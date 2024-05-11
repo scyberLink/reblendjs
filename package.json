@@ -1,0 +1,39 @@
+{
+  "name": "reactex",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start2": "npx webpack-dev-server --mode development --open --stats-error-details",
+    "compile": "npx tsc",
+    "build": "npm run compile && chmod +x ./build.sh && ./build.sh",
+    "build:dev": "npm run compile && chmod +x ./build-dev.sh && ./build-dev.sh",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Emmanuel Elom <scansioquielom@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/preset-env": "^7.24.5",
+    "@babel/preset-react": "^7.24.1",
+    "babel-loader": "^9.1.3",
+    "clean-webpack-plugin": "^4.0.0",
+    "css-loader": "^7.1.1",
+    "dotenv-webpack": "^8.1.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.1",
+    "html-loader": "^5.0.0",
+    "html-webpack-plugin": "^5.6.0",
+    "mini-css-extract-plugin": "^2.9.0",
+    "postcss-loader": "^8.1.1",
+    "react-toastify": "^10.0.5",
+    "resolve-url-loader": "^5.0.0",
+    "sass": "^1.77.0",
+    "sass-loader": "^14.2.1",
+    "style-loader": "^4.0.0",
+    "typescript": "^5.4.5",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
+  }
+}

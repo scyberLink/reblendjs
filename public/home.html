@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<!-- Mirrored from Fata Ai.com/demos/html/bitrader/ by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 09 Aug 2023 09:23:27 GMT -->
+
+<head>
+  <title>FATA AI - Crypto Arbitrage Trading Robot</title>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Sites meta Data -->
+  <meta name="application-name"
+    content="FATA - Your crypto arbitrage hub. Trade assets profitably by exploiting price differences across exchanges. Simplify trading and boost gains." />
+  <meta name="author" content="FATA" />
+  <meta name="keywords"
+    content="FATA, Arbitrage, Crypto, Forex, Portfolio Management, Investment, MLM and Stocks Trading Business" />
+  <meta name="description"
+    content="FATA is an all-in-one cryptocurrency trading and portfolio management platform that enables users to conduct arbitrage trades, which is taking advantage of an asset's price discrepancy in two or more exchanges. The idea is that you buy the asset from the exchange with a low price and sell it in the one with a higher price." />
+
+  <!-- OG meta data -->
+  <meta property="og:title"
+    content="FATA - Your crypto arbitrage hub. Trade assets profitably by exploiting price differences across exchanges. Simplify trading and boost gains." />
+  <meta property="og:site_name" content="FATA" />
+  <meta property="og:url" content="home.html" />
+  <meta property="og:description"
+    content="FATA is an all-in-one cryptocurrency trading and portfolio management platform that enables users to conduct arbitrage trades, which is taking advantage of an asset's price discrepancy in two or more exchanges. The idea is that you buy the asset from the exchange with a low price and sell it in the one with a higher price." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/images/og.png" />
+
+  <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon" />
+
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="assets/css/aos.css" />
+  <link rel="stylesheet" href="assets/css/all.min.css" />
+
+  <link rel="stylesheet" href="assets/css/swiper-bundle.min.css" />
+
+  <!-- main css for template -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+
+<body>
+  <!-- ===============>> Preloader start here <<================= -->
+  <div class="preloader">
+    <img src="assets/images/logo/preloader.png" alt="preloader icon" />
+  </div>
+  <!-- ===============>> Preloader end here <<================= -->
+
+  <!-- ===============>> light&dark switch start here <<================= -->
+  <div class="lightdark-switch">
+    <span onclick="undefined" class="dark-btn" id="btnSwitch"><i class="fa fa-moon"></i><!-- <img src="assets/images/icon/moon.svg" alt="light-dark-switchbtn"
+        class="swtich-icon"> --></span>
+  </div>
+  <!-- ===============>> light&dark switch start here <<================= -->
+
+  <!-- ===============>> Header section start here <<================= -->
+  <header class="header-section header-section--style2">
+    <div class="header-bottom">
+      <div class="container">
+        <div class="header-wrapper">
+          <div class="logo">
+            <a href="#">
+              <img id="header-image" style="height: 70px;" class="dark" src="assets/images/logo/logo.png" alt="logo" />
+            </a>
+          </div>
+          <div class="menu-area">
+            <ul class="menu menu--style1">
+              <li>
+                <a href="#home">Home </a>
+              </li>
+              <li>
+                <a href="#about">About us </a>
+              </li>
+              <li>
+                <a href="#service">Services </a>
+              </li>
+              <li>
+                <a href="#roadmap">Roadmap </a>
+              </li>
+              <li>
+                <a href="#pricing">Licensing </a>
+              </li>
+              <li>
+                <a href="#testimonial">Testimonial </a>
+              </li>
+              <li>
+                <a href="#faq">FAQ </a>
+              </li>
+            </ul>
+          </div>
+          <div class="header-action">
+            <div class="menu-area">
+              <div class="header-btn">
+                <a href="signup" class="trk-btn trk-btn--border trk-btn--primary">
+                  <span>Get Started</span>
+                </a>
+              </div>
+
+              <!-- toggle icons -->
+              <div class="header-bar d-lg-none header-bar--style1">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- ===============>> Header section end here <<================= -->
+
+  <!-- ===============>> Banner section start here <<================= -->
+  <section id="home" class="banner banner--style1">
+    <div class="banner__bg">
+      <div class="banner__bg-element">
+        <img src="assets/images/banner/home1/bg.png" alt="section-bg-element" class="dark d-none d-lg-block" />
+        <span class="bg-color d-lg-none"></span>
+      </div>
+    </div>
+    <div class="container">
+      <div class="banner__wrapper">
+        <div class="row gy-5 gx-4">
+          <div class="col-lg-6 col-md-7">
+            <div class="banner__content" data-aos="fade-right" data-aos-duration="1000">
+              <div class="banner__content-coin">
+                <img src="assets/images/banner/home1/3.png" alt="coin icon" />
+              </div>
+              <h1 class="banner__content-heading">
+                Get your account fatter with <span>FATA</span>
+              </h1>
+              <p class="banner__content-moto">
+                Anyone can make money online by the help of our artificial
+                intelligence through cryptocurrency arbitrage trading.
+              </p>
+              <div class="banner__btn-group btn-group">
+                <a href="login" class="trk-btn trk-btn--primary trk-btn--arrow">Login
+                  <span><i class="fa-solid fa-arrow-right"></i></span>
+                </a>
+                <a href="fata-reward-system.pdf" class="btn btn-lg btn-outline-primary text-bold">
+
+                  How it Works
+                </a>
+              </div>
+              <div class="banner__content-social">
+                <p>Follow Us</p>
+                <ul class="social">
+                  <!-- <li class="social__item">
+                    <a href="#" class="social__link social__link--style1 active"><i class="fab fa-facebook-f"></i></a>
+                  </li> -->
+                  <!-- <li class="social__item">
+                    <a href="#" class="social__link social__link--style1"><i class="fab fa-linkedin-in"></i></a>
+                  </li> -->
+                  <li class="social__item">
+                    <a href="#" class="social__link social__link--style1"><i class="fab fa-telegram"></i></a>
+                  </li>
+                  <!-- <li class="social__item">
+                    <a href="#" class="social__link social__link--style1"><i class="fab fa-youtube"></i></a>
+                  </li> -->
+                  <li class="social__item">
+                    <a href="https://twitter.com/FataAi" class="social__link social__link--style1"><i
+                        class="fab fa-twitter"></i></a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-5">
+            <div class="banner__thumb" data-aos="fade-left" data-aos-duration="1000">
+              <img src="assets/images/banner/home1/1.png" alt="banner-thumb" class="dark" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="banner__shape">
+      <span class="banner__shape-item banner__shape-item--1"><img src="assets/images/banner/home1/4.png"
+          alt="shape icon" /></span>
+    </div>
+  </section>
+  <!-- ===============>> Banner section end here <<================= -->
+
+  <!-- ===============>> partner section start here <<================= -->
+  <div class="partner partner--gradient">
+    <div class="container">
+      <div class="partner__wrapper">
+        <div class="partner__slider swiper">
+          <div class="swiper-wrapper">
+
+            <div class="swiper-slide">
+              <div class="partner__item">
+                <div class="partner__item-inner">
+                  <img src="assets/images/exchanger/Binance.png" style="height: 50px;width: 100%;" alt="partner logo"
+                    class="dark" />
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="partner__item">
+                <div class="partner__item-inner">
+                  <img src="assets/images/exchanger/Bitfinex.png" style="height: 50px;width: 100%;" alt="partner logo"
+                    class="dark" />
+                </div>
+              </div>
+            </div><!-- 
+            <div class="swiper-slide">
+              <div class="partner__item">
+                <div class="partner__item-inner">
+                  <img src="assets/images/exchanger/Bitmart.png" style="height: 50px;width: 100%;" alt="partner logo"
+                    class="dark" />
+                </div>
+              </div>
+            </div> -->
+            <div class="swiper-slide">
+              <div class="partner__item">
+                <div class="partner__item-inner">
+                  <img src="assets/images/exchanger/Poloniex.png" style="height: 50px;width: 100%;" alt="partner logo"
+                    class="dark" />
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="partner__item">
+                <div class="partner__item-inner">
+                  <img src="assets/images/exchanger/Kraken.png" style="height: 50px;width: 100%;" alt="partner logo"
+                    class="dark" />
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="partner__item">
+                <div class="partner__item-inner">
+                  <img src="assets/images/exchanger/MEXC Global.png" style="height: 50px;width: 100%;"
+                    alt="partner logo" class="dark" />
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="partner__item">
+                <div class="partner__item-inner">
+                  <svg id="Group_12763" data-name="Group 12763" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" width="176.067" height="41.67"
+                    viewBox="0 0 176.067 41.67" style="height: 50px;width: 100%;" alt="partner logo">
+                    <defs>
+                      <clipPath id="clip-path">
+                        <rect id="Rectangle_4" data-name="Rectangle 4" width="176.067" height="41.67" fill="#1c6fe8" />
+                      </clipPath>
+                    </defs>
+                    <g id="Group_8" data-name="Group 8" clip-path="url(#clip-path)">
+                      <path id="Path_7" data-name="Path 7"
+                        d="M41.7,0H12.079V8.731h5.443v-3.3H36.287V24.151H29.6V12.1H0V41.651H29.592V32.939h-5.41v3.3H5.419V17.523H12.1V29.567H41.713v-.348q0-14.443,0-28.885C41.712.223,41.7.111,41.7,0M24.168,24.157H17.53V17.515h6.638Zm29.54-5.089c3.76,0,7.52.01,11.28-.01a8.591,8.591,0,0,0,1.938-.225,4.687,4.687,0,0,0,3.586-3.043,6.485,6.485,0,0,0,.311-2.616,4.249,4.249,0,0,0-2.841-3.949c-.091-.037-.18-.078-.31-.134a3.79,3.79,0,0,0,2.109-2.746,6.235,6.235,0,0,0,.131-2.221,4.065,4.065,0,0,0-2.3-3.4A6.323,6.323,0,0,0,66.462.288C65.979.16,65.479.093,64.987,0H53.454c0,.111.012.223.012.334q0,9.185,0,18.37v.352c.113.005.178.011.243.011m4.259-15.3h.3c1.558,0,3.115,0,4.673,0a5.9,5.9,0,0,1,.725.045A1.635,1.635,0,0,1,65.2,5.5a3.356,3.356,0,0,1-.066.887,1.589,1.589,0,0,1-1.552,1.355c-.176.016-.354.014-.531.014H57.968Zm-.008,7.658c.094-.006.184-.016.273-.016,1.846,0,3.693,0,5.539,0a4.135,4.135,0,0,1,.805.072,1.77,1.77,0,0,1,1.5,2.052,1.552,1.552,0,0,1-1.518,1.677,5.426,5.426,0,0,1-.752.058q-2.811.007-5.623,0c-.065,0-.129-.005-.228-.01Zm61.908,7.284v.343h4.523v-7.2c1.379,0,2.722.013,4.065-.01a.567.567,0,0,1,.6.382c1.092,2.2,2.2,4.394,3.3,6.594a.382.382,0,0,0,.4.255c1.53-.011,3.06-.005,4.59-.005h.286l-4.381-8.091a.467.467,0,0,1,.086-.06,3.818,3.818,0,0,0,2.505-2.69,8.7,8.7,0,0,0,.17-4.179A4.485,4.485,0,0,0,132.591.253c-.448-.118-.914-.17-1.371-.253H119.855c0,.111.012.223.012.334q0,9.186,0,18.372m4.545-14.764c.1,0,.2-.013.294-.013,1.6,0,3.208-.011,4.811.007a4.528,4.528,0,0,1,1.155.163,1.124,1.124,0,0,1,.894,1.028,9.285,9.285,0,0,1,.017,1.72c-.093.811-.48,1.122-1.32,1.2-.194.019-.391.029-.586.029q-2.49,0-4.979,0c-.091,0-.181-.009-.286-.015Zm16.1,14.874q0-9.366,0-18.732c0-.028,0-.056,0-.083h14.669V4H145.01V7.512h9.8v4.024h-9.8V15.08h10.286v3.97H140.529c-.006-.075-.018-.154-.018-.234m16.573.252L164.1,9.434l-.885-1.267q-2.763-3.953-5.526-7.906c-.057-.082-.1-.174-.15-.261h5.375c.063.112.119.228.19.334,4.009,6.073,8.257,11.981,12.423,17.946.175.25.363.491.544.736v.056c-1.661,0-3.321-.011-4.982,0a.6.6,0,0,1-.578-.317c-1.236-1.853-2.485-3.7-3.729-5.544-.056-.083-.114-.164-.188-.27l-1.5,2.16c-.873,1.254-1.744,2.511-2.623,3.76a.452.452,0,0,1-.294.194c-1.67.012-3.339.008-5.086.008M100.352,3.931c-.027-.045-.044-.06-.044-.075q0-1.928.007-3.856h16.74V3.915h-6.047v15.13h-4.665V3.931ZM81.875,3.743q0-1.789,0-3.578A1.24,1.24,0,0,1,81.9,0h16.74V3.923h-6.07V19.053H87.919V3.93H81.895c-.009-.081-.02-.134-.02-.187M74.409.362c0-.121-.01-.241-.016-.362H79.04c0,.1.012.2.012.306q0,9.2,0,18.393v.35H74.41v-.378q0-9.155,0-18.31m98.367,2.944h-2.588V0h5.879V5.873h-3.291ZM121.682,35.337a.822.822,0,0,1-.852.709c-1.133.037-2.268.011-3.418.011V33.891h1.408c.578,0,1.156-.011,1.733,0a1.093,1.093,0,0,1,1.128,1.442m-9.806-3.921a6.244,6.244,0,0,1,.022,3.23,1.959,1.959,0,0,1-1.9,1.524,4.038,4.038,0,0,1-.865-.013,2.038,2.038,0,0,1-1.891-1.953c-.063-.375-.08-.758-.129-1.246.069-.432.12-.972.248-1.492a1.821,1.821,0,0,1,1.528-1.412,3.459,3.459,0,0,1,1.635.045,1.811,1.811,0,0,1,1.355,1.316m5.534.9V30.079h.4c.8,0,1.6-.008,2.406.006a.987.987,0,0,1,1.063,1.124,1.007,1.007,0,0,1-1.107,1.112c-.912,0-1.824,0-2.761,0m11.685-1.974,1.188,3.5h-2.464c.433-1.19.86-2.362,1.275-3.5m46.693-5.4H53.589V41.67H176.067V24.947l-.28,0m-78.873,13h-1.6q-.05-.392-.1-.767c-.033,0-.058-.013-.066-.005a3.655,3.655,0,0,1-3.059.9,5.051,5.051,0,0,1-1.07-.191,3.279,3.279,0,0,1-2.429-2.423,8.23,8.23,0,0,1-.105-3.929A3.717,3.717,0,0,1,91.91,28.59a6.422,6.422,0,0,1,2.924.279,3.047,3.047,0,0,1,2.03,2.787c0,.063-.005.127-.009.207H94.919c-.032-.129-.055-.258-.1-.381A1.71,1.71,0,0,0,93.25,30.29a4.3,4.3,0,0,0-1.275.067,1.765,1.765,0,0,0-1.425,1.476,7.193,7.193,0,0,0-.039,2.887,1.848,1.848,0,0,0,1.847,1.7,3.721,3.721,0,0,0,1.3-.067,1.647,1.647,0,0,0,1.378-2.1H92.386V32.618h4.529Zm8.047,0H98.3V28.712h2.035v7.527h4.631Zm8.992-2.906a3.479,3.479,0,0,1-3.4,3,8.108,8.108,0,0,1-2.367-.074,3.448,3.448,0,0,1-2.97-3.09c-.087-.522-.116-1.053-.178-1.646.069-.533.1-1.131.229-1.709a3.5,3.5,0,0,1,2.783-2.806,6.743,6.743,0,0,1,3.214.009,3.373,3.373,0,0,1,2.718,2.846,8.643,8.643,0,0,1-.028,3.468m9.871.639a2.3,2.3,0,0,1-2.307,2.248c-.846.051-1.7.033-2.545.037-1.073.005-2.146,0-3.219,0h-.338V28.688h.3c1.642,0,3.285-.016,4.926.011a4.918,4.918,0,0,1,1.395.231,1.847,1.847,0,0,1,1.327,1.668,2.416,2.416,0,0,1-.422,1.883,4.906,4.906,0,0,1-.843.68c.016,0,.074.016.131.036a2.1,2.1,0,0,1,1.6,2.481m9.257,2.287c-.383,0-.765-.008-1.147,0a.277.277,0,0,1-.322-.221c-.2-.59-.426-1.171-.629-1.76a.264.264,0,0,0-.3-.215c-1.1.008-2.2.01-3.3,0a.3.3,0,0,0-.336.247q-.317.879-.662,1.748a.329.329,0,0,1-.217.19c-.623.015-1.247.009-1.927.009l.9-2.309c.864-2.228,1.731-4.456,2.586-6.687a.374.374,0,0,1,.423-.284c.68.016,1.361.009,2.042,0a.251.251,0,0,1,.288.187q1.63,4.469,3.271,8.933a1.247,1.247,0,0,1,.029.158Zm8.275-.021H134.7V28.709h2.03v7.526h4.628Z"
+                        fill="#1c6fe8" />
+                    </g>
+                  </svg>
+
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="partner__item">
+                <div class="partner__item-inner">
+                  <svg width="87" height="34" viewBox="0 0 87 34" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    style="height: 50px;width: 100%;" alt="partner logo">
+                    <path d="M62.0083 25.3572V3H66.5022V25.3572H62.0083Z" fill="#F7A600" />
+                    <path
+                      d="M9.63407 31.9983H0V9.64111H9.24666C13.7406 9.64111 16.3591 12.0903 16.3591 15.9214C16.3591 18.4013 14.6774 20.0039 13.5134 20.5375C14.9028 21.1652 16.6813 22.5779 16.6813 25.5624C16.6813 29.7373 13.7406 31.9983 9.63407 31.9983ZM8.89096 13.5355H4.4939V18.6852H8.89096C10.7981 18.6852 11.8652 17.6488 11.8652 16.1095C11.8652 14.5719 10.7981 13.5355 8.89096 13.5355ZM9.18151 22.6104H4.4939V28.1056H9.18151C11.2189 28.1056 12.1874 26.8503 12.1874 25.3418C12.1874 23.835 11.2171 22.6104 9.18151 22.6104Z"
+                      fill="#15192A" />
+                    <path
+                      d="M30.3882 22.8293V31.9983H25.926V22.8293L19.0073 9.64111H23.8886L28.1888 18.6527L32.4239 9.64111H37.3052L30.3882 22.8293Z"
+                      fill="#15192A" />
+                    <path
+                      d="M50.0457 31.9983H40.4116V9.64111H49.6583C54.1522 9.64111 56.7707 12.0903 56.7707 15.9214C56.7707 18.4013 55.089 20.0039 53.925 20.5375C55.3144 21.1652 57.093 22.5779 57.093 25.5624C57.093 29.7373 54.1522 31.9983 50.0457 31.9983ZM49.3026 13.5355H44.9055V18.6852H49.3026C51.2097 18.6852 52.2768 17.6488 52.2768 16.1095C52.2768 14.5719 51.2097 13.5355 49.3026 13.5355ZM49.5931 22.6104H44.9055V28.1056H49.5931C51.6305 28.1056 52.599 26.8503 52.599 25.3418C52.599 23.835 51.6305 22.6104 49.5931 22.6104Z"
+                      fill="#15192A" />
+                    <path d="M80.986 13.5355V32H76.4921V13.5355H70.4785V9.64111H86.9996V13.5355H80.986Z"
+                      fill="#15192A" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="partner__item">
+                <div class="partner__item-inner">
+                  <svg width="525" height="203" viewBox="0 0 525 203" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    style="height: 50px;width: 100%;" alt="partner logo">
+                    <g clip-path="url(#clip0_14_10)">
+                      <path
+                        d="M87.0818 62.636C87.6838 32.826 70.8038 6.85 62.0118 0.606999C61.9718 0.566799 61.1888 0.145297 61.2488 1.3096C61.2488 1.3296 61.2288 1.3296 61.2288 1.3497C60.3258 57.658 31.3818 72.834 15.6658 93.47C-19.2592 139.359 9.88484 191.713 47.6398 201.629C48.2828 201.79 50.0288 202.312 53.3408 202.994C55.0668 203.356 55.5688 201.89 54.3038 199.702C49.7878 191.853 41.7588 178.604 40.1738 161.581C36.5608 122.055 86.3788 97.324 87.0818 62.636Z"
+                        fill="white" />
+                      <path
+                        d="M106.11 81.727C105.809 81.506 105.388 81.526 105.348 81.907C104.545 89.074 97.138 103.929 87.383 117.82C54.545 164.653 71.085 185.891 83.931 200.626C86.299 203.356 87.483 202.754 88.728 200.807C89.892 198.96 91.658 196.611 99.246 193.018C100.43 192.456 129.093 177.24 132.204 142.592C135.195 109.068 113.697 87.869 106.11 81.727Z"
+                        fill="#008CD6" />
+                      <path
+                        d="M276.622 73.195V196.43H250.187V146.647H199.385V196.43H172.288V73.195H199.385V122.979H250.187V73.195H276.622Z"
+                        fill="white" />
+                      <path
+                        d="M398.84 73.195V97.565H386.255H360.884V196.41H333.687V97.565H308.998H296.413V73.195H398.84Z"
+                        fill="white" />
+                      <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M495.105 196.551L464.033 153.672L433.203 196.37L403.055 196.41L448.759 133.498L405.624 73.195H435.752L525.112 196.551H495.105Z"
+                        fill="white" />
+                      <path d="M472.483 100.777L487.397 121.494L522.724 73.175H492.756L472.483 100.777Z"
+                        fill="#008CD6" />
+                    </g>
+                    <defs>
+                      <clipPath id="clip0_14_10">
+                        <rect width="525" height="203" fill="white" />
+                      </clipPath>
+                    </defs>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="partner__item">
+                <div class="partner__item-inner">
+                  <svg width="122" height="29" viewBox="0 0 122 29" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    style="height: 50px;width: 100%;" alt="partner logo">
+                    <path
+                      d="M95.985 14.9845C95.985 14.2555 95.985 13.5805 95.958 12.9594C95.931 12.3384 95.877 11.7444 95.796 11.2314C95.715 10.6914 95.553 10.2053 95.31 9.71932C95.094 9.2333 94.7429 8.80128 94.3379 8.36927C93.7439 7.77525 93.0959 7.34323 92.3669 7.01922C91.6378 6.72221 90.8008 6.5332 89.8558 6.5332C88.9107 6.5332 88.0737 6.69521 87.3447 7.01922C86.6157 7.31623 85.9406 7.77525 85.3466 8.36927C84.9146 8.80128 84.6176 9.2333 84.4016 9.71932C84.1856 10.2053 83.9966 10.6914 83.9156 11.2314C83.8346 11.7714 83.7806 12.3384 83.7536 12.9594C83.7266 13.5805 83.7266 14.2555 83.7266 14.9845C83.7266 15.7135 83.7266 16.3616 83.7536 17.0096C83.7806 17.6306 83.8346 18.2246 83.9156 18.7376C83.9966 19.2777 84.1586 19.7637 84.4016 20.2497C84.6176 20.7357 84.9686 21.1677 85.3466 21.5997C85.9406 22.1938 86.5887 22.6258 87.3447 22.9498C88.0737 23.2468 88.9107 23.4358 89.8558 23.4358C90.8008 23.4358 91.6108 23.2738 92.3669 22.9498C93.0959 22.6528 93.7709 22.1938 94.3379 21.5997C94.7699 21.1677 95.0669 20.7357 95.31 20.2497C95.526 19.7637 95.715 19.2777 95.796 18.7376C95.877 18.1976 95.958 17.6306 95.958 17.0096C95.985 16.3346 95.985 15.7135 95.985 14.9845ZM92.7719 14.9845C92.7719 15.7675 92.7719 16.4426 92.7449 16.9826C92.7179 17.5226 92.6909 17.9276 92.6099 18.2786C92.5559 18.6026 92.4749 18.8996 92.3669 19.0887C92.2589 19.3047 92.1509 19.5207 91.9619 19.6827C91.7458 19.9527 91.4218 20.1687 91.0978 20.3307C90.7468 20.4927 90.3418 20.5467 89.8828 20.5737C89.4238 20.5737 89.0457 20.4927 88.6677 20.3307C88.3167 20.1687 88.0197 19.9797 87.7767 19.6827C87.6147 19.5207 87.5067 19.3317 87.3717 19.0887C87.2637 18.8726 87.1827 18.6026 87.1287 18.2786C87.0747 17.9546 87.0207 17.5226 87.0207 16.9826C86.9937 16.4426 86.9937 15.7945 86.9937 14.9845C86.9937 14.2015 86.9937 13.5265 87.0207 12.9864C87.0477 12.4464 87.0747 12.0414 87.1287 11.6904C87.1827 11.3394 87.2637 11.0694 87.3717 10.8804C87.4797 10.6644 87.5877 10.4483 87.7767 10.2863C87.9927 10.0163 88.3167 9.80032 88.6677 9.63831C89.0187 9.47631 89.4238 9.42231 89.8828 9.39531C90.3418 9.39531 90.7198 9.47631 91.0978 9.63831C91.4218 9.80032 91.7458 9.98933 91.9619 10.2863C92.1239 10.4483 92.2319 10.6374 92.3669 10.8804C92.4749 11.0964 92.5559 11.3664 92.6099 11.6904C92.6639 12.0144 92.7179 12.4464 92.7449 12.9864C92.7449 13.5265 92.7719 14.2015 92.7719 14.9845Z"
+                      fill="#01BC8D" />
+                    <path
+                      d="M121.772 6.96532C121.772 6.80332 121.637 6.69531 121.502 6.69531H118.855C118.693 6.69531 118.585 6.83032 118.585 6.96532V16.8477L112.078 6.77632C112.024 6.72231 111.997 6.69531 111.916 6.69531H109.432C109.297 6.69531 109.162 6.83032 109.162 6.96532C109.162 12.3115 109.162 17.6577 109.162 22.9499C109.162 23.1119 109.297 23.2199 109.432 23.2199H112.078C112.24 23.2199 112.348 23.0849 112.348 22.9499V13.0405L118.855 23.1389C118.909 23.1929 118.936 23.2199 119.017 23.2199H121.502C121.664 23.2199 121.772 23.0849 121.772 22.9499V6.96532Z"
+                      fill="#01BC8D" />
+                    <path
+                      d="M103.87 6.96532C103.87 6.80332 103.735 6.69531 103.6 6.69531H100.954C100.792 6.69531 100.684 6.83032 100.684 6.96532V22.9499C100.684 23.1119 100.819 23.2199 100.954 23.2199H103.6C103.762 23.2199 103.87 23.0849 103.87 22.9499V6.96532Z"
+                      fill="#01BC8D" />
+                    <path
+                      d="M71.9546 14.9845C71.9546 14.2015 71.9546 13.5265 71.9816 12.9864C72.0086 12.4464 72.0356 12.0414 72.0896 11.6904C72.3326 10.2593 73.4397 9.42231 74.8437 9.42231C75.7617 9.42231 76.5718 9.74632 77.1118 10.5293C77.3278 10.8534 77.5168 11.2584 77.6248 11.7174C77.6248 11.7714 77.6518 11.7984 77.7058 11.7984H80.8379C80.8919 11.7984 80.8919 11.7714 80.8919 11.7174C80.5679 9.80032 79.5149 8.01826 77.6788 7.15423C76.8418 6.74921 75.8697 6.5332 74.7897 6.5332C73.0346 6.5332 71.5226 7.15423 70.3076 8.34227C69.6055 9.0443 69.1735 9.88132 68.9575 10.8264C68.7685 11.7444 68.6875 13.1214 68.6875 14.9305C68.6875 16.7396 68.7685 18.1166 68.9575 19.0346C69.1465 19.9797 69.6325 20.8167 70.3076 21.5187C71.5226 22.7338 73.0076 23.3278 74.7897 23.3278C75.8427 23.3278 76.8148 23.1388 77.6788 22.7068C79.4879 21.8428 80.5679 20.1147 80.8919 18.1436C80.8919 18.0896 80.8919 18.0626 80.8379 18.0626H77.7058C77.6518 18.0626 77.6248 18.0896 77.6248 18.1436C77.5168 18.6026 77.3548 18.9806 77.1118 19.3317C76.5718 20.0877 75.7617 20.4117 74.8437 20.4387C73.4397 20.4387 72.3596 19.6017 72.0896 18.1706C72.0356 17.8466 71.9816 17.4146 71.9816 16.8746C71.9546 16.4426 71.9546 15.7675 71.9546 14.9845Z"
+                      fill="#01BC8D" />
+                    <path
+                      d="M38.7974 6.96532C38.7974 6.80332 38.6624 6.69531 38.5274 6.69531H35.8813C35.7193 6.69531 35.6113 6.83032 35.6113 6.96532V22.9499C35.6113 23.1119 35.7463 23.2199 35.8813 23.2199H38.5274C38.6894 23.2199 38.7974 23.0849 38.7974 22.9499V18.2517L40.9575 15.6866L45.3587 23.1659C45.3857 23.2199 45.4397 23.2469 45.5207 23.2469H48.7608C48.8958 23.2469 48.9228 23.1659 48.8688 23.0309L43.1176 13.2835L48.4098 6.93832C48.5178 6.80331 48.4638 6.69531 48.3018 6.69531H44.7376C44.6836 6.69531 44.6566 6.69531 44.6296 6.74931L38.7974 13.6886V6.96532Z"
+                      fill="#01BC8D" />
+                    <path
+                      d="M58.2377 20.5197C56.7256 20.5197 55.3756 19.1156 55.3756 17.4685V6.99218C55.3756 6.83017 55.2406 6.72217 55.1055 6.72217H52.4595C52.2975 6.72217 52.1895 6.85717 52.1895 6.99218V17.4415C52.1895 21.1137 54.9435 23.4358 58.2917 23.4358C61.6398 23.4358 64.3939 21.1137 64.3939 17.4415V6.99218C64.3939 6.83017 64.2589 6.72217 64.1239 6.72217H61.4778C61.3158 6.72217 61.2078 6.85717 61.2078 6.99218V17.4685C61.0728 19.1156 59.7227 20.5197 58.2377 20.5197Z"
+                      fill="#01BC8D" />
+                    <path
+                      d="M8.71879 14.9844L17.0081 23.2737L22.2462 18.0355C23.1643 17.1175 24.6763 17.1175 25.5944 18.0355C26.5124 18.9535 26.5124 20.4656 25.5944 21.3836L18.6821 28.2959C17.7641 29.2139 16.252 29.2139 15.334 28.2959L5.39767 18.3325V24.2727C5.39767 25.5688 4.34464 26.6488 3.02159 26.6488C1.69854 26.6488 0.645508 25.5958 0.645508 24.2727V5.75005C0.645508 4.427 1.69854 3.37396 3.02159 3.37396C4.34464 3.37396 5.39767 4.427 5.39767 5.75005V11.6363L15.361 1.6729C16.279 0.754867 17.7911 0.754867 18.7091 1.6729L25.6214 8.58515C26.5394 9.50318 26.5394 11.0152 25.6214 11.9333C24.7033 12.8513 23.1913 12.8513 22.2733 11.9333L17.0351 6.69508L8.71879 14.9844ZM17.0351 12.6083C15.712 12.6083 14.659 13.6613 14.659 14.9844C14.659 16.3074 15.712 17.3605 17.0351 17.3605C18.3581 17.3605 19.4111 16.3074 19.4111 14.9844C19.3841 13.6613 18.3311 12.6083 17.0351 12.6083Z"
+                      fill="#01BC8D" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="partner__item">
+                <div class="partner__item-inner">
+                  <svg width="146" height="28" viewBox="0 0 146 28" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    style="height: 50px;width: 100%;" alt="partner logo" class="dark">
+                    <path
+                      d="M42.3855 19.4685L33.0698 3.30927C31.0275 -0.0587229 26.0472 -0.0945535 24.0765 3.45259L14.295 20.2567C12.4677 23.3381 14.725 27.2077 18.3796 27.2077H37.9785C41.6689 27.2077 44.4278 23.2306 42.3855 19.4685Z"
+                      fill="#3156AA" />
+                    <path
+                      d="M28.9507 20.7231L28.3774 19.7199C27.84 18.7883 26.6576 16.7818 26.6576 16.7818L18.7751 3.09485C16.7328 0.0493267 11.8957 -0.201482 9.85345 3.6323L0.681034 19.5049C-1.21794 22.837 1.03933 27.1724 5.15975 27.2083H24.6511H32.9636H37.9081C32.8561 27.2441 31.2438 24.6285 28.9507 20.7231Z"
+                      fill="#1972E2" />
+                    <path
+                      d="M28.951 20.7229L28.3777 19.7197C27.8402 18.7881 26.6579 16.7817 26.6579 16.7817L21.57 7.82422L14.2608 20.293C12.4335 23.3743 14.6907 27.2439 18.3454 27.2439H24.6156H32.9281H37.9084C32.8206 27.2081 31.2441 24.6284 28.951 20.7229Z"
+                      fill="url(#paint0_linear_5316_35437)" />
+                    <path
+                      d="M124.362 14.8026C124.404 21.0965 129.523 26.0476 135.817 25.9637C139.719 25.9637 142.74 24.621 145.006 21.9776L143.579 20.7608C142.656 20.0056 141.355 19.9636 140.432 20.6769C139.173 21.6 137.621 22.1035 135.775 22.1035C131.411 22.1035 128.684 19.2922 128.684 14.7187C128.684 10.1871 131.327 7.50177 135.775 7.50177C137.579 7.50177 139.173 7.96331 140.432 8.92837C141.397 9.64167 142.698 9.59972 143.579 8.84445L145.006 7.62764C142.74 4.94226 139.593 3.55762 135.607 3.55762C132.208 3.55762 129.355 4.60659 127.383 6.53671C125.411 8.50878 124.362 11.362 124.362 14.8026Z"
+                      fill="white" />
+                    <path
+                      d="M65.4928 23.4044L71.451 12.9986V25.6702H75.9825V3.80957H73.1713C72.2902 3.80957 71.451 4.27112 71.0314 5.06834L63.8983 18.0756L56.7653 5.06834C56.3457 4.27112 55.5065 3.80957 54.6254 3.80957H51.8141V25.6702H56.3457V12.9986L62.3039 23.4044H65.4928Z"
+                      fill="white" />
+                    <path
+                      d="M79.7163 3.85107V25.7117L97.8846 25.6698V24.2851C97.8846 23.1942 97.0034 22.313 95.9125 22.313H84.2479V16.4388H95.9125V13.0821H84.2479V7.2078H95.9125C97.0034 7.2078 97.8846 6.32666 97.8846 5.23572V3.85107H79.7163Z"
+                      fill="white" />
+                    <path
+                      d="M119.706 3.85107H123.985L115.342 14.8443L124.027 25.7537H119.748C118.95 25.7537 118.237 25.376 117.733 24.7886L112.531 18.285L107.37 24.7467C106.866 25.376 106.153 25.7117 105.356 25.7117H101.076L109.761 14.8024L101.076 3.89303H105.356C106.153 3.89303 106.866 4.22871 107.37 4.85809L112.531 11.3198L117.692 4.81613C118.195 4.18675 118.908 3.85107 119.706 3.85107Z"
+                      fill="white" />
+                    <defs>
+                      <linearGradient id="paint0_linear_5316_35437" x1="11.6594" y1="14.6276" x2="34.3031" y2="22.9952"
+                        gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#264CA2" stop-opacity="0" />
+                        <stop offset="1" stop-color="#234588" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ===============>> partner section end here <<================= -->
+
+  <!-- ===============>> About section start here <<================= -->
+  <section id="about" class="about about--style1">
+    <div class="container">
+      <div class="about__wrapper">
+        <div class="row gx-5 gy-4 gy-sm-0 align-items-center">
+          <div class="col-lg-6">
+            <div class="about__thumb pe-lg-5" data-aos="fade-right" data-aos-duration="800">
+              <div class="about__thumb-inner">
+                <div class="about__thumb-image floating-content">
+                  <img class="dark" src="assets/images/about/1.png" alt="about-image" />
+                  <div class="floating-content__top-left">
+                    <div class="floating-content__item">
+                      <h3>
+                        $<span class="purecounter" data-purecounter-start="0" data-purecounter-end="4.5"> 4.5M</span>M+
+                      </h3>
+                      <p>Revenue Generated</p>
+                    </div>
+                  </div>
+                  <div class="floating-content__bottom-right">
+                    <div class="floating-content__item">
+                      <h3>
+                        <span class="purecounter" data-purecounter-start="0" data-purecounter-end="3"> 3K</span>K+
+                      </h3>
+                      <p>Active Members</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="about__content" data-aos="fade-left" data-aos-duration="800">
+              <div class="about__content-inner">
+                <h2>Meet <span>FATA AI</span> unless miss the opportunity</h2>
+
+                <p class="mb-0">
+                  FATA AI is an artificial intelligence system that can help
+                  you perform cryptocurrency arbitrage trading which is taking
+                  advantage of an asset's price discrepancy in two or more
+                  exchanges and also manage your portfolio in one wallet. The
+                  idea is that you buy the asset from the exchange with a low
+                  price and sell it in the one with a higher price in just 10 secs.
+                </p>
+                <a href="fata-reward-system.pdf" class="trk-btn trk-btn--border trk-btn--primary">How It Works
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ===============>> About section start here <<================= -->
+
+  <!-- ===============>> feature section start here <<================= -->
+  <section class="feature feature--style1 padding-bottom padding-top bg-color">
+    <div class="container">
+      <div class="feature__wrapper">
+        <div class="row g-5 align-items-center justify-content-between">
+          <div class="col-md-6 col-lg-5">
+            <div class="feature__content" data-aos="fade-right" data-aos-duration="800">
+              <div class="feature__content-inner">
+                <div class="section-header">
+                  <h2 class="mb-15 mt-minus-5"><span>Why </span>Trust Us</h2>
+                  <p class="mb-0">
+                    Unlike other scam cryptocurrency projects with no known
+                    owners, FATA AI is a product of PIMCO Investments LLC a
+                    broker-dealer registered with the SEC and member of the
+                    Financial Industry Regulatory Authority, Inc.
+                  </p>
+                </div>
+
+                <div class="feature__nav">
+                  <div class="nav nav--feature flex-column nav-pills" id="feat-pills-tab" role="tablist"
+                    aria-orientation="vertical">
+                    <div class="nav-link active" id="feat-pills-one-tab" data-bs-toggle="pill"
+                      data-bs-target="#feat-pills-one" role="tab" aria-controls="feat-pills-one" aria-selected="true">
+                      <div class="feature__item">
+                        <div class="feature__item-inner">
+                          <div class="feature__item-content">
+                            <h6>Registered LLC in US</h6>
+                            <p style="color: black">
+                              PIMCO Investments LLC is certified by the
+                              Secretary of State of Colorado, USA and
+                              registered under the law of Delaware.
+                            </p>
+                            <a href="https://www.coloradosos.gov/biz/BusinessEntityCriteriaExt.do"
+                              target="_blank">Verify <i class="fa fa-arrow-right"></i></a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nav-link" id="feat-pills-two-tab" data-bs-toggle="pill" data-bs-target="#feat-pills-two"
+                      role="tab" aria-controls="feat-pills-two" aria-selected="false">
+                      <div class="feature__item">
+                        <div class="feature__item-inner">
+                          <div class="feature__item-content">
+                            <h6>Certified by SEC and FINRA</h6>
+                            <p style="color: black">
+                              PIMCO Investments LLC is certified by the US
+                              Securities and Exchange Commission (SEC) and
+                              Financial Regulatory Authorities Inc. (FINRA)
+                            </p>
+                            <a href="https://brokercheck.finra.org/firm/summary/154957" target="_blank">Verify <i
+                                class="fa fa-arrow-right"></i></a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="nav-link" id="feat-pills-three-tab" data-bs-toggle="pill"
+                      data-bs-target="#feat-pills-three" role="tab" aria-controls="feat-pills-three"
+                      aria-selected="false">
+                      <div class="feature__item">
+                        <div class="feature__item-inner">
+                          <div class="feature__item-content">
+                            <h6>Over $100,000 reserved</h6>
+                            <p style="color: black">
+                              In order to avoid lost of funds due to any
+                              technical issue, we have reserved over $100k in
+                              Binance BEP2 network to handle such situations.
+                            </p>
+                            <a href="https://explorer.bnbchain.org/address/bnb136ns6lfw4zs5hg4n85vdthaad7hq5m4gtkgf23"
+                              target="_blank">Verify <i class="fa fa-arrow-right"></i></a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-6">
+            <div class="feature__thumb pt-5 pt-md-0" data-aos="fade-left" data-aos-duration="800">
+              <div class="feature__thumb-inner">
+                <div class="tab-content" id="feat-pills-tabContent">
+                  <div class="tab-pane fade show active" id="feat-pills-one" role="tabpanel"
+                    aria-labelledby="feat-pills-one-tab" tabindex="0">
+                    <div class="feature__image floating-content">
+                      <img src="assets/images/feature/1.png" alt="Feature image" />
+                      <div class="floating-content__top-right floating-content__top-right--style2" data-aos="fade-left"
+                        data-aos-duration="1000">
+                        <div class="floating-content__item floating-content__item--style2 text-center">
+                          <p class="style2">Company ID 20111020753</p>
+                        </div>
+                      </div>
+                      <div class="floating-content__bottom-left floating-content__bottom-left--style2"
+                        data-aos="fade-left" data-aos-duration="1000">
+                        <div class="floating-content__item floating-content__item--style3 d-flex align-items-center">
+                          <h3 class="style2">
+                            <span class="purecounter" data-purecounter-start="0" data-purecounter-end="10">12</span>
+                            Years
+                          </h3>
+                          <p class="ms-3 style2">Existance</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane fade" id="feat-pills-two" role="tabpanel" aria-labelledby="feat-pills-two-tab"
+                    tabindex="0">
+                    <div class="feature__image floating-content">
+                      <img src="assets/images/feature/2.png" alt="Feature image" />
+                      <div class="floating-content__top-right floating-content__top-right--style2" data-aos="fade-left"
+                        data-aos-duration="1000">
+                        <div class="floating-content__item floating-content__item--style2 text-center">
+                          <p class="style2">SEC No: 8-68686</p>
+                        </div>
+                      </div>
+                      <div class="floating-content__bottom-left floating-content__bottom-left--style2"
+                        data-aos="fade-left" data-aos-duration="1000">
+                        <div class="floating-content__item floating-content__item--style3 d-flex align-items-center">
+                          <h3 class="style2">
+                            <span class="purecounter" data-purecounter-start="0" data-purecounter-end="18">12</span>
+                            Years
+                          </h3>
+                          <p class="ms-3 style2">SEC Verified</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane fade" id="feat-pills-three" role="tabpanel"
+                    aria-labelledby="feat-pills-three-tab" tabindex="0">
+                    <div class="feature__image floating-content">
+                      <img src="assets/images/feature/1.png" alt="Feature image" />
+                      <div class="floating-content__top-right floating-content__top-right--style2" data-aos="fade-left"
+                        data-aos-duration="1000">
+                        <div class="floating-content__item floating-content__item--style2 text-center">
+                          <p class="style2">Secured Tokens in BEP2</p>
+                        </div>
+                      </div>
+                      <div class="floating-content__bottom-left floating-content__bottom-left--style2"
+                        data-aos="fade-left" data-aos-duration="1000">
+                        <div class="floating-content__item floating-content__item--style3 d-flex align-items-center">
+                          <h3 class="style2">
+                            <span class="purecounter" data-purecounter-start="0" data-purecounter-end="100"></span>+
+                          </h3>
+                          <p class="ms-3 style2">Tokens locked</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature__shape">
+      <span class="feature__shape-item feature__shape-item--1"><img src="assets/images/feature/shape/1.png"
+          alt="shape-icon" /></span>
+      <span class="feature__shape-item feature__shape-item--2">
+        <span></span>
+      </span>
+    </div>
+  </section>
+  <!-- ===============>> feature section end here <<================= -->
+
+  <!-- ===============>> Service section start here <<================= -->
+  <section id="service" class="service padding-top padding-bottom">
+    <div class="section-header section-header--max50">
+      <h2 class="mb-15 mt-minus-5"><span>FATA AI</span> Services</h2>
+      <p>
+        We Are Your Go-To Crypto Arbitrage Platform for Maximizing Investment
+        Gains!
+      </p>
+    </div>
+    <div class="container">
+      <div class="service__wrapper">
+        <div class="row g-4 align-items-center">
+          <div class="col-sm-6 col-md-6 col-lg-4">
+            <div class="service__item" data-aos="fade-up" data-aos-duration="800">
+              <div class="service__item-inner text-center">
+                <div class="service__thumb mb-30">
+                  <div class="service__thumb-inner">
+                    <img class="dark" src="assets/images/service/1.png" alt="service-icon" />
+                  </div>
+                </div>
+                <div class="service__content">
+                  <h5 class="mb-15">
+                    <a class="stretched-link" href="javascript:void();">Real-time Data Analysis</a>
+                  </h5>
+                  <p class="mb-0">
+                    We provide you with up-to-the-minute market data and
+                    analytics for you to trade with just one-click.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <div class="service__item" data-aos="fade-up" data-aos-duration="1000">
+              <div class="service__item-inner text-center">
+                <div class="service__thumb mb-30">
+                  <div class="service__thumb-inner">
+                    <img class="dark" src="assets/images/service/2.png" alt="service-icon" />
+                  </div>
+                </div>
+                <div class="service__content">
+                  <h5 class="mb-15">
+                    <a class="stretched-link" href="javascript:void();">
+                      Arbitrage Trading</a>
+                  </h5>
+                  <p class="mb-0">
+                    Identifying and executing profitable trading opportunities
+                    across multiple cryptocurrency exchanges.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <div class="service__item" data-aos="fade-up" data-aos-duration="1200">
+              <div class="service__item-inner text-center">
+                <div class="service__thumb mb-30">
+                  <div class="service__thumb-inner">
+                    <img class="dark" src="assets/images/service/3.png" alt="service-icon" />
+                  </div>
+                </div>
+                <div class="service__content">
+                  <h5 class="mb-15">
+                    <a class="stretched-link" href="javascript:void();">Automated Trading</a>
+                  </h5>
+                  <p class="mb-0">
+                    Setting up automated trading bots to execute arbitrage and
+                    trading strategies on your behalf.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <div class="service__item" data-aos="fade-up" data-aos-duration="800">
+              <div class="service__item-inner text-center">
+                <div class="service__thumb mb-30">
+                  <div class="service__thumb-inner">
+                    <img class="dark" src="assets/images/service/5.png" alt="service-icon" />
+                  </div>
+                </div>
+                <div class="service__content">
+                  <h5 class="mb-15">
+                    <a class="stretched-link" href="javascript:void();">Risk Management
+                    </a>
+                  </h5>
+                  <p class="mb-0">
+                    Implementing strategies to minimize investment risks and
+                    optimize returns.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <div class="service__item" data-aos="fade-up" data-aos-duration="1000">
+              <div class="service__item-inner text-center">
+                <div class="service__thumb mb-30">
+                  <div class="service__thumb-inner">
+                    <img class="dark" src="assets/images/service/6.png" alt="service-icon" />
+                  </div>
+                </div>
+                <div class="service__content">
+                  <h5 class="mb-15">
+                    <a class="stretched-link" href="javascript:void();">Portfolio Managment</a>
+                  </h5>
+                  <p class="mb-0">
+                    Monitoring and managing all your wallet holdings in one
+                    centralized dashboard.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <div class="service__item" data-aos="fade-up" data-aos-duration="1200">
+              <div class="service__item-inner text-center">
+                <div class="service__thumb mb-30">
+                  <div class="service__thumb-inner">
+                    <img class="dark" src="assets/images/service/4.png" alt="service-icon" />
+                  </div>
+                </div>
+                <div class="service__content">
+                  <h5 class="mb-15">
+                    <a class="stretched-link" href="javascript:void();">User-Friendly Interface</a>
+                  </h5>
+                  <p class="mb-0">
+                    Intuitive and accessible platform design for effortless
+                    navigation and trading.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ===============>> Service section start here <<================= -->
+
+  <!-- ========== Roadmap Section start Here========== -->
+  <section id="roadmap" class="roadmap roadmap--style1 padding-top padding-bottom bg-color" id="roadmap">
+    <div class="container">
+      <div class="section-header section-header--max50">
+        <h2 class="mb-15 mt-minus-5">Roadmap of <span>FATA AI</span></h2>
+        <p>
+          This roadmap serves as a dynamic document that delineates
+          accomplished milestones and outstanding objectives for FATA AI
+        </p>
+      </div>
+      <div class="roadmap__wrapper">
+        <div class="row gy-4 gy-md-0 gx-5">
+          <div class="col-md-6 offset-md-6">
+            <div class="roadmap__item ms-md-4 aos-init aos-animate" data-aos="fade-left" data-aos-duration="800">
+              <div class="roadmap__item-inner">
+                <div class="roadmap__item-content">
+                  <div class="roadmap__item-header">
+                    <h3>project launch</h3>
+                    <span>P1</span>
+                  </div>
+                  <p>
+                    <i class="fa fa-check text-success"></i> Team formation
+                  </p>
+                  <p>
+                    <i class="fa fa-check text-success"></i> Legal and
+                    reegulatory compliance
+                  </p>
+                  <p>
+                    <i class="fa fa-check text-success"></i> Platform
+                    development
+                  </p>
+                  <p>
+                    <i class="fa fa-check text-success"></i> Platform testing
+                    and security auditing
+                  </p>
+                  <p>
+                    <i class="fa fa-check text-success"></i> Platform launch
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="roadmap__item roadmap__item--style2 ms-auto me-md-4 aos-init aos-animate" data-aos="fade-right"
+              data-aos-duration="800">
+              <div class="roadmap__item-inner">
+                <div class="roadmap__item-content">
+                  <div class="roadmap__item-header">
+                    <h3>Marketing and Deployment</h3>
+                    <span>P2</span>
+                  </div>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> Promotional
+                    ad campaigns
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> 5000 Telegram
+                    audience
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> 5000 Twitter
+                    audience
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> Android app
+                    deployment
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> 5000 active
+                    platform users
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 offset-md-6">
+            <div class="roadmap__item ms-md-4 aos-init" data-aos="fade-left" data-aos-duration="800">
+              <div class="roadmap__item-inner">
+                <div class="roadmap__item-content">
+                  <div class="roadmap__item-header">
+                    <h3>Expansion and Enhancements</h3>
+                    <span>P3</span>
+                  </div>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> Change domain
+                    name
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> Continuous
+                    improvement
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> Run platform
+                    AMA
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> Additional
+                    exchange integration
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> Strategic
+                    partnerships and alliances
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="roadmap__item roadmap__item--style2 ms-auto me-md-4 aos-init" data-aos="fade-right"
+              data-aos-duration="800">
+              <div class="roadmap__item-inner">
+                <div class="roadmap__item-content">
+                  <div class="roadmap__item-header">
+                    <h3>Tokenize FATA AI</h3>
+                    <span>P4</span>
+                  </div>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> Release $FATA
+                    token
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> Run airdrop
+                    for users only
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> Run airdrop
+                    for the public
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> 1st phase of
+                    presale for users only
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> 2nd phase of
+                    presale for users only
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> 3rd phase of
+                    presale for public
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 offset-md-6">
+            <div class="roadmap__item ms-md-4 aos-init" data-aos="fade-left" data-aos-duration="800">
+              <div class="roadmap__item-inner">
+                <div class="roadmap__item-content">
+                  <div class="roadmap__item-header">
+                    <h3>Token Listing</h3>
+                    <span>P5</span>
+                  </div>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> List on 15+
+                    crypto blogs
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> List on Coin
+                    Market Cap
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> List on Coin
+                    Gecko
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> List on major
+                    DEX
+                  </p>
+                  <p>
+                    <i class="fa fa-hourglass text-warning"></i> List on major
+                    CEX
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="roadmap__shape">
+      <span class="roadmap__shape-item roadmap__shape-item--1">
+        <span></span>
+      </span>
+      <span class="roadmap__shape-item roadmap__shape-item--2">
+        <img src="assets/images/icon/1.png" alt="shape-icon" />
+      </span>
+    </div>
+  </section>
+  <!-- ========== Roadmap Section Ends Here========== -->
+
+  <!-- ===============>> Pricing section start here <<================= -->
+  <section id="pricing" class="pricing padding-top padding-bottom">
+    <div class="section-header section-header--max50">
+      <h2 class="mb-15 mt-minus-5"><span>FATA AI</span> License Plans</h2>
+      <p>
+        We offer the best pricings around for cryptocurrency arbitrage
+        trading.
+      </p>
+    </div>
+    <div class="container">
+      <div class="pricing__wrapper">
+        <div class="row g-4 align-items-center">
+          <div class="col-md-6 col-lg-3">
+            <div class="pricing__item" data-aos="fade-left" data-aos-duration="1000">
+              <div class="pricing__item-inner">
+                <div class="pricing__item-content">
+                  <!-- pricing top part -->
+                  <div class="pricing__item-top">
+                    <h6 class="mb-15">pro max</h6>
+                    <h3 class="mb-25">$1,000/<span>Yearly</span></h3>
+                  </div>
+
+                  <!-- pricing middle part -->
+                  <div class="pricing__item-middle">
+                    <ul class="pricing__list">
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        5% max daily profit
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        1000 max total trades
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        $2,500 min trading amount
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        $100,000 max trading amount
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        Energy refills in 7 days
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        12 Exchanges connected
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        Team earnings: 5 generations
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- pricing bottom part -->
+                  <div class="pricing__item-bottom">
+                    <a href="license" class="trk-btn trk-btn--outline">Choose Plan</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="pricing__item" data-aos="fade-left" data-aos-duration="1000">
+              <div class="pricing__item-inner active">
+                <div class="pricing__item-content">
+                  <!-- pricing top part -->
+                  <div class="pricing__item-top">
+                    <h6 class="mb-15">pro</h6>
+                    <h3 class="mb-25">$500/<span>Yearly</span></h3>
+                  </div>
+
+                  <!-- pricing middle part -->
+                  <div class="pricing__item-middle">
+                    <ul class="pricing__list">
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        4% max daily profit
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        1000 max total trades
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        $1,000 min trading amount
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        $50,000 max trading amount
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        Energy refills in 14 days
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        9 Exchanges connected
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        Team earnings: 4 generations
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- pricing bottom part -->
+                  <div class="pricing__item-bottom">
+                    <a href="license" class="trk-btn trk-btn--outline">Choose Plan</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="pricing__item" data-aos="fade-up" data-aos-duration="1000">
+              <div class="pricing__item-inner">
+                <div class="pricing__item-content">
+                  <!-- pricing top part -->
+                  <div class="pricing__item-top">
+                    <h6 class="mb-15">lite</h6>
+                    <h3 class="mb-25">$100/<span>Yearly</span></h3>
+                  </div>
+
+                  <!-- pricing middle part -->
+                  <div class="pricing__item-middle">
+                    <ul class="pricing__list">
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        3% max daily profit
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        1000 max total trades
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        $500 min trading amount
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        $10,000 max trading amount
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        Energy refills in 21 days
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        6 Exchangers connected
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        Team earnings: 3 generations
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- pricing bottom part -->
+                  <div class="pricing__item-bottom">
+                    <a href="license" class="trk-btn trk-btn--outline active">Choose Plan</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="pricing__item" data-aos="fade-right" data-aos-duration="1000">
+              <div class="pricing__item-inner">
+                <div class="pricing__item-content">
+                  <!-- pricing top part -->
+                  <div class="pricing__item-top">
+                    <h6 class="mb-15">Free</h6>
+                    <h3 class="mb-25">Free <span>Forever</span></h3>
+                  </div>
+
+                  <!-- pricing middle part -->
+                  <div class="pricing__item-middle">
+                    <ul class="pricing__list">
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        1.5% max daily profit
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        1000 max total trades
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        $10 min trading amount
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        $1,000 max trading amount
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        Energy refills in 28 days
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        4 Exchangers connected
+                      </li>
+                      <li class="pricing__list-item">
+                        <span><img src="assets/images/icon/check.svg" alt="check" class="dark" /></span>
+                        Team earnings: 1 generation
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- pricing bottom part -->
+                  <div class="pricing__item-bottom">
+                    <a href="license" class="trk-btn trk-btn--outline">Choose Plan</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pricing__shape">
+      <span class="pricing__shape-item pricing__shape-item--1">
+        <span></span>
+      </span>
+      <span class="pricing__shape-item pricing__shape-item--2">
+        <img src="assets/images/icon/1.png" alt="shape-icon" />
+      </span>
+    </div>
+  </section>
+  <!-- ===============>> Pricing section start here <<================= -->
+
+  <!-- ===============>> Team section start here <<================= -->
+  <!-- <section class="team padding-top padding-bottom bg-color">
+    <div class="section-header section-header--max50">
+      <h2 class="mb-15 mt-minus-5">Meet our <span>advisers</span></h2>
+      <p>Hey everyone, meet our amazing advisers! They're here to help and guide us through anything.</p>
+    </div>
+    <div class="container">
+      <div class="team__wrapper">
+        <div class="row g-4 align-items-center">
+          <div class="col-sm-6 col-lg-3">
+            <div class="team__item team__item--shape" data-aos="fade-up" data-aos-duration="800">
+              <div class="team__item-inner team__item-inner--shape">
+                <div class="team__item-thumb team__item-thumb--style1">
+                  <img src="assets/images/team/1.png" alt="Team Image" class="dark">
+                </div>
+                <div class="team__item-content team__item-content--style1">
+                  <div class="team__item-author team__item-author--style1">
+                    <div class="team__item-authorinfo">
+                      <h6 class="mb-1"><a href="team-details.html" class="stretched-link">Dianne Russell</a> </h6>
+                      <p class="mb-0">Trade Captain</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="team__item team__item--shape" data-aos="fade-up" data-aos-duration="900">
+              <div class="team__item-inner team__item-inner--shape">
+                <div class="team__item-thumb team__item-thumb--style1">
+                  <img src="assets/images/team/2.png" alt="Team Image" class="dark">
+                </div>
+                <div class="team__item-content team__item-content--style1">
+                  <div class="team__item-author team__item-author--style1">
+                    <div class="team__item-authorinfo">
+                      <h6 class="mb-1"><a href="team-details.html" class="stretched-link">Theresa Webb</a> </h6>
+                      <p class="mb-0">Strategic Advisor</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="team__item team__item--shape" data-aos="fade-up" data-aos-duration="1000">
+              <div class="team__item-inner team__item-inner--shape">
+                <div class="team__item-thumb team__item-thumb--style1">
+                  <img src="assets/images/team/3.png" alt="Team Image" class="dark">
+                </div>
+                <div class="team__item-content team__item-content--style1">
+                  <div class="team__item-author team__item-author--style1">
+                    <div class="team__item-authorinfo">
+                      <h6 class="mb-1"><a href="team-details.html" class="stretched-link">Courtney Henry</a> </h6>
+                      <p class="mb-0">Management Consultant</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="team__item team__item--shape" data-aos="fade-up" data-aos-duration="1100">
+              <div class="team__item-inner team__item-inner--shape">
+                <div class="team__item-thumb team__item-thumb--style1">
+                  <img src="assets/images/team/4.png" alt="Team Image" class="dark">
+                </div>
+                <div class="team__item-content team__item-content--style1">
+                  <div class="team__item-author team__item-author--style1">
+                    <div class="team__item-authorinfo">
+                      <h6 class="mb-1"><a href="team-details.html" class="stretched-link">Albert Flores</a> </h6>
+                      <p class="mb-0">Development Specialist</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="team__item team__item--shape" data-aos="fade-up" data-aos-duration="800">
+              <div class="team__item-inner team__item-inner--shape">
+                <div class="team__item-thumb team__item-thumb--style1">
+                  <img src="assets/images/team/5.png" alt="Team Image" class="dark">
+                </div>
+                <div class="team__item-content team__item-content--style1">
+                  <div class="team__item-author team__item-author--style1">
+                    <div class="team__item-authorinfo">
+                      <h6 class="mb-1"><a href="team-details.html" class="stretched-link">Darrell Steward</a> </h6>
+                      <p class="mb-0">Growth Strategist</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="team__item team__item--shape" data-aos="fade-up" data-aos-duration="900">
+              <div class="team__item-inner team__item-inner--shape">
+                <div class="team__item-thumb team__item-thumb--style1">
+                  <img src="assets/images/team/6.png" alt="Team Image" class="dark">
+                </div>
+                <div class="team__item-content team__item-content--style1">
+                  <div class="team__item-author team__item-author--style1">
+                    <div class="team__item-authorinfo">
+                      <h6 class="mb-1"><a href="team-details.html" class="stretched-link">Wade Warren</a> </h6>
+                      <p class="mb-0">Trade Consultant</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="team__item team__item--shape" data-aos="fade-up" data-aos-duration="1000">
+              <div class="team__item-inner team__item-inner--shape">
+                <div class="team__item-thumb team__item-thumb--style1">
+                  <img src="assets/images/team/7.png" alt="Team Image" class="dark">
+                </div>
+                <div class="team__item-content team__item-content--style1">
+                  <div class="team__item-author team__item-author--style1">
+                    <div class="team__item-authorinfo">
+                      <h6 class="mb-1"><a href="team-details.html" class="stretched-link">Cody Fisher</a> </h6>
+                      <p class="mb-0">HR Consultant</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="team__item team__item--shape" data-aos="fade-up" data-aos-duration="1100">
+              <div class="team__item-inner team__item-inner--shape">
+                <div class="team__item-thumb team__item-thumb--style1">
+                  <img src="assets/images/team/8.png" alt="Team Image" class="dark">
+                </div>
+                <div class="team__item-content team__item-content--style1">
+                  <div class="team__item-author team__item-author--style1">
+                    <div class="team__item-authorinfo">
+                      <h6 class="mb-1"><a href="team-details.html" class="stretched-link">Bessie Cooper</a> </h6>
+                      <p class="mb-0">Financial Advisor</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="text-center">
+            <a href="team.html" class="trk-btn trk-btn--border trk-btn--primary mt-25">View more </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> -->
+  <!-- ===============>> Team section start here <<================= -->
+
+  <!-- ===============>> Blog section start here <<================= -->
+  <!--   <section class="blog padding-top padding-bottom">
+    <div class="container">
+      <div class="section-header d-md-flex align-items-center justify-content-between">
+        <div class="section-header__content">
+          <h2 class="mb-15"><span>articles</span> for pro traders</h2>
+          <p class="mb-0">Hey there pro traders, check out these articles with tips to take your trading game to the
+            next level!</p>
+        </div>
+        <div class="section-header__action">
+          <div class="swiper-nav swiper-nav--style1">
+            <button class="swiper-nav__btn blog__slider-prev"><i class="fa-solid fa-angle-left"></i></button>
+            <button class="swiper-nav__btn blog__slider-next active"><i class="fa-solid fa-angle-right"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="blog__wrapper" data-aos="fade-up" data-aos-duration="1000">
+        <div class="blog__slider swiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <div class="blog__item blog__item--style2">
+                <div class="blog__item-inner">
+                  <div class="blog__thumb">
+                    <img src="assets/images/blog/1.png" alt="blog Images">
+                  </div>
+
+                  <div class="blog__content">
+                    <div class="blog__meta">
+                      <span class="blog__meta-tag blog__meta-tag--style1">Forex trading</span>
+                    </div>
+                    <h5 class="10"> <a href="blog-details.html">Swing Trading Definition</a> </h5>
+
+                    <p class="mb-15">Our platform is not only about trading—it's also a hub for knowledge and learning.
+                      We provide resources.</p>
+
+                    <div class="blog__writer">
+                      <div class="blog__writer-thumb">
+                        <img src="assets/images/blog/author/1.png" alt="writer">
+                      </div>
+                      <div class="blog__writer-designation">
+                        <h6 class="mb-0">Vasha Gueye</h6>
+                        <span>20/6/2023</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="blog__item blog__item--style2">
+                <div class="blog__item-inner">
+                  <div class="blog__thumb">
+                    <img src="assets/images/blog/2.png" alt="blog Images">
+                  </div>
+
+                  <div class="blog__content">
+                    <div class="blog__meta">
+                      <span class="blog__meta-tag blog__meta-tag--style1">Trading market</span>
+                    </div>
+                    <h5 class="10"> <a href="blog-details.html">hedge funds work?</a> </h5>
+
+                    <p class="mb-15">To cater to your individual trading preferences, we offer a variety of order types,
+                      including market.</p>
+
+                    <div class="blog__writer">
+                      <div class="blog__writer-thumb">
+                        <img src="assets/images/blog/author/2.png" alt="writer">
+                      </div>
+                      <div class="blog__writer-designation">
+                        <h6 class="mb-0">Abhivibha Kanmani</h6>
+                        <span>30/5/2023</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="blog__item blog__item--style2">
+                <div class="blog__item-inner">
+                  <div class="blog__thumb">
+                    <img src="assets/images/blog/3.png" alt="blog Images">
+                  </div>
+
+                  <div class="blog__content">
+                    <div class="blog__meta">
+                      <span class="blog__meta-tag blog__meta-tag--style1">Investment</span>
+                    </div>
+                    <h5 class="10"> <a href="blog-details.html">Options Trading business?</a> </h5>
+
+                    <p class="mb-15">Security is our top priority, and we employ robust measures to ensure the safety of
+                      your funds.</p>
+
+                    <div class="blog__writer">
+                      <div class="blog__writer-thumb">
+                        <img src="assets/images/blog/author/3.png" alt="writer">
+                      </div>
+                      <div class="blog__writer-designation">
+                        <h6 class="mb-0">Hulya Aydin</h6>
+                        <span>12/07/2023</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center">
+        <a href="blogs.html" class="trk-btn trk-btn--border trk-btn--primary mt-40">View more </a>
+      </div>
+    </div>
+    <div class="blog__shape">
+      <span class="blog__shape-item blog__shape-item--1"> <span></span> </span>
+    </div>
+  </section>
+ -->
+  <!-- ===============>> Blog section start here <<================= -->
+
+  <!-- ===============>> Testimonial section start here <<================= -->
+  <section id="testimonial" class="testimonial padding-top padding-bottom-style2 bg-color">
+    <div class="container">
+      <div class="section-header d-md-flex align-items-center justify-content-between">
+        <div class="section-header__content">
+          <h2 class="mb-15">Testimonies</h2>
+          <p class="mb-0">
+            We love connecting with our clients to hear about their
+            experiences and how we can improve.
+          </p>
+        </div>
+        <div class="section-header__action">
+          <div class="swiper-nav">
+            <button class="swiper-nav__btn testimonial__slider-prev">
+              <i class="fa-solid fa-angle-left"></i>
+            </button>
+            <button class="swiper-nav__btn testimonial__slider-next active">
+              <i class="fa-solid fa-angle-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial__wrapper" data-aos="fade-up" data-aos-duration="1000">
+        <div class="testimonial__slider swiper">
+          <div class="swiper-wrapper">
+
+            <div class="swiper-slide">
+              <div class="testimonial__item testimonial__item--style1">
+                <div class="testimonial__item-inner">
+                  <div class="testimonial__item-content">
+                    <p class="mb-0">
+                      As a professional trader, I'm always on the lookout for an edge. Fata Ai delivers! It's like having a 24/7 trading assistant that never misses a beat. 
+                    </p>
+                    <div class="testimonial__footer">
+                      <div class="testimonial__author">
+                        <div class="testimonial__author-thumb">
+                          <img src="assets/images/testimonial/Mike Gawkin.jpg" alt="author" />
+                        </div>
+                        <div class="testimonial__author-designation">
+                          <h6>Mike Gawkin</h6>
+                          <span>Pro Trader</span>
+                        </div>
+                      </div>
+                      <div class="testimonial__quote">
+                        <span><i class="fa-solid fa-quote-right"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial__item testimonial__item--style1">
+                <div class="testimonial__item-inner">
+                  <div class="testimonial__item-content">
+                    <p class="mb-0">
+                      I was skeptical at first, but Fata AI changed my crypto game! It spots arbitrage opportunities lightning-fast and executes trades seamlessly. Highly recommend it! 
+                    </p>
+                    <div class="testimonial__footer">
+                      <div class="testimonial__author">
+                        <div class="testimonial__author-thumb">
+                          <img src="assets/images/testimonial/DeFiOscar.jpg" alt="author" />
+                        </div>
+                        <div class="testimonial__author-designation">
+                          <h6>DeFiOscar</h6>
+                          <span>Crypto Enthusiast</span>
+                        </div>
+                      </div>
+                      <div class="testimonial__quote">
+                        <span><i class="fa-solid fa-quote-right"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial__item testimonial__item--style1">
+                <div class="testimonial__item-inner">
+                  <div class="testimonial__item-content">
+                    <p class="mb-0">
+                      Impressed with the speed and accuracy of Fata AI. It's become an essential part of my crypto trading strategy. 
+                    </p>
+                    <div class="testimonial__footer">
+                      <div class="testimonial__author">
+                        <div class="testimonial__author-thumb">
+                          <img src="assets/images/testimonial/BillionaireDave.jpg" alt="author" />
+                        </div>
+                        <div class="testimonial__author-designation">
+                          <h6>BillionaireDave</h6>
+                          <span>Blockchain Advocate</span>
+                        </div>
+                      </div>
+                      <div class="testimonial__quote">
+                        <span><i class="fa-solid fa-quote-right"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial__item testimonial__item--style1">
+                <div class="testimonial__item-inner">
+                  <div class="testimonial__item-content">
+                    <p class="mb-0">
+                      I love the hands-free trading experience this bot offers. It allows me to focus on other aspects of my life while it handles my trades. 
+                    </p>
+                    <div class="testimonial__footer">
+                      <div class="testimonial__author">
+                        <div class="testimonial__author-thumb">
+                          <img src="assets/images/testimonial/Investor Jane.jpg" alt="author" />
+                        </div>
+                        <div class="testimonial__author-designation">
+                          <h6>Investor Jane</h6>
+                          <span>Crypto Trader/Investor</span>
+                        </div>
+                      </div>
+                      <div class="testimonial__quote">
+                        <span><i class="fa-solid fa-quote-right"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial__item testimonial__item--style1">
+                <div class="testimonial__item-inner">
+                  <div class="testimonial__item-content">
+                    <p class="mb-0">
+                      I've been using this bot for a while now, and it consistently outperforms my manual trading efforts. It's like having a crypto expert by your side. 
+                    </p>
+                    <div class="testimonial__footer">
+                      <div class="testimonial__author">
+                        <div class="testimonial__author-thumb">
+                          <img src="assets/images/testimonial/Samuel Kungawo.jpg" alt="author" />
+                        </div>
+                        <div class="testimonial__author-designation">
+                          <h6>Samuel Kungawo</h6>
+                          <span>Crypto Trader/Investor</span>
+                        </div>
+                      </div>
+                      <div class="testimonial__quote">
+                        <span><i class="fa-solid fa-quote-right"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial__item testimonial__item--style1">
+                <div class="testimonial__item-inner">
+                  <div class="testimonial__item-content">
+                    <p class="mb-0">
+                      I've named my Ai account 'Cleobotra' because she's the queen of crypto! Cleobotra doesn't just trade; she strategizes, calculates, and makes me feel like I've got a crypto genius in my pocket. 
+                    </p>
+                    <div class="testimonial__footer">
+                      <div class="testimonial__author">
+                        <div class="testimonial__author-thumb">
+                          <img src="assets/images/testimonial/Lady Amalia.jpg" alt="author" />
+                        </div>
+                        <div class="testimonial__author-designation">
+                          <h6>Lady Amalia</h6>
+                          <span>Crypto Trader/Investor</span>
+                        </div>
+                      </div>
+                      <div class="testimonial__quote">
+                        <span><i class="fa-solid fa-quote-right"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial__item testimonial__item--style1">
+                <div class="testimonial__item-inner">
+                  <div class="testimonial__item-content">
+                    <p class="mb-0">
+                      I used to spend sleepless nights watching the market, but now, thanks to Fata Ai, I get to sleep soundly while it does all the heavy lifting. It's like having a loyal trading ninja. 
+                    </p>
+                    <div class="testimonial__footer">
+                      <div class="testimonial__author">
+                        <div class="testimonial__author-thumb">
+                          <img src="assets/images/testimonial/Edward Dylan.jpg" alt="author" />
+                        </div>
+                        <div class="testimonial__author-designation">
+                          <h6>Edward Dylan</h6>
+                          <span>Seasoned Trader</span>
+                        </div>
+                      </div>
+                      <div class="testimonial__quote">
+                        <span><i class="fa-solid fa-quote-right"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial__item testimonial__item--style1">
+                <div class="testimonial__item-inner">
+                  <div class="testimonial__item-content">
+                    <p class="mb-0">
+                      Yo! In Fata, I've found crypto zen. It's the tranquil river that navigates the turbulent waters of the market, bringing peace and prosperity. 
+                    </p>
+                    <div class="testimonial__footer">
+                      <div class="testimonial__author">
+                        <div class="testimonial__author-thumb">
+                          <img src="assets/images/testimonial/Leonid Oleg.jpg" alt="author" />
+                        </div>
+                        <div class="testimonial__author-designation">
+                          <h6>Leonid Oleg</h6>
+                          <span>Entertainer</span>
+                        </div>
+                      </div>
+                      <div class="testimonial__quote">
+                        <span><i class="fa-solid fa-quote-right"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ===============>> Testimonial section start here <<================= -->
+
+  <!-- ===============>> FAQ section start here <<================= -->
+  <section id="faq" class="faq padding-top padding-bottom of-hidden">
+    <div class="section-header section-header--max65">
+      <h2 class="mb-15 mt-minus-5">
+        <span>Frequently</span> Asked questions
+      </h2>
+      <p>
+        Hey there! Got questions? We've got answers. Check out our FAQ
+        for all the deets. Still not satisfied? Hit us up.
+      </p>
+    </div>
+    <div class="container">
+      <div class="faq__wrapper">
+        <div class="row g-5 align-items-center justify-content-between">
+          <div class="col-lg-6">
+            <div class="accordion accordion--style1" id="faqAccordion1" data-aos="fade-right" data-aos-duration="1000">
+              <div class="row">
+
+                <div class="col-12">
+                  <div class="accordion__item">
+                    <div class="accordion__header" id="faq1">
+                      <button class="accordion__button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqBody1" aria-expanded="false" aria-controls="faqBody1">
+                        <span class="accordion__button-content">What is crypto arbitrage trading?</span>
+                        <span class="accordion__button-plusicon"></span>
+                      </button>
+                    </div>
+                    <div id="faqBody1" class="accordion-collapse collapse" aria-labelledby="faq1"
+                      data-bs-parent="#faqAccordion1">
+                      <div class="accordion__body">
+                        <p class="mb-15">
+                          Crypto arbitrage trading is when people buy and sell cryptocurrencies on different exchanges
+                          to profit from price differences. They take advantage of the variations in prices to make
+                          money.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="accordion__item">
+                    <div class="accordion__header" id="faq2">
+                      <button class="accordion__button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqBody2" aria-expanded="false" aria-controls="faqBody2">
+                        <span class="accordion__button-content">How does crypto arbitrage trading works?</span>
+                        <span class="accordion__button-plusicon"></span>
+                      </button>
+                    </div>
+                    <div id="faqBody2" class="accordion-collapse collapse" aria-labelledby="faq2"
+                      data-bs-parent="#faqAccordion1">
+                      <div class="accordion__body">
+                        <p class="mb-15">
+                          Let's say you see that Bitcoin (BTC) is being sold for $10,000 on Exchange A, but on Exchange
+                          B, it's being sold for $10,100. <br>
+                          <li>You buy Bitcoin for $10,000 on Exchange A.</li>
+                          <li>You then sell that same Bitcoin on Exchange B for $10,100.</li> <br>
+
+                          After all those, you've made a $100 profit ($10,100 - $10,000) just by exploiting the price
+                          difference between the two exchanges.<br><br>
+
+                          Though, fees and transaction times are important factors to consider in arbitrage trading.<br>
+
+                          Also, arbitrage opportunities can be quite competitive and may disappear quickly, so it's a
+                          strategy that requires fast execution and close monitoring of prices on different
+                          exchanges.<br><br>
+
+                          That's where FATA AI come in, we monitor tokens to see good arbitrage opportunities then
+                          execute them for you in less than 10 secs.
+
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-12">
+                  <div class="accordion__item">
+                    <div class="accordion__header" id="faq3">
+                      <button class="accordion__button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqBody3" aria-expanded="false" aria-controls="faqBody3">
+                        <span class="accordion__button-content">Is crypto arbitrage trading profitable?</span>
+                        <span class="accordion__button-plusicon"></span>
+                      </button>
+                    </div>
+                    <div id="faqBody3" class="accordion-collapse collapse" aria-labelledby="faq3"
+                      data-bs-parent="#faqAccordion1">
+                      <div class="accordion__body">
+                        <p class="mb-15">
+                          Certainly! Crypto arbitrage trading has the potential for profitability. It involves
+                          exploiting price variations of a cryptocurrency across different exchanges. By buying low and
+                          selling high, traders aim to make a profit. However, it's crucial to note that success in
+                          arbitrage trading depends on factors like market conditions, transaction costs, and speed.
+                          Diligent research and a well-informed approach can enhance the chances of profitability.<br><br>
+
+                          That's why the use of Ai is highly essential in order to enhance its profitability and
+                          minimise loss to the lowest minimum.
+
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-12">
+                  <div class="accordion__item">
+                    <div class="accordion__header" id="faq4">
+                      <button class="accordion__button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqBody4" aria-expanded="false" aria-controls="faqBody4">
+                        <span class="accordion__button-content">Is crypto arbitrage trading risky?</span>
+                        <span class="accordion__button-plusicon"></span>
+                      </button>
+                    </div>
+                    <div id="faqBody4" class="accordion-collapse collapse" aria-labelledby="faq4"
+                      data-bs-parent="#faqAccordion1">
+                      <div class="accordion__body">
+                        <p class="mb-15">
+                          Yes, trading, including arbitrage trading in crypto, can be risky. The Fata AI, designed to
+                          spot arbitrage opportunities, can help manage some of these risks. It quickly identifies price
+                          differences and executes trades for potential profits. This can reduce the impact of market
+                          volatility and minimize the window for potential losses.
+
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-12">
+                  <div class="accordion__item">
+                    <div class="accordion__header" id="faq5">
+                      <button class="accordion__button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqBody5" aria-expanded="false" aria-controls="faqBody5">
+                        <span class="accordion__button-content">What's the difference between normal crypto trading and
+                          crypto arbitrage trading?</span>
+                        <span class="accordion__button-plusicon"></span>
+                      </button>
+                    </div>
+                    <div id="faqBody5" class="accordion-collapse collapse" aria-labelledby="faq5"
+                      data-bs-parent="#faqAccordion1">
+                      <div class="accordion__body">
+                        <p class="mb-15">
+                          Normal crypto trading involves buying crypto asset with the intention of selling for profit
+                          when the price of the asset appreciates. It's typically done within a single market or
+                          exchange and can take hours, days, months or even years. <br><br>
+
+                          Crypto arbitrage trading, on the other hand, involves exploiting price differences of a
+                          cryptocurrency across different exchanges. Traders aim to buy low on one exchange and sell
+                          high on another almost simultaneously, profiting from the variation in prices. These can
+                          happen in minutes even seconds. <br><br>
+
+                          The key distinction lies in the strategy: normal trading seeks to profit from price movements
+                          over time, while crypto arbitrage trading capitalizes on price disparities across exchanges in
+                          real-time.
+
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-12">
+                  <div class="accordion__item">
+                    <div class="accordion__header" id="faq6">
+                      <button class="accordion__button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqBody6" aria-expanded="false" aria-controls="faqBody6">
+                        <span class="accordion__button-content">How can I start crypto arbitrage trading?</span>
+                        <span class="accordion__button-plusicon"></span>
+                      </button>
+                    </div>
+                    <div id="faqBody6" class="accordion-collapse collapse" aria-labelledby="faq6"
+                      data-bs-parent="#faqAccordion1">
+                      <div class="accordion__body">
+                        <p class="mb-15">
+                          Starting crypto arbitrage trading involves several steps. Here's a basic guide to help you get
+                          started: <br>
+                          <li>Research and select crypto currency to focus on</li>
+                          <li>Create an account in exchanges where those cryptocurrencies are listed</li>
+                          <li>Verify the accounts</li>
+                          <li>Deposit funds eg. USDT</li>
+                          <li>Purchase the cryptocurrencies</li>
+                          <li>Track their prices</li>
+                          <li>Dictate arbitrage opportunity</li>
+                          <li>Transfer to exchange with higher price</li>
+                          <li>Sell to get your profit</li>
+                          <br>
+                          The good news is, you don't need to go through all these stress anymore in order to make
+                          profit from crypto arbitrage trading. All you need to do is: <br><br>
+                          <li>Create an account in FATA</li>
+                          <li>Fund the account witg USDT</li>
+                          <li>Purchase a licence (you can as well continue on free licence)</li>
+                          <li>Identify an arbitrage opportunity that suits your licence</li>
+                          <li>Click on the opportunity to run the trade</li>
+                          <li>That's all, withdraw your profit.</li>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-12">
+                  <div class="accordion__item">
+                    <div class="accordion__header" id="faq7">
+                      <button class="accordion__button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqBody7" aria-expanded="false" aria-controls="faqBody7">
+                        <span class="accordion__button-content">How can I fund my wallet?</span>
+                        <span class="accordion__button-plusicon"></span>
+                      </button>
+                    </div>
+                    <div id="faqBody7" class="accordion-collapse collapse" aria-labelledby="faq7"
+                      data-bs-parent="#faqAccordion1">
+                      <div class="accordion__body">
+                        <p class="mb-15">
+                          FATA AI only accept USDT as a method of payment, therefore you need to purchase USDT using
+                          your country local currency then send it to the specialised USDT wallet address of FATA AI.
+                          <br><br>
+
+                          After making the transfer, make sure to copy and paste your transaction hash ID in order for
+                          your transaction to be approved.
+
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-12">
+                  <div class="accordion__item">
+                    <div class="accordion__header" id="faq8">
+                      <button class="accordion__button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqBody8" aria-expanded="false" aria-controls="faqBody8">
+                        <span class="accordion__button-content">How can I withdraw my profits?</span>
+                        <span class="accordion__button-plusicon"></span>
+                      </button>
+                    </div>
+                    <div id="faqBody8" class="accordion-collapse collapse" aria-labelledby="faq8"
+                      data-bs-parent="#faqAccordion1">
+                      <div class="accordion__body">
+                        <p class="mb-15">
+                          To withdraw from Fata AI:
+                          <br>
+                          <li> the "withdraw" button.</li>
+                          <li>Choose the wallet from which you want to withdraw.</li>
+                          <li>Fill in your wallet address details and the withdrawal amount.</li>
+                          <li>Provide your transaction pin and confirm.</li>
+                          <li>Your transaction will be sent immediately.</li>
+                          <br>
+
+                          Note: To withdraw from the spot and profit wallets, you need to have full energy.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-12">
+                  <div class="accordion__item">
+                    <div class="accordion__header" id="faq9">
+                      <button class="accordion__button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqBody9" aria-expanded="false" aria-controls="faqBody9">
+                        <span class="accordion__button-content">How safe is my money?</span>
+                        <span class="accordion__button-plusicon"></span>
+                      </button>
+                    </div>
+                    <div id="faqBody9" class="accordion-collapse collapse" aria-labelledby="faq9"
+                      data-bs-parent="#faqAccordion1">
+                      <div class="accordion__body">
+                        <p class="mb-15">
+                          FATA AI is super secure thanks to top-notch military-grade encryption, making it extremely
+                          tough for hackers to breach. And don't worry about losing funds or facing technical hiccups -
+                          we've set aside more than $100,000 in the BNB network to handle any unexpected situations.
+                          Your investments are well protected!
+
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-12">
+                  <div class="accordion__item">
+                    <div class="accordion__header" id="faq10">
+                      <button class="accordion__button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqBody10" aria-expanded="false" aria-controls="faqBody10">
+                        <span class="accordion__button-content">How can I refer someone to FATA AI?</span>
+                        <span class="accordion__button-plusicon"></span>
+                      </button>
+                    </div>
+                    <div id="faqBody10" class="accordion-collapse collapse" aria-labelledby="faq10"
+                      data-bs-parent="#faqAccordion1">
+                      <div class="accordion__body">
+                        <p class="mb-15">
+
+                          <li>Sign into your account.</li>
+                          <li>On the home page, click "Copy referral link."</li>
+                          <li>Send the link to the person through any messaging channel.</li>
+                          <li>The person will be registered under you once they use the link for registration.</li>
+
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="faq__thumb faq__thumb--style1" data-aos="fade-left" data-aos-duration="1000">
+              <img class="dark" src="assets/images/others/1.png" alt="faq-thumb" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="faq__shape faq__shape--style1">
+      <span class="faq__shape-item faq__shape-item--1"><img src="assets/images/others/2.png" alt="shpae-icon" /></span>
+    </div>
+  </section>
+  <!-- ===============>> FAQ section start here <<================= -->
+
+  <!-- ===============>> cta section start here <<================= -->
+  <section class="cta padding-top padding-bottom bg-color">
+    <div class="container">
+      <div class="cta__wrapper">
+        <div class="cta__newsletter justify-content-center">
+          <div class="cta__newsletter-inner" data-aos="fade-up" data-aos-duration="1000">
+            <div class="cta__thumb">
+              <img src="assets/images/cta/3.png" alt="cta-thumb" />
+            </div>
+            <div class="cta__subscribe">
+              <h2><span>Subscribe</span> our news</h2>
+              <p>
+                Hey! Are you tired of missing out on our updates? Subscribe to
+                our news now and stay in the loop!
+              </p>
+              <form class="cta-form cta-form--style2 form-subscribe" action="#">
+                <div class="cta-form__inner d-sm-flex align-items-center">
+                  <input type="email" class="form-control form-control--style2 mb-3 mb-sm-0"
+                    placeholder="Email Address" />
+                  <button class="trk-btn trk-btn--large trk-btn--secondary2" type="submit">
+                    Submit
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="cta__shape">
+          <span class="cta__shape-item cta__shape-item--1"><img src="assets/images/cta/2.png" alt="shape icon" /></span>
+          <span class="cta__shape-item cta__shape-item--2"><img src="assets/images/cta/4.png" alt="shape icon" /></span>
+          <span class="cta__shape-item cta__shape-item--3"><img src="assets/images/cta/5.png" alt="shape icon" /></span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ===============>> cta section start here <<================= -->
+
+  <!-- ===============>> footer start here <<================= -->
+  <footer class="footer brand-1">
+    <div class="container">
+      <div class="footer__wrapper">
+        <div class="footer__top footer__top--style1">
+          <div class="row gy-5 gx-4">
+            <div class="col-md-6">
+              <div class="footer__about">
+                <a href="/" class="footer__about-logo"><img style="height: 100px;" src="assets/fata img/20230919_130539.png" alt="Logo" /></a>
+                <p class="footer__about-moto">
+                  FATA AI is an artificial intelligence system that can help you perform cryptocurrency arbitrage
+                  trading which is taking advantage of an asset's price discrepancy in two or more exchanges and also
+                  manage your portfolio in one wallet.
+                </p>
+                <div class="footer__app">
+                  <div class="footer__app-item footer__app-item--apple">
+                    <div class="footer__app-inner">
+                      <div class="footer__app-thumb">
+                        <a href="javascript:void();" class="stretched-link">
+                          <img src="assets/images/footer/apple.png" alt="apple-icon" />
+                        </a>
+                      </div>
+                      <div class="footer__app-content">
+                        <span>Download on the</span>
+                        <p class="mb-0">App Store</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="footer__app-item footer__app-item--playstore">
+                    <div class="footer__app-inner">
+                      <div class="footer__app-thumb">
+                        <a href="javascript:void();" class="stretched-link">
+                          <img src="assets/images/footer/play.png" alt="playstore-icon" />
+                        </a>
+                      </div>
+                      <div class="footer__app-content">
+                        <span>GET IT ON</span>
+                        <p class="mb-0">Google Play</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="row">
+                <div class="col-6">
+                  <div class="footer__links">
+                    <div class="footer__links-tittle">
+                      <h6>Quick links</h6>
+                    </div>
+                    <div class="footer__links-content">
+                      <ul class="footer__linklist">
+                        <li>
+                          <a href="#home">Home </a>
+                        </li>
+                        <li>
+                          <a href="#about">About us </a>
+                        </li>
+                        <li>
+                          <a href="#service">Services </a>
+                        </li>
+                        <li>
+                          <a href="#roadmap">Roadmap </a>
+                        </li>
+                        <li>
+                          <a href="#pricing">Pricing </a>
+                        </li>
+                        <li>
+                          <a href="#testimonial">Testimonial </a>
+                        </li>
+                        <li>
+                          <a href="#faq">FAQ </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="footer__links">
+                    <div class="footer__links-tittle">
+                      <h6>Support</h6>
+                    </div>
+                    <div class="footer__links-content">
+                      <ul class="footer__linklist">
+                        <li class="footer__linklist-item">
+                          <a href="#">Terms & Conditions</a>
+                        </li>
+                        <li class="footer__linklist-item">
+                          <a href="#">Privacy Policy</a>
+                        </li>
+                        <li class="footer__linklist-item">
+                          <a href="license">Licenses</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="col-md-2 col-sm-4">
+              <div class="footer__links">
+                <div class="footer__links-tittle">
+                  <h6>Company</h6>
+                </div>
+                <div class="footer__links-content">
+                  <ul class="footer__linklist">
+                    <li class="footer__linklist-item">
+                      <a href="#">Careers</a>
+                    </li>
+                    <li class="footer__linklist-item">
+                      <a href="#">Updates</a>
+                    </li>
+                    <li class="footer__linklist-item"><a href="#">Licenses</a></li>
+                    <li class="footer__linklist-item">
+                      <a href="#">Announce</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div> -->
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <div class="footer__end">
+            <div class="footer__end-copyright">
+              <p class="mb-0">
+                © 2023 All Rights Reserved By
+                <a href="../" class="text-green">FATA AI</span>
+              </p>
+            </div>
+            <div>
+              <ul class="social">
+                <!-- <li class="social__item">
+                  <a href="#" class="social__link social__link--style22"><i class="fab fa-facebook-f"></i></a>
+                </li> -->
+                <li class="social__item">
+                  <a href="#" class="social__link social__link--style22"><i class="fab fa-telegram"></i></a>
+                </li><!-- 
+                <li class="social__item">
+                  <a href="#" class="social__link social__link--style22"><i class="fa-brands fa-linkedin-in"></i></a>
+                </li> --><!-- 
+                <li class="social__item">
+                  <a href="#" class="social__link social__link--style22"><i class="fab fa-youtube"></i></a>
+                </li> -->
+                <li class="social__item">
+                  <a href="https://twitter.com/FataAi" class="social__link social__link--style22"><i
+                      class="fab fa-twitter"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer__shape">
+      <span class="footer__shape-item footer__shape-item--1"><img src="assets/images/footer/1.png"
+          alt="shape icon" /></span>
+      <span class="footer__shape-item footer__shape-item--2">
+        <span></span>
+      </span>
+    </div>
+  </footer>
+  <!-- ===============>> footer end here <<================= -->
+
+  <!-- ===============>> scrollToTop start here <<================= -->
+  <a href="#home" class="scrollToTop scrollToTop--home1"><i class="fa-solid fa-arrow-up-from-bracket"></i></a>
+  <!-- ===============>> scrollToTop ending here <<================= -->
+
+  <!-- vendor plugins -->
+
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/all.min.js"></script>
+  <script src="assets/js/swiper-bundle.min.js"></script>
+  <script src="assets/js/aos.js"></script>
+  <script src="assets/js/fslightbox.js"></script>
+  <script src="assets/js/purecounter_vanilla.js"></script>
+
+  <script src="assets/js/custom.js"></script>
+
+  <!-- Smartsupp Live Chat script -->
+  <script type="text/javascript">
+    var _smartsupp = _smartsupp || {};
+    _smartsupp.key = '96ace009134fe42c9957a0a311d456bb2a1309a2';
+    window.smartsupp||(function(d) {
+      var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+      s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+      c.type='text/javascript';c.charset='utf-8';c.async=true;
+      c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+    })(document);
+  </script>
+  <noscript> Powered by <a href=“https://www.smartsupp.com” target=“_blank”>Smartsupp</a></noscript>
+</body>
+
+
+</html>
