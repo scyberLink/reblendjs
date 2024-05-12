@@ -19,6 +19,14 @@ export type FunctionComponent = (args: {
   thiz: Reactex;
 }) => HTMLElement | BaseComponent;
 
+export type stateFn<T> = T | ((previous: T) => T);
+
+export type SingleState<T> = {
+  value: T;
+  get(): T;
+  set(val: stateFn<T>): void;
+};
+
 class BaseComponent extends HTMLElement implements IDelegate {
   protected static ELEMENT_NAME = "BaseComponent";
   protected shadow!: ShadowRoot;
@@ -35,6 +43,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
   props!: IAny;
   static props: IAny;
   private _dataId!: string;
+  private _state!: IAny;
 
   constructor() {
     super();
@@ -762,7 +771,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
         customElements.define(tagName, element);
       }
     } catch (error: any) {
-      console.warn(error.message);
+      //better left empty
+      //console.warn(error.message);
     }
   }
 
@@ -770,11 +780,13 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.scale = scale;
   }
 
+  init() {}
+
   private setProps(props: IAny) {
     BaseComponent.setProps(props, this);
   }
 
-  static fn(eventCallback: (e: Event) => any = () => {}, thiz: Reactex) {
+  static fn(eventCallback: (e: Event) => any = () => {}) {
     return (e) => eventCallback(e);
   }
 
@@ -788,12 +800,63 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
       for (let propName in props) {
         if (propName.startsWith("on")) {
-          to[propName] = this.fn(props[propName], to);
+          to[propName] = this.fn(props[propName]);
         } else {
           to[propName] = props[propName];
         }
       }
+      to.init();
     }
+  }
+
+  get state(): IAny {
+    return this._state || {};
+  }
+
+  set state(value: stateFn<IAny>) {
+    this._state = {
+      ...this._state,
+      ...(typeof value == "function" ? value(this._state) : value),
+    };
+    this.refresh();
+  }
+
+  setState(value: stateFn<IAny>) {
+    this.state = value;
+  }
+
+  protected useState<T>(initial: T): SingleState<T> {
+    let variable: T = initial;
+
+    const variableSetter = (value: stateFn<T>) => {
+      if (typeof value == "function") {
+        value = (value as Function)(variable);
+        if (variable != value) {
+          variable = value as T;
+          this.refresh(); // Assumes Reactex has a refresh mechanism
+        }
+      } else {
+        if (variable != value) {
+          variable = value;
+          this.refresh();
+        }
+      }
+    };
+
+    return {
+      get value(): T {
+        return variable;
+      },
+      get() {
+        return this.value;
+      },
+      set value(val: stateFn<T>) {
+        variableSetter(val);
+      },
+      set(val: stateFn<T>) {
+        variableSetter(val);
+      },
+    };
   }
 
   protected refresh() {
@@ -836,11 +899,13 @@ class BaseComponent extends HTMLElement implements IDelegate {
     if (!("html" in element)) {
       throw new UnsupportedPrototype(`${isTagStandard ? tag : tag.name}`);
     }
+
     this.setProps(propes, element);
 
     if (isTagStandard) {
       element.appendChildren(...this.createChildren(children));
     }
+
     element.refresh();
 
     return element;
