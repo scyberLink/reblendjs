@@ -20,5 +20,5 @@
     "outDir": "./dist",
     "noImplicitAny": false
   },
-  "include": ["src", "index.d.ts"]
+  "include": ["src", "src/internal/index.d.ts"]
 }

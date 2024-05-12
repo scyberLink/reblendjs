@@ -2,6 +2,7 @@ import { DAY } from "../config/constants";
 import IAny from "../interface/IAny";
 import SharedConfig from "../common/SharedConfig";
 import NullException from "../exceptions/NullException";
+import BaseComponent from "../internal/BaseComponent";
 
 // Large screens breakpoint
 export const LAYOUT_BREAKPOINT = 1200;
@@ -476,7 +477,7 @@ export const getDefaultExportFromString = (code: string): string | null => {
 export function registerElement(
   name: string,
   element: typeof HTMLElement
-): typeof HTMLElement | typeof HTMLElement {
+): any {
   if (!element) {
     throw new Error("Element to register is null");
   }
@@ -492,4 +493,8 @@ export function registerElement(
   }
 
   return element;
+}
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }

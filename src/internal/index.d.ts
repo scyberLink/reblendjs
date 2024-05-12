@@ -1,4 +1,4 @@
-import Reactex from "./src/internal/Reactex";
+import Reactex from "./Reactex";
 
 declare global {
   namespace JSX {

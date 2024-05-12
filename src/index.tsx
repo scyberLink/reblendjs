@@ -1,5 +1,5 @@
-import App from "./view/App";
+import Reactex from "./internal/Reactex";
+import App from "./test/App";
 
 const root = document.getElementById("root");
-const app = new App();
-root?.appendChild(app);
+root?.appendChild(<App prop1="oneOfTheProp" />);
