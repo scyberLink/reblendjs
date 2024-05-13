@@ -1,0 +1,41 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Read package.json
+        id: package_json
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const packageJson = require('./package.json');
+            return { version: packageJson.version, codename: packageJson.codename };
+
+      - name: Set tag and release names
+        id: set_names
+        run: |
+          echo "tag_name=${{ steps.package_json.outputs.version }}" >> $GITHUB_OUTPUT
+          echo "release_name=${{ steps.package_json.outputs.codename || steps.package_json.outputs.version }}" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        run: git tag v${{ steps.set_names.outputs.tag_name }}
+
+      - name: Push tag
+        run: git push origin ${{ steps.set_names.outputs.tag_name }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.set_names.outputs.tag_name }}
+          release_name: ${{ steps.set_names.outputs.release_name }}
+          # Add other release options if needed (e.g., body, draft, prerelease)

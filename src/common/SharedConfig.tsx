@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-empty */
-
 import IAny from '../interface/IAny'
-import IUser from '../interface/IUser'
+
 
 class GlobalConfig {
   MEMORY_STORAGE = 0
@@ -192,7 +189,7 @@ class GlobalConfig {
     return this.__get(key, this.MEMORY_STORAGE)
   }
 
-  set(key: string, value: NodeJS.Timeout) {
+  set(key: string, value: IAny) {
     this.__set(key, value, this.MEMORY_STORAGE)
   }
 
@@ -261,7 +258,7 @@ class GlobalConfig {
     return this.__get(key, this.LOCAL_STORAGE)
   }
 
-  setLocalData(key: string, value: string | number | IUser | undefined) {
+  setLocalData(key: string, value: string | number | undefined) {
     this.__set(key, value, this.LOCAL_STORAGE)
   }
 

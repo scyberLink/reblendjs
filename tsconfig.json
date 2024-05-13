@@ -16,9 +16,11 @@
     "noEmit": false,
     "jsx": "react",
     "jsxFactory": "Reactex.construct",
-    "jsxFragmentFactory": "Reactex.Fragment",
+    "jsxFragmentFactory": "Reactex",
     "outDir": "./dist",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "declaration": true,
   },
-  "include": ["src", "src/internal/index.d.ts"]
+  "include": ["src"]
 }

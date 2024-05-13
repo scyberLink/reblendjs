@@ -1,7 +1,7 @@
-import { rand } from "../common/md5";
 import {
   capitalize,
   cssString,
+  rand,
   registerElement,
   snakeCase,
 } from "../common/utils";
@@ -14,21 +14,16 @@ import IDelegate from "./IDelegate";
 import Reactex from "./Reactex";
 import ShadowMode from "./ShadowMode";
 
-export type FunctionComponent = (args: {
-  props: IAny;
-  thiz: Reactex;
-}) => HTMLElement | BaseComponent;
-
-export type stateFn<T> = T | ((previous: T) => T);
+export type StateFunction<T> = T | ((previous: T) => T);
 
 export type SingleState<T> = {
   value: T;
   get(): T;
-  set(val: stateFn<T>): void;
+  set(val: StateFunction<T>): void;
 };
 
 class BaseComponent extends HTMLElement implements IDelegate {
-  protected static ELEMENT_NAME = "BaseComponent";
+  static ELEMENT_NAME = "BaseComponent";
   protected shadow!: ShadowRoot;
   protected shadowWrapper!: HTMLElement;
   protected shadowStyle!: HTMLStyleElement;
@@ -813,7 +808,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return this._state || {};
   }
 
-  set state(value: stateFn<IAny>) {
+  set state(value: StateFunction<IAny>) {
     this._state = {
       ...this._state,
       ...(typeof value == "function" ? value(this._state) : value),
@@ -821,14 +816,14 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.refresh();
   }
 
-  setState(value: stateFn<IAny>) {
+  setState(value: StateFunction<IAny>) {
     this.state = value;
   }
 
   protected useState<T>(initial: T): SingleState<T> {
     let variable: T = initial;
 
-    const variableSetter = (value: stateFn<T>) => {
+    const variableSetter = (value: StateFunction<T>) => {
       if (typeof value == "function") {
         value = (value as Function)(variable);
         if (variable != value) {
@@ -850,10 +845,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
       get() {
         return this.value;
       },
-      set value(val: stateFn<T>) {
+      set value(val: StateFunction<T>) {
         variableSetter(val);
       },
-      set(val: stateFn<T>) {
+      set(val: StateFunction<T>) {
         variableSetter(val);
       },
     };
@@ -884,7 +879,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     const isTagStandard = typeof tag === "string";
     if (isTagStandard) {
       clazz = class extends Reactex {
-        protected static ELEMENT_NAME: string = capitalize(`${tag}`);
+        static ELEMENT_NAME: string = capitalize(`${tag}`);
 
         constructor() {
           super();
@@ -910,18 +905,6 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
     return element;
   }
-
-  static Fragment = class extends BaseComponent {
-    static ELEMENT_NAME = "Fragment";
-
-    constructor() {
-      super();
-    }
-
-    protected html() {
-      return BaseComponent.createChildren(this.props.children);
-    }
-  };
 
   static createChildren(
     children: any[],
