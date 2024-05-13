@@ -1,2 +1,2 @@
-# reactex
-React Extension build with the idea of react but uses web components to manage state
+# ScansioJs
+A library built using react way of handling dom but with web components
