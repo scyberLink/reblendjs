@@ -1,12 +1,11 @@
 {
-  "name": "reactex",
+  "name": "scansiojs",
   "version": "1.0.0",
   "codename": "infant",
   "description": "This is build using react way of handling dom but with web components",
   "keywords": [
-    "React",
-    "Reactex",
-    "React Extension",
+    "ScansioJs",
+    "Reative",
     "UI",
     "Library"
   ],
