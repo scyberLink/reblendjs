@@ -1,6 +1,6 @@
 {
   "name": "scansiojs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "codename": "infant",
   "description": "This is build using react way of handling dom but with web components",
   "keywords": [
@@ -11,9 +11,6 @@
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "compile": "npx tsc"
   },
