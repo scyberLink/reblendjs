@@ -3,7 +3,7 @@ class UnsupportedPrototype extends Error {
     super(
       `Prototype ${
         clazz ? `"${clazz}" ` : ""
-      }not supported. Please extend Reactex and define html method that returns your JSX/HTMLElementu`
+      }not supported. Please extend Scansio and define html method that returns your JSX/HTMLElementu`
     );
   }
 }

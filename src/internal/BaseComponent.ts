@@ -11,7 +11,7 @@ import UnsupportedPrototype from "../exceptions/UnsupportedPrototype";
 import IAny from "../interface/IAny";
 import IPair from "../interface/IPair";
 import IDelegate from "./IDelegate";
-import Reactex from "./Reactex";
+import Scansio from "./Scansio";
 import ShadowMode from "./ShadowMode";
 
 export type StateFunction<T> = T | ((previous: T) => T);
@@ -759,7 +759,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     const tagName = `${snakeCase(element.ELEMENT_NAME)}-${rand(
       111111,
       999999
-    )}-reactex`;
+    )}-scansio`;
     try {
       const registered = customElements.get(tagName);
       if (!registered) {
@@ -828,7 +828,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
         value = (value as Function)(variable);
         if (variable != value) {
           variable = value as T;
-          this.refresh(); // Assumes Reactex has a refresh mechanism
+          this.refresh(); // Assumes Scansio has a refresh mechanism
         }
       } else {
         if (variable != value) {
@@ -871,14 +871,14 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   static construct(
-    tag: typeof Reactex | string,
+    tag: typeof Scansio | string,
     props: IAny,
     ...children: any[]
   ) {
-    let clazz: typeof Reactex = tag as typeof Reactex;
+    let clazz: typeof Scansio = tag as typeof Scansio;
     const isTagStandard = typeof tag === "string";
     if (isTagStandard) {
-      clazz = class extends Reactex {
+      clazz = class extends Scansio {
         static ELEMENT_NAME: string = capitalize(`${tag}`);
 
         constructor() {
@@ -890,7 +890,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     const propes = { ...clazz.props, ...props, children };
 
     this.register(clazz);
-    const element: Reactex = new (clazz as any)();
+    const element: Scansio = new (clazz as any)();
     if (!("html" in element)) {
       throw new UnsupportedPrototype(`${isTagStandard ? tag : tag.name}`);
     }
