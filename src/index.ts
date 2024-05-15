@@ -1,4 +1,4 @@
-import Scansio from "./internal/Scansio";
+import Reblend from "./internal/Reblend";
 import ShadowMode from "./internal/ShadowMode";
 import IAny from "./interface/IAny";
 import IPair from "./interface/IPair";
@@ -8,7 +8,7 @@ import * as utils from "./common/utils";
 import { StateFunction, SingleState } from "./internal/BaseComponent";
 import SharedConfig from "./common/SharedConfig";
 
-export default Scansio;
+export default Reblend;
 
 export {
   ShadowMode,

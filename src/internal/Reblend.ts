@@ -15,12 +15,12 @@ declare global {
       (properties?: { [key: string]: any }, children?: Node[]): HTMLElement;
     } */
 
-    interface ElementClass extends Scansio {}
+    interface ElementClass extends Reblend {}
     interface ElementAttributesProperty { props: {}; }
   }
 }
 
-class Scansio extends BaseComponent {
+class Reblend extends BaseComponent {
   static ELEMENT_NAME = "Fragment";
 
   constructor() {
@@ -32,6 +32,6 @@ class Scansio extends BaseComponent {
   }
 }
 
-registerElement(`ScansioFragment`, Scansio);
+registerElement(`ReblendFragment`, Reblend);
 
-export default Scansio;
+export default Reblend;
