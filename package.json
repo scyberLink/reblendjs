@@ -1,6 +1,6 @@
 {
   "name": "reblendjs",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "codename": "infant",
   "description": "This is build using react way of handling dom but with web components",
   "keywords": [
@@ -11,6 +11,9 @@
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "compile": "npx tsc"
   },
