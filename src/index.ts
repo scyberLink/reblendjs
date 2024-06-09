@@ -7,6 +7,7 @@ import md5 from "./common/md5";
 import * as utils from "./common/utils";
 import { StateFunction, SingleState } from "./internal/BaseComponent";
 import SharedConfig from "./common/SharedConfig";
+import { useState, useEffect, useReducer, useMemo } from "./internal/hooks";
 
 export default Reblend;
 
@@ -20,4 +21,8 @@ export {
   StateFunction,
   SingleState,
   SharedConfig,
+  useState,
+  useEffect,
+  useReducer,
+  useMemo,
 };

@@ -820,7 +820,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.state = value;
   }
 
-  protected useState<T>(initial: T): SingleState<T> {
+  /* protected useState<T>(initial: T): SingleState<T> {
     let variable: T = initial;
 
     const variableSetter = (value: StateFunction<T>) => {
@@ -852,8 +852,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
         variableSetter(val);
       },
     };
-  }
-
+  } */
+ 
   protected refresh() {
     const viewFragment = this.html();
     if (viewFragment) {
