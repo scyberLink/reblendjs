@@ -1,3 +1,5 @@
+import { cloneDeep, isEqual } from "lodash";
+
 export type StateFunction<T> = (value: StateFunctionValue<T>) => void;
 export type StateFunctionValue<T> = T | ((previous: T) => T);
 export type StateEffectiveFunction = () => (() => {}) | void | any;
@@ -5,70 +7,69 @@ export type StateReducerFunction<T> = (previous: T, current: T) => any;
 
 export const useState = <T>(initial: T): [T, StateFunction<T>] => {
   let variable: T = initial;
-  const effectsFn: StateEffectiveFunction[] = [];
 
   const variableSetter: StateFunction<T> = (value: StateFunctionValue<T>) => {
-    let updated = false;
-    if (typeof value == "function") {
+    if (typeof value === "function") {
       value = (value as Function)(variable);
-      if (variable != value) {
-        variable = value as T;
-        updated = true;
-      }
-    } else {
-      if (variable != value) {
-        variable = value;
-        updated = true;
-      }
     }
-    if (updated) {
+    if (!isEqual(variable, value)) {
+      variable = value as T;
+      (this as any)?.effectsFn.forEach(async (effectFn) => await effectFn());
       (this as any)?.refresh();
-      effectsFn.forEach(async (effectFn) => await effectFn());
     }
   };
 
-  const proxyHandler = {
-    get(target: any, prop: string) {
-      if (prop === "value") {
-        return variable;
-      }
-      return target[prop];
-    },
-    set(_target: any, prop: string, value: StateEffectiveFunction) {
-      if (prop === "value") {
-        effectsFn.push(value);
-        return true;
-      }
-      return false;
-    },
-  };
-
-  const proxy = new Proxy({ value: variable }, proxyHandler);
-
-  return [proxy, variableSetter];
+  return [variable, variableSetter];
 };
 
-export const useEffect = (fn: StateEffectiveFunction, dependencies: any[]) =>
-  dependencies.forEach((dependency) => (dependency = fn));
+export const useEffect = (fn: StateEffectiveFunction, dependencies: any[]) => {
+  const cacher = () => cloneDeep(dependencies);
+  let caches = cacher();
+  const internalFn = () => {
+    if (!isEqual(dependencies, caches)) {
+      caches = cacher();
+      fn();
+    }
+  };
+  (this as any)?.effectsFn.push(internalFn);
+};
 
 export const useReducer = <T>(reducer: StateReducerFunction<T>, initial: T) => {
-  const [val, setter] = useState<T>(initial);
+  const [state, setState] = useState<T>(initial);
 
   const fn: StateFunction<T> = (newValue: StateFunctionValue<T>) => {
     let reducedVal: StateFunctionValue<T>;
     if (typeof newValue === "function") {
-      reducedVal = reducer(val, (newValue as Function)(val));
+      reducedVal = reducer(state, (newValue as Function)(state));
     } else {
-      reducedVal = reducer(val, newValue as T);
+      reducedVal = reducer(state, newValue as T);
     }
-    setter(reducedVal);
+    setState(reducedVal);
   };
 
-  return [val, fn];
+  return [state, fn];
 };
 
 export const useMemo = <T>(fn: StateEffectiveFunction, dependencies: any[]) => {
-  const [val, setter] = useState<T>(fn());
-  dependencies.forEach((dependency) => (dependency = () => setter(fn())));
-  return val;
+  const [state, setState] = useState<T>(fn());
+  const cacher = () =>
+    dependencies.map((state) => {
+      const [_0] = [...[state]];
+      return _0;
+    });
+  let caches = cacher();
+  const internalFn = () => {
+    for (let i = 0; i < dependencies.length; i++) {
+      const dependency = dependencies[i];
+      const cache = caches[i];
+
+      if (dependency !== cache) {
+        caches = cacher();
+        setState(fn());
+        break;
+      }
+    }
+  };
+  (this as any)?.effectsFn.push(internalFn);
+  return state;
 };

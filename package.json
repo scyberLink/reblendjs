@@ -21,5 +21,9 @@
   "license": "MIT",
   "devDependencies": {
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.17.5",
+    "lodash": "^4.17.21"
   }
 }

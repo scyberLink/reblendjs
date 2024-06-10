@@ -13,6 +13,7 @@ import IPair from "../interface/IPair";
 import IDelegate from "./IDelegate";
 import Reblend from "./Reblend";
 import ShadowMode from "./ShadowMode";
+import { StateEffectiveFunction } from "./hooks";
 
 export type StateFunction<T> = T | ((previous: T) => T);
 
@@ -933,6 +934,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   protected cleanUp() {}
+
+  protected effectsFn: StateEffectiveFunction[] = [];
 }
 
 registerElement(`BaseComponent`, BaseComponent);
