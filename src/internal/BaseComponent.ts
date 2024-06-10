@@ -904,7 +904,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
         }
 
         protected html() {
-          return (clazz as any as ReblendFunctionComponent)(propes);
+          return (clazz as any as ReblendFunctionComponent).bind(this)(propes);
         }
       };
       clazz = _clazz;
