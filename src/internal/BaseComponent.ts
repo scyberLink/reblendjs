@@ -1,6 +1,7 @@
 import {
   capitalize,
   cssString,
+  isSubclassOf,
   rand,
   registerElement,
   snakeCase,
@@ -10,6 +11,7 @@ import NullException from "../exceptions/NullException";
 import UnsupportedPrototype from "../exceptions/UnsupportedPrototype";
 import IAny from "../interface/IAny";
 import IPair from "../interface/IPair";
+import ReblendFunctionComponent from "../interface/ReblendFunctionComponent";
 import IDelegate from "./IDelegate";
 import Reblend from "./Reblend";
 import ShadowMode from "./ShadowMode";
@@ -854,7 +856,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       },
     };
   } */
- 
+
   protected refresh() {
     const viewFragment = this.html();
     if (viewFragment) {
@@ -878,6 +880,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
   ) {
     let clazz: typeof Reblend = tag as typeof Reblend;
     const isTagStandard = typeof tag === "string";
+    const propes = {
+      ...(isTagStandard ? {} : clazz.props),
+      ...props,
+      children,
+    };
     if (isTagStandard) {
       clazz = class extends Reblend {
         static ELEMENT_NAME: string = capitalize(`${tag}`);
@@ -887,8 +894,21 @@ class BaseComponent extends HTMLElement implements IDelegate {
           this.wrapper = document.createElement(tag as string);
         }
       };
+    } else if (typeof clazz === "function" && !isSubclassOf(clazz, Reblend)) {
+      const _clazz = class extends Reblend {
+        static ELEMENT_NAME: string = capitalize(`${clazz.name}`);
+
+        constructor() {
+          super();
+          //this.wrapper = document.createElement(tag as string);
+        }
+
+        protected html() {
+          return (clazz as any as ReblendFunctionComponent)(propes);
+        }
+      };
+      clazz = _clazz;
     }
-    const propes = { ...clazz.props, ...props, children };
 
     this.register(clazz);
     const element: Reblend = new (clazz as any)();

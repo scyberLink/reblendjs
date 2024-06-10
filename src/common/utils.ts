@@ -182,3 +182,10 @@ export function capitalize(str: string) {
 export const rand = (min = 1234, max = 9876) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
+export const isSubclassOf = (
+  subclass: Function,
+  superclass: Function
+): boolean => {
+  return subclass.prototype instanceof superclass || subclass === superclass;
+};
