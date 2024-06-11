@@ -894,7 +894,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
           const ele = document.createElement(tag as string);
           Object.entries(propes).forEach(([key, value], _index) => {
             if (!key.startsWith("on")) {
-              ele.setAttribute(key, value as any);
+              if (typeof value === "string") {
+                ele.setAttribute(key, value as any);
+              }
             }
           });
           this.wrapper = ele;
