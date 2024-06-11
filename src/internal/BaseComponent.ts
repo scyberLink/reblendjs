@@ -895,8 +895,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
         }
       };
     } else if (typeof clazz === "function" && !isSubclassOf(clazz, Reblend)) {
-      const _clazz = class extends Reblend {
-        static ELEMENT_NAME: string = capitalize(`${clazz.name}`);
+      const $clazz = { clazz }.clazz;
+      clazz = class extends Reblend {
+        static ELEMENT_NAME: string = capitalize(`${$clazz.name}`);
 
         constructor() {
           super();
@@ -904,10 +905,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
         }
 
         protected html() {
-          return (clazz as any as ReblendFunctionComponent).bind(this)(propes);
+          return ($clazz as any as ReblendFunctionComponent).bind(this)(propes);
         }
       };
-      clazz = _clazz;
     }
 
     this.register(clazz);
