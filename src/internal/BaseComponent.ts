@@ -891,7 +891,13 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
         constructor() {
           super();
-          this.wrapper = document.createElement(tag as string);
+          const ele = document.createElement(tag as string);
+          Object.entries(propes).forEach(([key, value], _index) => {
+            if (!key.startsWith("on")) {
+              ele.setAttribute(key, value as any);
+            }
+          });
+          this.wrapper = ele;
         }
       };
     } else if (typeof clazz === "function" && !isSubclassOf(clazz, Reblend)) {
