@@ -751,8 +751,12 @@ class BaseComponent extends HTMLElement implements IDelegate {
       : super.classList.replace(oldClassName, newClassName);
   }
 
+  static hasName(element: typeof BaseComponent) {
+    return element.ELEMENT_NAME && element.ELEMENT_NAME !== "BaseComponent";
+  }
+
   static register(element: typeof BaseComponent) {
-    if (!element.ELEMENT_NAME || element.ELEMENT_NAME === "BaseComponent") {
+    if (!BaseComponent.hasName(element)) {
       throw new InvalidTagNameException(
         `Please declare a static field ELEMENT_NAME in "${
           element.name || "your derived"
@@ -823,40 +827,6 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.state = value;
   }
 
-  /* protected useState<T>(initial: T): SingleState<T> {
-    let variable: T = initial;
-
-    const variableSetter = (value: StateFunction<T>) => {
-      if (typeof value == "function") {
-        value = (value as Function)(variable);
-        if (variable != value) {
-          variable = value as T;
-          this.refresh(); // Assumes Reblend has a refresh mechanism
-        }
-      } else {
-        if (variable != value) {
-          variable = value;
-          this.refresh();
-        }
-      }
-    };
-
-    return {
-      get value(): T {
-        return variable;
-      },
-      get() {
-        return this.value;
-      },
-      set value(val: StateFunction<T>) {
-        variableSetter(val);
-      },
-      set(val: StateFunction<T>) {
-        variableSetter(val);
-      },
-    };
-  } */
-
   protected refresh() {
     const viewFragment = this.html();
     if (viewFragment) {
@@ -885,6 +855,13 @@ class BaseComponent extends HTMLElement implements IDelegate {
       ...props,
       children,
     };
+    if (
+      !isTagStandard &&
+      isSubclassOf(clazz, Reblend) &&
+      !BaseComponent.hasName(clazz)
+    ) {
+      clazz.ELEMENT_NAME = `Anonymous`;
+    }
     if (isTagStandard) {
       clazz = class extends Reblend {
         static ELEMENT_NAME: string = capitalize(`${tag}`);
@@ -902,27 +879,13 @@ class BaseComponent extends HTMLElement implements IDelegate {
           this.wrapper = ele;
         }
       };
-    } else if (typeof clazz === "function" && !isSubclassOf(clazz, Reblend)) {
-      const $clazz = { clazz }.clazz;
-      clazz = class extends Reblend {
-        static ELEMENT_NAME: string = capitalize(`${$clazz.name}`);
-
-        constructor() {
-          super();
-          //this.wrapper = document.createElement(tag as string);
-        }
-
-        protected html() {
-          return ($clazz as any as ReblendFunctionComponent).bind(this)(propes);
-        }
-      };
     }
 
-    this.register(clazz);
-    const element: Reblend = new (clazz as any)();
-    if (!("html" in element)) {
+    if (!isSubclassOf(clazz, Reblend)) {
       throw new UnsupportedPrototype(`${isTagStandard ? tag : tag.name}`);
     }
+    this.register(clazz);
+    const element: Reblend = new (clazz as any)();
 
     this.setProps(propes, element);
 
