@@ -907,11 +907,17 @@ class BaseComponent extends HTMLElement implements IDelegate {
         return this.createChildren(child, containerArr);
       } else {
         if (child !== undefined && child !== null) {
-          if (child instanceof Object) {
+          if (child instanceof Reblend) {
             containerArr.push(child);
           } else {
             containerArr.push(
-              document.createTextNode(`${child}`) as unknown as HTMLElement
+              document.createTextNode(
+                `${
+                  child instanceof Object && "toString" in child
+                    ? child.toString()
+                    : child
+                }`
+              ) as unknown as HTMLElement
             );
           }
         }
