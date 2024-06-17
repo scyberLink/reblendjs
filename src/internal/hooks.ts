@@ -6,14 +6,18 @@ export type StateEffectiveFunction = () => (() => {}) | void | any;
 export type StateReducerFunction<T> = (previous: T, current: T) => any;
 
 export function useState<T>(initial: T): [T, StateFunction<T>] {
-  let variable: T = initial;
+  const variable: T = initial;
+  const labelPlaceholder = "[LABEL]";
 
   const variableSetter: StateFunction<T> = (value: StateFunctionValue<T>) => {
     if (typeof value === "function") {
-      value = (value as Function)(variable);
+      // @ts-ignore
+      value = (value as Function)(this[labelPlaceholder]);
     }
-    if (!isEqual(variable, value)) {
-      variable = value as T;
+    // @ts-ignore
+    if (!isEqual(this[labelPlaceholder], value)) {
+      // @ts-ignore
+      this[labelPlaceholder] = value as T;
       // @ts-ignore
       this?.effectsFn.forEach(async (effectFn) => await effectFn());
       // @ts-ignore
@@ -33,6 +37,7 @@ export function useEffect(fn: StateEffectiveFunction, dependencies: any[]) {
       fn();
     }
   };
+  fn();
   // @ts-ignore
   this?.effectsFn.push(internalFn);
 }
@@ -55,11 +60,7 @@ export function useReducer<T>(reducer: StateReducerFunction<T>, initial: T) {
 
 export function useMemo<T>(fn: StateEffectiveFunction, dependencies: any[]) {
   const [state, setState] = useState<T>(fn());
-  const cacher = () =>
-    dependencies.map((state) => {
-      const [_0] = [...[state]];
-      return _0;
-    });
+  const cacher = () => cloneDeep(dependencies);
   let caches = cacher();
   const internalFn = () => {
     for (let i = 0; i < dependencies.length; i++) {

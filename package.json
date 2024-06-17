@@ -1,6 +1,6 @@
 {
   "name": "reblendjs",
-  "version": "2.0.6",
+  "version": "2.0.10",
   "codename": "infant",
   "description": "This is build using react way of handling dom but with web components",
   "keywords": [
@@ -19,7 +19,8 @@
     "dist"
   ],
   "scripts": {
-    "compile": "npx tsc"
+    "compile": "npx tsc",
+    "prepublish": "npm run compile"
   },
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",

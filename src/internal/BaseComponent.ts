@@ -933,6 +933,18 @@ class BaseComponent extends HTMLElement implements IDelegate {
   protected cleanUp() {}
 
   protected effectsFn: StateEffectiveFunction[] = [];
+
+  protected apply(func: Function, label: string) {
+    if (!label || typeof label !== "string") {
+      throw new Error("Invalid label");
+    }
+    const functionString = func.toString();
+    const modifiedString = functionString.replace(/\[LABEL\]/, label);
+    const modifiedFunction = new Function(modifiedString);
+    // @ts-ignore
+    func.__proto__ = modifiedFunction.prototype;
+    return func;
+  }
 }
 
 registerElement(`BaseComponent`, BaseComponent);
