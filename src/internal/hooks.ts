@@ -7,9 +7,9 @@ export type StateReducerFunction<T> = (previous: T, current: T) => any;
 
 export function useState<T>(initial: T): [T, StateFunction<T>] {
   const variable: T = initial;
-  const labelPlaceholder = "[LABEL]";
 
   const variableSetter: StateFunction<T> = (value: StateFunctionValue<T>) => {
+    const labelPlaceholder = "[LABEL]";
     if (typeof value === "function") {
       // @ts-ignore
       value = (value as Function)(this[labelPlaceholder]);
