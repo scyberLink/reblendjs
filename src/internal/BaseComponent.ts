@@ -942,21 +942,17 @@ class BaseComponent extends HTMLElement implements IDelegate {
     const functionString = func.toString();
     const modifiedString = functionString.replace(/\[LABEL\]/g, label);
 
-    // Create a new function from the modified string
     const wrapperFunction = new Function(`
-      return function ${func.name || ""}() {
-        ${modifiedString}
-      }
-    `)();
+    return (${modifiedString})
+  `)();
 
-    // Copy all properties from the original function to the new one
-    Object.keys(func).forEach((key) => {
-      wrapperFunction[key] = func[key];
+    // Replace the original function's behavior
+    func.prototype.constructor = wrapperFunction.prototype.constructor;
+    Object.setPrototypeOf(func, wrapperFunction);
+    Object.defineProperty(func, "toString", {
+      value: modifiedString,
+      writable: false,
     });
-
-    // Replace the original function with the new one
-    Object.setPrototypeOf(wrapperFunction, Object.getPrototypeOf(func));
-    Object.assign(func, wrapperFunction);
 
     return func;
   }
