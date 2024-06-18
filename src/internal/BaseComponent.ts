@@ -938,11 +938,26 @@ class BaseComponent extends HTMLElement implements IDelegate {
     if (!label || typeof label !== "string") {
       throw new Error("Invalid label");
     }
+
     const functionString = func.toString();
-    const modifiedString = functionString.replace(/\[LABEL\]/, label);
-    const modifiedFunction = new Function(modifiedString);
-    // @ts-ignore
-    func.__proto__ = modifiedFunction.prototype;
+    const modifiedString = functionString.replace(/\[LABEL\]/g, label);
+
+    // Create a new function from the modified string
+    const wrapperFunction = new Function(`
+      return function ${func.name || ""}() {
+        ${modifiedString}
+      }
+    `)();
+
+    // Copy all properties from the original function to the new one
+    Object.keys(func).forEach((key) => {
+      wrapperFunction[key] = func[key];
+    });
+
+    // Replace the original function with the new one
+    Object.setPrototypeOf(wrapperFunction, Object.getPrototypeOf(func));
+    Object.assign(func, wrapperFunction);
+
     return func;
   }
 }
