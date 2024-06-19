@@ -944,17 +944,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
     const wrapperFunction = new Function(`
     return (${modifiedString})
-  `)();
+  `)().bind(func);
 
-    // Replace the original function's behavior
-    func.prototype.constructor = wrapperFunction.prototype.constructor;
-    Object.setPrototypeOf(func, wrapperFunction);
-    Object.defineProperty(func, "toString", {
-      value: modifiedString,
-      writable: false,
-    });
-
-    return func;
+    return wrapperFunction;
   }
 }
 
