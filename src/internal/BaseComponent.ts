@@ -946,9 +946,12 @@ class BaseComponent extends HTMLElement implements IDelegate {
     const wrapperFunction = new Function(
       "lodash",
       `
-    return (${modifiedString})
+    return function ${func.name}() {
+      const func = ${modifiedString};
+      return func.apply(this, arguments);
+    }
   `
-    )(lodash).bind(func);
+    )(lodash).bind(this);
 
     return wrapperFunction;
   }

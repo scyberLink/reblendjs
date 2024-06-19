@@ -1,4 +1,4 @@
-import * as lodash from "lodash";
+import { cloneDeep, isEqual } from "lodash";
 
 export type StateFunction<T> = (value: StateFunctionValue<T>) => void;
 export type StateFunctionValue<T> = T | ((previous: T) => T);
@@ -6,16 +6,14 @@ export type StateEffectiveFunction = () => (() => {}) | void | any;
 export type StateReducerFunction<T> = (previous: T, current: T) => any;
 
 export function useState<T>(initial: T): [T, StateFunction<T>] {
-  const variable: T = initial;
-
   const variableSetter: StateFunction<T> = (value: StateFunctionValue<T>) => {
     const labelPlaceholder = "[LABEL]";
     if (typeof value === "function") {
       // @ts-ignore
       value = (value as Function)(this[labelPlaceholder]);
     }
-    // @ts-ignore
-    if (!isEqual(this[labelPlaceholder], value)) {
+    // @ts-ignore Dynamic imported
+    if (!lodash.isEqual(this[labelPlaceholder], value)) {
       // @ts-ignore
       this[labelPlaceholder] = value as T;
       // @ts-ignore
@@ -25,14 +23,14 @@ export function useState<T>(initial: T): [T, StateFunction<T>] {
     }
   };
 
-  return [variable, variableSetter];
+  return [initial, variableSetter];
 }
 
 export function useEffect(fn: StateEffectiveFunction, dependencies: any[]) {
-  const cacher = () => lodash.cloneDeep(dependencies);
+  const cacher = () => cloneDeep(dependencies);
   let caches = cacher();
   const internalFn = () => {
-    if (!lodash.isEqual(dependencies, caches)) {
+    if (!isEqual(dependencies, caches)) {
       caches = cacher();
       fn();
     }
@@ -60,7 +58,7 @@ export function useReducer<T>(reducer: StateReducerFunction<T>, initial: T) {
 
 export function useMemo<T>(fn: StateEffectiveFunction, dependencies: any[]) {
   const [state, setState] = useState<T>(fn());
-  const cacher = () => lodash.cloneDeep(dependencies);
+  const cacher = () => cloneDeep(dependencies);
   let caches = cacher();
   const internalFn = () => {
     for (let i = 0; i < dependencies.length; i++) {
