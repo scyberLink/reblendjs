@@ -1,4 +1,4 @@
-import { cloneDeep, isEqual } from "lodash";
+import * as lodash from "lodash";
 
 export type StateFunction<T> = (value: StateFunctionValue<T>) => void;
 export type StateFunctionValue<T> = T | ((previous: T) => T);
@@ -29,10 +29,10 @@ export function useState<T>(initial: T): [T, StateFunction<T>] {
 }
 
 export function useEffect(fn: StateEffectiveFunction, dependencies: any[]) {
-  const cacher = () => cloneDeep(dependencies);
+  const cacher = () => lodash.cloneDeep(dependencies);
   let caches = cacher();
   const internalFn = () => {
-    if (!isEqual(dependencies, caches)) {
+    if (!lodash.isEqual(dependencies, caches)) {
       caches = cacher();
       fn();
     }
@@ -60,7 +60,7 @@ export function useReducer<T>(reducer: StateReducerFunction<T>, initial: T) {
 
 export function useMemo<T>(fn: StateEffectiveFunction, dependencies: any[]) {
   const [state, setState] = useState<T>(fn());
-  const cacher = () => cloneDeep(dependencies);
+  const cacher = () => lodash.cloneDeep(dependencies);
   let caches = cacher();
   const internalFn = () => {
     for (let i = 0; i < dependencies.length; i++) {

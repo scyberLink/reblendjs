@@ -16,6 +16,7 @@ import IDelegate from "./IDelegate";
 import Reblend from "./Reblend";
 import ShadowMode from "./ShadowMode";
 import { StateEffectiveFunction } from "./hooks";
+import * as lodash from "lodash";
 
 export type StateFunction<T> = T | ((previous: T) => T);
 
@@ -942,9 +943,12 @@ class BaseComponent extends HTMLElement implements IDelegate {
     const functionString = func.toString();
     const modifiedString = functionString.replace(/\[LABEL\]/g, label);
 
-    const wrapperFunction = new Function(`
+    const wrapperFunction = new Function(
+      "lodash",
+      `
     return (${modifiedString})
-  `)().bind(func);
+  `
+    )(lodash).bind(func);
 
     return wrapperFunction;
   }
