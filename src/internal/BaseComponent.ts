@@ -851,11 +851,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
   ) {
     let clazz: typeof Reblend = tag as typeof Reblend;
     const isTagStandard = typeof tag === "string";
-    const propes = {
-      ...(isTagStandard ? {} : clazz.props),
-      ...props,
-      children,
-    };
+    isTagStandard && Object.assign(props, clazz.props)
+    Object.assign(props, {children})
+
     if (
       !isTagStandard &&
       isSubclassOf(clazz, Reblend) &&
@@ -870,7 +868,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
         constructor() {
           super();
           const ele = document.createElement(tag as string);
-          Object.entries(propes).forEach(([key, value], _index) => {
+          Object.entries(props).forEach(([key, value], _index) => {
             if (!key.startsWith("on")) {
               if (typeof value === "string") {
                 ele.setAttribute(key, value as any);
@@ -888,7 +886,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.register(clazz);
     const element: Reblend = new (clazz as any)();
 
-    this.setProps(propes, element);
+    this.setProps(props, element);
 
     if (isTagStandard) {
       element.appendChildren(...this.createChildren(children));
