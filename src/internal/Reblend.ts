@@ -16,7 +16,9 @@ declare global {
     } */
 
     interface ElementClass extends Reblend {}
-    interface ElementAttributesProperty { props: {}; }
+    interface ElementAttributesProperty {
+      props: {};
+    }
   }
 }
 
@@ -28,7 +30,7 @@ class Reblend extends BaseComponent {
   }
 
   protected html() {
-    return BaseComponent.createChildren(this.props.children);
+    return this.props.children;
   }
 }
 

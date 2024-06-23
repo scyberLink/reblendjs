@@ -19,7 +19,7 @@ export function useState<T>(initial: T): [T, StateFunction<T>] {
       // @ts-ignore
       this?.effectsFn.forEach(async (effectFn) => await effectFn());
       // @ts-ignore
-      this?.refresh();
+      this?.onStateChange();
     }
   };
 
@@ -35,9 +35,11 @@ export function useEffect(fn: StateEffectiveFunction, dependencies: any[]) {
       fn();
     }
   };
-  fn();
+  const closeListener = fn();
   // @ts-ignore
   this?.effectsFn.push(internalFn);
+  // @ts-ignore
+  this?.disconnectEffects.push(closeListener || (() => {}));
 }
 
 export function useReducer<T>(reducer: StateReducerFunction<T>, initial: T) {

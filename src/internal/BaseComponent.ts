@@ -26,6 +26,26 @@ export type SingleState<T> = {
   set(val: StateFunction<T>): void;
 };
 
+export type ChildWithProps = {
+  child: BaseComponent;
+  propsKey: string[];
+};
+
+interface PropPatch {
+  type: "REMOVE" | "UPDATE";
+  node: BaseComponent;
+  key: string;
+  propValue?: string;
+}
+
+interface Patch {
+  type: "CREATE" | "REMOVE" | "REPLACE" | "UPDATE" | "TEXT";
+  newNode?: BaseComponent;
+  oldNode?: BaseComponent;
+  container?: BaseComponent;
+  patches?: PropPatch[];
+}
+
 class BaseComponent extends HTMLElement implements IDelegate {
   static ELEMENT_NAME = "BaseComponent";
   protected shadow!: ShadowRoot;
@@ -43,6 +63,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
   static props: IAny;
   private _dataId!: string;
   private _state!: IAny;
+  protected container!: BaseComponent;
+  containingSiblings: BaseComponent[] = [];
+  stateKeys: string[] = [];
+  cacheHtml!: BaseComponent | BaseComponent[];
 
   constructor() {
     super();
@@ -764,6 +788,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
         }" class of BaseComponent`
       );
     }
+    // @ts-ignore
+    element.prototype.tag = element.ELEMENT_NAME;
     const tagName = `${snakeCase(element.ELEMENT_NAME)}-${rand(
       111111,
       999999
@@ -821,14 +847,141 @@ class BaseComponent extends HTMLElement implements IDelegate {
       ...this._state,
       ...(typeof value == "function" ? value(this._state) : value),
     };
-    this.refresh();
+    this.onStateChange();
   }
 
   setState(value: StateFunction<IAny>) {
     this.state = value;
   }
 
-  protected refresh() {
+  isTextNode(node: Node): node is Text {
+    return node.nodeType === Node.TEXT_NODE;
+  }
+
+  diff(
+    container: BaseComponent,
+    oldNode: BaseComponent,
+    newNode: BaseComponent
+  ): Patch[] {
+    if (!oldNode && !newNode) {
+      return [];
+    }
+
+    const patches: Patch[] = [];
+
+    if (!oldNode) {
+      patches.push({ type: "CREATE", container, newNode });
+    } else if (!newNode) {
+      patches.push({ type: "REMOVE", container, oldNode });
+    } else if (this.isTextNode(oldNode) || this.isTextNode(newNode)) {
+      //
+      if (oldNode.textContent !== newNode.textContent) {
+        patches.push({ type: "TEXT", newNode, oldNode });
+      }
+      //@ts-ignore
+    } else if (oldNode.tag !== newNode.tag) {
+      patches.push({ type: "REPLACE", container, newNode, oldNode });
+    } else {
+      const propsPatches = this.diffProps(
+        oldNode,
+        oldNode?.props,
+        newNode?.props
+      );
+      if (Object.keys(propsPatches).length > 0) {
+        patches.push({ type: "UPDATE", patches: propsPatches });
+      }
+      patches.push(
+        ...this.diffChildren(
+          oldNode,
+          oldNode.props.children,
+          newNode.props.children
+        )
+      );
+    }
+
+    return patches;
+  }
+
+  diffProps(
+    oldNode: BaseComponent,
+    oldProps: { [key: string]: any },
+    newProps: { [key: string]: any }
+  ) {
+    const patches: PropPatch[] = [];
+    for (const key in newProps) {
+      if (key !== "children" && oldProps[key] !== newProps[key]) {
+        patches.push({
+          type: "UPDATE",
+          node: oldNode,
+          propValue: newProps[key],
+          key,
+        });
+      }
+    }
+
+    for (const key in oldProps) {
+      if (!(key in newProps)) {
+        patches.push({
+          type: "REMOVE",
+          node: oldNode,
+          key,
+        });
+      }
+    }
+
+    return patches;
+  }
+
+  diffChildren(
+    oldNode: BaseComponent,
+    oldChildren: BaseComponent[],
+    newChildren: BaseComponent[]
+  ) {
+    const patches: Patch[] = [];
+    const maxLength = Math.max(oldChildren.length, newChildren.length);
+
+    for (let i = 0; i < maxLength; i++) {
+      const oldChild = oldChildren[i];
+      const newChild = newChildren[i];
+      patches.push(...this.diff(oldNode, oldChild, newChild));
+    }
+
+    return patches;
+  }
+
+  applyPatches(patches: Patch[]) {
+    patches?.forEach(({ type, newNode, oldNode, container, patches }) => {
+      switch (type) {
+        case "CREATE":
+          container?.appendChild(newNode as any);
+          break;
+        case "REMOVE":
+          container?.removeChild(oldNode as any);
+          break;
+        case "REPLACE":
+          container?.replaceChild(oldNode as any, newNode as any);
+          break;
+        case "TEXT":
+          oldNode && (oldNode.textContent = newNode?.textContent as string);
+          break;
+        case "UPDATE":
+          this.applyProps(patches);
+          break;
+      }
+    });
+  }
+
+  applyProps(patches?: PropPatch[]) {
+    patches?.forEach(({ type, node, key, propValue }) => {
+      if (type === "UPDATE") {
+        BaseComponent.setProps({ [key]: propValue }, node);
+      } else if (type === "REMOVE") {
+        node.removeAttribute(key);
+      }
+    });
+  }
+
+  protected attach() {
     const viewFragment = this.html();
     if (viewFragment) {
       this.innerHTML = "";
@@ -837,7 +990,47 @@ class BaseComponent extends HTMLElement implements IDelegate {
       } else {
         this.appendChildren(viewFragment);
       }
+      if (!this.cacheHtml) {
+        this.cacheHtml = viewFragment as BaseComponent;
+      }
     }
+  }
+
+  protected onStateChange() {
+    const viewFragments = this.html();
+    if (viewFragments) {
+      let patches: Patch[] = [];
+      const isCacheArray = Array.isArray(this.cacheHtml);
+      const isViewFramentArray = Array.isArray(viewFragments);
+      if (isCacheArray || isViewFramentArray) {
+        const maxLength = Math.max(
+          isCacheArray ? (this.cacheHtml as BaseComponent[]).length : 0,
+          isViewFramentArray ? viewFragments.length : 0
+        );
+        for (let i = 0; i < maxLength; i++) {
+          const viewFragment = isViewFramentArray
+            ? viewFragments[i]
+            : viewFragments;
+          const currentViewFragment = isCacheArray
+            ? this.cacheHtml[i]
+            : this.cacheHtml;
+          patches.push(...this.diff(this, currentViewFragment, viewFragment));
+        }
+      } else {
+        patches.push(
+          ...this.diff(
+            this,
+            this.cacheHtml as BaseComponent,
+            viewFragments as BaseComponent
+          )
+        );
+      }
+      this.applyPatches(patches);
+    }
+  }
+
+  protected addSibling(child: BaseComponent) {
+    this.containingSiblings.push(child);
   }
 
   protected html(): JSX.Element {
@@ -851,8 +1044,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
   ) {
     let clazz: typeof Reblend = tag as typeof Reblend;
     const isTagStandard = typeof tag === "string";
-    isTagStandard && Object.assign(props, clazz.props)
-    Object.assign(props, {children})
+    props || (props = {});
+    isTagStandard && Object.assign(props, clazz.props);
+    Object.assign(props, { children: BaseComponent.createChildren(children) });
 
     if (
       !isTagStandard &&
@@ -868,13 +1062,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
         constructor() {
           super();
           const ele = document.createElement(tag as string);
-          Object.entries(props).forEach(([key, value], _index) => {
-            if (!key.startsWith("on")) {
-              if (typeof value === "string") {
-                ele.setAttribute(key, value as any);
+          const srcTags = ["svg", "img"];
+          for (const t of srcTags) {
+            if ((tag as string).toLowerCase() === t) {
+              if ("src" in props) {
+                ele.setAttribute("src", props.src);
               }
+              break;
             }
-          });
+          }
           this.wrapper = ele;
         }
       };
@@ -883,17 +1079,14 @@ class BaseComponent extends HTMLElement implements IDelegate {
     if (!isSubclassOf(clazz, Reblend)) {
       throw new UnsupportedPrototype(`${isTagStandard ? tag : tag.name}`);
     }
-    this.register(clazz);
+    BaseComponent.register(clazz);
     const element: Reblend = new (clazz as any)();
 
-    this.setProps(props, element);
-
-    if (isTagStandard) {
-      element.appendChildren(...this.createChildren(children));
-    }
-
-    element.refresh();
-
+    BaseComponent.setProps(props, element);
+    const container = this as any as BaseComponent;
+    element.container = container;
+    container?.addSibling(element);
+    element.attach();
     return element;
   }
 
@@ -927,11 +1120,13 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
   disconnectedCallback() {
     this.cleanUp();
+    this.disconnectEffects.forEach((fn) => fn());
   }
 
   protected cleanUp() {}
 
   protected effectsFn: StateEffectiveFunction[] = [];
+  protected disconnectEffects: StateEffectiveFunction[] = [];
 
   protected apply(func: Function, label: string) {
     if (!label || typeof label !== "string") {
@@ -950,7 +1145,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     }
   `
     )(lodash).bind(this);
-
+    this.stateKeys.push(label);
     return wrapperFunction;
   }
 }
