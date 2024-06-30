@@ -1,5 +1,6 @@
 import { cloneDeep, isEqual } from "lodash";
 
+export type Ref<T> = { current?: T | HTMLElement };
 export type StateFunction<T> = (value: StateFunctionValue<T>) => void;
 export type StateFunctionValue<T> = T | ((previous: T) => T);
 export type StateEffectiveFunction = () => (() => {}) | void | any;
@@ -77,4 +78,9 @@ export function useMemo<T>(fn: StateEffectiveFunction, dependencies: any[]) {
   // @ts-ignore
   this?.effectsFn.push(internalFn);
   return state;
+}
+
+export function useRef<T>(initial?: T) {
+  const ref: Ref<T> = { current: initial };
+  return ref;
 }

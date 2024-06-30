@@ -436,6 +436,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
       this.wrapper || this.shadowed
         ? this.shadowWrapper.appendChild(node)
         : super.appendChild(node);
+    appended &&
+      "componentDidMount" in appended &&
+      (appended as any).componentDidMount();
     return appended;
   }
 
@@ -819,6 +822,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   init() {}
+  componentDidMount() {}
 
   private setProps(props: IAny, init: boolean) {
     BaseComponent.setProps(props, this, init);
@@ -1157,7 +1161,22 @@ class BaseComponent extends HTMLElement implements IDelegate {
     }
     BaseComponent.register(clazz);
     const element: Reblend = new (clazz as any)();
+    if ("ref" in props) {
+      if (!props.ref) {
+        throw new Error("Invalid ref object");
+      }
+      const ref = props.ref;
+      delete props.ref;
+      const descriptor = Object.getOwnPropertyDescriptor(ref, "current");
 
+      if (!descriptor || descriptor.configurable) {
+        Object.defineProperty(ref, "current", {
+          value: element,
+          configurable: false,
+          writable: false,
+        });
+      }
+    }
     BaseComponent.setProps(props, element, true);
     element.container = container;
     element.attach();
@@ -1195,6 +1214,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
   disconnectedCallback() {
     this.cleanUp();
     this.disconnectEffects.forEach((fn) => fn());
+    {
+      this.shadow = null as any;
+      this.shadowWrapper = null as any;
+      this.shadowStyle = null as any;
+      this.props = null as any;
+      this._state = null as any;
+      this.container = null as any;
+      this.stateKeys = null as any;
+    }
   }
 
   protected cleanUp() {}
