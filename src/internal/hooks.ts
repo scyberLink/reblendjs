@@ -84,3 +84,8 @@ export function useRef<T>(initial?: T) {
   const ref: Ref<T> = { current: initial };
   return ref;
 }
+
+export function useCallback(fn: Function) {
+  //@ts-ignore
+  return fn.bind(this);
+}

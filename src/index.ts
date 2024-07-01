@@ -13,6 +13,7 @@ import {
   useReducer,
   useMemo,
   useRef,
+  useCallback,
 } from "./internal/hooks";
 
 export default Reblend;
@@ -32,4 +33,5 @@ export {
   useReducer,
   useMemo,
   useRef,
+  useCallback,
 };
