@@ -1,38 +1,48 @@
 {
-  "name": "reblendjs",
-  "version": "2.0.29",
-  "codename": "infant",
-  "description": "This is build using react way of handling dom but with web components",
-  "keywords": [
-    "ReblendJs",
-    "Reative",
-    "UI",
-    "Library"
-  ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/scyberLink/reblendjs.git"
-  },
-  "files": [
-    "dist",
-    "type"
+  "private": true,
+  "workspaces": [
+    "packages/*"
   ],
   "scripts": {
-    "compile": "npx tsc",
-    "prepublish": "npm run compile"
+    "build": "lerna run build",
+    "changelog": "lerna-changelog",
+    "npm": "tasks/npm.sh",
+    "publish": "tasks/publish.sh",
+    "start": "cd packages/reblend-template-test && npm start",
+    "alex": "alex .",
+    "eslint": "eslint .",
+    "prettier": "prettier .",
+    "format": "npm run prettier -- --write"
   },
-  "author": "Emmanuel Elom <scansioquielom@gmail.com>",
-  "license": "MIT",
   "devDependencies": {
-    "@types/lodash": "^4.17.6",
-    "typescript": "^5.5.3"
+    "alex": "^8.2.0",
+    "eslint": "^8.3.0",
+    "husky": "^4.3.8",
+    "lerna": "^4.0.0",
+    "lerna-changelog": "^2.2.0",
+    "lint-staged": "^12.1.2",
+    "prettier": "^2.5.0"
   },
-  "dependencies": {
-    "csstype": "^3.1.3",
-    "lodash": "^4.17.21",
-    "@types/prop-types": "^15.7.12",
-    "prop-types": "^15.8.1"
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,yml,yaml,css,scss,ts,tsx,md}": [
+      "prettier --write"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
