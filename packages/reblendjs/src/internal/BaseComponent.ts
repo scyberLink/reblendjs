@@ -1105,7 +1105,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     }
   }
 
-  protected html(): JSX.Element {
+  protected html(): any {
     return null as any;
   }
 
