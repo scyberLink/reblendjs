@@ -11,7 +11,7 @@
     "noFallthroughCasesInSwitch": true,
     "outDir": "./dist",
     "noImplicitAny": false,
-    "declaration": true,
+    "declaration": true
   },
-  "include": ["src"]
+  "include": ["src", "type"]
 }
