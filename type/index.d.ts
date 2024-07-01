@@ -3064,6 +3064,7 @@ declare namespace Reblend {
     accessKey?: string | undefined;
     autoFocus?: boolean | undefined;
     className?: string | undefined;
+    class?: string | undefined;
     contentEditable?: Booleanish | "inherit" | "plaintext-only" | undefined;
     contextMenu?: string | undefined;
     dir?: string | undefined;
@@ -3074,7 +3075,7 @@ declare namespace Reblend {
     nonce?: string | undefined;
     slot?: string | undefined;
     spellCheck?: Booleanish | undefined;
-    style?: CSSProperties | undefined;
+    style?: CSSProperties | string | undefined;
     tabIndex?: number | undefined;
     title?: string | undefined;
     translate?: "yes" | "no" | undefined;
@@ -3145,57 +3146,85 @@ declare namespace Reblend {
     // Standard HTML Attributes
     accept?: string | undefined;
     acceptCharset?: string | undefined;
+    acceptcharset?: string | undefined;
     action?:
       | string
       | undefined
       | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS];
     allowFullScreen?: boolean | undefined;
+    allowfullscreen?: boolean | undefined;
     allowTransparency?: boolean | undefined;
+    allowtransparency?: boolean | undefined;
     alt?: string | undefined;
     as?: string | undefined;
     async?: boolean | undefined;
     autoComplete?: string | undefined;
+    autocomplete?: string | undefined;
     autoPlay?: boolean | undefined;
+    autoplay?: boolean | undefined;
     capture?: boolean | "user" | "environment" | undefined;
     cellPadding?: number | string | undefined;
+    cellpadding?: number | string | undefined;
     cellSpacing?: number | string | undefined;
+    cellspacing?: number | string | undefined;
     charSet?: string | undefined;
+    charset?: string | undefined;
     challenge?: string | undefined;
     checked?: boolean | undefined;
     cite?: string | undefined;
     classID?: string | undefined;
     cols?: number | undefined;
     colSpan?: number | undefined;
+    colspan?: number | undefined;
     controls?: boolean | undefined;
     coords?: string | undefined;
     crossOrigin?: CrossOrigin;
+    crossorigin?: CrossOrigin;
     data?: string | undefined;
     dateTime?: string | undefined;
+    datetime?: string | undefined;
     default?: boolean | undefined;
     defer?: boolean | undefined;
     disabled?: boolean | undefined;
     download?: any;
     encType?: string | undefined;
+    enctype?: string | undefined;
     form?: string | undefined;
     formAction?:
       | string
       | undefined
       | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS];
+
+    action?:
+      | string
+      | undefined
+      | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS];
+
     formEncType?: string | undefined;
+    enctype?: string | undefined;
     formMethod?: string | undefined;
+    method?: string | undefined;
     formNoValidate?: boolean | undefined;
+    novalidate?: boolean | undefined;
     formTarget?: string | undefined;
+    target?: string | undefined;
     frameBorder?: number | string | undefined;
+    frameborder?: number | string | undefined;
     headers?: string | undefined;
     height?: number | string | undefined;
     high?: number | undefined;
     href?: string | undefined;
     hrefLang?: string | undefined;
+    hreflang?: string | undefined;
     htmlFor?: string | undefined;
+    for?: string | undefined;
     httpEquiv?: string | undefined;
+    httpequiv?: string | undefined;
     integrity?: string | undefined;
     keyParams?: string | undefined;
+    keyparams?: string | undefined;
     keyType?: string | undefined;
+    keytype?: string | undefined;
     kind?: string | undefined;
     label?: string | undefined;
     list?: string | undefined;
@@ -3203,30 +3232,39 @@ declare namespace Reblend {
     low?: number | undefined;
     manifest?: string | undefined;
     marginHeight?: number | undefined;
+    marginheight?: number | undefined;
     marginWidth?: number | undefined;
+    marginwidth?: number | undefined;
     max?: number | string | undefined;
     maxLength?: number | undefined;
+    maxlength?: number | undefined;
     media?: string | undefined;
     mediaGroup?: string | undefined;
+    mediagroup?: string | undefined;
     method?: string | undefined;
     min?: number | string | undefined;
     minLength?: number | undefined;
+    minlength?: number | undefined;
     multiple?: boolean | undefined;
     muted?: boolean | undefined;
     name?: string | undefined;
     noValidate?: boolean | undefined;
+    novalidate?: boolean | undefined;
     open?: boolean | undefined;
     optimum?: number | undefined;
     pattern?: string | undefined;
     placeholder?: string | undefined;
     playsInline?: boolean | undefined;
+    playsinline?: boolean | undefined;
     poster?: string | undefined;
     preload?: string | undefined;
     readOnly?: boolean | undefined;
+    readonly?: boolean | undefined;
     required?: boolean | undefined;
     reversed?: boolean | undefined;
     rows?: number | undefined;
     rowSpan?: number | undefined;
+    rowspan?: number | undefined;
     sandbox?: string | undefined;
     scope?: string | undefined;
     scoped?: boolean | undefined;
@@ -3239,14 +3277,18 @@ declare namespace Reblend {
     span?: number | undefined;
     src?: string | undefined;
     srcDoc?: string | undefined;
+    srcdoc?: string | undefined;
     srcLang?: string | undefined;
+    srclang?: string | undefined;
     srcSet?: string | undefined;
+    srcset?: string | undefined;
     start?: number | undefined;
     step?: number | string | undefined;
     summary?: string | undefined;
     target?: string | undefined;
     type?: string | undefined;
     useMap?: string | undefined;
+    usemap?: string | undefined;
     value?: string | readonly string[] | number | undefined;
     width?: number | string | undefined;
     wmode?: string | undefined;
@@ -5290,10 +5332,16 @@ export namespace JSX {
   type ElementType = Reblend.JSX.ElementType;
   interface Element extends Reblend.JSX.Element {}
   interface ElementClass extends Reblend.JSX.ElementClass {}
-  interface ElementAttributesProperty extends Reblend.JSX.ElementAttributesProperty {}
-  interface ElementChildrenAttribute extends Reblend.JSX.ElementChildrenAttribute {}
-  type LibraryManagedAttributes<C, P> = Reblend.JSX.LibraryManagedAttributes<C, P>;
+  interface ElementAttributesProperty
+    extends Reblend.JSX.ElementAttributesProperty {}
+  interface ElementChildrenAttribute
+    extends Reblend.JSX.ElementChildrenAttribute {}
+  type LibraryManagedAttributes<C, P> = Reblend.JSX.LibraryManagedAttributes<
+    C,
+    P
+  >;
   interface IntrinsicAttributes extends Reblend.JSX.IntrinsicAttributes {}
-  interface IntrinsicClassAttributes<T> extends Reblend.JSX.IntrinsicClassAttributes<T> {}
+  interface IntrinsicClassAttributes<T>
+    extends Reblend.JSX.IntrinsicClassAttributes<T> {}
   interface IntrinsicElements extends Reblend.JSX.IntrinsicElements {}
 }
