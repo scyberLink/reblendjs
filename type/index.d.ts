@@ -35,7 +35,7 @@ type CrossOrigin = "anonymous" | "use-credentials" | "" | undefined;
 declare const UNDEFINED_VOID_ONLY: unique symbol;
 
 /**
- * The function returned from an effect passed to {@link Reblend.useEffect useEffect},
+ * The function returned from an effect passed to {@link ReblendTyping.useEffect useEffect},
  * which can be used to clean up the effect when the component unmounts.
  *
  * @see {@link https://reblend.dev/reference/reblend/useEffect Reblend Docs}
@@ -44,10 +44,10 @@ type Destructor = () => void | { [UNDEFINED_VOID_ONLY]: never };
 type VoidOrUndefinedOnly = void | { [UNDEFINED_VOID_ONLY]: never };
 
 // eslint-disable-next-line @definitelytyped/export-just-namespace
-export = Reblend;
-export as namespace Reblend;
+export = ReblendTyping;
+export as namespace ReblendTyping;
 
-declare namespace Reblend {
+declare namespace ReblendTyping {
   //
   // Reblend Elements
   // ----------------------------------------------------------------------
@@ -1231,17 +1231,17 @@ declare namespace Reblend {
   }
 
   /**
-   * @deprecated - Equivalent to {@link Reblend.FunctionComponent}.
+   * @deprecated - Equivalent to {@link ReblendTyping.FunctionComponent}.
    *
-   * @see {@link Reblend.FunctionComponent}
+   * @see {@link ReblendTyping.FunctionComponent}
    * @alias {@link VoidFunctionComponent}
    */
   type VFC<P = {}> = VoidFunctionComponent<P>;
 
   /**
-   * @deprecated - Equivalent to {@link Reblend.FunctionComponent}.
+   * @deprecated - Equivalent to {@link ReblendTyping.FunctionComponent}.
    *
-   * @see {@link Reblend.FunctionComponent}
+   * @see {@link ReblendTyping.FunctionComponent}
    */
   interface VoidFunctionComponent<P = {}> {
     (
@@ -4735,10 +4735,10 @@ declare global {
     // .propTypes assignability so we might as well drop it entirely here to
     //  reduce the work of the type-checker.
     // TODO: Check impact of making Reblend.ElementType<P = any> = Reblend.JSXElementConstructor<P>
-    type ElementType = string | Reblend.JSXElementConstructor<any>;
-    interface Element extends Reblend.ReblendElement {}
-    interface ElementClass extends Reblend.Component<any> {
-      render(): Reblend.ReblendNode;
+    type ElementType = string | ReblendTyping.JSXElementConstructor<any>;
+    interface Element extends ReblendTyping.ReblendElement {}
+    interface ElementClass extends ReblendTyping.Component<any> {
+      render(): ReblendTyping.ReblendNode;
     }
     interface ElementAttributesProperty {
       props: {};
@@ -4750,558 +4750,558 @@ declare global {
     // We can't recurse forever because `type` can't be self-referential;
     // let's assume it's reasonable to do a single Reblend.lazy() around a single Reblend.memo() / vice-versa
     type LibraryManagedAttributes<C, P> = C extends
-      | Reblend.MemoExoticComponent<infer T>
-      | Reblend.LazyExoticComponent<infer T>
+      | ReblendTyping.MemoExoticComponent<infer T>
+      | ReblendTyping.LazyExoticComponent<infer T>
       ? T extends
-          | Reblend.MemoExoticComponent<infer U>
-          | Reblend.LazyExoticComponent<infer U>
+          | ReblendTyping.MemoExoticComponent<infer U>
+          | ReblendTyping.LazyExoticComponent<infer U>
         ? ReblendManagedAttributes<U, P>
         : ReblendManagedAttributes<T, P>
       : ReblendManagedAttributes<C, P>;
 
-    interface IntrinsicAttributes extends Reblend.Attributes {}
-    interface IntrinsicClassAttributes<T> extends Reblend.ClassAttributes<T> {}
+    interface IntrinsicAttributes extends ReblendTyping.Attributes {}
+    interface IntrinsicClassAttributes<T> extends ReblendTyping.ClassAttributes<T> {}
 
     interface IntrinsicElements {
       // HTML
-      a: Reblend.DetailedHTMLProps<
-        Reblend.AnchorHTMLAttributes<HTMLAnchorElement>,
+      a: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.AnchorHTMLAttributes<HTMLAnchorElement>,
         HTMLAnchorElement
       >;
-      abbr: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      abbr: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      address: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      address: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      area: Reblend.DetailedHTMLProps<
-        Reblend.AreaHTMLAttributes<HTMLAreaElement>,
+      area: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.AreaHTMLAttributes<HTMLAreaElement>,
         HTMLAreaElement
       >;
-      article: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      article: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      aside: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      aside: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      audio: Reblend.DetailedHTMLProps<
-        Reblend.AudioHTMLAttributes<HTMLAudioElement>,
+      audio: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.AudioHTMLAttributes<HTMLAudioElement>,
         HTMLAudioElement
       >;
-      b: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      b: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      base: Reblend.DetailedHTMLProps<
-        Reblend.BaseHTMLAttributes<HTMLBaseElement>,
+      base: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.BaseHTMLAttributes<HTMLBaseElement>,
         HTMLBaseElement
       >;
-      bdi: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      bdi: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      bdo: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      bdo: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      big: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      big: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      blockquote: Reblend.DetailedHTMLProps<
-        Reblend.BlockquoteHTMLAttributes<HTMLQuoteElement>,
+      blockquote: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.BlockquoteHTMLAttributes<HTMLQuoteElement>,
         HTMLQuoteElement
       >;
-      body: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLBodyElement>,
+      body: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLBodyElement>,
         HTMLBodyElement
       >;
-      br: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLBRElement>,
+      br: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLBRElement>,
         HTMLBRElement
       >;
-      button: Reblend.DetailedHTMLProps<
-        Reblend.ButtonHTMLAttributes<HTMLButtonElement>,
+      button: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.ButtonHTMLAttributes<HTMLButtonElement>,
         HTMLButtonElement
       >;
-      canvas: Reblend.DetailedHTMLProps<
-        Reblend.CanvasHTMLAttributes<HTMLCanvasElement>,
+      canvas: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.CanvasHTMLAttributes<HTMLCanvasElement>,
         HTMLCanvasElement
       >;
-      caption: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      caption: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      center: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      center: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      cite: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      cite: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      code: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      code: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      col: Reblend.DetailedHTMLProps<
-        Reblend.ColHTMLAttributes<HTMLTableColElement>,
+      col: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.ColHTMLAttributes<HTMLTableColElement>,
         HTMLTableColElement
       >;
-      colgroup: Reblend.DetailedHTMLProps<
-        Reblend.ColgroupHTMLAttributes<HTMLTableColElement>,
+      colgroup: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.ColgroupHTMLAttributes<HTMLTableColElement>,
         HTMLTableColElement
       >;
-      data: Reblend.DetailedHTMLProps<
-        Reblend.DataHTMLAttributes<HTMLDataElement>,
+      data: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.DataHTMLAttributes<HTMLDataElement>,
         HTMLDataElement
       >;
-      datalist: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLDataListElement>,
+      datalist: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLDataListElement>,
         HTMLDataListElement
       >;
-      dd: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      dd: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      del: Reblend.DetailedHTMLProps<
-        Reblend.DelHTMLAttributes<HTMLModElement>,
+      del: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.DelHTMLAttributes<HTMLModElement>,
         HTMLModElement
       >;
-      details: Reblend.DetailedHTMLProps<
-        Reblend.DetailsHTMLAttributes<HTMLDetailsElement>,
+      details: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.DetailsHTMLAttributes<HTMLDetailsElement>,
         HTMLDetailsElement
       >;
-      dfn: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      dfn: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      dialog: Reblend.DetailedHTMLProps<
-        Reblend.DialogHTMLAttributes<HTMLDialogElement>,
+      dialog: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.DialogHTMLAttributes<HTMLDialogElement>,
         HTMLDialogElement
       >;
-      div: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLDivElement>,
+      div: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLDivElement>,
         HTMLDivElement
       >;
-      dl: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLDListElement>,
+      dl: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLDListElement>,
         HTMLDListElement
       >;
-      dt: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      dt: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      em: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      em: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      embed: Reblend.DetailedHTMLProps<
-        Reblend.EmbedHTMLAttributes<HTMLEmbedElement>,
+      embed: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.EmbedHTMLAttributes<HTMLEmbedElement>,
         HTMLEmbedElement
       >;
-      fieldset: Reblend.DetailedHTMLProps<
-        Reblend.FieldsetHTMLAttributes<HTMLFieldSetElement>,
+      fieldset: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.FieldsetHTMLAttributes<HTMLFieldSetElement>,
         HTMLFieldSetElement
       >;
-      figcaption: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      figcaption: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      figure: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      figure: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      footer: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      footer: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      form: Reblend.DetailedHTMLProps<
-        Reblend.FormHTMLAttributes<HTMLFormElement>,
+      form: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.FormHTMLAttributes<HTMLFormElement>,
         HTMLFormElement
       >;
-      h1: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLHeadingElement>,
+      h1: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLHeadingElement>,
         HTMLHeadingElement
       >;
-      h2: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLHeadingElement>,
+      h2: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLHeadingElement>,
         HTMLHeadingElement
       >;
-      h3: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLHeadingElement>,
+      h3: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLHeadingElement>,
         HTMLHeadingElement
       >;
-      h4: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLHeadingElement>,
+      h4: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLHeadingElement>,
         HTMLHeadingElement
       >;
-      h5: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLHeadingElement>,
+      h5: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLHeadingElement>,
         HTMLHeadingElement
       >;
-      h6: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLHeadingElement>,
+      h6: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLHeadingElement>,
         HTMLHeadingElement
       >;
-      head: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLHeadElement>,
+      head: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLHeadElement>,
         HTMLHeadElement
       >;
-      header: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      header: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      hgroup: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      hgroup: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      hr: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLHRElement>,
+      hr: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLHRElement>,
         HTMLHRElement
       >;
-      html: Reblend.DetailedHTMLProps<
-        Reblend.HtmlHTMLAttributes<HTMLHtmlElement>,
+      html: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HtmlHTMLAttributes<HTMLHtmlElement>,
         HTMLHtmlElement
       >;
-      i: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      i: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      iframe: Reblend.DetailedHTMLProps<
-        Reblend.IframeHTMLAttributes<HTMLIFrameElement>,
+      iframe: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.IframeHTMLAttributes<HTMLIFrameElement>,
         HTMLIFrameElement
       >;
-      img: Reblend.DetailedHTMLProps<
-        Reblend.ImgHTMLAttributes<HTMLImageElement>,
+      img: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.ImgHTMLAttributes<HTMLImageElement>,
         HTMLImageElement
       >;
-      input: Reblend.DetailedHTMLProps<
-        Reblend.InputHTMLAttributes<HTMLInputElement>,
+      input: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.InputHTMLAttributes<HTMLInputElement>,
         HTMLInputElement
       >;
-      ins: Reblend.DetailedHTMLProps<
-        Reblend.InsHTMLAttributes<HTMLModElement>,
+      ins: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.InsHTMLAttributes<HTMLModElement>,
         HTMLModElement
       >;
-      kbd: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      kbd: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      keygen: Reblend.DetailedHTMLProps<
-        Reblend.KeygenHTMLAttributes<HTMLElement>,
+      keygen: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.KeygenHTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      label: Reblend.DetailedHTMLProps<
-        Reblend.LabelHTMLAttributes<HTMLLabelElement>,
+      label: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.LabelHTMLAttributes<HTMLLabelElement>,
         HTMLLabelElement
       >;
-      legend: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLLegendElement>,
+      legend: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLLegendElement>,
         HTMLLegendElement
       >;
-      li: Reblend.DetailedHTMLProps<
-        Reblend.LiHTMLAttributes<HTMLLIElement>,
+      li: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.LiHTMLAttributes<HTMLLIElement>,
         HTMLLIElement
       >;
-      link: Reblend.DetailedHTMLProps<
-        Reblend.LinkHTMLAttributes<HTMLLinkElement>,
+      link: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.LinkHTMLAttributes<HTMLLinkElement>,
         HTMLLinkElement
       >;
-      main: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      main: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      map: Reblend.DetailedHTMLProps<
-        Reblend.MapHTMLAttributes<HTMLMapElement>,
+      map: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.MapHTMLAttributes<HTMLMapElement>,
         HTMLMapElement
       >;
-      mark: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      mark: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      menu: Reblend.DetailedHTMLProps<
-        Reblend.MenuHTMLAttributes<HTMLElement>,
+      menu: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.MenuHTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      menuitem: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      menuitem: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      meta: Reblend.DetailedHTMLProps<
-        Reblend.MetaHTMLAttributes<HTMLMetaElement>,
+      meta: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.MetaHTMLAttributes<HTMLMetaElement>,
         HTMLMetaElement
       >;
-      meter: Reblend.DetailedHTMLProps<
-        Reblend.MeterHTMLAttributes<HTMLMeterElement>,
+      meter: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.MeterHTMLAttributes<HTMLMeterElement>,
         HTMLMeterElement
       >;
-      nav: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      nav: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      noindex: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      noindex: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      noscript: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      noscript: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      object: Reblend.DetailedHTMLProps<
-        Reblend.ObjectHTMLAttributes<HTMLObjectElement>,
+      object: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.ObjectHTMLAttributes<HTMLObjectElement>,
         HTMLObjectElement
       >;
-      ol: Reblend.DetailedHTMLProps<
-        Reblend.OlHTMLAttributes<HTMLOListElement>,
+      ol: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.OlHTMLAttributes<HTMLOListElement>,
         HTMLOListElement
       >;
-      optgroup: Reblend.DetailedHTMLProps<
-        Reblend.OptgroupHTMLAttributes<HTMLOptGroupElement>,
+      optgroup: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.OptgroupHTMLAttributes<HTMLOptGroupElement>,
         HTMLOptGroupElement
       >;
-      option: Reblend.DetailedHTMLProps<
-        Reblend.OptionHTMLAttributes<HTMLOptionElement>,
+      option: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.OptionHTMLAttributes<HTMLOptionElement>,
         HTMLOptionElement
       >;
-      output: Reblend.DetailedHTMLProps<
-        Reblend.OutputHTMLAttributes<HTMLOutputElement>,
+      output: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.OutputHTMLAttributes<HTMLOutputElement>,
         HTMLOutputElement
       >;
-      p: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLParagraphElement>,
+      p: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLParagraphElement>,
         HTMLParagraphElement
       >;
-      param: Reblend.DetailedHTMLProps<
-        Reblend.ParamHTMLAttributes<HTMLParamElement>,
+      param: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.ParamHTMLAttributes<HTMLParamElement>,
         HTMLParamElement
       >;
-      picture: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      picture: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      pre: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLPreElement>,
+      pre: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLPreElement>,
         HTMLPreElement
       >;
-      progress: Reblend.DetailedHTMLProps<
-        Reblend.ProgressHTMLAttributes<HTMLProgressElement>,
+      progress: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.ProgressHTMLAttributes<HTMLProgressElement>,
         HTMLProgressElement
       >;
-      q: Reblend.DetailedHTMLProps<
-        Reblend.QuoteHTMLAttributes<HTMLQuoteElement>,
+      q: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.QuoteHTMLAttributes<HTMLQuoteElement>,
         HTMLQuoteElement
       >;
-      rp: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      rp: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      rt: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      rt: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      ruby: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      ruby: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      s: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      s: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      samp: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      samp: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      search: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      search: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      slot: Reblend.DetailedHTMLProps<
-        Reblend.SlotHTMLAttributes<HTMLSlotElement>,
+      slot: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.SlotHTMLAttributes<HTMLSlotElement>,
         HTMLSlotElement
       >;
-      script: Reblend.DetailedHTMLProps<
-        Reblend.ScriptHTMLAttributes<HTMLScriptElement>,
+      script: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.ScriptHTMLAttributes<HTMLScriptElement>,
         HTMLScriptElement
       >;
-      section: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      section: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      select: Reblend.DetailedHTMLProps<
-        Reblend.SelectHTMLAttributes<HTMLSelectElement>,
+      select: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.SelectHTMLAttributes<HTMLSelectElement>,
         HTMLSelectElement
       >;
-      small: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      small: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      source: Reblend.DetailedHTMLProps<
-        Reblend.SourceHTMLAttributes<HTMLSourceElement>,
+      source: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.SourceHTMLAttributes<HTMLSourceElement>,
         HTMLSourceElement
       >;
-      span: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLSpanElement>,
+      span: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLSpanElement>,
         HTMLSpanElement
       >;
-      strong: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      strong: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      style: Reblend.DetailedHTMLProps<
-        Reblend.StyleHTMLAttributes<HTMLStyleElement>,
+      style: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.StyleHTMLAttributes<HTMLStyleElement>,
         HTMLStyleElement
       >;
-      sub: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      sub: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      summary: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      summary: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      sup: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      sup: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      table: Reblend.DetailedHTMLProps<
-        Reblend.TableHTMLAttributes<HTMLTableElement>,
+      table: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.TableHTMLAttributes<HTMLTableElement>,
         HTMLTableElement
       >;
-      template: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLTemplateElement>,
+      template: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLTemplateElement>,
         HTMLTemplateElement
       >;
-      tbody: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLTableSectionElement>,
+      tbody: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLTableSectionElement>,
         HTMLTableSectionElement
       >;
-      td: Reblend.DetailedHTMLProps<
-        Reblend.TdHTMLAttributes<HTMLTableDataCellElement>,
+      td: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.TdHTMLAttributes<HTMLTableDataCellElement>,
         HTMLTableDataCellElement
       >;
-      textarea: Reblend.DetailedHTMLProps<
-        Reblend.TextareaHTMLAttributes<HTMLTextAreaElement>,
+      textarea: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.TextareaHTMLAttributes<HTMLTextAreaElement>,
         HTMLTextAreaElement
       >;
-      tfoot: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLTableSectionElement>,
+      tfoot: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLTableSectionElement>,
         HTMLTableSectionElement
       >;
-      th: Reblend.DetailedHTMLProps<
-        Reblend.ThHTMLAttributes<HTMLTableHeaderCellElement>,
+      th: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.ThHTMLAttributes<HTMLTableHeaderCellElement>,
         HTMLTableHeaderCellElement
       >;
-      thead: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLTableSectionElement>,
+      thead: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLTableSectionElement>,
         HTMLTableSectionElement
       >;
-      time: Reblend.DetailedHTMLProps<
-        Reblend.TimeHTMLAttributes<HTMLTimeElement>,
+      time: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.TimeHTMLAttributes<HTMLTimeElement>,
         HTMLTimeElement
       >;
-      title: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLTitleElement>,
+      title: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLTitleElement>,
         HTMLTitleElement
       >;
-      tr: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLTableRowElement>,
+      tr: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLTableRowElement>,
         HTMLTableRowElement
       >;
-      track: Reblend.DetailedHTMLProps<
-        Reblend.TrackHTMLAttributes<HTMLTrackElement>,
+      track: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.TrackHTMLAttributes<HTMLTrackElement>,
         HTMLTrackElement
       >;
-      u: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      u: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      ul: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLUListElement>,
+      ul: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLUListElement>,
         HTMLUListElement
       >;
-      var: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      var: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      video: Reblend.DetailedHTMLProps<
-        Reblend.VideoHTMLAttributes<HTMLVideoElement>,
+      video: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.VideoHTMLAttributes<HTMLVideoElement>,
         HTMLVideoElement
       >;
-      wbr: Reblend.DetailedHTMLProps<
-        Reblend.HTMLAttributes<HTMLElement>,
+      wbr: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      webview: Reblend.DetailedHTMLProps<
-        Reblend.WebViewHTMLAttributes<HTMLWebViewElement>,
+      webview: ReblendTyping.DetailedHTMLProps<
+        ReblendTyping.WebViewHTMLAttributes<HTMLWebViewElement>,
         HTMLWebViewElement
       >;
 
       // SVG
-      svg: Reblend.SVGProps<SVGSVGElement>;
+      svg: ReblendTyping.SVGProps<SVGSVGElement>;
 
-      animate: Reblend.SVGProps<SVGElement>; // TODO: It is SVGAnimateElement but is not in TypeScript's lib.dom.d.ts for now.
-      animateMotion: Reblend.SVGProps<SVGElement>;
-      animateTransform: Reblend.SVGProps<SVGElement>; // TODO: It is SVGAnimateTransformElement but is not in TypeScript's lib.dom.d.ts for now.
-      circle: Reblend.SVGProps<SVGCircleElement>;
-      clipPath: Reblend.SVGProps<SVGClipPathElement>;
-      defs: Reblend.SVGProps<SVGDefsElement>;
-      desc: Reblend.SVGProps<SVGDescElement>;
-      ellipse: Reblend.SVGProps<SVGEllipseElement>;
-      feBlend: Reblend.SVGProps<SVGFEBlendElement>;
-      feColorMatrix: Reblend.SVGProps<SVGFEColorMatrixElement>;
-      feComponentTransfer: Reblend.SVGProps<SVGFEComponentTransferElement>;
-      feComposite: Reblend.SVGProps<SVGFECompositeElement>;
-      feConvolveMatrix: Reblend.SVGProps<SVGFEConvolveMatrixElement>;
-      feDiffuseLighting: Reblend.SVGProps<SVGFEDiffuseLightingElement>;
-      feDisplacementMap: Reblend.SVGProps<SVGFEDisplacementMapElement>;
-      feDistantLight: Reblend.SVGProps<SVGFEDistantLightElement>;
-      feDropShadow: Reblend.SVGProps<SVGFEDropShadowElement>;
-      feFlood: Reblend.SVGProps<SVGFEFloodElement>;
-      feFuncA: Reblend.SVGProps<SVGFEFuncAElement>;
-      feFuncB: Reblend.SVGProps<SVGFEFuncBElement>;
-      feFuncG: Reblend.SVGProps<SVGFEFuncGElement>;
-      feFuncR: Reblend.SVGProps<SVGFEFuncRElement>;
-      feGaussianBlur: Reblend.SVGProps<SVGFEGaussianBlurElement>;
-      feImage: Reblend.SVGProps<SVGFEImageElement>;
-      feMerge: Reblend.SVGProps<SVGFEMergeElement>;
-      feMergeNode: Reblend.SVGProps<SVGFEMergeNodeElement>;
-      feMorphology: Reblend.SVGProps<SVGFEMorphologyElement>;
-      feOffset: Reblend.SVGProps<SVGFEOffsetElement>;
-      fePointLight: Reblend.SVGProps<SVGFEPointLightElement>;
-      feSpecularLighting: Reblend.SVGProps<SVGFESpecularLightingElement>;
-      feSpotLight: Reblend.SVGProps<SVGFESpotLightElement>;
-      feTile: Reblend.SVGProps<SVGFETileElement>;
-      feTurbulence: Reblend.SVGProps<SVGFETurbulenceElement>;
-      filter: Reblend.SVGProps<SVGFilterElement>;
-      foreignObject: Reblend.SVGProps<SVGForeignObjectElement>;
-      g: Reblend.SVGProps<SVGGElement>;
-      image: Reblend.SVGProps<SVGImageElement>;
-      line: Reblend.SVGLineElementAttributes<SVGLineElement>;
-      linearGradient: Reblend.SVGProps<SVGLinearGradientElement>;
-      marker: Reblend.SVGProps<SVGMarkerElement>;
-      mask: Reblend.SVGProps<SVGMaskElement>;
-      metadata: Reblend.SVGProps<SVGMetadataElement>;
-      mpath: Reblend.SVGProps<SVGElement>;
-      path: Reblend.SVGProps<SVGPathElement>;
-      pattern: Reblend.SVGProps<SVGPatternElement>;
-      polygon: Reblend.SVGProps<SVGPolygonElement>;
-      polyline: Reblend.SVGProps<SVGPolylineElement>;
-      radialGradient: Reblend.SVGProps<SVGRadialGradientElement>;
-      rect: Reblend.SVGProps<SVGRectElement>;
-      set: Reblend.SVGProps<SVGSetElement>;
-      stop: Reblend.SVGProps<SVGStopElement>;
-      switch: Reblend.SVGProps<SVGSwitchElement>;
-      symbol: Reblend.SVGProps<SVGSymbolElement>;
-      text: Reblend.SVGTextElementAttributes<SVGTextElement>;
-      textPath: Reblend.SVGProps<SVGTextPathElement>;
-      tspan: Reblend.SVGProps<SVGTSpanElement>;
-      use: Reblend.SVGProps<SVGUseElement>;
-      view: Reblend.SVGProps<SVGViewElement>;
+      animate: ReblendTyping.SVGProps<SVGElement>; // TODO: It is SVGAnimateElement but is not in TypeScript's lib.dom.d.ts for now.
+      animateMotion: ReblendTyping.SVGProps<SVGElement>;
+      animateTransform: ReblendTyping.SVGProps<SVGElement>; // TODO: It is SVGAnimateTransformElement but is not in TypeScript's lib.dom.d.ts for now.
+      circle: ReblendTyping.SVGProps<SVGCircleElement>;
+      clipPath: ReblendTyping.SVGProps<SVGClipPathElement>;
+      defs: ReblendTyping.SVGProps<SVGDefsElement>;
+      desc: ReblendTyping.SVGProps<SVGDescElement>;
+      ellipse: ReblendTyping.SVGProps<SVGEllipseElement>;
+      feBlend: ReblendTyping.SVGProps<SVGFEBlendElement>;
+      feColorMatrix: ReblendTyping.SVGProps<SVGFEColorMatrixElement>;
+      feComponentTransfer: ReblendTyping.SVGProps<SVGFEComponentTransferElement>;
+      feComposite: ReblendTyping.SVGProps<SVGFECompositeElement>;
+      feConvolveMatrix: ReblendTyping.SVGProps<SVGFEConvolveMatrixElement>;
+      feDiffuseLighting: ReblendTyping.SVGProps<SVGFEDiffuseLightingElement>;
+      feDisplacementMap: ReblendTyping.SVGProps<SVGFEDisplacementMapElement>;
+      feDistantLight: ReblendTyping.SVGProps<SVGFEDistantLightElement>;
+      feDropShadow: ReblendTyping.SVGProps<SVGFEDropShadowElement>;
+      feFlood: ReblendTyping.SVGProps<SVGFEFloodElement>;
+      feFuncA: ReblendTyping.SVGProps<SVGFEFuncAElement>;
+      feFuncB: ReblendTyping.SVGProps<SVGFEFuncBElement>;
+      feFuncG: ReblendTyping.SVGProps<SVGFEFuncGElement>;
+      feFuncR: ReblendTyping.SVGProps<SVGFEFuncRElement>;
+      feGaussianBlur: ReblendTyping.SVGProps<SVGFEGaussianBlurElement>;
+      feImage: ReblendTyping.SVGProps<SVGFEImageElement>;
+      feMerge: ReblendTyping.SVGProps<SVGFEMergeElement>;
+      feMergeNode: ReblendTyping.SVGProps<SVGFEMergeNodeElement>;
+      feMorphology: ReblendTyping.SVGProps<SVGFEMorphologyElement>;
+      feOffset: ReblendTyping.SVGProps<SVGFEOffsetElement>;
+      fePointLight: ReblendTyping.SVGProps<SVGFEPointLightElement>;
+      feSpecularLighting: ReblendTyping.SVGProps<SVGFESpecularLightingElement>;
+      feSpotLight: ReblendTyping.SVGProps<SVGFESpotLightElement>;
+      feTile: ReblendTyping.SVGProps<SVGFETileElement>;
+      feTurbulence: ReblendTyping.SVGProps<SVGFETurbulenceElement>;
+      filter: ReblendTyping.SVGProps<SVGFilterElement>;
+      foreignObject: ReblendTyping.SVGProps<SVGForeignObjectElement>;
+      g: ReblendTyping.SVGProps<SVGGElement>;
+      image: ReblendTyping.SVGProps<SVGImageElement>;
+      line: ReblendTyping.SVGLineElementAttributes<SVGLineElement>;
+      linearGradient: ReblendTyping.SVGProps<SVGLinearGradientElement>;
+      marker: ReblendTyping.SVGProps<SVGMarkerElement>;
+      mask: ReblendTyping.SVGProps<SVGMaskElement>;
+      metadata: ReblendTyping.SVGProps<SVGMetadataElement>;
+      mpath: ReblendTyping.SVGProps<SVGElement>;
+      path: ReblendTyping.SVGProps<SVGPathElement>;
+      pattern: ReblendTyping.SVGProps<SVGPatternElement>;
+      polygon: ReblendTyping.SVGProps<SVGPolygonElement>;
+      polyline: ReblendTyping.SVGProps<SVGPolylineElement>;
+      radialGradient: ReblendTyping.SVGProps<SVGRadialGradientElement>;
+      rect: ReblendTyping.SVGProps<SVGRectElement>;
+      set: ReblendTyping.SVGProps<SVGSetElement>;
+      stop: ReblendTyping.SVGProps<SVGStopElement>;
+      switch: ReblendTyping.SVGProps<SVGSwitchElement>;
+      symbol: ReblendTyping.SVGProps<SVGSymbolElement>;
+      text: ReblendTyping.SVGTextElementAttributes<SVGTextElement>;
+      textPath: ReblendTyping.SVGProps<SVGTextPathElement>;
+      tspan: ReblendTyping.SVGProps<SVGTSpanElement>;
+      use: ReblendTyping.SVGProps<SVGUseElement>;
+      view: ReblendTyping.SVGProps<SVGViewElement>;
     }
   }
 }
@@ -5327,21 +5327,22 @@ interface GlobalJSXIntrinsicClassAttributes<T>
   extends JSX.IntrinsicClassAttributes<T> {}
 
 interface GlobalJSXIntrinsicElements extends JSX.IntrinsicElements {}
-
+/* 
 export namespace JSX {
-  type ElementType = Reblend.JSX.ElementType;
-  interface Element extends Reblend.JSX.Element {}
-  interface ElementClass extends Reblend.JSX.ElementClass {}
+  type ElementType = ReblendTyping.JSX.ElementType;
+  interface Element extends ReblendTyping.JSX.Element {}
+  interface ElementClass extends ReblendTyping.JSX.ElementClass {}
   interface ElementAttributesProperty
-    extends Reblend.JSX.ElementAttributesProperty {}
+    extends ReblendTyping.JSX.ElementAttributesProperty {}
   interface ElementChildrenAttribute
-    extends Reblend.JSX.ElementChildrenAttribute {}
-  type LibraryManagedAttributes<C, P> = Reblend.JSX.LibraryManagedAttributes<
+    extends ReblendTyping.JSX.ElementChildrenAttribute {}
+  type LibraryManagedAttributes<C, P> = ReblendTyping.JSX.LibraryManagedAttributes<
     C,
     P
   >;
-  interface IntrinsicAttributes extends Reblend.JSX.IntrinsicAttributes {}
+  interface IntrinsicAttributes extends ReblendTyping.JSX.IntrinsicAttributes {}
   interface IntrinsicClassAttributes<T>
-    extends Reblend.JSX.IntrinsicClassAttributes<T> {}
-  interface IntrinsicElements extends Reblend.JSX.IntrinsicElements {}
+    extends ReblendTyping.JSX.IntrinsicClassAttributes<T> {}
+  interface IntrinsicElements extends ReblendTyping.JSX.IntrinsicElements {}
 }
+ */
