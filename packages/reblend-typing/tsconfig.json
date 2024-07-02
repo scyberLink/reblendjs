@@ -11,7 +11,8 @@
     "noFallthroughCasesInSwitch": true,
     "outDir": "./dist",
     "noImplicitAny": false,
-    "declaration": true
+    "declaration": true,
+    "moduleResolution": "Node"
   },
-  "include": ["index.d.ts", "global.d.ts"]
+  "include": ["src"]
 }

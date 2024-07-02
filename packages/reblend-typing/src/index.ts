@@ -6,7 +6,6 @@
 
 import * as CSS from 'csstype';
 import * as PropTypes from 'prop-types';
-import BaseComponent from '../src/internal/BaseComponent';
 
 type NativeAnimationEvent = AnimationEvent;
 type NativeClipboardEvent = ClipboardEvent;
@@ -43,11 +42,7 @@ declare const UNDEFINED_VOID_ONLY: unique symbol;
 type Destructor = () => void | { [UNDEFINED_VOID_ONLY]: never };
 type VoidOrUndefinedOnly = void | { [UNDEFINED_VOID_ONLY]: never };
 
-// eslint-disable-next-line @definitelytyped/export-just-namespace
-export = ReblendTyping;
-export as namespace ReblendTyping;
-
-declare namespace ReblendTyping {
+export declare namespace ReblendTyping {
   //
   // Reblend Elements
   // ----------------------------------------------------------------------
@@ -325,7 +320,7 @@ declare namespace ReblendTyping {
    * const element: ReblendElement = <div />;
    * ```
    */
-  type ReblendElement = BaseComponent;
+  type ReblendElement = HTMLElement;
 
   /**
    * @deprecated
@@ -3195,19 +3190,10 @@ declare namespace ReblendTyping {
       | undefined
       | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS];
 
-    action?:
-      | string
-      | undefined
-      | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS];
-
     formEncType?: string | undefined;
-    enctype?: string | undefined;
     formMethod?: string | undefined;
-    method?: string | undefined;
     formNoValidate?: boolean | undefined;
-    novalidate?: boolean | undefined;
     formTarget?: string | undefined;
-    target?: string | undefined;
     frameBorder?: number | string | undefined;
     frameborder?: number | string | undefined;
     headers?: string | undefined;
@@ -4642,27 +4628,6 @@ declare namespace ReblendTyping {
     componentStack?: string | null;
     digest?: string | null;
   }
-
-  // Keep in sync with JSX namespace in ./jsx-runtime.d.ts and ./jsx-dev-runtime.d.ts
-  namespace JSX {
-    type ElementType = GlobalJSXElementType;
-    interface Element extends GlobalJSXElement {}
-    interface ElementClass extends GlobalJSXElementClass {}
-    interface ElementAttributesProperty
-      extends GlobalJSXElementAttributesProperty {}
-    interface ElementChildrenAttribute
-      extends GlobalJSXElementChildrenAttribute {}
-
-    type LibraryManagedAttributes<C, P> = GlobalJSXLibraryManagedAttributes<
-      C,
-      P
-    >;
-
-    interface IntrinsicAttributes extends GlobalJSXIntrinsicAttributes {}
-    interface IntrinsicClassAttributes<T>
-      extends GlobalJSXIntrinsicClassAttributes<T> {}
-    interface IntrinsicElements extends GlobalJSXIntrinsicElements {}
-  }
 }
 
 // naked 'any' type in a conditional type will short circuit and union both the then/else branches
@@ -4738,7 +4703,7 @@ declare global {
     type ElementType = string | ReblendTyping.JSXElementConstructor<any>;
     interface Element extends ReblendTyping.ReblendElement {}
     interface ElementClass extends ReblendTyping.Component<any> {
-      render(): ReblendTyping.ReblendNode;
+      html(): ReblendTyping.ReblendNode;
     }
     interface ElementAttributesProperty {
       props: {};
@@ -5305,42 +5270,4 @@ declare global {
       view: ReblendTyping.SVGProps<SVGViewElement>;
     }
   }
-}
-
-// Reblend.JSX needs to point to global.JSX to keep global module augmentations intact.
-// But we can't access global.JSX so we need to create these aliases instead.
-// Once the global JSX namespace will be removed we replace Reblend.JSX with the contents of global.JSX
-type GlobalJSXElementType = JSX.ElementType;
-interface GlobalJSXElement extends JSX.Element {}
-interface GlobalJSXElementClass extends JSX.ElementClass {}
-interface GlobalJSXElementAttributesProperty
-  extends JSX.ElementAttributesProperty {}
-interface GlobalJSXElementChildrenAttribute
-  extends JSX.ElementChildrenAttribute {}
-
-type GlobalJSXLibraryManagedAttributes<C, P> = JSX.LibraryManagedAttributes<
-  C,
-  P
->;
-
-interface GlobalJSXIntrinsicAttributes extends JSX.IntrinsicAttributes {}
-interface GlobalJSXIntrinsicClassAttributes<T>
-  extends JSX.IntrinsicClassAttributes<T> {}
-
-interface GlobalJSXIntrinsicElements extends JSX.IntrinsicElements {}
-
-export namespace JSX {
-  type ElementType = ReblendTyping.JSX.ElementType;
-  interface Element extends ReblendTyping.JSX.Element {}
-  interface ElementClass extends ReblendTyping.JSX.ElementClass {}
-  interface ElementAttributesProperty
-    extends ReblendTyping.JSX.ElementAttributesProperty {}
-  interface ElementChildrenAttribute
-    extends ReblendTyping.JSX.ElementChildrenAttribute {}
-  type LibraryManagedAttributes<C, P> =
-    ReblendTyping.JSX.LibraryManagedAttributes<C, P>;
-  interface IntrinsicAttributes extends ReblendTyping.JSX.IntrinsicAttributes {}
-  interface IntrinsicClassAttributes<T>
-    extends ReblendTyping.JSX.IntrinsicClassAttributes<T> {}
-  interface IntrinsicElements extends ReblendTyping.JSX.IntrinsicElements {}
 }
