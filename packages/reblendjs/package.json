@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "prepublish": "npm run compile"
+    "prepublish": "npm run build"
   },
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
@@ -37,5 +37,5 @@
     "prop-types": "^15.8.1",
     "reblend-typing": "^3.0.5"
   },
-  "gitHead": "b9ea64ab6dc0ef295f8bd2fc73c76826f3a2441a"
+  "gitHead": "925861601548bac5600cdfb042a408d283d8cc17"
 }
