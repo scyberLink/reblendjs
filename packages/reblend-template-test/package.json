@@ -19,12 +19,6 @@
     "test": "reblend-scripts test",
     "eject": "reblend-scripts eject"
   },
-  "eslintConfig": {
-    "extends": [
-      "reblend-app",
-      "reblend-app/jest"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",

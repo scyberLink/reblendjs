@@ -1,3 +1,4 @@
+import { ReblendTyping } from 'reblend-typing';
 import {
   capitalize,
   cssString,
@@ -1249,6 +1250,18 @@ class BaseComponent extends HTMLElement implements IDelegate {
     )(lodash).bind(this);
     this.stateKeys.push(label);
     return wrapperFunction;
+  }
+
+  static mountOn(
+    elementId: string,
+    app: typeof Reblend | ReblendTyping.FunctionComponent,
+    props?: IAny
+  ) {
+    const root = document.getElementById(elementId);
+    if (!root) {
+      throw new Error('Invalid root id');
+    }
+    root.append(this.construct(app as any, props || {}, []) as Reblend);
   }
 }
 

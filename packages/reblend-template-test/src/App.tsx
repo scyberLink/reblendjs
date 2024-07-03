@@ -1,5 +1,6 @@
 import './App.css';
 import Reblend from 'reblendjs';
+import logo from './logo.svg';
 
 function App() {
   return (
@@ -7,7 +8,7 @@ function App() {
       <header className="App-header">
         <img
           class={'App'}
-          src={'/'}
+          src={logo}
           className="App-logo"
           alt="logo"
           style={{ width: '50px' }}
