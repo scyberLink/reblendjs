@@ -17,8 +17,7 @@
     "directory": "packages/reblendjs"
   },
   "files": [
-    "dist",
-    "type"
+    "dist"
   ],
   "scripts": {
     "build": "tsc",

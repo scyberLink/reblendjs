@@ -1,11 +1,12 @@
 import { registerElement } from '../common/utils';
 import BaseComponent from './BaseComponent';
-import { ReblendTyping } from 'reblend-typing';
+import {
+  ReblendTyping,
+  ReblendManagedAttributes,
+  HTMLWebViewElement,
+} from 'reblend-typing';
 
 declare global {
-  /**
-   * @deprecated Use `Reblend.JSX` instead of the global `JSX` namespace.
-   */
   namespace JSX {
     type ElementType = string | ReblendTyping.JSXElementConstructor<any>;
     interface Element extends ReblendTyping.ReblendElement {}
@@ -24,12 +25,9 @@ declare global {
       ? T extends
           | ReblendTyping.MemoExoticComponent<infer U>
           | ReblendTyping.LazyExoticComponent<infer U>
-        ? //@ts-ignore
-          ReblendManagedAttributes<U, P>
-        : //@ts-ignore
-          ReblendManagedAttributes<T, P>
-      : //@ts-ignore
-        ReblendManagedAttributes<C, P>;
+        ? ReblendManagedAttributes<U, P>
+        : ReblendManagedAttributes<T, P>
+      : ReblendManagedAttributes<C, P>;
     interface IntrinsicAttributes extends ReblendTyping.Attributes {}
     interface IntrinsicClassAttributes<T>
       extends ReblendTyping.ClassAttributes<T> {}
@@ -507,9 +505,7 @@ declare global {
         HTMLElement
       >;
       webview: ReblendTyping.DetailedHTMLProps<
-        //@ts-ignore
         ReblendTyping.WebViewHTMLAttributes<HTMLWebViewElement>,
-        //@ts-ignore
         HTMLWebViewElement
       >;
       svg: ReblendTyping.SVGProps<SVGSVGElement>;

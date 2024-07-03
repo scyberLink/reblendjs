@@ -1073,7 +1073,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       if (Array.isArray(viewFragment)) {
         this.appendChildren(...viewFragment);
       } else {
-        this.appendChildren(viewFragment);
+        this.appendChildren(viewFragment as any);
       }
     }
   }

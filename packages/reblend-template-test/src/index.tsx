@@ -1,3 +1,4 @@
+import Reblend from 'reblendjs';
 import './index.css';
 import App from './App';
 
