@@ -1,91 +1,130 @@
-import { cloneDeep, isEqual } from 'lodash';
+import { isEqual } from 'lodash';
+import BaseComponent from './BaseComponent';
 
 export type Ref<T> = { current?: T | HTMLElement };
 export type StateFunction<T> = (value: StateFunctionValue<T>) => void;
-export type StateFunctionValue<T> = T | ((previous: T) => T);
-export type StateEffectiveFunction = () => (() => {}) | void | any;
+export type StateFunctionValue<T> = ((previous: T) => T) | T;
+export type StateEffectiveMemoFunction<T> = () => T;
+export type StateEffectiveFunction = () => (() => any) | void;
 export type StateReducerFunction<T> = (previous: T, current: T) => any;
+type ContextSubscriber = {
+  component: BaseComponent;
+  stateKey: string;
+};
+
+const contextValue = Symbol.for('Reblend.contextValue');
+const contextUpdater = Symbol.for('Reblend.contextUpdater');
+const contextSubscrbers = Symbol.for('Reblend.contextSubscrbers');
+const contextSubscrbe = Symbol.for('Reblend.contextSubscrbe');
+type Context<T> = {
+  [contextSubscrbers]: ContextSubscriber[];
+  [contextValue]: T;
+  [contextUpdater](update: StateFunctionValue<T>): void;
+  [contextSubscrbe](component: BaseComponent, stateKey: string): void;
+};
+
+const incorrectUsage = new Error(
+  'This should not never run unless your function is not Reblend transformed'
+);
+
+const invalidContext = new Error('Invalid context');
 
 export function useState<T>(initial: T): [T, StateFunction<T>] {
-  const variableSetter: StateFunction<T> = (value: StateFunctionValue<T>) => {
-    const labelPlaceholder = '[LABEL]';
-    if (typeof value === 'function') {
-      // @ts-ignore
-      value = (value as Function)(this[labelPlaceholder]);
-    }
-    // @ts-ignore Dynamic imported
-    if (!lodash.isEqual(this[labelPlaceholder], value)) {
-      // @ts-ignore
-      this[labelPlaceholder] = value as T;
-      // @ts-ignore
-      this?.effectsFn.forEach(async effectFn => await effectFn());
-      // @ts-ignore
-      this?.onStateChange();
-    }
-  };
-
-  return [initial, variableSetter];
+  throw incorrectUsage;
 }
 
-export function useEffect(fn: StateEffectiveFunction, dependencies: any[]) {
-  const cacher = () => cloneDeep(dependencies);
-  let caches = cacher();
-  const internalFn = () => {
-    if (!isEqual(dependencies, caches)) {
-      caches = cacher();
-      fn();
-    }
-  };
-  const closeListener = fn();
-  // @ts-ignore
-  this?.effectsFn.push(internalFn);
-  // @ts-ignore
-  this?.disconnectEffects.push(closeListener || (() => {}));
+export function useEffect(
+  fn: StateEffectiveFunction,
+  dependencies: any[]
+): void {
+  throw incorrectUsage;
 }
 
-export function useReducer<T>(reducer: StateReducerFunction<T>, initial: T) {
-  const [state, setState] = useState<T>(initial);
-
-  const fn: StateFunction<T> = (newValue: StateFunctionValue<T>) => {
-    let reducedVal: StateFunctionValue<T>;
-    if (typeof newValue === 'function') {
-      reducedVal = reducer(state, (newValue as Function)(state));
-    } else {
-      reducedVal = reducer(state, newValue as T);
-    }
-    setState(reducedVal);
-  };
-
-  return [state, fn];
+export function useReducer<T>(
+  reducer: StateReducerFunction<T>,
+  initial: T
+): [T, StateFunction<T>] {
+  throw incorrectUsage;
 }
 
-export function useMemo<T>(fn: StateEffectiveFunction, dependencies: any[]) {
-  const [state, setState] = useState<T>(fn());
-  const cacher = () => cloneDeep(dependencies);
-  let caches = cacher();
-  const internalFn = () => {
-    for (let i = 0; i < dependencies.length; i++) {
-      const dependency = dependencies[i];
-      const cache = caches[i];
-
-      if (dependency !== cache) {
-        caches = cacher();
-        setState(fn());
-        break;
-      }
-    }
-  };
-  // @ts-ignore
-  this?.effectsFn.push(internalFn);
-  return state;
+export function useMemo<T>(
+  fn: StateEffectiveMemoFunction<T>,
+  dependencies?: any[]
+): T {
+  throw incorrectUsage;
 }
 
-export function useRef<T>(initial?: T) {
-  const ref: Ref<T> = { current: initial };
-  return ref;
+export function useRef<T>(initial?: T): Ref<T> {
+  throw incorrectUsage;
 }
 
-export function useCallback(fn: Function) {
+export function useCallback(fn: Function): Function {
+  throw incorrectUsage;
+}
+
+export function useContext<T>(context: Context<T>): T {
+  if (
+    !(
+      contextSubscrbers in context ||
+      contextValue in context ||
+      contextSubscrbe in context
+    )
+  ) {
+    throw invalidContext;
+  }
+  const stateKey = arguments[arguments.length - 1];
+
+  if (typeof stateKey !== 'string') {
+    throw new Error(
+      'Invalid state key. Make sure you are calling useContext correctly'
+    );
+  }
   //@ts-ignore
-  return fn.bind(this);
+  context[contextSubscrbe](this, stateKey);
+  return context[contextValue];
+}
+
+export function useContextDispatch<T>(context: Context<T>): StateFunction<T> {
+  if (
+    !(
+      contextValue in context ||
+      contextSubscrbers in context ||
+      contextUpdater in context
+    )
+  ) {
+    throw invalidContext;
+  }
+
+  return context[contextUpdater];
+}
+
+export function createContext<T>(initial: T): Context<T> {
+  const context: Context<T> = {
+    [contextSubscrbers]: [],
+    [contextValue]: initial,
+    [contextUpdater](update: StateFunctionValue<T>) {
+      const newValue =
+        typeof update === 'function'
+          ? (update as Function)(this[contextValue])
+          : update;
+      if (!isEqual(newValue, this[contextValue])) {
+        this[contextValue] = newValue;
+        this[contextSubscrbers].forEach(subscriber => {
+          subscriber.component[subscriber.stateKey] = this[contextValue];
+          //@ts-ignore
+          subscriber.component.onStateChange();
+        });
+      }
+    },
+    [contextSubscrbe](component: BaseComponent, stateKey: string) {
+      if (!component) {
+        throw new Error('Invalid component');
+      }
+      if (!stateKey) {
+        throw new Error('Invalid state key');
+      }
+      this[contextSubscrbers].push({ component, stateKey });
+    },
+  };
+  return context;
 }

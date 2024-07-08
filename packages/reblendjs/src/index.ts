@@ -5,7 +5,6 @@ import IPair from './interface/IPair';
 import IStyle from './interface/IStyle';
 import md5 from './common/md5';
 import * as utils from './common/utils';
-import { StateFunction, SingleState } from './internal/BaseComponent';
 import SharedConfig from './common/SharedConfig';
 import {
   useState,
@@ -14,6 +13,9 @@ import {
   useMemo,
   useRef,
   useCallback,
+  createContext,
+  useContext,
+  useContextDispatch,
 } from './internal/hooks';
 
 export default Reblend;
@@ -25,8 +27,6 @@ export {
   IStyle,
   md5,
   utils,
-  StateFunction,
-  SingleState,
   SharedConfig,
   useState,
   useEffect,
@@ -34,4 +34,7 @@ export {
   useMemo,
   useRef,
   useCallback,
+  useContext,
+  createContext,
+  useContextDispatch,
 };

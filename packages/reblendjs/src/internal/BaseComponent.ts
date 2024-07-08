@@ -1,4 +1,8 @@
-import { ReblendTyping } from 'reblend-typing';
+import {
+  ReblendTyping,
+  attributeName,
+  shouldUseSetAttribute,
+} from 'reblend-typing';
 import {
   capitalize,
   cssString,
@@ -15,16 +19,15 @@ import IPair from '../interface/IPair';
 import IDelegate from './IDelegate';
 import Reblend from './Reblend';
 import ShadowMode from './ShadowMode';
-import { StateEffectiveFunction } from './hooks';
+import {
+  Ref,
+  StateEffectiveFunction,
+  StateEffectiveMemoFunction,
+  StateFunction,
+  StateFunctionValue,
+  StateReducerFunction,
+} from './hooks';
 import * as lodash from 'lodash';
-
-export type StateFunction<T> = T | ((previous: T) => T);
-
-export type SingleState<T> = {
-  value: T;
-  get(): T;
-  set(val: StateFunction<T>): void;
-};
 
 export type ChildWithProps = {
   child: BaseComponent;
@@ -74,6 +77,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
   connectedCallback() {
     this.attached = true;
+    this.componentDidMount();
+    this.mountEffects();
   }
 
   constructor() {
@@ -437,9 +442,6 @@ class BaseComponent extends HTMLElement implements IDelegate {
       this.wrapper || this.shadowed
         ? this.shadowWrapper.appendChild(node)
         : super.appendChild(node);
-    appended &&
-      'componentDidMount' in appended &&
-      (appended as any).componentDidMount();
     return appended;
   }
 
@@ -842,10 +844,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
       }
 
       for (let propName in props) {
+        const _attributeName = attributeName(propName);
+        const propValue = props[propName];
         if (propName.startsWith('on')) {
-          to[propName] = this.fn(props[propName]);
+          to[_attributeName] = this.fn(propValue);
         } else {
-          to[propName] = props[propName];
+          const _shouldUseSetAttribute = shouldUseSetAttribute(propName);
+          _shouldUseSetAttribute
+            ? to.setAttribute(_attributeName, propValue)
+            : (to[_attributeName] = propValue);
         }
       }
       init && to.init();
@@ -857,7 +864,13 @@ class BaseComponent extends HTMLElement implements IDelegate {
       to.props = { ...to.props, ...props };
 
       for (let propName in props) {
-        to[propName] = props[propName];
+        const _attributeName = attributeName(propName);
+        const propValue = props[propName];
+        const _shouldUseSetAttribute = shouldUseSetAttribute(propName);
+
+        _shouldUseSetAttribute
+          ? to.removeAttribute(_attributeName)
+          : (to[_attributeName] = propValue);
       }
     }
   }
@@ -866,7 +879,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return this._state || {};
   }
 
-  set state(value: StateFunction<IAny>) {
+  set state(value: StateFunctionValue<IAny>) {
     this._state = {
       ...this._state,
       ...(typeof value == 'function' ? value(this._state) : value),
@@ -874,7 +887,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.onStateChange();
   }
 
-  setState(value: StateFunction<IAny>) {
+  setState(value: StateFunctionValue<IAny>) {
     this.state = value;
   }
 
@@ -1080,6 +1093,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   protected onStateChange() {
+    this.effectsFn.forEach(async effectFn => await effectFn());
+
     let viewFragments: VNode[] | VNode = this.html() as any;
     let patches: Patch[] = [];
     if (viewFragments) {
@@ -1212,8 +1227,18 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return containerArr;
   }
 
+  private onMountEffects: StateEffectiveFunction[] = [];
+
+  private mountEffects() {
+    this.onMountEffects.forEach(fn => {
+      const disconnectEffect = fn();
+      disconnectEffect && this.disconnectEffects.push(disconnectEffect);
+    });
+  }
+
   disconnectedCallback() {
     this.cleanUp();
+    this.componentWillUnmount();
     this.disconnectEffects.forEach(fn => fn());
     {
       this.shadow = null as any;
@@ -1227,30 +1252,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   protected cleanUp() {}
+  protected componentWillUnmount() {}
 
-  protected effectsFn: StateEffectiveFunction[] = [];
-  protected disconnectEffects: StateEffectiveFunction[] = [];
-
-  protected apply(func: Function, label: string) {
-    if (!label || typeof label !== 'string') {
-      throw new Error('Invalid label');
-    }
-
-    const functionString = func.toString();
-    const modifiedString = functionString.replace(/\[LABEL\]/g, label);
-
-    const wrapperFunction = new Function(
-      'lodash',
-      `
-    return function ${func.name}() {
-      const func = ${modifiedString};
-      return func.apply(this, arguments);
-    }
-  `
-    )(lodash).bind(this);
-    this.stateKeys.push(label);
-    return wrapperFunction;
-  }
+  private effectsFn: StateEffectiveFunction[] = [];
+  private disconnectEffects: StateEffectiveFunction[] = [];
 
   static mountOn(
     elementId: string,
@@ -1262,6 +1267,90 @@ class BaseComponent extends HTMLElement implements IDelegate {
       throw new Error('Invalid root id');
     }
     root.append(this.construct(app as any, props || {}, []) as Reblend);
+  }
+
+  useState<T>(initial: T): [T, StateFunction<T>] {
+    const stateID: string = arguments[arguments.length - 1];
+    const variableSetter: StateFunction<T> = (value: StateFunctionValue<T>) => {
+      if (typeof value === 'function') {
+        value = (value as Function)(this[stateID]);
+      }
+      if (!lodash.isEqual(this[stateID], value)) {
+        this[stateID] = value as T;
+        this.onStateChange();
+      }
+    };
+
+    return [initial, variableSetter];
+  }
+
+  useEffect(fn: StateEffectiveFunction, dependencies: any[]) {
+    fn = fn.bind(this);
+    const dep = new Function(`return (${dependencies})`).bind(this);
+    const cacher = () => lodash.cloneDeep(dep());
+    let caches = cacher();
+    const internalFn = () => {
+      if (!dependencies || !lodash.isEqual(dep(), caches)) {
+        caches = cacher();
+        fn();
+      }
+    };
+    this.effectsFn.push(internalFn);
+    this.onMountEffects.push(fn);
+  }
+
+  useReducer<T>(
+    reducer: StateReducerFunction<T>,
+    initial: T
+  ): [T, StateFunction<T>] {
+    reducer = reducer.bind(this);
+    const stateID: string = arguments[arguments.length - 1];
+    //@ts-ignore
+    let [state, setState] = this.useState<T>(initial, stateID);
+    this[stateID] = state;
+    const fn: StateFunction<T> = (newValue: StateFunctionValue<T>) => {
+      let reducedVal: StateFunctionValue<T>;
+      if (typeof newValue === 'function') {
+        reducedVal = reducer(
+          this[stateID],
+          (newValue as Function)(this[stateID])
+        );
+      } else {
+        reducedVal = reducer(this[stateID], newValue as T);
+      }
+      setState(reducedVal);
+    };
+
+    return [this[stateID], fn];
+  }
+
+  useMemo<T>(fn: StateEffectiveMemoFunction<T>, dependencies?: any[]) {
+    fn = fn.bind(this);
+    const stateID: string = arguments[arguments.length - 1];
+    //@ts-ignore
+    let [state, setState] = this.useState<T>(fn(), stateID);
+    this[stateID] = state;
+    const dep = new Function(`return (${dependencies})`).bind(this);
+    const cacher = () => lodash.cloneDeep(dependencies);
+    let caches = cacher();
+    const internalFn = () => {
+      const depData = dep();
+      if (!dependencies || !lodash.isEqual(depData, caches)) {
+        caches = cacher();
+        setState(fn());
+      }
+    };
+    this?.effectsFn.push(internalFn);
+    return this[stateID];
+  }
+
+  useRef<T>(initial?: T) {
+    const ref: Ref<T> = { current: initial };
+    return ref;
+  }
+
+  useCallback(fn: Function) {
+    return fn.bind(this);
   }
 }
 
