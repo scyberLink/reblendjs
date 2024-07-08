@@ -4836,3 +4836,9 @@ export type ReblendManagedAttributes<C, P> = C extends {
   : C extends { defaultProps: infer D }
   ? Defaultize<P, D>
   : P;
+
+export {
+  allAttribute,
+  shouldUseSetAttribute,
+  attributeName,
+} from './standardAttribute';
