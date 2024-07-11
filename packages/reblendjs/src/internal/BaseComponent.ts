@@ -28,6 +28,7 @@ import {
   StateReducerFunction,
 } from './hooks';
 import * as lodash from 'lodash';
+import StyleUtil from './StyleUtil';
 
 export type ChildWithProps = {
   child: BaseComponent;
@@ -58,7 +59,6 @@ class BaseComponent extends HTMLElement implements IDelegate {
   static ELEMENT_NAME = 'BaseComponent';
   protected shadow!: ShadowRoot;
   protected shadowWrapper!: HTMLElement;
-  protected shadowStyle!: HTMLStyleElement;
   private _scale: number = 1;
   private _rotate: number = 0;
   private initialDisplay: string = 'initial';
@@ -74,10 +74,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
   protected container!: BaseComponent;
   stateKeys: string[] = [];
   protected attached!: boolean;
+  styleUtil = StyleUtil;
 
   connectedCallback() {
-    this.attached = true;
-    this.componentDidMount();
+    /*     this.attached = true;
+     */ this.componentDidMount();
     this.mountEffects();
   }
 
@@ -89,15 +90,6 @@ class BaseComponent extends HTMLElement implements IDelegate {
   private setDataID() {
     this.dataId = `${rand(1111111, 9999999)}`;
     this.dataIdQuerySelector = `[data-id="${this.dataId}"]`;
-    this.shadowStyle = document.createElement('style');
-    this.shadowStyle.textContent = `
-    ${this.dataIdQuerySelector} {
-
-      }
-    `;
-    this.shadow
-      ? this.shadow.appendChild(this.shadowStyle)
-      : super.appendChild(this.shadowStyle);
   }
 
   public get rotate(): number {
@@ -147,6 +139,18 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.wrapper || this.shadowed
       ? (this.shadowWrapper.accessKey = value)
       : (super.accessKey = value);
+  }
+
+  get childNodes(): NodeListOf<ChildNode> {
+    return this.wrapper || this.shadowed
+      ? this.shadowWrapper.childNodes
+      : super.childNodes;
+  }
+
+  set childNodes(value: NodeListOf<ChildNode>) {
+    /* this.wrapper || this.shadowed
+      ? (this.shadowWrapper.childNodes = value)
+      : (super.childNodes = value); */
   }
 
   get attributes(): NamedNodeMap {
@@ -674,6 +678,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   setAttribute(name: string, value: string): void {
+    if (typeof value == 'object') {
+      value = (value as Object).toString();
+    }
     this.wrapper || this.shadowed
       ? this.shadowWrapper.setAttribute(name, value)
       : super.setAttribute(name, value);
@@ -716,31 +723,21 @@ class BaseComponent extends HTMLElement implements IDelegate {
     throw new Error("Not implemented")
   } */
 
-  addStyle(styles: string[]): HTMLStyleElement;
-  addStyle(style: IAny): HTMLStyleElement;
-  addStyle(style: string): HTMLStyleElement;
-  addStyle(style: string[] | IAny | string): HTMLStyleElement {
-    let styleString: string = '';
-    let previousStyle = this.shadowStyle.textContent ?? '';
+  addStyle(styles: string[]): void;
+  addStyle(style: IAny): void;
+  addStyle(style: string): void;
+  addStyle(style: string[] | IAny | string): void {
     if (typeof style === 'string') {
-      styleString = style;
-      this.shadowStyle.textContent = previousStyle + styleString;
+      this.styleUtil.update(this.dataIdQuerySelector, style);
     } else if (!Array.isArray(style)) {
-      styleString = `${cssString(style)}`;
-      const startOfThisIdStyle = `${this.dataIdQuerySelector} {`;
-      previousStyle = previousStyle.replace(
-        startOfThisIdStyle,
-        `${startOfThisIdStyle}${styleString}`
-      );
-      this.shadowStyle.textContent = previousStyle;
+      this.styleUtil.update(this.dataIdQuerySelector, style as any);
     } else if (Array.isArray(style)) {
+      let styleString = '';
       for (const styleI of style) {
         styleString = styleString?.concat('\n\n', styleI);
       }
-      this.shadowStyle.textContent = previousStyle + styleString;
+      this.styleUtil.update(this.dataIdQuerySelector, styleString);
     }
-
-    return this.shadowStyle;
   }
 
   addPseudoClass(clazz: string, style: IAny) {
@@ -849,10 +846,14 @@ class BaseComponent extends HTMLElement implements IDelegate {
         if (propName.startsWith('on')) {
           to[_attributeName] = this.fn(propValue);
         } else {
-          const _shouldUseSetAttribute = shouldUseSetAttribute(propName);
-          _shouldUseSetAttribute
-            ? to.setAttribute(_attributeName, propValue)
-            : (to[_attributeName] = propValue);
+          if (_attributeName == 'style') {
+            to.addStyle(propValue);
+          } else {
+            const _shouldUseSetAttribute = shouldUseSetAttribute(propName);
+            _shouldUseSetAttribute
+              ? to.setAttribute(_attributeName, propValue)
+              : (to[_attributeName] = propValue);
+          }
         }
       }
       init && to.init();
@@ -865,12 +866,12 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
       for (let propName in props) {
         const _attributeName = attributeName(propName);
-        const propValue = props[propName];
+        //const propValue = props[propName];
         const _shouldUseSetAttribute = shouldUseSetAttribute(propName);
 
         _shouldUseSetAttribute
           ? to.removeAttribute(_attributeName)
-          : (to[_attributeName] = propValue);
+          : delete to[_attributeName];
       }
     }
   }
@@ -918,9 +919,12 @@ class BaseComponent extends HTMLElement implements IDelegate {
     } else if (oldNode.tag !== newNode.tag) {
       patches.push({ type: 'REPLACE', container, newNode, oldNode });
     } else {
-      const propsDiff = this.diffProps(oldNode?.props, newNode?.props);
-      if (propsDiff) {
-        patches.push({ type: 'REPLACE', container, newNode, oldNode });
+      const propsDiff = this.diffProps(newNode, oldNode);
+      if (propsDiff && propsDiff.length > 0) {
+        patches.push({
+          type: 'UPDATE',
+          patches: propsDiff,
+        });
       }
       patches.push(
         ...this.diffChildren(
@@ -934,7 +938,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return patches;
   }
 
-  diffProps(oldProps: IAny, newProps: IAny) {
+  diffProps(newNode: VNode, oldNode: BaseComponent) {
+    const patches: PropPatch[] = [];
+    const oldProps: IAny = oldNode?.props;
+    const newProps: IAny = newNode?.props;
     for (const key in newProps) {
       if (key !== 'children') {
         let oldProp =
@@ -948,18 +955,28 @@ class BaseComponent extends HTMLElement implements IDelegate {
         if (!lodash.isEqual(oldProp, newProp)) {
           oldProp = null;
           newProp = null;
-          return true;
+          patches.push({
+            type: 'UPDATE',
+            node: oldNode,
+            key,
+            propValue: newProps[key],
+          });
         }
       }
     }
 
     for (const key in oldProps) {
       if (key !== 'children' && !(key in newProps)) {
-        return true;
+        patches.push({
+          type: 'REMOVE',
+          node: oldNode,
+          key,
+          propValue: undefined,
+        });
       }
     }
 
-    return false;
+    return patches;
   }
 
   diffChildren(
@@ -988,7 +1005,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     props || (props = {});
     isTagStandard || Object.assign(props, clazz.props);
     Object.assign(props, {
-      children: BaseComponent.createChildren(children),
+      children: BaseComponent.createChildren.bind(this)(children),
     });
     if (
       !isTagStandard &&
@@ -1046,18 +1063,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
           break;
         case 'REPLACE':
           if (oldNode) {
-            oldNode.setProps(
-              {
-                ...(newNode as IAny)?.props,
-                children: BaseComponent.createChildren(
-                  (newNode as IAny)?.props?.children
-                ),
-              },
-              false
+            const newNodeElement = this.createElement(
+              container as BaseComponent,
+              newNode as VNode
             );
-            oldNode.attached = false;
-            oldNode.attach();
-            oldNode.attached = true;
+            oldNode?.parentNode?.replaceChild(newNodeElement, oldNode);
           }
           break;
         case 'TEXT':
@@ -1074,8 +1084,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
     patches?.forEach(({ type, node, key, propValue }) => {
       if (type === 'UPDATE') {
         BaseComponent.setProps({ [key]: propValue }, node, false);
+        node.onStateChange();
       } else if (type === 'REMOVE') {
         BaseComponent.removeProps({ [key]: undefined }, node);
+        node.onStateChange();
       }
     });
   }
@@ -1090,34 +1102,42 @@ class BaseComponent extends HTMLElement implements IDelegate {
         this.appendChildren(viewFragment as any);
       }
     }
+    this.attached = true;
+  }
+
+  private applyEffects() {
+    this.effectsFn.forEach(effectFn => effectFn());
   }
 
   protected onStateChange() {
-    this.effectsFn.forEach(async effectFn => await effectFn());
-
+    this.applyEffects();
     let viewFragments: VNode[] | VNode = this.html() as any;
     let patches: Patch[] = [];
     if (viewFragments) {
-      const isFirstChildStyle =
-        this.firstChild?.nodeType === Node.ELEMENT_NODE &&
-        this.firstChild.nodeName === 'STYLE';
       const isViewFramentArray = Array.isArray(viewFragments);
+      if (isViewFramentArray) {
+        if (viewFragments[0] && (viewFragments[0] as any).parentNode) {
+          return;
+        }
+      } else {
+        if ((viewFragments as any).parentNode) {
+          return;
+        }
+      }
       const maxLength = Math.max(
-        isFirstChildStyle ? this.childNodes.length - 1 : this.childNodes.length,
+        this.childNodes.length,
         isViewFramentArray ? (viewFragments as any).length : 0
       );
       for (let i = 0; i < maxLength; i++) {
         const viewFragment = isViewFramentArray
           ? viewFragments[i]
           : viewFragments;
-        const currentViewFragment =
-          this.childNodes[isFirstChildStyle ? i + 1 : i];
+        const currentViewFragment = this.childNodes[i];
         patches.push(
           ...this.diff(this, currentViewFragment as any, viewFragment as VNode)
         );
       }
       this.applyPatches(patches);
-      viewFragments = null as any;
     }
   }
 
@@ -1138,8 +1158,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
     Object.assign(props, {
       children: container?.attached
         ? children
-        : BaseComponent.createChildren(children),
+        : BaseComponent.createChildren.bind(this)(children),
     });
+    if (!isTagStandard && clazz.ELEMENT_NAME === 'Fragment') {
+      return props.children;
+    }
     if (
       !isTagStandard &&
       isSubclassOf(clazz, Reblend) &&
@@ -1154,15 +1177,6 @@ class BaseComponent extends HTMLElement implements IDelegate {
         constructor() {
           super();
           const ele = document.createElement(tag as string);
-          const srcTags = ['svg', 'img'];
-          for (const t of srcTags) {
-            if ((tag as string).toLowerCase() === t) {
-              if ('src' in props) {
-                ele.setAttribute('src', props.src);
-              }
-              break;
-            }
-          }
           this.wrapper = ele;
         }
       };
@@ -1205,11 +1219,23 @@ class BaseComponent extends HTMLElement implements IDelegate {
   ) {
     for (const child of children) {
       if (Array.isArray(child)) {
-        return this.createChildren(child, containerArr);
+        return BaseComponent.createChildren.bind(this)(child, containerArr);
       } else {
         if (child !== undefined && child !== null) {
           if (child instanceof Reblend || child instanceof Node) {
             containerArr.push(child as any);
+          } else if (
+            typeof child == 'object' &&
+            'tag' in child &&
+            'props' in child
+          ) {
+            containerArr.push(
+              BaseComponent.construct.bind(this)(
+                child.tag,
+                child.props,
+                child.children
+              ) as BaseComponent
+            );
           } else {
             containerArr.push(
               document.createTextNode(
@@ -1243,11 +1269,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
     {
       this.shadow = null as any;
       this.shadowWrapper = null as any;
-      this.shadowStyle = null as any;
       this.props = null as any;
       this._state = null as any;
       this.container = null as any;
       this.stateKeys = null as any;
+      this.parentElement?.removeChild(this);
     }
   }
 
@@ -1269,8 +1295,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
     root.append(this.construct(app as any, props || {}, []) as Reblend);
   }
 
-  useState<T>(initial: T): [T, StateFunction<T>] {
+  useState<T>(initial: StateFunctionValue<T>): [T, StateFunction<T>] {
     const stateID: string = arguments[arguments.length - 1];
+    if (typeof initial === 'function') initial = (initial as Function)();
+    this[stateID] = initial;
     const variableSetter: StateFunction<T> = (value: StateFunctionValue<T>) => {
       if (typeof value === 'function') {
         value = (value as Function)(this[stateID]);
@@ -1281,7 +1309,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       }
     };
 
-    return [initial, variableSetter];
+    return [initial as T, variableSetter];
   }
 
   useEffect(fn: StateEffectiveFunction, dependencies: any[]) {
@@ -1301,7 +1329,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
   useReducer<T>(
     reducer: StateReducerFunction<T>,
-    initial: T
+    initial: StateFunctionValue<T>
   ): [T, StateFunction<T>] {
     reducer = reducer.bind(this);
     const stateID: string = arguments[arguments.length - 1];
@@ -1331,7 +1359,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     let [state, setState] = this.useState<T>(fn(), stateID);
     this[stateID] = state;
     const dep = new Function(`return (${dependencies})`).bind(this);
-    const cacher = () => lodash.cloneDeep(dependencies);
+    const cacher = () => lodash.cloneDeep(dep());
     let caches = cacher();
     const internalFn = () => {
       const depData = dep();

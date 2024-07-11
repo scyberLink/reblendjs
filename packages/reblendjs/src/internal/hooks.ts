@@ -12,10 +12,10 @@ type ContextSubscriber = {
   stateKey: string;
 };
 
-const contextValue = Symbol.for('Reblend.contextValue');
-const contextUpdater = Symbol.for('Reblend.contextUpdater');
-const contextSubscrbers = Symbol.for('Reblend.contextSubscrbers');
-const contextSubscrbe = Symbol.for('Reblend.contextSubscrbe');
+const contextValue = Symbol('Reblend.contextValue');
+const contextUpdater = Symbol('Reblend.contextUpdater');
+const contextSubscrbers = Symbol('Reblend.contextSubscrbers');
+const contextSubscrbe = Symbol('Reblend.contextSubscrbe');
 type Context<T> = {
   [contextSubscrbers]: ContextSubscriber[];
   [contextValue]: T;
@@ -23,43 +23,45 @@ type Context<T> = {
   [contextSubscrbe](component: BaseComponent, stateKey: string): void;
 };
 
-const incorrectUsage = new Error(
-  'This should not never run unless your function is not Reblend transformed'
-);
-
 const invalidContext = new Error('Invalid context');
 
 export function useState<T>(initial: T): [T, StateFunction<T>] {
-  throw incorrectUsage;
+  //@ts-ignore
+  return this.useState(...arguments);
 }
 
 export function useEffect(
   fn: StateEffectiveFunction,
   dependencies: any[]
 ): void {
-  throw incorrectUsage;
+  //@ts-ignore
+  return this.useEffect(...arguments);
 }
 
 export function useReducer<T>(
   reducer: StateReducerFunction<T>,
   initial: T
 ): [T, StateFunction<T>] {
-  throw incorrectUsage;
+  //@ts-ignore
+  return this.useReducer(...arguments);
 }
 
 export function useMemo<T>(
   fn: StateEffectiveMemoFunction<T>,
   dependencies?: any[]
 ): T {
-  throw incorrectUsage;
+  //@ts-ignore
+  return this.useMemo(...arguments);
 }
 
 export function useRef<T>(initial?: T): Ref<T> {
-  throw incorrectUsage;
+  //@ts-ignore
+  return this.useRef(...arguments);
 }
 
 export function useCallback(fn: Function): Function {
-  throw incorrectUsage;
+  //@ts-ignore
+  return this.useCallback(...arguments);
 }
 
 export function useContext<T>(context: Context<T>): T {
@@ -105,12 +107,12 @@ export function createContext<T>(initial: T): Context<T> {
     [contextUpdater](update: StateFunctionValue<T>) {
       const newValue =
         typeof update === 'function'
-          ? (update as Function)(this[contextValue])
+          ? (update as Function)(context[contextValue])
           : update;
-      if (!isEqual(newValue, this[contextValue])) {
-        this[contextValue] = newValue;
-        this[contextSubscrbers].forEach(subscriber => {
-          subscriber.component[subscriber.stateKey] = this[contextValue];
+      if (!isEqual(newValue, context[contextValue])) {
+        context[contextValue] = newValue;
+        context[contextSubscrbers].forEach(subscriber => {
+          subscriber.component[subscriber.stateKey] = context[contextValue];
           //@ts-ignore
           subscriber.component.onStateChange();
         });
@@ -123,7 +125,7 @@ export function createContext<T>(initial: T): Context<T> {
       if (!stateKey) {
         throw new Error('Invalid state key');
       }
-      this[contextSubscrbers].push({ component, stateKey });
+      context[contextSubscrbers].push({ component, stateKey });
     },
   };
   return context;

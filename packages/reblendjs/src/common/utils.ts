@@ -128,16 +128,29 @@ export const removeLastChild = (parent: HTMLElement | null) => {
 };
 
 export const cssString = (styleObject: IAny) => {
-  const definedValues = getDefinedValuesFrom(styleObject);
-  const styleKeys = Object.keys(definedValues);
-  const styleValues = Object.values(definedValues);
   let styleString = '';
-  for (let i = 0; i < styleKeys.length; i++) {
-    const styleKey = styleKeys[i];
-    const styleValue = styleValues[i];
-    styleString = styleString.concat(`${styleKey}: ${styleValue};`, '\n');
+
+  for (const [key, value] of Object.entries(styleObject)) {
+    styleString += `${key}: ${value === undefined ? 'initial' : value}; \n`;
   }
+
   return styleString.trim();
+};
+
+export const cssObjectFromString = (
+  styleString: string
+): CSSStyleDeclaration => {
+  const regex = /([a-zA-Z-]+)\s*:\s*([^;]+)/g;
+  const cssObject: CSSStyleDeclaration = {} as any;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(styleString)) !== null) {
+    const styleName = match[1].trim();
+    const value = match[2].trim();
+    cssObject[styleName] = value;
+  }
+
+  return cssObject;
 };
 
 export const spreadTo = (parentObj: IAny, objToSpread: IAny) => {
