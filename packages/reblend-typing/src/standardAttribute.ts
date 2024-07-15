@@ -633,20 +633,16 @@ export const allAttribute: Record<string, string | null | { name: string }> = {
 export const shouldUseSetAttribute = (key: string): boolean => {
   const attribute = allAttribute[key];
 
-  if (attribute === undefined) {
-    return !!key;
-  }
-
   if (
-    attribute === null ||
+    !attribute ||
     attribute instanceof Object ||
     attribute.startsWith('on') ||
     attribute.startsWith('aria')
   ) {
     return false;
-  } else {
-    return !!attribute;
   }
+
+  return !!attribute;
 };
 
 export const attributeName = (key: string): string => {
