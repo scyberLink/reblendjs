@@ -1,19 +1,23 @@
 import './App.css';
 import Reblend, { useContextDispatch, useMemo, useState } from 'reblendjs';
 //@ts-ignore
-import logo from './logo.svg';
+import logo, { ReblendComponent } from './logo.svg';
 import { ThemeContext } from './context';
 import { rand } from 'reblendjs/dist/common/utils';
 import Header from './Header';
+import useI from './hook';
 
 function App() {
-  const [s, setS] = useState(1);
+  const [msg, s] = useI();
 
-  setInterval(() => {
-    setS(pre => pre + 2);
-  }, 1000);
-
-  const msg = useMemo(() => `State = "${s}"`, [s]);
+  const Header1 = useMemo(() => {
+    return (
+      <>
+        <Header {...{ logo, msg, i: s }} />
+        {s % 3 === 0 ? <ReblendComponent /> : null}
+      </>
+    );
+  }, [msg, s]);
 
   const themeDispatcher = useContextDispatch(ThemeContext);
 
@@ -23,9 +27,13 @@ function App() {
   }, 2000);
 
   return (
-    <div {...{ className: 'App' }}>
-      <Header {...{ logo, msg, i: s }} />
-    </div>
+    <>
+      {/* @ts-ignore */}
+      <Header1 />
+      <div {...{ className: 'App' }}>
+        <Header {...{ logo, msg, i: s }} />
+      </div>
+    </>
   );
 }
 
