@@ -1,0 +1,35 @@
+{
+  "name": "reblend-router",
+  "version": "0.1.0",
+  "main": "./lib/index.js",
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.101",
+    "reblend-scripts": "^6.0.36",
+    "reblendjs": "^3.0.6",
+    "reblend-routing": "latest",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "reblend-scripts start ./src/__test__/index.tsx",
+    "build": "reblend-scripts build",
+    "build:production": "tsc -p tsconfig.production.json",
+    "test": "reblend-scripts test",
+    "eject": "reblend-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
