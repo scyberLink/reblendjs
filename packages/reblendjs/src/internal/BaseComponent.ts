@@ -944,6 +944,16 @@ class BaseComponent extends HTMLElement implements IDelegate {
     const patches: Patch[] = [];
 
     if (
+      BaseComponent.isPrimitive(oldNode) &&
+      BaseComponent.isPrimitive(newNode)
+    ) {
+      patches.push({ type: 'CREATE', parent, newNode });
+    } else if (
+      BaseComponent.isPrimitive(oldNode) &&
+      !BaseComponent.isPrimitive(newNode)
+    ) {
+      patches.push({ type: 'CREATE', parent, newNode });
+    } else if (
       this.isReblendPrimitiveElement(oldNode) &&
       BaseComponent.isPrimitive(newNode)
     ) {
@@ -962,6 +972,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
     } else if (
       this.isTextNode(oldNode) &&
       !BaseComponent.isPrimitive(newNode)
+    ) {
+      patches.push({ type: 'REPLACE', parent, newNode, oldNode });
+    } else if (
+      !this.isReblendPrimitiveElement(oldNode) &&
+      BaseComponent.isPrimitive(newNode)
     ) {
       patches.push({ type: 'REPLACE', parent, newNode, oldNode });
     } else if (
@@ -1061,6 +1076,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   protected static createElement(vNode: VNode): BaseComponent {
+    if (BaseComponent.isPrimitive(vNode)) {
+      return new BaseComponent.ReblendPrimitive().setData(
+        vNode as VNodeChild as Primitive
+      );
+    }
     const { tag } = vNode;
     const { children } = vNode.props;
     let clazz: typeof Reblend = tag as any as typeof Reblend;
@@ -1180,7 +1200,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
   protected attach() {
     let vNodes = this.html();
-    if (!vNodes) return;
+    //if (!vNodes) return;
     this.innerHTML = '';
     const isVNodesArray = Array.isArray(vNodes);
     if (isVNodesArray && (vNodes as []).length < 1) {
@@ -1197,7 +1217,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       vNodes = BaseComponent.createChildren(vNodes as VNodeChildren) as any;
       this.appendChildren(...(vNodes as any));
     } else {
-      if ((vNodes as any).parentNode) {
+      if ((vNodes as any)?.parentNode) {
         vNodes = null as any;
         return;
       }
@@ -1233,34 +1253,32 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.applyEffects();
     let vNodes = this.html();
     let patches: Patch[] = [];
-    if (vNodes) {
-      const isVNodesArray = Array.isArray(vNodes);
-      if (isVNodesArray) {
-        vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren);
-      }
-      if (isVNodesArray) {
-        if (vNodes[0] && vNodes[0].parentNode) {
-          vNodes = null as any;
-          return;
-        }
-      } else {
-        if ((vNodes as any).parentNode) {
-          vNodes = null as any;
-          return;
-        }
-      }
-      const maxLength = Math.max(
-        this.childNodes.length,
-        isVNodesArray ? (vNodes as VNodeChildren).length : 0
-      );
-      for (let i = 0; i < maxLength; i++) {
-        const newVNode: VNodeChild = isVNodesArray ? vNodes[i] : vNodes;
-        const currentVNode = this.childNodes[i];
-        patches.push(...this.diff(this, currentVNode, newVNode));
-      }
-      vNodes = null as any;
-      this.applyPatches(patches);
+    const isVNodesArray = Array.isArray(vNodes);
+    if (isVNodesArray) {
+      vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren);
     }
+    if (isVNodesArray) {
+      if (vNodes[0] && vNodes[0].parentNode) {
+        vNodes = null as any;
+        return;
+      }
+    } else {
+      if ((vNodes as any)?.parentNode) {
+        vNodes = null as any;
+        return;
+      }
+    }
+    const maxLength = Math.max(
+      this.childNodes.length,
+      isVNodesArray ? (vNodes as VNodeChildren).length : vNodes ? 1 : 0
+    );
+    for (let i = 0; i < maxLength; i++) {
+      const newVNode: VNodeChild = isVNodesArray ? vNodes[i] : vNodes;
+      const currentVNode = this.childNodes[i];
+      patches.push(...this.diff(this, currentVNode, newVNode));
+    }
+    vNodes = null as any;
+    this.applyPatches(patches);
   }
 
   protected html(): VNode | VNodeChildren {
@@ -1302,7 +1320,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
       'symbol',
     ];
     const dataType = typeof data;
-    return primitves.some(primitve => primitve === dataType);
+    return primitves.some(
+      primitve => primitve === (data === null ? 'null' : dataType)
+    );
   }
 
   private static ReblendPrimitive = BaseComponent.register(
