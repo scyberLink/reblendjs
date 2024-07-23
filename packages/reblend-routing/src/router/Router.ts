@@ -50,7 +50,6 @@ interface Router {
   stack: any[];
   param(name: string | Function, fn: Function): Router;
   handle(req: any, res: any, out: any): void;
-  process_params(layer: any, called: any, req: any, done: Function): void;
   use(fn: Function | string, ...fns: Function[]): Router;
   route(path: string): Route;
   [method: string]: any;
@@ -334,51 +333,94 @@ class Router {
    * @private
    */
 
-  process_params(
+  private process_params(
     layer: Layer,
-    called: {},
+    called: any,
     req: Request,
-    done: { (err?: any): void; (arg0: undefined): void }
-  ): void {
-    const params = this.params;
+    done: Function
+  ) {
+    var params = this.params;
 
     // captured parameters from the layer, keys and values
-    const keys = layer.keys;
+    var keys = layer.keys;
 
     // fast track
     if (!keys || keys.length === 0) {
       return done();
     }
 
-    let paramcalled = called;
-    let paramIndex = 0;
-    let paramVal = null;
-    let paramCallbacks = null;
-    let paramCallback = null;
+    var i = 0;
+    var name;
+    var paramIndex = 0;
+    var key: any;
+    var paramVal: any;
+    var paramCallbacks: any;
+    var paramCalled: any;
 
-    function param(err?: undefined) {
+    // process params in order
+    // param callbacks can be async
+    function param(err?: any) {
       if (err) {
         return done(err);
       }
 
-      if (paramIndex >= keys.length) {
+      if (i >= keys.length) {
         return done();
       }
 
-      paramVal = req.params![keys[paramIndex].name];
-      paramCallbacks = params[keys[paramIndex].name];
+      paramIndex = 0;
+      key = keys[i++];
+      name = key.name;
+      paramVal = req.params![name];
+      paramCallbacks = params[name];
+      paramCalled = called[name];
 
-      // param logic
-      if (!paramCallbacks) {
+      if (paramVal === undefined || !paramCallbacks) {
         return param();
       }
 
-      paramCallback = paramCallbacks[paramIndex++];
+      // param previously called with same value or error occurred
+      if (
+        paramCalled &&
+        (paramCalled.match === paramVal ||
+          (paramCalled.error && paramCalled.error !== 'route'))
+      ) {
+        // restore value
+        req.params![name] = paramCalled.value;
 
-      if (paramCallback.length === 4) {
-        paramCallback(err, req, param);
-      } else {
-        paramCallback(req, param, paramVal);
+        // next param
+        return param(paramCalled.error);
+      }
+
+      called[name] = paramCalled = {
+        error: null,
+        match: paramVal,
+        value: paramVal,
+      };
+
+      paramCallback();
+    }
+
+    // single param callbacks
+    function paramCallback(err?: any) {
+      var fn = paramCallbacks[paramIndex++];
+
+      // store updated value
+      paramCalled.value = req.params![key.name];
+
+      if (err) {
+        // store error
+        paramCalled.error = err;
+        param(err);
+        return;
+      }
+
+      if (!fn) return param();
+
+      try {
+        fn(req, paramCallback, paramVal, key.name);
+      } catch (e) {
+        paramCallback(e);
       }
     }
 
