@@ -8,6 +8,7 @@
 'use strict';
 
 import qs from 'qs';
+import { Request } from './index';
 
 /**
  * Check if `path` looks absolute.
@@ -21,38 +22,6 @@ export function isAbsolute(path: string): boolean {
   if (path[1] === ':' && (path[2] === '\\' || path[2] === '/')) return true; // Windows device path
   if (path.substring(0, 2) === '\\\\') return true; // Microsoft Azure absolute path
   return false;
-}
-
-/**
- * Parse accept params `str` returning an
- * object with `.value`, `.quality` and `.params`.
- *
- * @param {String} str
- * @return {Object}
- * @api private
- */
-function acceptParams(str: string): {
-  value: string;
-  quality: number;
-  params: Record<string, string>;
-} {
-  const parts = str.split(/ *; */);
-  const ret = {
-    value: parts[0],
-    quality: 1,
-    params: {} as Record<string, string>,
-  };
-
-  for (let i = 1; i < parts.length; ++i) {
-    const pms = parts[i].split(/ *= */);
-    if (pms[0] === 'q') {
-      ret.quality = parseFloat(pms[1]);
-    } else {
-      ret.params[pms[0]] = pms[1];
-    }
-  }
-
-  return ret;
 }
 
 /**
@@ -112,4 +81,13 @@ function parseExtendedQueryString(str: string): Record<string, any> {
   });
 }
 
-export const methods = ['GET', 'PUT', 'POST', 'UPDATE', 'OPTION', 'PATCH'];
+export type MethodsType = {
+  get: (path: string, handler: (req: Request, next: Function) => any) => any;
+  put: (path: string, handler: (req: Request, next: Function) => any) => any;
+  post: (path: string, handler: (req: Request, next: Function) => any) => any;
+  update: (path: string, handler: (req: Request, next: Function) => any) => any;
+  option: (path: string, handler: (req: Request, next: Function) => any) => any;
+  patch: (path: string, handler: (req: Request, next: Function) => any) => any;
+};
+export const methods = ['get', 'put', 'post', 'update', 'option', 'patch'];
+export const REQUEST_EVENT = 'routing-request';

@@ -9,7 +9,8 @@
 'use strict';
 
 import IAny from './IAny';
-import { Route } from './express';
+import { Route } from './index';
+import { MethodsType } from './utils';
 
 /**
  * Request prototype.
@@ -19,17 +20,14 @@ class Request {
   params?: IAny = {};
   body?: IAny = {};
   query: IAny = {};
-  url: string = '';
-  method?: string;
   baseUrl?: string;
   next?: Function;
   originalUrl?: string;
   route?: Route;
   urlObject: URL;
 
-  constructor(url: string) {
-    this.url = url;
-    this.urlObject = new URL(decodeURI(url));
+  constructor(public url: string, public method: keyof MethodsType) {
+    this.urlObject = new URL(decodeURI(this.url));
     this.urlObject.searchParams.forEach(
       (value, key) => (this.query[key] = value)
     );

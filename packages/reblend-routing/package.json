@@ -38,12 +38,12 @@
     "supertest": "6.3.0",
     "typescript": "^5.5.4"
   },
+  "main": "lib/index.js",
   "files": [
     "LICENSE",
     "History.md",
     "Readme.md",
-    "index.js",
-    "lib/"
+    "lib"
   ],
   "scripts": {
     "lint": "eslint .",

@@ -151,7 +151,7 @@ class Router {
     debug('dispatching %s %s', req.method, req.url);
 
     let idx = 0;
-    const protohost = getProtohost(req.url) || '';
+    const protohost = this.getProtohost(req.url) || '';
     let removed = '';
     let slashAdded = false;
     let sync = 0;
@@ -167,7 +167,7 @@ class Router {
     // manage inter-router variables
     let parentParams = req.params;
     let parentUrl = req.baseUrl || '';
-    let done = restore(out, req, 'baseUrl', 'next', 'params');
+    let done = this.restore(out, req, 'baseUrl', 'next', 'params');
 
     // setup next layer
     req.next = next;
@@ -225,7 +225,7 @@ class Router {
 
       while (match !== true && idx < stack.length) {
         layer = stack[idx++];
-        match = matchLayer(layer, path);
+        match = self.matchLayer(layer, path);
         route = layer.route as Route;
 
         if (typeof match !== 'boolean') {
@@ -264,7 +264,7 @@ class Router {
 
       // Capture one-time layer values
       req.params = self.mergeParams
-        ? mergeParams(layer.params as any, parentParams)
+        ? self.mergeParamsFn(layer.params as any, parentParams)
         : layer.params;
       const layerPath = layer.path;
 
@@ -413,7 +413,8 @@ class Router {
 
       if (typeof fn !== 'function') {
         throw new TypeError(
-          'Router.use() requires a middleware function but got a ' + gettype(fn)
+          'Router.use() requires a middleware function but got a ' +
+            this.gettype(fn)
         );
       }
 
@@ -468,169 +469,164 @@ class Router {
     this.stack.push(layer);
     return route;
   }
-}
 
-/**
- * Append methods to a list of methods.
- *
- * @param {Array} list
- * @param {Array} addition
- * @private
- */
+  /**
+   * Append methods to a list of methods.
+   *
+   * @param {Array} list
+   * @param {Array} addition
+   * @private
+   */
 
-function appendMethods(list: any[], addition: string | any[]) {
-  for (let i = 0; i < addition.length; i++) {
-    const method = addition[i];
-    if (list.indexOf(method) === -1) {
-      list.push(method);
+  appendMethods(list: any[], addition: string | any[]) {
+    for (let i = 0; i < addition.length; i++) {
+      const method = addition[i];
+      if (list.indexOf(method) === -1) {
+        list.push(method);
+      }
     }
   }
-}
 
-/**
- * Get get protocol + host for a URL.
- *
- * @param {string} url
- * @private
- */
+  /**
+   * Get get protocol + host for a URL.
+   *
+   * @param {string} url
+   * @private
+   */
 
-function getProtohost(url: string) {
-  if (url.length === 0 || url[0] === '/') {
-    return undefined;
+  getProtohost(url: string) {
+    if (url.length === 0 || url[0] === '/') {
+      return undefined;
+    }
+
+    const fqdnIndex = url.indexOf('://');
+
+    return fqdnIndex !== -1 && url.lastIndexOf('?', fqdnIndex) === -1
+      ? url.substring(0, url.indexOf('/', 3 + fqdnIndex))
+      : undefined;
   }
 
-  const fqdnIndex = url.indexOf('://');
+  /**
+   * Get type for error message.
+   *
+   * @param  {Mixed} thing
+   * @return {String}
+   * @private
+   */
 
-  return fqdnIndex !== -1 && url.lastIndexOf('?', fqdnIndex) === -1
-    ? url.substring(0, url.indexOf('/', 3 + fqdnIndex))
-    : undefined;
-}
-
-/**
- * Get type for error message.
- *
- * @param  {Mixed} thing
- * @return {String}
- * @private
- */
-
-function gettype(thing: any) {
-  const str = toString.call(thing);
-  return str.replace(objectRegExp, '$1');
-}
-
-/**
- * Merge params with parent params
- *
- * @param {Object} params
- * @param {Object} parent
- * @return {Object} merged params
- * @private
- */
-
-function mergeParams(params: any[], parent: any): IAny {
-  if (typeof parent !== 'object' || !parent) {
-    return params;
+  gettype(thing: any) {
+    const str = toString.call(thing);
+    return str.replace(objectRegExp, '$1');
   }
 
-  // make copy of parent for base
-  const obj = mixin({}, parent);
+  /**
+   * Merge params with parent params
+   *
+   * @param {Object} params
+   * @param {Object} parent
+   * @return {Object} merged params
+   * @private
+   */
 
-  // simple non-numeric merging
-  if (!(0 in params) || !(0 in parent)) {
+  mergeParamsFn(params: any[], parent: any): IAny {
+    if (typeof parent !== 'object' || !parent) {
+      return params;
+    }
+
+    // make copy of parent for base
+    const obj = mixin({}, parent);
+
+    // simple non-numeric merging
+    if (!(0 in params) || !(0 in parent)) {
+      return mixin(obj, params);
+    }
+
+    let i = 0;
+    let o = 0;
+
+    // determine numeric gap in params
+    while (i in params) {
+      i++;
+    }
+
+    // determine numeric gap in parent
+    while (o in parent) {
+      o++;
+    }
+
+    // offset numeric indices in params before merge
+    for (i--; i >= 0; i--) {
+      params[i + o] = params[i];
+
+      // create holes for the merge when necessary
+      if (i < o) {
+        delete params[i];
+      }
+    }
+
     return mixin(obj, params);
   }
 
-  let i = 0;
-  let o = 0;
+  /**
+   * Restore obj props after function.
+   *
+   * @param {Object} obj
+   * @param {String} prop
+   * @param {Mixed} val
+   * @return {Function}
+   * @private
+   */
 
-  // determine numeric gap in params
-  while (i in params) {
-    i++;
-  }
+  restore(fn: Function, obj: { [x: string]: any }, ..._properties: any[]) {
+    const props = new Array(arguments.length - 2);
+    const vals = new Array(arguments.length - 2);
 
-  // determine numeric gap in parent
-  while (o in parent) {
-    o++;
-  }
-
-  // offset numeric indices in params before merge
-  for (i--; i >= 0; i--) {
-    params[i + o] = params[i];
-
-    // create holes for the merge when necessary
-    if (i < o) {
-      delete params[i];
-    }
-  }
-
-  return mixin(obj, params);
-}
-
-/**
- * Restore obj props after function.
- *
- * @param {Object} obj
- * @param {String} prop
- * @param {Mixed} val
- * @return {Function}
- * @private
- */
-
-function restore(
-  fn: Function,
-  obj: { [x: string]: any },
-  ..._properties: any[]
-) {
-  const props = new Array(arguments.length - 2);
-  const vals = new Array(arguments.length - 2);
-
-  for (let i = 0; i < props.length; i++) {
-    props[i] = arguments[i + 2];
-    vals[i] = obj[props[i]];
-  }
-
-  return function (err?: any) {
-    // restore vals
     for (let i = 0; i < props.length; i++) {
-      obj[props[i]] = vals[i];
+      props[i] = arguments[i + 2];
+      vals[i] = obj[props[i]];
     }
-    //@ts-ignore
-    return fn.apply(this, arguments);
-  };
-}
 
-/**
- * Wrap a function
- *
- * @param {function} old
- * @param {function} fn
- * @return {function}
- * @private
- */
+    return (err?: any) => {
+      // restore vals
+      for (let i = 0; i < props.length; i++) {
+        obj[props[i]] = vals[i];
+      }
+      return fn.apply(this, arguments);
+    };
+  }
 
-function wrap(
-  old: (err?: any) => any,
-  fn: { (old: any, err: any): any; apply?: any }
-) {
-  return function proxy(this: any) {
-    fn.apply(this, [old].concat(Array.prototype.slice.call(arguments)));
-  };
+  /**
+   * Wrap a function
+   *
+   * @param {function} old
+   * @param {function} fn
+   * @return {function}
+   * @private
+   */
+
+  wrap(
+    old: (err?: any) => any,
+    fn: { (old: any, err: any): any; apply?: any }
+  ) {
+    return function proxy(this: any) {
+      fn.apply(this, [old].concat(Array.prototype.slice.call(arguments)));
+    };
+  }
+  /**
+   * Match path to a layer.
+   *
+   * @param {Layer} layer
+   * @param {string} path
+   * @private
+   */
+
+  matchLayer(layer: Layer, path: string) {
+    try {
+      return layer.match(path);
+    } catch (err) {
+      return err;
+    }
+  }
 }
 
 export default Router;
-/**
- * Match path to a layer.
- *
- * @param {Layer} layer
- * @param {string} path
- * @private
- */
-
-function matchLayer(layer: Layer, path: string) {
-  try {
-    return layer.match(path);
-  } catch (err) {
-    return err;
-  }
-}

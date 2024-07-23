@@ -35,6 +35,7 @@ export default class Layer {
   regexp: any;
   route?: Route;
   method?: string;
+
   constructor(path: string, options: Record<string, any>, fn: Function) {
     if (!(this instanceof Layer)) {
       return new Layer(path, options, fn);
@@ -60,11 +61,10 @@ export default class Layer {
    *
    * @param {Error} error
    * @param {Request} req
-   * @param {Response} res
    * @param {function} next
    * @api private
    */
-  handle_error(error: Error, req: any, res: any, next: Function) {
+  handle_error(error: Error, req: any, next: Function) {
     const fn = this.handle;
 
     if (fn.length !== 4) {
@@ -73,7 +73,7 @@ export default class Layer {
     }
 
     try {
-      fn(error, req, res, next);
+      fn(error, req, next);
     } catch (err) {
       next(err);
     }

@@ -8,74 +8,81 @@
 
 'use strict';
 
-/**
- * Module dependencies.
- * @private
- */
-
 import Router from './router/Router';
 import debugLib from 'debug';
-import { compileQueryParser } from './utils';
+import {
+  compileQueryParser,
+  methods,
+  MethodsType,
+  REQUEST_EVENT,
+} from './utils';
 //@ts-ignore
 import flatten from 'array-flatten';
 //@ts-ignore
 import setPrototypeOf from 'setprototypeof';
 import Request from './Request';
+import IAny from './IAny';
 
 const debug = debugLib('express:application');
 
-/**
- * Module variables.
- * @private
- */
-
 const { slice } = Array.prototype;
 
-/**
- * Application prototype.
- */
+type ReblendRoutingWithMethods = {
+  [K in keyof MethodsType]: MethodsType[K];
+};
 
-interface IApplication {
-  cache: Record<string, any>;
-  settings: Record<string, any>;
-  locals: Record<string, any>;
-  mountpath: string;
-  _router: Router;
-  parent?: IApplication;
-  init: () => void;
-  defaultConfiguration: () => void;
-  lazyrouter: () => void;
-  handle: (req: Request, callback?: Function) => void;
-  use: (...args: any[]) => this;
-  route: (path: string) => any;
-  param: (name: string | string[], fn: Function) => this;
-  set: (setting: string, val?: any) => any;
-  get: (setting: string) => any;
-  path: () => string;
-  enabled: (setting: string) => boolean;
-  disabled: (setting: string) => boolean;
-  enable: (setting: string) => this;
-  disable: (setting: string) => this;
-  configure: (env?: string | Function, fn?: Function) => this;
-  logerror: (i: any) => any;
-  request: Request;
-  wrap: Function;
-}
+class ReblendRouting implements ReblendRoutingWithMethods {
+  parent?: ReblendRouting;
+  cache: IAny = {};
+  settings: IAny = {};
+  locals: IAny = {};
+  request: Request = null as any;
+  mountpath = '/';
+  _router: Router = null as any;
 
-const app: IApplication = {
-  cache: {},
-  settings: {},
-  locals: {},
-  request: null as any,
-  mountpath: '/',
-  _router: null as any,
+  constructor() {
+    this.init();
+
+    addEventListener(REQUEST_EVENT, e => {
+      const req = (e as CustomEvent).detail;
+      req.app = this;
+      this.request = req;
+      this.handle(req);
+    });
+
+    (methods as (keyof MethodsType)[]).forEach(method => {
+      this[method] = function (path: string) {
+        if (method === 'get' && arguments.length === 1) {
+          // app.get(setting)
+          return this.set(path);
+        }
+
+        this.lazyrouter();
+
+        var route = this._router.route(path);
+        route[method].apply(route, slice.call(arguments, 1));
+        return this;
+      };
+    });
+  }
+  put!: (path: string, handler: (req: Request, next: Function) => any) => any;
+  post!: (path: string, handler: (req: Request, next: Function) => any) => any;
+  update!: (
+    path: string,
+    handler: (req: Request, next: Function) => any
+  ) => any;
+  option!: (
+    path: string,
+    handler: (req: Request, next: Function) => any
+  ) => any;
+  patch!: (path: string, handler: (req: Request, next: Function) => any) => any;
 
   init() {
     this.cache = {};
     this.settings = {};
 
     this.defaultConfiguration();
-  },
+  }
 
   defaultConfiguration() {
     this.set('query parser', 'extended');
@@ -85,7 +92,7 @@ const app: IApplication = {
     debug('booting in %s mode', 'default');
 
     addEventListener('mount', ({ detail }: any) => {
-      const parent: IApplication = detail;
+      const parent: ReblendRouting = detail;
       // inherit protos
       setPrototypeOf(this.request, parent.request);
       setPrototypeOf(this.settings, parent.settings);
@@ -99,7 +106,7 @@ const app: IApplication = {
 
     // default locals
     this.locals.settings = this.settings;
-  },
+  }
 
   lazyrouter() {
     if (!this._router) {
@@ -108,7 +115,7 @@ const app: IApplication = {
         strict: this.enabled('strict routing'),
       });
     }
-  },
+  }
 
   handle(req: Request, callback?: Function) {
     const router = this._router;
@@ -119,8 +126,8 @@ const app: IApplication = {
       return;
     }
 
-    router.handle(req, callback);
-  },
+    router.handle(req, () => {});
+  }
 
   use(...args: any[]) {
     let offset = 0;
@@ -174,12 +181,12 @@ const app: IApplication = {
     }, this);
 
     return this;
-  },
+  }
 
   route(path: string) {
     this.lazyrouter();
     return this._router.route(path);
-  },
+  }
 
   param(name: string | string[], fn: Function) {
     this.lazyrouter();
@@ -195,7 +202,7 @@ const app: IApplication = {
     this._router.param(name, fn);
 
     return this;
-  },
+  }
 
   set(setting: string, val?: any) {
     if (arguments.length === 1) {
@@ -216,30 +223,30 @@ const app: IApplication = {
     }
 
     return this;
-  },
+  }
   get(setting: string) {
     return this.settings[setting];
-  },
+  }
 
-  path() {
+  path(): string {
     return this.parent ? this.parent.path() + this.mountpath : this.mountpath;
-  },
+  }
 
   enabled(setting: string) {
     return Boolean(this.set(setting));
-  },
+  }
 
   disabled(setting: string) {
     return !this.set(setting);
-  },
+  }
 
   enable(setting: string) {
     return this.set(setting, true);
-  },
+  }
 
   disable(setting: string) {
     return this.set(setting, false);
-  },
+  }
 
   configure(env?: string | Function, fn?: Function) {
     let envs: string | string[] = 'all';
@@ -256,7 +263,7 @@ const app: IApplication = {
     }
 
     return this;
-  },
+  }
 
   /**
    * Log error using console.error.
@@ -265,10 +272,10 @@ const app: IApplication = {
    * @private
    */
 
-  logerror(this: IApplication, err: Error) {
+  logerror(this: ReblendRouting, err: Error) {
     /* istanbul ignore next */
     if (this.get('env') !== 'test') console.error(err.stack || err.toString());
-  },
+  }
 
   /**
    * Convert a callback to a standard middleware function.
@@ -280,7 +287,7 @@ const app: IApplication = {
 
   wrap(fn: Function): Function {
     return ((...args: any[]) => fn.apply(this, args)).bind(this);
-  },
-};
+  }
+}
 
-export default app;
+export default ReblendRouting;

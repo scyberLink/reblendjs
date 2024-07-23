@@ -13,6 +13,7 @@ import debugModule from 'debug';
 import flatten from 'array-flatten';
 import Layer from './layer';
 import { methods } from '../utils';
+import { Request } from '../index';
 
 const debug = debugModule('express:router:route');
 
@@ -99,10 +100,10 @@ export default class Route {
   }
 
   /**
-   * dispatch req, res into this route
+   * dispatch req into this route
    * @private
    */
-  dispatch(req: any, res: any, done: (err?: any) => void): void {
+  dispatch(req: Request, done: (err?: any) => void): void {
     let idx = 0;
     const stack = this.stack;
     let sync = 0;
@@ -137,7 +138,7 @@ export default class Route {
         return next(err);
       }
 
-      const layer = stack[idx++];
+      const layer: Layer = stack[idx++];
 
       // end of layers
       if (!layer) {
@@ -147,9 +148,9 @@ export default class Route {
       if (layer.method && layer.method !== method) {
         next(err);
       } else if (err) {
-        layer.handle_error(err, req, res, next);
+        layer.handle_error(err, req, next);
       } else {
-        layer.handle_request(req, res, next);
+        layer.handle_request(req, next);
       }
 
       sync = 0;
