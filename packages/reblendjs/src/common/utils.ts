@@ -202,3 +202,23 @@ export const isSubclassOf = (
 ): boolean => {
   return subclass.prototype instanceof superclass || subclass === superclass;
 };
+
+export const isCallable = (obj: any) => {
+  if (typeof obj !== 'function') {
+    return false;
+  }
+
+  try {
+    // Check if obj is a class constructor by inspecting its string representation
+    // Classes typically have a string representation starting with "class"
+    const str = Function.prototype.toString.call(obj);
+    if (str.startsWith('class')) {
+      return false;
+    }
+  } catch (e) {
+    // If any error occurs during string conversion, assume it's not callable
+    return false;
+  }
+
+  return true;
+};

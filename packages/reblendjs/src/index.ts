@@ -17,6 +17,10 @@ import {
   useContext,
   useContextDispatch,
 } from './internal/hooks';
+import {
+  ERROR_EVENTNAME,
+  ReblendRenderingException,
+} from './internal/BaseComponent';
 
 export default Reblend;
 
@@ -37,4 +41,6 @@ export {
   useContext,
   createContext,
   useContextDispatch,
+  ERROR_EVENTNAME,
+  ReblendRenderingException,
 };

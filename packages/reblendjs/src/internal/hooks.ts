@@ -25,14 +25,18 @@ type Context<T> = {
 
 const invalidContext = new Error('Invalid context');
 
-export function useState<T>(initial: T): [T, StateFunction<T>] {
+export function useState<T>(
+  initial: T,
+  ...dependencyStringAndOrStateKey: string[]
+): [T, StateFunction<T>] {
   //@ts-ignore
   return this.useState(...arguments);
 }
 
 export function useEffect(
   fn: StateEffectiveFunction,
-  dependencies: any[]
+  dependencies?: any[],
+  ...dependencyStringAndOrStateKey: string[]
 ): void {
   //@ts-ignore
   return this.useEffect(...arguments);
@@ -40,7 +44,8 @@ export function useEffect(
 
 export function useReducer<T>(
   reducer: StateReducerFunction<T>,
-  initial: T
+  initial: T,
+  ...dependencyStringAndOrStateKey: string[]
 ): [T, StateFunction<T>] {
   //@ts-ignore
   return this.useReducer(...arguments);
@@ -48,23 +53,33 @@ export function useReducer<T>(
 
 export function useMemo<T>(
   fn: StateEffectiveMemoFunction<T>,
-  dependencies?: any[]
+  dependencies?: any[],
+  ...dependencyStringAndOrStateKey: string[]
 ): T {
   //@ts-ignore
   return this.useMemo(...arguments);
 }
 
-export function useRef<T>(initial?: T): Ref<T> {
+export function useRef<T>(
+  initial?: T,
+  ...dependencyStringAndOrStateKey: string[]
+): Ref<T> {
   //@ts-ignore
   return this.useRef(...arguments);
 }
 
-export function useCallback(fn: Function): Function {
+export function useCallback(
+  fn: Function,
+  ...dependencyStringAndOrStateKey: string[]
+): Function {
   //@ts-ignore
   return this.useCallback(...arguments);
 }
 
-export function useContext<T>(context: Context<T>): T {
+export function useContext<T>(
+  context: Context<T>,
+  ...dependencyStringAndOrStateKey: string[]
+): T {
   if (
     !(
       contextSubscrbers in context ||
@@ -74,19 +89,27 @@ export function useContext<T>(context: Context<T>): T {
   ) {
     throw invalidContext;
   }
-  const stateKey = arguments[arguments.length - 1];
+  const stateID: string | undefined = dependencyStringAndOrStateKey.pop();
 
-  if (typeof stateKey !== 'string') {
+  if (!stateID) {
+    //@ts-ignore
+    throw this.stateIdNotIncluded;
+  }
+
+  if (typeof stateID !== 'string') {
     throw new Error(
       'Invalid state key. Make sure you are calling useContext correctly'
     );
   }
   //@ts-ignore
-  context[contextSubscrbe](this, stateKey);
+  context[contextSubscrbe](this, stateID);
   return context[contextValue];
 }
 
-export function useContextDispatch<T>(context: Context<T>): StateFunction<T> {
+export function useContextDispatch<T>(
+  context: Context<T>,
+  ...dependencyStringAndOrStateKey: string[]
+): StateFunction<T> {
   if (
     !(
       contextValue in context ||

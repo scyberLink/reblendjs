@@ -6,6 +6,7 @@ import {
 import {
   capitalize,
   cssString,
+  isCallable,
   isSubclassOf,
   rand,
   registerElement,
@@ -34,6 +35,10 @@ export type ChildWithProps = {
   child: BaseComponent;
   propsKey: string[];
 };
+
+export const ERROR_EVENTNAME = 'reblend-render-error';
+
+export type ReblendRenderingException = Error & { component: BaseComponent };
 
 interface PropPatch {
   type: 'REMOVE' | 'UPDATE';
@@ -66,7 +71,9 @@ export const REBLEND_PRIMITIVE_ELEMENT_NAME = 'ReblendPrimitive';
 
 interface BaseComponent {
   tag: string;
+  [stateKey: string]: any;
 }
+
 interface ReblendPrimitive extends BaseComponent {
   node: string;
   setData(data: Primitive): this;
@@ -1082,7 +1089,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       );
     }
     const { tag } = vNode;
-    const { children } = vNode.props;
+    const { children } = vNode.props || {};
     let clazz: typeof Reblend = tag as any as typeof Reblend;
     const isTagStandard = typeof tag === 'string';
     const props = {
@@ -1199,31 +1206,33 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   protected attach() {
-    let vNodes = this.html();
-    //if (!vNodes) return;
-    this.innerHTML = '';
-    const isVNodesArray = Array.isArray(vNodes);
-    if (isVNodesArray && (vNodes as []).length < 1) {
-      return;
-    }
-    if (isVNodesArray) {
-      vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren);
-    }
-    if (isVNodesArray) {
-      if (vNodes[0] && vNodes[0].parentNode) {
-        vNodes = null as any;
+    this.catch(() => {
+      let vNodes = this.html();
+      //if (!vNodes) return;
+      this.innerHTML = '';
+      const isVNodesArray = Array.isArray(vNodes);
+      if (isVNodesArray && (vNodes as []).length < 1) {
         return;
       }
-      vNodes = BaseComponent.createChildren(vNodes as VNodeChildren) as any;
-      this.appendChildren(...(vNodes as any));
-    } else {
-      if ((vNodes as any)?.parentNode) {
-        vNodes = null as any;
-        return;
+      if (isVNodesArray) {
+        vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren);
       }
-      vNodes = BaseComponent.createElement(vNodes as VNode) as any;
-      this.appendChildren(vNodes as any);
-    }
+      if (isVNodesArray) {
+        if (vNodes[0] && vNodes[0].parentNode) {
+          vNodes = null as any;
+          return;
+        }
+        vNodes = BaseComponent.createChildren(vNodes as VNodeChildren) as any;
+        this.appendChildren(...(vNodes as any));
+      } else {
+        if ((vNodes as any)?.parentNode) {
+          vNodes = null as any;
+          return;
+        }
+        vNodes = BaseComponent.createElement(vNodes as VNode) as any;
+        this.appendChildren(vNodes as any);
+      }
+    });
   }
 
   private applyEffects() {
@@ -1249,36 +1258,59 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return containerArr;
   }
 
+  private catch(fn: Function) {
+    const handleError = (error: Error) => {
+      window.dispatchEvent(
+        new CustomEvent(ERROR_EVENTNAME, {
+          detail: (((error as any).component = this), error),
+        })
+      );
+      throw error;
+    };
+
+    try {
+      const result = fn();
+      // Check if the result is a promise
+      if (result && typeof result.then === 'function') {
+        return result.catch(handleError);
+      }
+    } catch (error) {
+      handleError(error as Error);
+    }
+  }
+
   protected async onStateChange() {
-    this.applyEffects();
-    let vNodes = this.html();
-    let patches: Patch[] = [];
-    const isVNodesArray = Array.isArray(vNodes);
-    if (isVNodesArray) {
-      vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren);
-    }
-    if (isVNodesArray) {
-      if (vNodes[0] && vNodes[0].parentNode) {
-        vNodes = null as any;
-        return;
+    this.catch(async () => {
+      this.applyEffects();
+      let vNodes = this.html();
+      let patches: Patch[] = [];
+      const isVNodesArray = Array.isArray(vNodes);
+      if (isVNodesArray) {
+        vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren);
       }
-    } else {
-      if ((vNodes as any)?.parentNode) {
-        vNodes = null as any;
-        return;
+      if (isVNodesArray) {
+        if (vNodes[0] && vNodes[0].parentNode) {
+          vNodes = null as any;
+          return;
+        }
+      } else {
+        if ((vNodes as any)?.parentNode) {
+          vNodes = null as any;
+          return;
+        }
       }
-    }
-    const maxLength = Math.max(
-      this.childNodes.length,
-      isVNodesArray ? (vNodes as VNodeChildren).length : vNodes ? 1 : 0
-    );
-    for (let i = 0; i < maxLength; i++) {
-      const newVNode: VNodeChild = isVNodesArray ? vNodes[i] : vNodes;
-      const currentVNode = this.childNodes[i];
-      patches.push(...this.diff(this, currentVNode, newVNode));
-    }
-    vNodes = null as any;
-    this.applyPatches(patches);
+      const maxLength = Math.max(
+        this.childNodes.length,
+        isVNodesArray ? (vNodes as VNodeChildren).length : 1
+      );
+      for (let i = 0; i < maxLength; i++) {
+        const newVNode: VNodeChild = isVNodesArray ? vNodes[i] : vNodes;
+        const currentVNode = this.childNodes[i];
+        patches.push(...this.diff(this, currentVNode, newVNode));
+      }
+      vNodes = null as any;
+      this.applyPatches(patches);
+    });
   }
 
   protected html(): VNode | VNodeChildren {
@@ -1376,8 +1408,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
     children: VNodeChildren,
     containerArr: (BaseComponent | HTMLElement)[] = []
   ) {
-    for (const child of children) {
-      if (Array.isArray(child)) {
+    for (let child of children) {
+      if (isCallable(child)) {
+        containerArr.push(child as any);
+      } else if (Array.isArray(child)) {
         BaseComponent.createChildren(child as any, containerArr);
       } else if (BaseComponent.isPrimitive(child)) {
         containerArr.push(
@@ -1440,9 +1474,17 @@ class BaseComponent extends HTMLElement implements IDelegate {
       root.append(node);
     }
   }
+  stateIdNotIncluded = new Error('State Identifier/Key not specified');
+  useState<T>(
+    initial: StateFunctionValue<T>,
+    ...dependencyStringAndOrStateKey: string[]
+  ): [T, StateFunction<T>] {
+    const stateID: string | undefined = dependencyStringAndOrStateKey.pop();
 
-  useState<T>(initial: StateFunctionValue<T>): [T, StateFunction<T>] {
-    const stateID: string = arguments[arguments.length - 1];
+    if (!stateID) {
+      throw this.stateIdNotIncluded;
+    }
+
     if (typeof initial === 'function') initial = (initial as Function)();
     this[stateID] = initial;
     const variableSetter: StateFunction<T> = (value: StateFunctionValue<T>) => {
@@ -1458,7 +1500,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return [initial as T, variableSetter];
   }
 
-  useEffect(fn: StateEffectiveFunction, dependencies: any[]) {
+  useEffect(
+    fn: StateEffectiveFunction,
+    dependencies: any[],
+    ...dependencyStringAndOrStateKey: string[]
+  ) {
     fn = fn.bind(this);
     const dep = new Function(`return (${dependencies})`).bind(this);
     const cacher = () => lodash.cloneDeep(dep());
@@ -1475,11 +1521,16 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
   useReducer<T>(
     reducer: StateReducerFunction<T>,
-    initial: StateFunctionValue<T>
+    initial: StateFunctionValue<T>,
+    ...dependencyStringAndOrStateKey: string[]
   ): [T, StateFunction<T>] {
     reducer = reducer.bind(this);
-    const stateID: string = arguments[arguments.length - 1];
-    //@ts-ignore
+    const stateID: string | undefined = dependencyStringAndOrStateKey.pop();
+
+    if (!stateID) {
+      throw this.stateIdNotIncluded;
+    }
+
     let [state, setState] = this.useState<T>(initial, stateID);
     this[stateID] = state;
     const fn: StateFunction<T> = (newValue: StateFunctionValue<T>) => {
@@ -1498,10 +1549,18 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return [this[stateID], fn];
   }
 
-  useMemo<T>(fn: StateEffectiveMemoFunction<T>, dependencies?: any[]) {
+  useMemo<T>(
+    fn: StateEffectiveMemoFunction<T>,
+    dependencies?: any[],
+    ...dependencyStringAndOrStateKey: string[]
+  ) {
     fn = fn.bind(this);
-    const stateID: string = arguments[arguments.length - 1];
-    //@ts-ignore
+    const stateID: string | undefined = dependencyStringAndOrStateKey.pop();
+
+    if (!stateID) {
+      throw this.stateIdNotIncluded;
+    }
+
     let [state, setState] = this.useState<T>(fn(), stateID);
     this[stateID] = state;
     const dep = new Function(`return (${dependencies})`).bind(this);
@@ -1518,6 +1577,13 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return this[stateID];
   }
 
+  /**
+   * Keeps variable out of state management
+   *
+   * Changes to current does not cause effect
+   * @param initial Initial value of current
+   * @returns Ref<T>
+   */
   useRef<T>(initial?: T) {
     const ref: Ref<T> = { current: initial };
     return ref;
