@@ -1,7 +1,7 @@
 {
   "name": "reblend-routing",
   "description": "Fast, unopinionated, minimalist web framework",
-  "version": "4.19.2",
+  "version": "4.19.3",
   "author": "Emmanuel Paul Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "repository": "expressjs/express",
