@@ -23,7 +23,8 @@
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublish": "npm run build"
   },
   "dependencies": {
     "@types/prop-types": "^15.7.12",

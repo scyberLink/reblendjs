@@ -17,6 +17,7 @@
     "start": "reblend-scripts start",
     "build:test": "reblend-scripts build",
     "build": "tsc -p tsconfig.production.json; babel dist --out-dir lib --source-maps",
+    "prepublish": "npm run build",
     "test": "reblend-scripts test",
     "eject": "reblend-scripts eject"
   },
