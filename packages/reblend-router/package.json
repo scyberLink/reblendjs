@@ -1,6 +1,6 @@
 {
   "name": "reblend-router",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "./lib/index.js",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
@@ -9,7 +9,7 @@
     "@types/node": "^16.18.101",
     "reblend-routing": "latest",
     "reblend-scripts": "^6.0.36",
-    "reblendjs": "^3.0.8",
+    "reblendjs": "^3.0.9",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
