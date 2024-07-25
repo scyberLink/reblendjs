@@ -1,5 +1,5 @@
 {
-  "name": "reblend-router",
+  "name": "reblend-error",
   "version": "0.1.0",
   "main": "./lib/index.js",
   "dependencies": {
@@ -9,7 +9,7 @@
     "@types/node": "^16.18.101",
     "reblend-scripts": "^6.0.36",
     "reblendjs": "^3.0.6",
-    "reblend-routing": "latest",
+    "reblend-router": "latest",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },

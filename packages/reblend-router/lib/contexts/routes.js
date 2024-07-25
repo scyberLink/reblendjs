@@ -12,3 +12,4 @@ const createRoute = route => {
   });
 };
 export default createRoute;
+//# sourceMappingURL=routes.js.map
