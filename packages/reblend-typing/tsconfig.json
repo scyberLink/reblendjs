@@ -9,7 +9,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "outDir": "./dist",
+    "outDir": "./lib",
     "noImplicitAny": false,
     "declaration": true,
     "moduleResolution": "Node"

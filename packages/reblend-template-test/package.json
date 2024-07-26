@@ -1,16 +1,19 @@
 {
   "name": "reblend-template-test",
   "version": "2.0.8",
+  "author": "Emmanuel Elom <scansioquielom@gmail.com>",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/scyberLink/reblendjs.git",
     "directory": "packages/reblend-template-test"
   },
-  "private": true,
   "dependencies": {
     "@types/node": "^16.18.101",
     "reblend-scripts": "^6.0.34",
-    "reblendjs": "^3.0.9",
+    "reblendjs": "latest",
+    "reblend-router": "latest",
+    "reblend-error": "latest",
     "typescript": "^4.9.5"
   },
   "scripts": {

@@ -1,25 +1,23 @@
 {
   "name": "reblend-error",
   "version": "0.1.2",
-  "main": "./lib/index.js",
+  "author": "Emmanuel Elom <scansioquielom@gmail.com>",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "LICENSE",
+    "HISTORY.md",
+    "README.md",
+    "lib",
+    "dist"
+  ],
   "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.101",
-    "reblend-router": "latest",
-    "reblend-scripts": "^6.0.36",
-    "reblendjs": "^3.0.9",
-    "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "reblendjs": "latest"
   },
   "scripts": {
-    "start": "reblend-scripts start",
-    "build:test": "reblend-scripts build",
-    "build": "tsc -p tsconfig.production.json; babel dist --out-dir lib --source-maps",
-    "prepublish": "npm run build",
-    "test": "reblend-scripts test",
-    "eject": "reblend-scripts eject"
+    "build": "tsc; babel dist --out-dir lib",
+    "prepublish": "npm run build"
   },
   "browserslist": {
     "production": [
@@ -35,6 +33,8 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.24.8",
+    "typescript": "^4.9.5",
     "babel-preset-reblend": "^7.24.34"
-  }
+  },
+  "gitHead": "5580e7fd4293308d8e1c7179a9b4637a694e43da"
 }

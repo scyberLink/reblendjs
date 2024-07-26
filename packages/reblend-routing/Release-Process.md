@@ -134,10 +134,10 @@ $ git merge --ff-only <proposal-branch>
 merge. Using a fast-forward merge keeps the history clean as it does
 not introduce merge commits.
 
-### Step 3. Update the History.md and package.json to the new version number
+### Step 3. Update the HISTORY.md and package.json to the new version number
 
 The changes so far for the release should already be documented under the
-"unreleased" section at the top of the History.md file, as per the usual
+"unreleased" section at the top of the HISTORY.md file, as per the usual
 development practice. Change "unreleased" to the new release version / date.
 Example diff fragment:
 
@@ -157,7 +157,7 @@ the new release version (eg: `4.13.3`):
 ```sh
 $ git checkout <release-branch>
 <..edit files..>
-$ git add History.md package.json
+$ git add HISTORY.md package.json
 $ git commit -m '<version-number>'
 ```
 

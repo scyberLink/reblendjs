@@ -3,6 +3,7 @@
   "npmClient": "yarn",
   "useWorkspaces": true,
   "version": "independent",
+  "packages": ["packages/*"],
   "changelog": {
     "repo": "scyberLink/create-reblend-app",
     "labels": {

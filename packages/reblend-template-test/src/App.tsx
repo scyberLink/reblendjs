@@ -3,9 +3,10 @@ import Reblend, { useContextDispatch, useMemo, useState } from 'reblendjs';
 //@ts-ignore
 import logo, { ReblendComponent } from './logo.svg';
 import { ThemeContext } from './context';
-import { rand } from 'reblendjs/dist/common/utils';
 import Header from './Header';
 import useI from './hook';
+import { rand } from 'reblendjs/lib/common/utils';
+import Routing from './Routing';
 
 function App() {
   const [msg, s] = useI();
@@ -33,6 +34,8 @@ function App() {
       <div {...{ className: 'App' }}>
         <Header {...{ logo, msg, i: s }} />
       </div>
+
+      <Routing />
     </>
   );
 }

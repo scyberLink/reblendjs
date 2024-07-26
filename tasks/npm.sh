@@ -5,6 +5,8 @@ ROOT=$(pwd)
 # Set the base directory containing your packages
 base_dir="packages"
 
+#npm $1
+
 # Loop through all subdirectories within the base directory
 for dir in "$base_dir"/*; do
   # Check if it's a directory (avoid hidden files, etc.)
@@ -22,6 +24,5 @@ for dir in "$base_dir"/*; do
   fi
 done
 
-npm $1
 
 echo "npm $1 run successfully"

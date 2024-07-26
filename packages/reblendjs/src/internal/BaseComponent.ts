@@ -38,8 +38,6 @@ export type ChildWithProps = {
 
 export const ERROR_EVENTNAME = 'reblend-render-error';
 
-export type ReblendRenderingException = Error & { component: BaseComponent };
-
 interface PropPatch {
   type: 'REMOVE' | 'UPDATE';
   node: BaseComponent;
@@ -1160,6 +1158,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
               newNode as VNode
             );
             oldNode?.parentNode?.replaceChild(newNodeElement, oldNode);
+            oldNode &&
+              'disconnectedCallback' &&
+              (oldNode as any).disconnectedCallback();
+            oldNode = null as any;
           }
           break;
         case 'TEXT':

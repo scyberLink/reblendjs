@@ -10,16 +10,19 @@
     "JSX",
     "Typing"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "LICENSE",
+    "HISTORY.md",
+    "README.md",
+    "lib"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/scyberLink/reblendjs.git",
     "directory": "packages/reblend-typing"
   },
-  "files": [
-    "dist"
-  ],
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "scripts": {
@@ -31,7 +34,7 @@
     "csstype": "^3.1.3",
     "prop-types": "^15.8.1"
   },
-  "gitHead": "925861601548bac5600cdfb042a408d283d8cc17",
+  "gitHead": "5580e7fd4293308d8e1c7179a9b4637a694e43da",
   "devDependencies": {
     "typescript": "^5.5.3"
   }

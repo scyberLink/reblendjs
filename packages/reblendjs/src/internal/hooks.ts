@@ -7,7 +7,7 @@ export type StateFunctionValue<T> = ((previous: T) => T) | T;
 export type StateEffectiveMemoFunction<T> = () => T;
 export type StateEffectiveFunction = () => (() => any) | void;
 export type StateReducerFunction<T> = (previous: T, current: T) => any;
-type ContextSubscriber = {
+export type ContextSubscriber = {
   component: BaseComponent;
   stateKey: string;
 };
@@ -16,7 +16,7 @@ const contextValue = Symbol('Reblend.contextValue');
 const contextUpdater = Symbol('Reblend.contextUpdater');
 const contextSubscrbers = Symbol('Reblend.contextSubscrbers');
 const contextSubscrbe = Symbol('Reblend.contextSubscrbe');
-type Context<T> = {
+export type Context<T> = {
   [contextSubscrbers]: ContextSubscriber[];
   [contextValue]: T;
   [contextUpdater](update: StateFunctionValue<T>): void;

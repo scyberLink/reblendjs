@@ -1,6 +1,7 @@
 import Reblend, { useContext } from 'reblendjs';
 import { ThemeContext } from './context';
 import Cde from './C';
+import Routing from './Routing';
 
 function Header({ i = 0, msg = '', logo = '' }) {
   const theme = useContext(ThemeContext);

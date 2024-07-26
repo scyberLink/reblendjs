@@ -39,10 +39,11 @@
     "typescript": "^5.5.4"
   },
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "files": [
     "LICENSE",
-    "History.md",
-    "Readme.md",
+    "HISTORY.md",
+    "README.md",
     "lib"
   ],
   "scripts": {
@@ -53,5 +54,6 @@
     "test-ci": "nyc --reporter=lcovonly --reporter=text npm test",
     "test-cov": "nyc --reporter=html --reporter=text npm test",
     "test-tap": "mocha --require test/support/env --reporter tap --check-leaks test/ test/acceptance/"
-  }
+  },
+  "gitHead": "5580e7fd4293308d8e1c7179a9b4637a694e43da"
 }

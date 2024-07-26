@@ -17,10 +17,8 @@ import {
   useContext,
   useContextDispatch,
 } from './internal/hooks';
-import {
-  ERROR_EVENTNAME,
-  ReblendRenderingException,
-} from './internal/BaseComponent';
+import BaseComponent, { ERROR_EVENTNAME } from './internal/BaseComponent';
+import { isCallable } from './common/utils';
 
 export default Reblend;
 
@@ -42,5 +40,8 @@ export {
   createContext,
   useContextDispatch,
   ERROR_EVENTNAME,
-  ReblendRenderingException,
+  isCallable,
 };
+type ReblendRenderingException = Error & { component: BaseComponent };
+
+export type { ReblendRenderingException };
