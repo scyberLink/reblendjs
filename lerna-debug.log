@@ -1,0 +1,10 @@
+61 error Error: Command failed with exit code 1: git add -- packages/reblend-error/package.json packages/reblend-error/package-lock.json packages/reblend-router/package.json packages/reblend-router/package-lock.json packages/reblend-routing/package.json packages/reblend-routing/package-lock.json packages/reblend-template-test/package.json packages/reblend-template-test/package-lock.json packages/reblend-typing/package.json packages/reblend-typing/package-lock.json packages/reblendjs/package.json packages/reblendjs/package-lock.json
+61 error The following paths are ignored by one of your .gitignore files:
+61 error packages/reblend-routing/package-lock.json
+61 error hint: Use -f if you really want to add them.
+61 error hint: Turn this message off by running
+61 error hint: "git config advice.addIgnoredFile false"
+61 error     at makeError (/home/s/Desktop/proj/scyberLink/reblendjs/node_modules/@lerna/child-process/node_modules/execa/lib/error.js:60:11)
+61 error     at handlePromise (/home/s/Desktop/proj/scyberLink/reblendjs/node_modules/@lerna/child-process/node_modules/execa/index.js:118:26)
+61 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+61 error     at async Promise.all (index 0)
