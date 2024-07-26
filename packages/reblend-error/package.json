@@ -1,6 +1,6 @@
 {
   "name": "reblend-error",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "main": "lib/index.js",
