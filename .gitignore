@@ -131,3 +131,6 @@ dist
 node_modules
 build
 dist
+**/build/**
+**/dist/**
+**/lib/**
