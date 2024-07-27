@@ -14,7 +14,7 @@
   ],
   "dependencies": {
     "reblend-routing": "^4.19.6",
-    "reblendjs": "latest"
+    "reblendjs": "^3.0.13"
   },
   "scripts": {
     "build": "tsc && babel dist --out-dir lib",
@@ -37,5 +37,5 @@
     "babel-preset-reblend": "^7.24.36",
     "typescript": "^4.9.5"
   },
-  "gitHead": "504864a7a5d7df35439a3f8ed3717ce5fbfe14d8"
+  "gitHead": "d6cf58b691138277be408e87393a0e6e703b589b"
 }
