@@ -1,5 +1,5 @@
 import { registerElement } from '../common/utils';
-import BaseComponent from './BaseComponent';
+import { BaseComponent } from './BaseComponent';
 import {
   ReblendTyping,
   ReblendManagedAttributes,
@@ -585,4 +585,4 @@ class Reblend extends BaseComponent {
 
 registerElement(`ReblendFragment`, Reblend);
 
-export default Reblend;
+export { Reblend };

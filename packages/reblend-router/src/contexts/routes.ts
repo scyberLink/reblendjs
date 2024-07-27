@@ -1,19 +1,16 @@
 import type Reblend from 'reblendjs';
-import { createContext, useContextDispatch } from 'reblendjs';
+import { createContext } from 'reblendjs';
 import ReblendRouting from 'reblend-routing';
 
 type RoutePath = { [path: string]: Reblend };
 
 export const Routes = createContext(new ReblendRouting());
 export const MatchedRoute = createContext(null as any as Reblend);
-const matchedRouteDispatcher = useContextDispatch(MatchedRoute);
-
-const routeDispatcher = useContextDispatch(Routes);
 
 const createRoute = (route: RoutePath) => {
-  routeDispatcher(previousState => {
+  Routes.update(previousState => {
     const [key, value] = Object.entries(route)[0];
-    previousState.post(key, () => matchedRouteDispatcher(value));
+    previousState.post(key, () => MatchedRoute.update(value));
     return previousState;
   });
 };

@@ -3,4 +3,4 @@ enum ShadowMode {
   CLOSE = 'closed',
 }
 
-export default ShadowMode;
+export { ShadowMode };

@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash';
-import BaseComponent from './BaseComponent';
+import { BaseComponent } from './BaseComponent';
 
 export type Ref<T> = { current?: T | HTMLElement };
 export type StateFunction<T> = (value: StateFunctionValue<T>) => void;
@@ -13,14 +13,17 @@ export type ContextSubscriber = {
 };
 
 const contextValue = Symbol('Reblend.contextValue');
-const contextUpdater = Symbol('Reblend.contextUpdater');
-const contextSubscrbers = Symbol('Reblend.contextSubscrbers');
-const contextSubscrbe = Symbol('Reblend.contextSubscrbe');
+const contextValueInitial = Symbol('Reblend.contextValueInitial');
+const contextSubscribers = Symbol('Reblend.contextSubscrbers');
+const contextSubscribe = Symbol('Reblend.contextSubscribe');
+
 export type Context<T> = {
-  [contextSubscrbers]: ContextSubscriber[];
+  [contextSubscribers]: ContextSubscriber[];
   [contextValue]: T;
-  [contextUpdater](update: StateFunctionValue<T>): void;
-  [contextSubscrbe](component: BaseComponent, stateKey: string): void;
+  [contextValueInitial]: T;
+  reset: () => void;
+  update(update: StateFunctionValue<T>): void;
+  [contextSubscribe](component: BaseComponent, stateKey: string): void;
 };
 
 const invalidContext = new Error('Invalid context');
@@ -82,9 +85,9 @@ export function useContext<T>(
 ): T {
   if (
     !(
-      contextSubscrbers in context ||
+      contextSubscribers in context ||
       contextValue in context ||
-      contextSubscrbe in context
+      contextSubscribe in context
     )
   ) {
     throw invalidContext;
@@ -102,53 +105,40 @@ export function useContext<T>(
     );
   }
   //@ts-ignore
-  context[contextSubscrbe](this, stateID);
+  context[contextSubscribe](this, stateID);
   return context[contextValue];
-}
-
-export function useContextDispatch<T>(
-  context: Context<T>,
-  ...dependencyStringAndOrStateKey: string[]
-): StateFunction<T> {
-  if (
-    !(
-      contextValue in context ||
-      contextSubscrbers in context ||
-      contextUpdater in context
-    )
-  ) {
-    throw invalidContext;
-  }
-
-  return context[contextUpdater];
 }
 
 export function createContext<T>(initial: T): Context<T> {
   const context: Context<T> = {
-    [contextSubscrbers]: [],
+    [contextSubscribers]: [],
     [contextValue]: initial,
-    [contextUpdater](update: StateFunctionValue<T>) {
+    update(update: StateFunctionValue<T>) {
       const newValue =
         typeof update === 'function'
           ? (update as Function)(context[contextValue])
           : update;
       if (!isEqual(newValue, context[contextValue])) {
         context[contextValue] = newValue;
-        context[contextSubscrbers].forEach(subscriber => {
+        context[contextSubscribers].forEach(subscriber => {
           subscriber.component[subscriber.stateKey] = context[contextValue];
           //@ts-ignore
           subscriber.component.onStateChange();
         });
       }
     },
-    [contextSubscrbe](component: BaseComponent, stateKey: string) {
+    [contextSubscribe](component: BaseComponent, stateKey: string) {
       if (!component) {
         throw new Error('Invalid component');
       }
       if (!stateKey) {
         throw new Error('Invalid state key');
       }
-      context[contextSubscrbers].push({ component, stateKey });
+      context[contextSubscribers].push({ component, stateKey });
+    },
+    [contextValueInitial]: initial,
+    reset() {
+      context[contextValue] = context[contextValueInitial];
     },
   };
   return context;

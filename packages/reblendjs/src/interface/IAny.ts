@@ -1,3 +1,3 @@
-export default interface IAny {
+export interface IAny {
   [key: string]: any;
 }

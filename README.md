@@ -1,5 +1,7 @@
 # ReblendJs
+
 ## A library built using react way of handling dom but with web components
+
 This project is a frontend library that provides a robust and modular approach to state management and component rendering, inspired by React's architecture but built using web components. The library aims to combine the benefits of React's efficient state handling with the native browser support and interoperability of web components.
 
 At its core, the library introduces a custom element base class that encapsulates the state management logic and lifecycle methods, similar to React's class components. Developers can extend this base class to create their own custom elements, defining their state, props, and event handlers.

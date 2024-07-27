@@ -7,7 +7,6 @@ import {
   capitalize,
   cssString,
   isCallable,
-  isSubclassOf,
   rand,
   registerElement,
   snakeCase,
@@ -15,11 +14,11 @@ import {
 import InvalidTagNameException from '../exceptions/InvalidTagNameException';
 import NullException from '../exceptions/NullException';
 import UnsupportedPrototype from '../exceptions/UnsupportedPrototype';
-import IAny from '../interface/IAny';
-import IPair from '../interface/IPair';
+import { IAny } from '../interface/IAny';
+import { IPair } from '../interface/IPair';
 import IDelegate from './IDelegate';
-import Reblend from './Reblend';
-import ShadowMode from './ShadowMode';
+import { Reblend } from './Reblend';
+import { ShadowMode } from './ShadowMode';
 import {
   Ref,
   StateEffectiveFunction,
@@ -37,6 +36,7 @@ export type ChildWithProps = {
 };
 
 export const ERROR_EVENTNAME = 'reblend-render-error';
+export type ReblendRenderingException = Error & { component: BaseComponent };
 
 interface PropPatch {
   type: 'REMOVE' | 'UPDATE';
@@ -53,6 +53,7 @@ type DomNodeChild = Text | BaseComponent | ReblendPrimitive;
 type DomNodeChildren = DomNodeChild[];
 
 interface VNode {
+  [reblendVComponent: symbol]: boolean;
   props: IAny & { children: VNodeChildren };
   tag: string | typeof Reblend;
 }
@@ -67,8 +68,12 @@ interface Patch {
 
 export const REBLEND_PRIMITIVE_ELEMENT_NAME = 'ReblendPrimitive';
 
+const ReblendNode = Symbol('Reblend.Node');
+const ReblendVNode = Symbol('Reblend.VNode');
+
 interface BaseComponent {
   tag: string;
+  [reblendComponent: symbol]: boolean;
   [stateKey: string]: any;
 }
 
@@ -95,7 +100,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
   private _dataId!: string;
   private _state!: IAny;
   styleUtil = StyleUtil;
-
+  renderingError?: ReblendRenderingException;
+  renderingErrorHandler?: (e: ReblendRenderingException) => void;
+  container?: BaseComponent;
   connectedCallback() {
     /*     this.attached = true;
      */ this.componentDidMount();
@@ -947,7 +954,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
     newNode: VNodeChild
   ): Patch[] {
     const patches: Patch[] = [];
-
+    if (isCallable(oldNode) && isCallable(newNode)) {
+      return [];
+    }
     if (
       BaseComponent.isPrimitive(oldNode) &&
       BaseComponent.isPrimitive(newNode)
@@ -1064,6 +1073,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
   ) {
     oldChildren || (oldChildren = []);
     newChildren || (newChildren = []);
+    if (isCallable(oldChildren) && isCallable(newChildren)) {
+      return [];
+    }
     const patches: Patch[] = [];
     const maxLength = Math.max(oldChildren.length, newChildren.length);
 
@@ -1092,14 +1104,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
     const isTagStandard = typeof tag === 'string';
     const props = {
       ...vNode.props,
-      children: BaseComponent.createChildren(children),
+      children: BaseComponent.createChildren.bind(this)(children),
       ...(isTagStandard && clazz.props ? clazz.props : {}),
     };
-    if (
-      !isTagStandard &&
-      isSubclassOf(clazz, Reblend) &&
-      !BaseComponent.hasName(clazz)
-    ) {
+    if (!isTagStandard && !BaseComponent.hasName(clazz)) {
       clazz.ELEMENT_NAME = `Anonymous`;
     }
     if (isTagStandard) {
@@ -1114,14 +1122,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
       };
     }
 
-    if (!isSubclassOf(clazz, Reblend)) {
-      throw new UnsupportedPrototype(
-        `${isTagStandard ? tag : (tag as any).name}`
-      );
-    }
-
     BaseComponent.register(clazz);
     const element: Reblend = new (clazz as any)();
+    element[ReblendNode] = true;
     if ('ref' in props) {
       if (!props.ref) {
         throw new Error('Invalid ref object');
@@ -1140,6 +1143,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     }
     BaseComponent.setProps(props, element, true);
     element.attach();
+    element.container = this as any as BaseComponent;
     return element;
   }
 
@@ -1147,14 +1151,16 @@ class BaseComponent extends HTMLElement implements IDelegate {
     patches?.forEach(({ type, newNode, oldNode, parent, patches }) => {
       switch (type) {
         case 'CREATE':
-          parent?.appendChild(BaseComponent.createElement(newNode as VNode));
+          parent?.appendChild(
+            BaseComponent.createElement.bind(this)(newNode as VNode)
+          );
           break;
         case 'REMOVE':
           oldNode && parent?.removeChild(oldNode);
           break;
         case 'REPLACE':
           if (oldNode) {
-            const newNodeElement = BaseComponent.createElement(
+            const newNodeElement = BaseComponent.createElement.bind(this)(
               newNode as VNode
             );
             oldNode?.parentNode?.replaceChild(newNodeElement, oldNode);
@@ -1207,8 +1213,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
     );
   }
 
-  protected attach() {
-    this.catch(() => {
+  protected async attach() {
+    this.catchErrorFrom(async () => {
       let vNodes = this.html();
       //if (!vNodes) return;
       this.innerHTML = '';
@@ -1224,14 +1230,16 @@ class BaseComponent extends HTMLElement implements IDelegate {
           vNodes = null as any;
           return;
         }
-        vNodes = BaseComponent.createChildren(vNodes as VNodeChildren) as any;
+        vNodes = BaseComponent.createChildren.bind(this)(
+          vNodes as VNodeChildren
+        ) as any;
         this.appendChildren(...(vNodes as any));
       } else {
         if ((vNodes as any)?.parentNode) {
           vNodes = null as any;
           return;
         }
-        vNodes = BaseComponent.createElement(vNodes as VNode) as any;
+        vNodes = BaseComponent.createElement.bind(this)(vNodes as VNode) as any;
         this.appendChildren(vNodes as any);
       }
     });
@@ -1259,30 +1267,31 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
     return containerArr;
   }
-
-  private catch(fn: Function) {
-    const handleError = (error: Error) => {
-      window.dispatchEvent(
-        new CustomEvent(ERROR_EVENTNAME, {
-          detail: (((error as any).component = this), error),
-        })
+  private handleError(error: Error) {
+    if (this.renderingErrorHandler) {
+      this.renderingErrorHandler(
+        (((error as any).component = this), error) as ReblendRenderingException
       );
+    } else if (this.container && this.container[ReblendNode]) {
+      this.container.handleError(error);
+    } else {
       throw error;
-    };
-
+    }
+  }
+  private catchErrorFrom(fn: Function) {
     try {
-      const result = fn();
+      const result = fn.bind(this)();
       // Check if the result is a promise
       if (result && typeof result.then === 'function') {
-        return result.catch(handleError);
+        return result.catch(this.handleError.bind(this));
       }
     } catch (error) {
-      handleError(error as Error);
+      this.handleError.bind(this)(error as Error);
     }
   }
 
   protected async onStateChange() {
-    this.catch(async () => {
+    this.catchErrorFrom.bind(this)(async () => {
       this.applyEffects();
       let vNodes = this.html();
       let patches: Patch[] = [];
@@ -1333,6 +1342,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       return children;
     }
     const velement = {
+      [ReblendVNode]: true,
       tag: clazz,
       props: {
         ...(props || {}),
@@ -1414,15 +1424,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
       if (isCallable(child)) {
         containerArr.push(child as any);
       } else if (Array.isArray(child)) {
-        BaseComponent.createChildren(child as any, containerArr);
+        BaseComponent.createChildren.bind(this)(child as any, containerArr);
       } else if (BaseComponent.isPrimitive(child)) {
         containerArr.push(
           new BaseComponent.ReblendPrimitive().setData(child as Primitive)
         );
       } else if (child instanceof Reblend || child instanceof Node) {
         containerArr.push(child as any);
-      } else if ('tag' in <any>child && 'props' in <any>child) {
-        const domChild = BaseComponent.createElement(child as any);
+      } else if (child![ReblendVNode]) {
+        const domChild = BaseComponent.createElement.bind(this)(child as any);
         containerArr.push(domChild);
       } else {
         throw new TypeError('Invalid child node  in children');
@@ -1469,7 +1479,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       throw new Error('Invalid root id');
     }
     const vNodes = BaseComponent.construct(app as any, props || {}, ...[]);
-    const nodes = BaseComponent.createChildren(
+    const nodes = BaseComponent.createChildren.bind(this)(
       Array.isArray(vNodes) ? (vNodes as any) : [vNodes]
     );
     for (const node of nodes) {
@@ -1598,4 +1608,4 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
 registerElement(`BaseComponent`, BaseComponent);
 
-export default BaseComponent;
+export { BaseComponent };

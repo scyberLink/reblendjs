@@ -1,13 +1,26 @@
-import Reblend, { useContext } from 'reblendjs';
+import Reblend, { TryCatchError, useContext } from 'reblendjs';
 import { ThemeContext } from './context';
 import Cde from './C';
-import Routing from './Routing';
+import { Link } from 'reblend-router';
 
 function Header({ i = 0, msg = '', logo = '' }) {
   const theme = useContext(ThemeContext);
 
   return (
     <header className="App-header">
+      <TryCatchError>
+        {error =>
+          (error && <>{error.message}</>) || (
+            <>
+              {
+                //@ts-ignore Should throw error and should be caught
+                inc.message + 1
+              }
+            </>
+          )
+        }
+      </TryCatchError>
+
       <img
         class={'App'}
         src={logo}
@@ -18,14 +31,14 @@ function Header({ i = 0, msg = '', logo = '' }) {
       <p style={{ background: theme }}>
         Edit <Cde code={i} /> and save to reload. {`{${msg}}`}
       </p>
-      <a
+      <Link
         className="App-link"
-        href="https://reblendjs.org"
+        href="user/detail"
         target="_blank"
         rel="noopener noreferrer"
       >
         Learn Reblend
-      </a>
+      </Link>
     </header>
   );
 }

@@ -10,9 +10,8 @@
   },
   "dependencies": {
     "@types/node": "^16.18.101",
-    "reblend-error": "latest",
     "reblend-router": "latest",
-    "reblend-scripts": "^6.0.34",
+    "reblend-scripts": "^6.0.39",
     "reblendjs": "latest",
     "typescript": "^4.9.5"
   },

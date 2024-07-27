@@ -21,4 +21,4 @@ type IStyle = {
   'z-index'?: string | number;
 };
 
-export default IStyle;
+export { IStyle };

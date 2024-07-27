@@ -3,4 +3,4 @@ interface IPair {
   value: any;
 }
 
-export default IPair;
+export { IPair };

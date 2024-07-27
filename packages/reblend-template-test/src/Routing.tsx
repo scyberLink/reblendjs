@@ -1,5 +1,4 @@
 import Reblend from 'reblendjs';
-import App from './App';
 //@ts-ignore
 import { ReblendComponent } from './logo.svg';
 import BrowserRouter, { Route } from 'reblend-router';
@@ -13,8 +12,6 @@ export default function Routing() {
         path={'/user/detail/:id([0-9]{10})?'}
         element={<ReblendComponent />}
       ></Route>
-      <Route path={'/app'} Component={App}></Route>
-      <Route path={'*'} Component={App}></Route>
     </>
   );
 }

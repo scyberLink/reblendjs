@@ -1,5 +1,5 @@
 import './App.css';
-import Reblend, { useContextDispatch, useMemo, useState } from 'reblendjs';
+import Reblend, { useMemo } from 'reblendjs';
 //@ts-ignore
 import logo, { ReblendComponent } from './logo.svg';
 import { ThemeContext } from './context';
@@ -20,11 +20,9 @@ function App() {
     );
   }, [msg, s]);
 
-  const themeDispatcher = useContextDispatch(ThemeContext);
-
   const colors = ['azure', 'yellow', 'pink', 'purple', 'green', 'red'];
   setInterval(() => {
-    themeDispatcher(colors[rand(0, colors.length)]);
+    ThemeContext.update(colors[rand(0, colors.length)]);
   }, 2000);
 
   return (

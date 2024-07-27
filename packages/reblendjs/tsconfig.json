@@ -9,10 +9,12 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "outDir": "./lib",
+    "outDir": "./dist",
     "noImplicitAny": false,
     "declaration": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "jsx": "preserve",
+    "jsxFactory": "Reblend"
   },
   "include": ["src"]
 }

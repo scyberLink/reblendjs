@@ -1,4 +1,4 @@
-import IAny from '../interface/IAny';
+import { IAny } from '../interface/IAny';
 
 class GlobalConfig {
   MEMORY_STORAGE = 0;
@@ -356,4 +356,4 @@ class GlobalConfig {
 
 const SharedConfig = new GlobalConfig();
 
-export default SharedConfig;
+export { SharedConfig };
