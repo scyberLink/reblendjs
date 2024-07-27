@@ -13,8 +13,8 @@
     "dist"
   ],
   "dependencies": {
-    "reblend-routing": "^4.19.6",
-    "reblendjs": "^3.0.13"
+    "reblend-routing": "^4.19.7",
+    "reblendjs": "^3.0.15"
   },
   "scripts": {
     "build": "tsc && babel dist --out-dir lib",
