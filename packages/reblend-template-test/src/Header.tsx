@@ -31,12 +31,7 @@ function Header({ i = 0, msg = '', logo = '' }) {
       <p style={{ background: theme }}>
         Edit <Cde code={i} /> and save to reload. {`{${msg}}`}
       </p>
-      <Link
-        className="App-link"
-        href="user/detail"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <Link className="App-link" href="user/detail">
         Learn Reblend
       </Link>
     </header>
