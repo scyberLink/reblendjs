@@ -29,6 +29,8 @@ import {
 } from './hooks';
 import * as lodash from 'lodash';
 import StyleUtil from './StyleUtil';
+import { createRoot, Root } from 'react-dom/client';
+import React, { createElement, createRef, forwardRef, useEffect } from 'react';
 
 export type ChildWithProps = {
   child: BaseComponent;
@@ -56,6 +58,12 @@ interface VNode {
   [reblendVComponent: symbol]: boolean;
   props: IAny & { children: VNodeChildren };
   tag: string | typeof Reblend;
+}
+
+interface ReactNode {
+  $$typeof: symbol;
+  displayName: string;
+  render: (props: any) => any;
 }
 
 interface Patch {
@@ -874,7 +882,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
         const _attributeName = attributeName(propName);
         const propValue = props[propName];
         if (propName.startsWith('on')) {
-          to[_attributeName] = this.fn(propValue);
+          to[_attributeName] = this.fn(propValue) as any;
         } else {
           if (_attributeName == 'style') {
             to.addStyle(propValue);
@@ -1016,8 +1024,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
       patches.push(
         ...this.diffChildren(
           oldNode as BaseComponent,
-          (oldNode as BaseComponent).props.children,
-          (newNode as VNode).props.children
+          (oldNode as BaseComponent)?.props?.children,
+          (newNode as VNode)?.props?.children
         )
       );
     }
@@ -1032,13 +1040,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
     for (const key in newProps) {
       if (key !== 'children') {
         let oldProp =
-          typeof oldProps[key] === 'function'
+          oldProps &&
+          (typeof oldProps[key] === 'function'
             ? oldProps[key].toString()
-            : oldProps[key];
+            : oldProps[key]);
         let newProp =
-          typeof newProps[key] === 'function'
+          newProps &&
+          (typeof newProps[key] === 'function'
             ? newProps[key].toString()
-            : newProps[key];
+            : newProps[key]);
         if (!lodash.isEqual(oldProp, newProp)) {
           oldProp = null;
           newProp = null;
@@ -1092,23 +1102,25 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return patches;
   }
 
-  protected static createElement(vNode: VNode): BaseComponent {
+  protected static createElement(vNode: VNode | ReactNode): BaseComponent {
     if (BaseComponent.isPrimitive(vNode)) {
       return new BaseComponent.ReblendPrimitive().setData(
         vNode as VNodeChild as Primitive
       );
     }
-    const { tag } = vNode;
-    const { children } = vNode.props || {};
+    const { tag } = vNode as VNode;
+    const { children } = (vNode as VNode).props || {};
     let clazz: typeof Reblend = tag as any as typeof Reblend;
     const isTagStandard = typeof tag === 'string';
     const props = {
-      ...vNode.props,
+      ...(vNode as VNode).props,
       children: BaseComponent.createChildren.bind(this)(children),
       ...(isTagStandard && clazz.props ? clazz.props : {}),
     };
     if (!isTagStandard && !BaseComponent.hasName(clazz)) {
-      clazz.ELEMENT_NAME = `Anonymous`;
+      clazz.ELEMENT_NAME = BaseComponent.isReactNode(clazz)
+        ? (clazz as any as ReactNode).displayName
+        : `Anonymous`;
     }
     if (isTagStandard) {
       clazz = class extends Reblend {
@@ -1118,6 +1130,57 @@ class BaseComponent extends HTMLElement implements IDelegate {
           super();
           const ele = document.createElement(tag as string);
           this.wrapper = ele;
+        }
+      };
+    }
+
+    if (BaseComponent.isReactNode(tag as any)) {
+      clazz = class extends Reblend {
+        static ELEMENT_NAME: string = capitalize(
+          `${(tag as unknown as ReactNode).displayName}`
+        );
+        reactDomCreateRoot_root?: Root;
+        constructor() {
+          super();
+        }
+
+        init(): void {
+          this.reactDomCreateRoot_root = createRoot(this);
+        }
+
+        protected cleanUp(): void {
+          try {
+            this.reactDomCreateRoot_root?.unmount();
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        protected html() {
+          const containerRef = createRef<HTMLDivElement>();
+
+          const WrapperComponent = forwardRef<HTMLDivElement>((props, ref) => {
+            useEffect(() => {
+              if (
+                containerRef.current instanceof HTMLElement &&
+                typeof containerRef.current.appendChild === 'function'
+              ) {
+                this.props.children.forEach((child: HTMLElement) => {
+                  if (child instanceof HTMLElement) {
+                    containerRef.current!.appendChild(child);
+                  }
+                });
+              }
+            }, []);
+
+            return createElement(tag as any, {
+              ...this.props,
+              children: undefined,
+              ref: containerRef,
+            });
+          });
+
+          this.reactDomCreateRoot_root?.render(createElement(WrapperComponent));
         }
       };
     }
@@ -1147,6 +1210,16 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return element;
   }
 
+  static isReactNode(tag: IAny): boolean {
+    return (
+      tag &&
+      typeof tag !== 'string' &&
+      '$$typeof' in tag &&
+      'displayName' in tag &&
+      'render' in tag
+    );
+  }
+
   applyPatches(patches: Patch[]) {
     patches?.forEach(({ type, newNode, oldNode, parent, patches }) => {
       switch (type) {
@@ -1165,7 +1238,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
             );
             oldNode?.parentNode?.replaceChild(newNodeElement, oldNode);
             oldNode &&
-              'disconnectedCallback' &&
+              'disconnectedCallback' in oldNode &&
               (oldNode as any).disconnectedCallback();
             oldNode = null as any;
           }

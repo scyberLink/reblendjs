@@ -1,5 +1,5 @@
 import './App.css';
-import Reblend, { useMemo } from 'reblendjs';
+import Reblend, { useMemo, useState } from 'reblendjs';
 //@ts-ignore
 import logo, { ReblendComponent } from './logo.svg';
 import { ThemeContext } from './context';
@@ -7,6 +7,10 @@ import Header from './Header';
 import useI from './hook';
 import { rand } from 'reblendjs/lib/common/utils';
 import Routing from './Routing';
+import { Button } from 'react-bootstrap';
+import { MyVerticallyCenteredModal } from './modal/MyVerticallyCenteredModal';
+import CardExample from './card/CardExample';
+import AutoLayoutSizingExample from './grid/AutoLayoutSizingExample';
 
 function App() {
   const [msg, s] = useI();
@@ -24,9 +28,21 @@ function App() {
   setInterval(() => {
     ThemeContext.update(colors[rand(0, colors.length)]);
   }, 2000);
+  const [modalShow, setModalShow] = useState(false);
 
   return (
     <>
+      <>
+        <CardExample class="p-2" />
+        <Button variant="primary" onClick={() => setModalShow(true)}>
+          Launch vertically centered modal
+        </Button>
+
+        <MyVerticallyCenteredModal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+        />
+      </>
       {/* @ts-ignore */}
       <Header1 />
       <div {...{ className: 'App' }}>
@@ -34,6 +50,7 @@ function App() {
       </div>
 
       <Routing />
+      <AutoLayoutSizingExample />
     </>
   );
 }

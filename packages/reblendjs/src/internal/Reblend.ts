@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { registerElement } from '../common/utils';
 import { BaseComponent } from './BaseComponent';
 import {
