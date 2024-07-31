@@ -13,7 +13,6 @@ import {
 } from '../common/utils';
 import InvalidTagNameException from '../exceptions/InvalidTagNameException';
 import NullException from '../exceptions/NullException';
-import UnsupportedPrototype from '../exceptions/UnsupportedPrototype';
 import { IAny } from '../interface/IAny';
 import { IPair } from '../interface/IPair';
 import IDelegate from './IDelegate';
@@ -28,9 +27,9 @@ import {
   StateReducerFunction,
 } from './hooks';
 import * as lodash from 'lodash';
-import StyleUtil from './StyleUtil';
+import StyleUtil, { StyleUtilType } from './StyleUtil';
 import { createRoot, Root } from 'react-dom/client';
-import React, { createElement, createRef, forwardRef, useEffect } from 'react';
+import { createElement, createRef, forwardRef, useEffect } from 'react';
 
 export type ChildWithProps = {
   child: BaseComponent;
@@ -48,22 +47,23 @@ interface PropPatch {
 }
 
 export type Primitive = boolean | null | number | string | undefined;
+export const REBLEND_PRIMITIVE_ELEMENT_NAME = 'ReblendPrimitive';
 
 type VNodeChild = Primitive | VNode;
 type VNodeChildren = VNodeChild[];
 type DomNodeChild = Text | BaseComponent | ReblendPrimitive;
 type DomNodeChildren = DomNodeChild[];
 
-interface VNode {
-  [reblendVComponent: symbol]: boolean;
-  props: IAny & { children: VNodeChildren };
-  tag: string | typeof Reblend;
-}
-
 interface ReactNode {
   $$typeof: symbol;
   displayName: string;
   render: (props: any) => any;
+}
+
+interface VNode {
+  [reblendVComponent: symbol]: boolean;
+  props: IAny & { children: VNodeChildren };
+  type: string | typeof Reblend | ReactNode;
 }
 
 interface Patch {
@@ -74,15 +74,19 @@ interface Patch {
   patches?: PropPatch[];
 }
 
-export const REBLEND_PRIMITIVE_ELEMENT_NAME = 'ReblendPrimitive';
-
 const ReblendNode = Symbol('Reblend.Node');
 const ReblendVNode = Symbol('Reblend.VNode');
 
+const ReactToReblendNode = Symbol('React.Reblend.Node');
+const ReactToReblendVNode = Symbol('React.Reblend.VNode');
+
+const ReblendNodeStandard = Symbol('Reblend.Node.Standard');
+const ReblendVNodeStandard = Symbol('Reblend.VNode.Standard');
+
 interface BaseComponent {
-  tag: string;
+  type: string;
   [reblendComponent: symbol]: boolean;
-  [stateKey: string]: any;
+  //[stateKey: string]: any;
 }
 
 interface ReblendPrimitive extends BaseComponent {
@@ -95,40 +99,55 @@ class BaseComponent extends HTMLElement implements IDelegate {
   static ELEMENT_NAME = 'BaseComponent';
   protected shadow!: ShadowRoot;
   protected shadowWrapper!: HTMLElement;
-  private _scale: number = 1;
-  private _rotate: number = 0;
-  private initialDisplay: string = 'initial';
+  private _scale?: number;
+  private _rotate?: number;
+  private initialDisplay?: string;
   private showing: boolean = true;
   xOrigin?: number;
   yOrigin?: number;
   dataIdQuerySelector!: string;
-  private _shadowed = '';
+  private _shadowed;
   props!: IAny;
   static props: IAny;
   private _dataId!: string;
   private _state!: IAny;
-  styleUtil = StyleUtil;
+  styleUtil!: StyleUtilType;
   renderingError?: ReblendRenderingException;
   renderingErrorHandler?: (e: ReblendRenderingException) => void;
   container?: BaseComponent;
   connectedCallback() {
     /*     this.attached = true;
      */ this.componentDidMount();
-    this.mountEffects();
+    this.mountEffects!();
   }
 
   constructor() {
     super();
+    this._constructor();
+  }
+
+  /**
+   * For compatibility incase standard element inherits this prototype; we can manually exec this constructor
+   */
+  _constructor() {
+    this.effectsFn = [];
+    this.onMountEffects = [];
+    this.disconnectEffects = [];
+    this._scale = 1;
+    this._rotate = 0;
+    this.initialDisplay = 'initial';
+    this._shadowed = '';
+    this.styleUtil = StyleUtil;
     this.setDataID();
   }
 
-  private setDataID() {
+  setDataID() {
     this.dataId = `${rand(1111111, 9999999)}`;
     this.dataIdQuerySelector = `[data-id="${this.dataId}"]`;
   }
 
   public get rotate(): number {
-    return this._rotate;
+    return this._rotate || 0;
   }
 
   public set rotate(value: number) {
@@ -137,7 +156,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   public get scale(): number {
-    return this._scale;
+    return this._scale || 1;
   }
 
   public set scale(value: number) {
@@ -419,7 +438,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     } else {
       this.wrapper || this.shadowed
         ? this.shadowWrapper.style.display
-        : (super.style.display = this.initialDisplay);
+        : (super.style!.display = this.initialDisplay || 'initial');
     }
     this.showing = !this.showing;
   }
@@ -838,15 +857,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
       );
     }
     // @ts-ignore
-    element.prototype.tag = element.ELEMENT_NAME;
-    const tagName = `${snakeCase(element.ELEMENT_NAME)}-${rand(
+    element.prototype.type = element.ELEMENT_NAME;
+    const typeName = `${snakeCase(element.ELEMENT_NAME)}-${rand(
       111111,
       999999
     )}-reblend`;
     try {
-      const registered = customElements.get(tagName);
+      const registered = customElements.get(typeName);
       if (!registered) {
-        customElements.define(tagName, element);
+        customElements.define(typeName, element);
       }
     } catch (error: any) {
       //better left empty
@@ -884,17 +903,23 @@ class BaseComponent extends HTMLElement implements IDelegate {
         if (propName.startsWith('on')) {
           to[_attributeName] = this.fn(propValue) as any;
         } else {
-          if (_attributeName == 'style') {
+          if (_attributeName === 'style') {
             to.addStyle(propValue);
           } else {
             const _shouldUseSetAttribute = shouldUseSetAttribute(propName);
-            _shouldUseSetAttribute
-              ? to.setAttribute(_attributeName, propValue)
-              : (to[_attributeName] = propValue);
+            try {
+              if (_shouldUseSetAttribute) {
+                to.setAttribute(_attributeName, propValue);
+              } else {
+                to[_attributeName] = propValue;
+              }
+            } catch (error: any) {
+              /* empty */
+            }
           }
         }
       }
-      init && to.init();
+      init && to.init && to.init();
     }
   }
 
@@ -904,12 +929,17 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
       for (let propName in props) {
         const _attributeName = attributeName(propName);
-        //const propValue = props[propName];
         const _shouldUseSetAttribute = shouldUseSetAttribute(propName);
 
-        _shouldUseSetAttribute
-          ? to.removeAttribute(_attributeName)
-          : delete to[_attributeName];
+        try {
+          if (_shouldUseSetAttribute) {
+            to.removeAttribute(_attributeName);
+          } else {
+            delete to[_attributeName];
+          }
+        } catch (error: any) {
+          /* empty */
+        }
       }
     }
   }
@@ -934,6 +964,38 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return node?.nodeType === Node.TEXT_NODE;
   }
 
+  isEmpty(data: any) {
+    return data === undefined || data === null;
+  }
+
+  static isReblendRenderedNode(node: any): boolean {
+    return typeof node !== 'string' && node![ReblendNode];
+  }
+
+  static isReblendVirtualNode(node: any): boolean {
+    return typeof node !== 'string' && node![ReblendVNode];
+  }
+
+  static isReblendRenderedNodeStandard(node: any): boolean {
+    return typeof node !== 'string' && node![ReblendNodeStandard];
+  }
+
+  static isReblendVirtualNodeStandard(node: any): boolean {
+    return typeof node !== 'string' && node![ReblendVNodeStandard];
+  }
+
+  static isReactToReblendRenderedNode(node: any): boolean {
+    return typeof node !== 'string' && node![ReactToReblendNode];
+  }
+
+  static isReactToReblendVirtualNode(node: any): boolean {
+    return typeof node !== 'string' && node![ReactToReblendVNode];
+  }
+
+  static isStandardVirtualNode(node: any): boolean {
+    return typeof node !== 'string' && node![ReblendVNodeStandard];
+  }
+
   diffCreateOrRemove(
     parent: BaseComponent,
     oldNode: DomNodeChild,
@@ -952,9 +1014,56 @@ class BaseComponent extends HTMLElement implements IDelegate {
   isReblendPrimitiveElement(element: any) {
     return (
       !BaseComponent.isPrimitive(element) &&
-      element.tag === REBLEND_PRIMITIVE_ELEMENT_NAME
+      element.type === REBLEND_PRIMITIVE_ELEMENT_NAME
     );
   }
+
+  private static ReblendPrimitive = BaseComponent.register(
+    class ReblendPrimitive extends BaseComponent {
+      static ELEMENT_NAME = REBLEND_PRIMITIVE_ELEMENT_NAME;
+      private reblendPrimitiveData: Primitive;
+      private node: Text | null = null;
+
+      constructor() {
+        super();
+      }
+
+      protected html() {
+        return this.node as any;
+      }
+
+      setData(data: Primitive) {
+        this.reblendPrimitiveData = data;
+        if (
+          this.reblendPrimitiveData !== undefined &&
+          this.reblendPrimitiveData !== null
+        ) {
+          const textContent = `${this.reblendPrimitiveData}`;
+
+          if (textContent) {
+            if (this.node) {
+              this.node.textContent = textContent;
+            } else {
+              this.node = document.createTextNode(textContent);
+              this.appendChild(this.node);
+            }
+          }
+        }
+        return this;
+      }
+
+      getData() {
+        return this.reblendPrimitiveData;
+      }
+
+      protected cleanUp(): void {
+        if (this.node) {
+          this.removeChild(this.node);
+          this.node = null;
+        }
+      }
+    }
+  );
 
   diff(
     parent: BaseComponent,
@@ -962,9 +1071,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
     newNode: VNodeChild
   ): Patch[] {
     const patches: Patch[] = [];
-    if (isCallable(oldNode) && isCallable(newNode)) {
+    if (isCallable(oldNode) || isCallable(newNode)) {
       return [];
     }
+
     if (
       BaseComponent.isPrimitive(oldNode) &&
       BaseComponent.isPrimitive(newNode)
@@ -1001,33 +1111,51 @@ class BaseComponent extends HTMLElement implements IDelegate {
       BaseComponent.isPrimitive(newNode)
     ) {
       patches.push({ type: 'REPLACE', parent, newNode, oldNode });
+    } else if (this.isEmpty(oldNode) && !this.isEmpty(newNode)) {
+      patches.push({ type: 'CREATE', parent, newNode });
+    } else if (!this.isEmpty(oldNode) && this.isEmpty(newNode)) {
+      patches.push({ type: 'REMOVE', parent, oldNode });
+    } else if (this.isTextNode(oldNode) && BaseComponent.isPrimitive(newNode)) {
+      if (oldNode.textContent !== newNode) {
+        patches.push({ type: 'TEXT', newNode, oldNode });
+      }
     } else if (
-      ((oldNode as BaseComponent).tag as string).toLowerCase() !==
-      (
-        (BaseComponent.isPrimitive((newNode as VNode).tag)
-          ? (newNode as VNode).tag
-          : ((newNode as VNode).tag as typeof Reblend).ELEMENT_NAME) as string
-      ).toLowerCase()
+      this.isTextNode(oldNode) &&
+      !BaseComponent.isPrimitive(newNode)
     ) {
       patches.push({ type: 'REPLACE', parent, newNode, oldNode });
-    } else {
-      const propsDiff = this.diffProps(
-        newNode as VNode,
-        oldNode as BaseComponent
-      );
-      if (propsDiff && propsDiff.length > 0) {
-        patches.push({
-          type: 'UPDATE',
-          patches: propsDiff,
-        });
+    } else if ('type' in oldNode && 'type' in (newNode as any)) {
+      const oldNodeTag = (
+        (oldNode as BaseComponent).type as string
+      ).toLowerCase();
+
+      const newNodeTag = (
+        (BaseComponent.isPrimitive((newNode as VNode).type)
+          ? (newNode as VNode).type
+          : ((newNode as VNode).type as typeof Reblend).ELEMENT_NAME) as string
+      ).toLowerCase();
+
+      if (oldNodeTag !== newNodeTag) {
+        patches.push({ type: 'REPLACE', parent, newNode, oldNode });
+      } else {
+        const propsDiff = this.diffProps(
+          newNode as VNode,
+          oldNode as BaseComponent
+        );
+        if (propsDiff && propsDiff.length > 0) {
+          patches.push({
+            type: 'UPDATE',
+            patches: propsDiff,
+          });
+        }
+        patches.push(
+          ...this.diffChildren(
+            oldNode as BaseComponent,
+            oldNode as BaseComponent,
+            newNode as VNode
+          )
+        );
       }
-      patches.push(
-        ...this.diffChildren(
-          oldNode as BaseComponent,
-          (oldNode as BaseComponent)?.props?.children,
-          (newNode as VNode)?.props?.children
-        )
-      );
     }
 
     return patches;
@@ -1076,22 +1204,21 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return patches;
   }
 
-  diffChildren(
-    parent: BaseComponent,
-    oldChildren: DomNodeChildren,
-    newChildren: VNodeChildren
-  ) {
-    oldChildren || (oldChildren = []);
-    newChildren || (newChildren = []);
-    if (isCallable(oldChildren) && isCallable(newChildren)) {
-      return [];
-    }
+  latestVChildren?: VNodeChildren;
+
+  diffChildren(parent: BaseComponent, oldNode: BaseComponent, newNode: VNode) {
+    const oldChildren: DomNodeChildren = oldNode?.props?.children || [];
+    const newChildren: VNodeChildren = newNode?.props?.children || [];
+    oldNode.latestVChildren = newChildren;
     const patches: Patch[] = [];
     const maxLength = Math.max(oldChildren.length, newChildren.length);
 
     for (let i = 0; i < maxLength; i++) {
       const oldChild = oldChildren[i];
       const newChild = newChildren[i];
+      if (isCallable(oldChild) || isCallable(newChild)) {
+        continue;
+      }
       if (oldChild === undefined || newChild === undefined) {
         patches.push(...this.diffCreateOrRemove(parent, oldChild, newChild));
       } else {
@@ -1102,93 +1229,172 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return patches;
   }
 
-  protected static createElement(vNode: VNode | ReactNode): BaseComponent {
+  protected static createElement(
+    vNode: VNode | ReactNode | Primitive
+  ): BaseComponent {
     if (BaseComponent.isPrimitive(vNode)) {
-      return new BaseComponent.ReblendPrimitive().setData(
-        vNode as VNodeChild as Primitive
-      );
+      return new BaseComponent.ReblendPrimitive().setData(vNode as Primitive);
     }
-    const { tag } = vNode as VNode;
-    const { children } = (vNode as VNode).props || {};
-    let clazz: typeof Reblend = tag as any as typeof Reblend;
-    const isTagStandard = typeof tag === 'string';
+
+    const { type } = vNode as VNode;
+    let clazz: typeof Reblend = type as any as typeof Reblend;
+    const isTagStandard = typeof type === 'string';
+    const isReactNode = BaseComponent.isReactNode(type as any);
+
+    const children: any[] = [];
+    children.push(
+      ...((isTagStandard && clazz.props ? clazz.props : {}).children || [])
+    );
+    children.push(...((vNode as VNode)?.props?.children || []));
+
     const props = {
+      ...(isTagStandard && clazz.props ? clazz.props : {}),
       ...(vNode as VNode).props,
       children: BaseComponent.createChildren.bind(this)(children),
-      ...(isTagStandard && clazz.props ? clazz.props : {}),
     };
-    if (!isTagStandard && !BaseComponent.hasName(clazz)) {
-      clazz.ELEMENT_NAME = BaseComponent.isReactNode(clazz)
-        ? (clazz as any as ReactNode).displayName
-        : `Anonymous`;
-    }
-    if (isTagStandard) {
-      clazz = class extends Reblend {
-        static ELEMENT_NAME: string = capitalize(`${tag}`);
 
-        constructor() {
-          super();
-          const ele = document.createElement(tag as string);
-          this.wrapper = ele;
-        }
-      };
-    }
+    let tagName = isTagStandard
+      ? type
+      : (BaseComponent.isReactNode(clazz)
+          ? (clazz as any as ReactNode).displayName
+          : clazz.ELEMENT_NAME) || `Anonymous`;
 
-    if (BaseComponent.isReactNode(tag as any)) {
+    isTagStandard || (clazz.ELEMENT_NAME = tagName);
+
+    if (isReactNode) {
       clazz = class extends Reblend {
         static ELEMENT_NAME: string = capitalize(
-          `${(tag as unknown as ReactNode).displayName}`
+          `${(type as unknown as ReactNode).displayName}`
         );
         reactDomCreateRoot_root?: Root;
+        containerRef?: React.RefObject<HTMLDivElement>;
+        childrenToBeRendered?: (BaseComponent | HTMLElement | Text)[];
+        WrapperComponent?: React.ForwardRefExoticComponent<
+          React.PropsWithoutRef<{}> & React.RefAttributes<HTMLDivElement>
+        >;
         constructor() {
           super();
+        }
+        _constructor(): void {
+          super._constructor();
+          this.containerRef = createRef<HTMLDivElement>();
         }
 
         init(): void {
-          this.reactDomCreateRoot_root = createRoot(this);
+          super.init();
+          this.initRoot();
+          this.WrapperComponent = forwardRef<HTMLDivElement>((props, ref) => {
+            useEffect(() => {
+              if (
+                this.containerRef!.current instanceof HTMLElement &&
+                typeof this.containerRef!.current.appendChild === 'function'
+              ) {
+                this.props?.children?.forEach((child: HTMLElement) => {
+                  if (child instanceof HTMLElement) {
+                    this.containerRef!.current!.appendChild(child);
+                  }
+                });
+              }
+              return () => this.cleanUp(); /* 
+                this.containerRef.current!.childNodes.forEach(child =>
+                  this.containerRef.current?.removeChild(child)
+                ); */
+            }, []);
+
+            return createElement(type as any, {
+              ...this.props,
+              children: undefined,
+              ref: node => {
+                // Assign the node to both refs
+                //@ts-ignore
+                this.containerRef.current = node;
+                if (typeof ref === 'function') {
+                  ref(node);
+                } else if (ref) {
+                  ref.current = node;
+                }
+              },
+            });
+          });
+
+          this.createChildrenToBeRendered();
+
+          this.render();
+        }
+
+        private render() {
+          this.WrapperComponent &&
+            this.reactDomCreateRoot_root?.render(
+              createElement(this.WrapperComponent)
+            );
+        }
+
+        private initRoot() {
+          if (!this.reactDomCreateRoot_root) {
+            /*  this.reactDomCreateRoot_root.unmount();
+            this.reactDomCreateRoot_root = undefined; */
+            this.reactDomCreateRoot_root = createRoot(this);
+          }
+        }
+
+        private createChildrenToBeRendered() {
+          this.childrenToBeRendered = (
+            BaseComponent.createChildren(
+              this.latestVChildren || this.props.children
+            ) || []
+          ).filter(Boolean);
+        }
+
+        protected remount() {
+          this.cleanUp();
+          this.initRoot();
+          this.createChildrenToBeRendered();
+          this.render();
         }
 
         protected cleanUp(): void {
           try {
-            this.reactDomCreateRoot_root?.unmount();
+            this.childrenToBeRendered?.forEach(
+              child =>
+                ((child as BaseComponent).disconnectedCallback !== undefined &&
+                  (child as BaseComponent).disconnectedCallback()) ||
+                (child.parentNode && child.parentNode.removeChild(child))
+            );
+            /* this.childrenToBeRendered = undefined;
+            this.reactDomCreateRoot_root?.unmount(); */
           } catch (error) {
             console.log(error);
           }
         }
-
         protected html() {
-          const containerRef = createRef<HTMLDivElement>();
-
-          const WrapperComponent = forwardRef<HTMLDivElement>((props, ref) => {
-            useEffect(() => {
-              if (
-                containerRef.current instanceof HTMLElement &&
-                typeof containerRef.current.appendChild === 'function'
-              ) {
-                this.props.children.forEach((child: HTMLElement) => {
-                  if (child instanceof HTMLElement) {
-                    containerRef.current!.appendChild(child);
-                  }
-                });
-              }
-            }, []);
-
-            return createElement(tag as any, {
-              ...this.props,
-              children: undefined,
-              ref: containerRef,
-            });
-          });
-
-          this.reactDomCreateRoot_root?.render(createElement(WrapperComponent));
+          return this.latestVChildren;
         }
       };
     }
 
-    BaseComponent.register(clazz);
-    const element: Reblend = new (clazz as any)();
-    element[ReblendNode] = true;
-    if ('ref' in props) {
+    !isTagStandard && BaseComponent.register(clazz);
+
+    const element: Reblend = document.createElement(
+      isTagStandard ? (type as string) : 'div'
+    ) as Reblend;
+
+    element.type = tagName;
+    element.latestVChildren = children;
+    Object.setPrototypeOf(
+      element,
+      isTagStandard ? Reblend.prototype : clazz.prototype
+    );
+    element._constructor();
+
+    element[
+      isReactNode
+        ? ReactToReblendNode
+        : isTagStandard
+        ? ReblendNodeStandard
+        : ReblendNode
+    ] = true;
+
+    if (!isReactNode && 'ref' in props) {
       if (!props.ref) {
         throw new Error('Invalid ref object');
       }
@@ -1204,29 +1410,25 @@ class BaseComponent extends HTMLElement implements IDelegate {
         });
       }
     }
+
     BaseComponent.setProps(props, element, true);
-    element.attach();
+    element.attach && element.attach();
     element.container = this as any as BaseComponent;
     return element;
   }
 
-  static isReactNode(tag: IAny): boolean {
-    return (
-      tag &&
-      typeof tag !== 'string' &&
-      '$$typeof' in tag &&
-      'displayName' in tag &&
-      'render' in tag
-    );
+  static isReactNode(type: IAny): boolean {
+    return type && typeof type !== 'string' && '$$typeof' in type;
   }
 
   applyPatches(patches: Patch[]) {
     patches?.forEach(({ type, newNode, oldNode, parent, patches }) => {
       switch (type) {
         case 'CREATE':
-          parent?.appendChild(
-            BaseComponent.createElement.bind(this)(newNode as VNode)
+          const element = BaseComponent.createElement.bind(this)(
+            newNode as VNode
           );
+          element && parent?.appendChild(element);
           break;
         case 'REMOVE':
           oldNode && parent?.removeChild(oldNode);
@@ -1236,11 +1438,12 @@ class BaseComponent extends HTMLElement implements IDelegate {
             const newNodeElement = BaseComponent.createElement.bind(this)(
               newNode as VNode
             );
-            oldNode?.parentNode?.replaceChild(newNodeElement, oldNode);
-            oldNode &&
+            newNodeElement &&
+              oldNode?.parentNode?.replaceChild(newNodeElement, oldNode);
+            newNodeElement &&
+              oldNode &&
               'disconnectedCallback' in oldNode &&
               (oldNode as any).disconnectedCallback();
-            oldNode = null as any;
           }
           break;
         case 'TEXT':
@@ -1250,12 +1453,19 @@ class BaseComponent extends HTMLElement implements IDelegate {
           this.applyProps(patches);
           break;
       }
+      {
+        (type = null as any),
+          (newNode = null as any),
+          (oldNode = null as any),
+          (parent = null as any),
+          (patches = null as any);
+      }
     });
   }
 
   applyProps(patches?: PropPatch[]) {
     //This helps reduce onStateChange call for updates of the same node
-    const nodes = new Set<BaseComponent>();
+    let nodes = new Set<BaseComponent>();
     patches?.forEach(({ type, node, key, propValue }) => {
       if (type === 'UPDATE') {
         BaseComponent.setProps({ [key]: propValue }, node, false);
@@ -1265,7 +1475,16 @@ class BaseComponent extends HTMLElement implements IDelegate {
         nodes.add(node);
       }
     });
-    nodes.forEach(node => node.onStateChange());
+    nodes.forEach(
+      node =>
+        BaseComponent.isReblendRenderedNodeStandard(node) ||
+        node[
+          BaseComponent.isReactToReblendRenderedNode(node)
+            ? 'remount'
+            : 'onStateChange'
+        ]()
+    );
+    nodes = null as any;
   }
 
   static isArray(obj: any) {
@@ -1289,7 +1508,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
   protected async attach() {
     this.catchErrorFrom(async () => {
       let vNodes = this.html();
-      //if (!vNodes) return;
+      /* if (BaseComponent.isReactToReblendRenderedNode(this)) {
+        return;
+      } */
+      if (!vNodes) return;
       this.innerHTML = '';
       const isVNodesArray = Array.isArray(vNodes);
       if (isVNodesArray && (vNodes as []).length < 1) {
@@ -1306,20 +1528,20 @@ class BaseComponent extends HTMLElement implements IDelegate {
         vNodes = BaseComponent.createChildren.bind(this)(
           vNodes as VNodeChildren
         ) as any;
-        this.appendChildren(...(vNodes as any));
+        this.appendChildren(...(vNodes as any).filter(Boolean));
       } else {
         if ((vNodes as any)?.parentNode) {
           vNodes = null as any;
           return;
         }
         vNodes = BaseComponent.createElement.bind(this)(vNodes as VNode) as any;
-        this.appendChildren(vNodes as any);
+        vNodes && this.appendChildren(vNodes as any);
       }
     });
   }
 
   private applyEffects() {
-    this.effectsFn.forEach(effectFn => effectFn());
+    this.effectsFn?.forEach(effectFn => effectFn());
   }
 
   static flattenVNodeChildren<T>(
@@ -1385,7 +1607,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       }
       const maxLength = Math.max(
         this.childNodes.length,
-        isVNodesArray ? (vNodes as VNodeChildren).length : 1
+        isVNodesArray ? (vNodes as VNodeChildren).length : vNodes ? 1 : 0
       );
       for (let i = 0; i < maxLength; i++) {
         const newVNode: VNodeChild = isVNodesArray ? vNodes[i] : vNodes;
@@ -1402,26 +1624,40 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   static construct(
-    tag: typeof Reblend | string | VNode[],
+    type: typeof Reblend | string | VNode[],
     props: IAny,
     ...children: VNodeChildren
   ): VNode | VNodeChildren {
-    if (Array.isArray(tag)) {
-      return tag as [];
+    if (Array.isArray(type)) {
+      return type as [];
     }
-    let clazz: typeof Reblend = tag as typeof Reblend;
-    const isTagStandard = typeof tag === 'string';
+    let clazz: typeof Reblend = type as typeof Reblend;
+    const isTagStandard = typeof type === 'string';
     if (!isTagStandard && clazz.ELEMENT_NAME === 'Fragment') {
-      return children;
+      return children || [];
     }
+
+    children || (children = []);
+
+    children.push(
+      ...((isTagStandard && clazz.props ? clazz.props : {}).children || [])
+    );
+    children.push(...(props?.children || []));
+
+    const mergedProp = {
+      ...(isTagStandard && clazz.props ? clazz.props : {}),
+      ...props,
+      children,
+    };
+
     const velement = {
-      [ReblendVNode]: true,
-      tag: clazz,
-      props: {
-        ...(props || {}),
-        children,
-        ...(!isTagStandard && clazz.props ? clazz.props : {}),
-      },
+      [isTagStandard
+        ? ReblendVNodeStandard
+        : BaseComponent.isReactNode(clazz)
+        ? ReactToReblendVNode
+        : ReblendVNode]: true,
+      type: clazz,
+      props: mergedProp,
     };
     return velement;
   }
@@ -1442,71 +1678,27 @@ class BaseComponent extends HTMLElement implements IDelegate {
     );
   }
 
-  private static ReblendPrimitive = BaseComponent.register(
-    class ReblendPrimitive extends BaseComponent {
-      static ELEMENT_NAME = REBLEND_PRIMITIVE_ELEMENT_NAME;
-      private reblendPrimitiveData: Primitive;
-      private node: Text | null = null;
-
-      constructor() {
-        super();
-      }
-
-      protected html() {
-        return this.node as any;
-      }
-
-      setData(data: Primitive) {
-        this.reblendPrimitiveData = data;
-        if (
-          this.reblendPrimitiveData !== undefined &&
-          this.reblendPrimitiveData !== null
-        ) {
-          const textContent = `${this.reblendPrimitiveData}`;
-
-          if (textContent) {
-            if (this.node) {
-              this.node.textContent = textContent;
-            } else {
-              this.node = document.createTextNode(textContent);
-              this.appendChild(this.node);
-            }
-          }
-        }
-        return this;
-      }
-
-      getData() {
-        return this.reblendPrimitiveData;
-      }
-
-      protected cleanUp(): void {
-        if (this.node) {
-          this.removeChild(this.node);
-          this.node = null;
-        }
-      }
-    }
-  );
-
   protected static createChildren(
     children: VNodeChildren,
-    containerArr: (BaseComponent | HTMLElement)[] = []
+    containerArr: (BaseComponent | HTMLElement | Text)[] = []
   ) {
     for (let child of children) {
-      if (isCallable(child)) {
+      if (
+        isCallable(child) ||
+        child instanceof Reblend ||
+        child instanceof Node
+      ) {
         containerArr.push(child as any);
       } else if (Array.isArray(child)) {
         BaseComponent.createChildren.bind(this)(child as any, containerArr);
-      } else if (BaseComponent.isPrimitive(child)) {
-        containerArr.push(
-          new BaseComponent.ReblendPrimitive().setData(child as Primitive)
-        );
-      } else if (child instanceof Reblend || child instanceof Node) {
-        containerArr.push(child as any);
-      } else if (child![ReblendVNode]) {
+      } else if (
+        BaseComponent.isPrimitive(child) ||
+        BaseComponent.isReactToReblendVirtualNode(child) ||
+        BaseComponent.isReblendVirtualNode(child) ||
+        BaseComponent.isStandardVirtualNode(child)
+      ) {
         const domChild = BaseComponent.createElement.bind(this)(child as any);
-        containerArr.push(domChild);
+        domChild && containerArr.push(domChild);
       } else {
         throw new TypeError('Invalid child node  in children');
       }
@@ -1514,19 +1706,19 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return containerArr;
   }
 
-  private onMountEffects: StateEffectiveFunction[] = [];
+  private onMountEffects?: StateEffectiveFunction[];
 
   private mountEffects() {
-    this.onMountEffects.forEach(fn => {
+    this.onMountEffects?.forEach(fn => {
       const disconnectEffect = fn();
-      disconnectEffect && this.disconnectEffects.push(disconnectEffect);
+      disconnectEffect && this.disconnectEffects?.push(disconnectEffect);
     });
   }
 
   disconnectedCallback() {
     this.cleanUp();
     this.componentWillUnmount();
-    this.disconnectEffects.forEach(fn => fn());
+    this.disconnectEffects?.forEach(fn => fn());
     {
       this.shadow = null as any;
       this.shadowWrapper = null as any;
@@ -1539,8 +1731,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
   protected cleanUp() {}
   protected componentWillUnmount() {}
 
-  private effectsFn: StateEffectiveFunction[] = [];
-  private disconnectEffects: StateEffectiveFunction[] = [];
+  private effectsFn?: StateEffectiveFunction[];
+  private disconnectEffects?: StateEffectiveFunction[];
 
   static mountOn(
     elementId: string,
@@ -1600,8 +1792,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
         fn();
       }
     };
-    this.effectsFn.push(internalFn);
-    this.onMountEffects.push(fn);
+    this.effectsFn?.push(internalFn);
+    this.onMountEffects?.push(fn);
   }
 
   useReducer<T>(
@@ -1658,7 +1850,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
         setState(fn());
       }
     };
-    this?.effectsFn.push(internalFn);
+    this.effectsFn?.push(internalFn);
     return this[stateID];
   }
 

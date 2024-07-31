@@ -52,4 +52,6 @@ class StyleUtil {
   }
 }
 
+export { type StyleUtil as StyleUtilType };
+
 export default new StyleUtil();

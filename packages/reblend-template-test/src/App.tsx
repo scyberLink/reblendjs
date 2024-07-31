@@ -34,8 +34,8 @@ function App() {
     <>
       <>
         <CardExample class="p-2" />
-        <Button variant="primary" onClick={() => setModalShow(true)}>
-          Launch vertically centered modal
+        <Button variant="primary" onClick={() => setModalShow(!modalShow)}>
+          Toggle vertically centered modal
         </Button>
 
         <MyVerticallyCenteredModal
