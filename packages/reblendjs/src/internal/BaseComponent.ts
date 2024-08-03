@@ -46,12 +46,22 @@ interface PropPatch {
   propValue?: string;
 }
 
+enum NodePlacementPosition {
+  BEFORE,
+  AFTER,
+}
+
+type LastNodeAtPositionInsertion = {
+  operation: NodePlacementPosition;
+  node: BaseComponent;
+};
+
 export type Primitive = boolean | null | number | string | undefined;
 export const REBLEND_PRIMITIVE_ELEMENT_NAME = 'ReblendPrimitive';
 
 type VNodeChild = Primitive | VNode;
 type VNodeChildren = VNodeChild[];
-type DomNodeChild = Text | BaseComponent | ReblendPrimitive;
+type DomNodeChild = BaseComponent | ReblendPrimitive;
 type DomNodeChildren = DomNodeChild[];
 
 interface ReactNode {
@@ -1028,6 +1038,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
         super();
       }
 
+      _constructor(): void {
+        super._constructor();
+        this[ReblendNodeStandard] = true;
+      }
+
       protected html() {
         return this.node as any;
       }
@@ -1229,8 +1244,160 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return patches;
   }
 
+  insertPosition?: number;
+  positionOnParent?: number;
+  parentComponent?: BaseComponent;
+
+  protected getLastNodeAtPosition(
+    position: number
+  ): LastNodeAtPositionInsertion | null {
+    if (this.childNodes.length < 1) {
+      return null;
+    }
+
+    let lastElement: BaseComponent | null = null;
+
+    for (let i = 0; i < this.childNodes.length; i++) {
+      const centerElement = this.childNodes[i] as BaseComponent;
+      const rightElement = this.childNodes[i + 1] as BaseComponent | undefined;
+
+      if (centerElement.insertPosition === position) {
+        // Continue to find the last element with the same position
+        lastElement = centerElement;
+      } else if (centerElement?.insertPosition! > position) {
+        // If we find a node with a greater position, return the BEFORE operation
+        return {
+          node: centerElement,
+          operation: NodePlacementPosition.BEFORE,
+        };
+      }
+
+      // Check the case when rightElement exists and has a greater position
+      if (rightElement && rightElement?.insertPosition! > position) {
+        return {
+          node: rightElement,
+          operation: NodePlacementPosition.BEFORE,
+        };
+      }
+    }
+
+    // If no element is found with a greater position and lastElement is set
+    if (lastElement) {
+      return {
+        node: lastElement,
+        operation: NodePlacementPosition.AFTER,
+      };
+    }
+
+    // All elements are less than the position
+    return {
+      node: this.childNodes[this.childNodes.length - 1] as BaseComponent,
+      operation: NodePlacementPosition.AFTER,
+    };
+  }
+
+  private insertElement() {
+    if (!this.element) {
+      return;
+    }
+
+    const isStandardThisElement =
+      BaseComponent.isReblendRenderedNodeStandard(this);
+
+    const fn = (ele: BaseComponent, position: number) => {
+      if (
+        /* isStandardThisElement && */
+        BaseComponent.isReblendRenderedNodeStandard(ele)
+      ) {
+        this.insertNodeAtPosition(ele, position);
+      }
+      ele?.insertElement();
+    };
+
+    if (Array.isArray(this.element)) {
+      this.element.forEach((ele, index) => fn(ele, index));
+    } else {
+      fn(this.element, 0);
+    }
+  }
+
+  protected insertNodeAtPosition(node: BaseComponent, position: number): void {
+    if (
+      !BaseComponent.isReblendRenderedNodeStandard(this) &&
+      !this.isReblendPrimitiveElement(this) &&
+      !(this.parentComponent as any)?.ELEMENT_NAME
+    ) {
+      this.parentComponent?.insertNodeAtPosition &&
+        this.parentComponent?.insertNodeAtPosition(
+          node,
+          this.positionOnParent || 0
+        );
+    } else {
+      const lastElementAtPosition = this.getLastNodeAtPosition(position);
+
+      if (lastElementAtPosition) {
+        switch (lastElementAtPosition.operation) {
+          case NodePlacementPosition.BEFORE:
+            lastElementAtPosition.node.before(node);
+            break;
+
+          case NodePlacementPosition.AFTER:
+            this.insertNodeAfter(node, lastElementAtPosition.node);
+            break;
+        }
+        node.insertPosition = position;
+      } else {
+        this.appendChild(((node.insertPosition = 0), node));
+      }
+    }
+  }
+
+  private getStandardElementFrom(node: BaseComponent | null | undefined) {
+    if (!node || BaseComponent.isReblendRenderedNodeStandard(node)) {
+      return node;
+    } else {
+      let found: BaseComponent | null = null;
+      const nodeElements = Array.isArray(node.element)
+        ? node.element
+        : [node.element].filter(Boolean);
+      for (const nodeElement of nodeElements) {
+        if ((found = this.getStandardElementFrom(nodeElement))) {
+          break;
+        }
+      }
+      return found;
+    }
+  }
+
+  protected insertNodeAfter(
+    newNode: BaseComponent | BaseComponent[],
+    oldNode: BaseComponent
+  ): BaseComponent | null {
+    oldNode = this.getStandardElementFrom(oldNode);
+    if (!newNode || !oldNode) {
+      return null;
+    }
+    !Array.isArray(newNode) && (newNode = [newNode]);
+    let lastInsertedNode: BaseComponent | null = null;
+
+    for (const n of newNode) {
+      if (!BaseComponent.isReblendRenderedNodeStandard(n)) {
+        lastInsertedNode = this.insertNodeAfter(
+          n.element!,
+          lastInsertedNode || oldNode
+        );
+      } else {
+        (lastInsertedNode || oldNode).after(n);
+        lastInsertedNode = n;
+      }
+    }
+
+    return lastInsertedNode;
+  }
+
   protected static createElement(
-    vNode: VNode | ReactNode | Primitive
+    vNode: VNode | ReactNode | Primitive,
+    parentComponent: BaseComponent
   ): BaseComponent {
     if (BaseComponent.isPrimitive(vNode)) {
       return new BaseComponent.ReblendPrimitive().setData(vNode as Primitive);
@@ -1339,7 +1506,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
         private createChildrenToBeRendered() {
           this.childrenToBeRendered = (
-            BaseComponent.createChildren(
+            BaseComponent.createChildren.bind(this)(
               this.latestVChildren || this.props.children
             ) || []
           ).filter(Boolean);
@@ -1372,7 +1539,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       };
     }
 
-    !isTagStandard && BaseComponent.register(clazz);
+    //!isTagStandard && BaseComponent.register(clazz);
 
     const element: Reblend = document.createElement(
       isTagStandard ? (type as string) : 'div'
@@ -1394,6 +1561,13 @@ class BaseComponent extends HTMLElement implements IDelegate {
         : ReblendNode
     ] = true;
 
+    /* for (let i = 0; i < props.children.length; i++) {
+      (props.children[i] as BaseComponent).positionOnParent = i;
+      (props.children[i] as BaseComponent).parentComponent = element;
+    }*/
+
+    element.parentComponent = parentComponent;
+
     if (!isReactNode && 'ref' in props) {
       if (!props.ref) {
         throw new Error('Invalid ref object');
@@ -1413,6 +1587,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
     BaseComponent.setProps(props, element, true);
     element.attach && element.attach();
+    !isTagStandard && element.setAttribute('custom-tag', tagName);
     element.container = this as any as BaseComponent;
     return element;
   }
@@ -1425,25 +1600,84 @@ class BaseComponent extends HTMLElement implements IDelegate {
     patches?.forEach(({ type, newNode, oldNode, parent, patches }) => {
       switch (type) {
         case 'CREATE':
-          const element = BaseComponent.createElement.bind(this)(
-            newNode as VNode
+          const element = BaseComponent.createElement.bind(parent!)(
+            newNode as VNode,
+            parent!
           );
-          element && parent?.appendChild(element);
+          if (element) {
+            parent?.insertNodeAtPosition(
+              element,
+              Array.isArray(parent!.element)
+                ? parent!.element.length - 1
+                : parent!.element
+                ? 1
+                : 0
+            );
+
+            Array.isArray(parent!.element)
+              ? parent!.element.push(element)
+              : parent!.element
+              ? (parent!.element = [parent!.element, element])
+              : (parent!.element = element);
+          }
           break;
         case 'REMOVE':
-          oldNode && parent?.removeChild(oldNode);
+          if (oldNode) {
+            if (oldNode == parent!.element) {
+              parent!.element = null as any;
+            } else if (Array.isArray(parent!.element)) {
+              const indexOfOldNode = (
+                parent!.element as BaseComponent[]
+              ).indexOf(oldNode);
+              if (indexOfOldNode > -1) {
+                parent!.element = ((parent!.element[indexOfOldNode] =
+                  null as any),
+                parent!.element).filter(Boolean);
+              }
+            }
+            (oldNode as any as BaseComponent).disconnectedCallback();
+          }
           break;
         case 'REPLACE':
           if (oldNode) {
-            const newNodeElement = BaseComponent.createElement.bind(this)(
-              newNode as VNode
+            const newNodeElement = BaseComponent.createElement.bind(parent!)(
+              newNode as VNode,
+              parent!
             );
-            newNodeElement &&
-              oldNode?.parentNode?.replaceChild(newNodeElement, oldNode);
-            newNodeElement &&
-              oldNode &&
+            newNodeElement.insertPosition = oldNode.insertPosition;
+            newNodeElement.parentComponent = oldNode.parentComponent;
+            const indexOfOldNode = Array.isArray(parent?.element)
+              ? parent?.element?.indexOf(oldNode)
+              : -1;
+            if (indexOfOldNode > 0) {
+              (parent?.element as BaseComponent[])[indexOfOldNode] =
+                newNodeElement;
+            } else {
+              if (
+                Array.isArray(parent?.element) &&
+                parent?.element.length > 1
+              ) {
+                parent.element.push(newNodeElement);
+              } else {
+                parent!.element = newNodeElement;
+              }
+            }
+            this.insertNodeAfter(newNodeElement, oldNode);
+
+            /* if (BaseComponent.isReblendRenderedNodeStandard(oldNode)) {
+              oldNode.parentNode?.removeChild(oldNode);
+            } else {
+              const oldNodeElements = Array.isArray(oldNode.element)
+                ? oldNode.element
+                : [oldNode.element].filter(Boolean);
+                for (const oldNodeElement of oldNodeElements) {
+                  oldNodeElement
+                }
+              oldNode.parentNode?.removeChild(oldNode);
+            } */
+            oldNode &&
               'disconnectedCallback' in oldNode &&
-              (oldNode as any).disconnectedCallback();
+              (oldNode as any as BaseComponent).disconnectedCallback();
           }
           break;
         case 'TEXT':
@@ -1505,6 +1739,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
     );
   }
 
+  element?: BaseComponent | BaseComponent[];
+
   protected async attach() {
     this.catchErrorFrom(async () => {
       let vNodes = this.html();
@@ -1528,14 +1764,42 @@ class BaseComponent extends HTMLElement implements IDelegate {
         vNodes = BaseComponent.createChildren.bind(this)(
           vNodes as VNodeChildren
         ) as any;
-        this.appendChildren(...(vNodes as any).filter(Boolean));
+        this.element = vNodes as any;
+        /* (vNodes as any as BaseComponent[])
+        .filter(Boolean)
+        .forEach((vnode, index) =>
+        this.insertNodeAtPosition(
+        vnode,
+        (((vnode.positionOnParent = index),
+        (vnode.parentComponent = this)),
+        index)
+        )
+        ); */
+        (vNodes as any as BaseComponent[])
+          .filter(Boolean)
+          .forEach(
+            (vnode, index) => (
+              (vnode.positionOnParent = index), (vnode.parentComponent = this)
+            )
+          );
       } else {
         if ((vNodes as any)?.parentNode) {
           vNodes = null as any;
           return;
         }
-        vNodes = BaseComponent.createElement.bind(this)(vNodes as VNode) as any;
-        vNodes && this.appendChildren(vNodes as any);
+        vNodes = BaseComponent.createElement.bind(this)(
+          vNodes as VNode,
+          this
+        ) as any;
+        this.element = vNodes as any;
+        /* vNodes &&
+          this.insertNodeAtPosition(
+            vNodes as any,
+            (((vNodes as any as BaseComponent).parentComponent = this),
+            ((vNodes as any as BaseComponent).positionOnParent = 0))
+          ); */ vNodes &&
+          (((vNodes as any as BaseComponent).parentComponent = this),
+          ((vNodes as any as BaseComponent).positionOnParent = 0));
       }
     });
   }
@@ -1591,6 +1855,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       let vNodes = this.html();
       let patches: Patch[] = [];
       const isVNodesArray = Array.isArray(vNodes);
+      const isElementArray = Array.isArray(this.element);
       if (isVNodesArray) {
         vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren);
       }
@@ -1606,12 +1871,16 @@ class BaseComponent extends HTMLElement implements IDelegate {
         }
       }
       const maxLength = Math.max(
-        this.childNodes.length,
+        isElementArray
+          ? (this.element as BaseComponent[]).length
+          : this.element
+          ? 1
+          : 0,
         isVNodesArray ? (vNodes as VNodeChildren).length : vNodes ? 1 : 0
       );
       for (let i = 0; i < maxLength; i++) {
         const newVNode: VNodeChild = isVNodesArray ? vNodes[i] : vNodes;
-        const currentVNode = this.childNodes[i];
+        const currentVNode = isElementArray ? this.element![i] : this.element;
         patches.push(...this.diff(this, currentVNode, newVNode));
       }
       vNodes = null as any;
@@ -1697,7 +1966,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
         BaseComponent.isReblendVirtualNode(child) ||
         BaseComponent.isStandardVirtualNode(child)
       ) {
-        const domChild = BaseComponent.createElement.bind(this)(child as any);
+        const domChild = BaseComponent.createElement.bind(this)(
+          child as any,
+          this as any
+        );
         domChild && containerArr.push(domChild);
       } else {
         throw new TypeError('Invalid child node  in children');
@@ -1725,6 +1997,12 @@ class BaseComponent extends HTMLElement implements IDelegate {
       this.props = null as any;
       this._state = null as any;
       this.parentElement?.removeChild(this);
+      const oldNodeElements = Array.isArray(this.element)
+        ? this.element
+        : [this.element].filter(Boolean);
+      for (const oldNodeElement of oldNodeElements) {
+        oldNodeElement?.disconnectedCallback();
+      }
     }
   }
 
@@ -1742,14 +2020,43 @@ class BaseComponent extends HTMLElement implements IDelegate {
     const root = document.getElementById(elementId);
     if (!root) {
       throw new Error('Invalid root id');
-    }
-    const vNodes = BaseComponent.construct(app as any, props || {}, ...[]);
-    const nodes = BaseComponent.createChildren.bind(this)(
-      Array.isArray(vNodes) ? (vNodes as any) : [vNodes]
+    } /* 
+  const children: any[] = [];
+    children.push(
+      ...((isTagStandard && clazz.props ? clazz.props : {}).children || [])
     );
-    for (const node of nodes) {
-      root.append(node);
-    }
+    children.push(...((vNode as VNode)?.props?.children || []));
+
+    const props = {
+      ...(isTagStandard && clazz.props ? clazz.props : {}),
+      ...(vNode as VNode).props,
+      children: BaseComponent.createChildren.bind(this)(children),
+    }; */
+    const clazz = class extends Reblend {
+      static ELEMENT_NAME: string = capitalize(`${root?.tagName}`);
+
+      constructor() {
+        super();
+      }
+
+      _constructor(): void {
+        super._constructor();
+        this[ReblendNodeStandard] = true;
+      }
+
+      protected html() {
+        return BaseComponent.construct(app as any, this.props || {}, ...[]);
+      }
+    };
+    /* for (let i = 0; i < props.children.length; i++) {
+      (props.children[i] as BaseComponent).positionOnParent = i;
+      (props.children[i] as BaseComponent).parentComponent = element;
+    } */
+    Object.setPrototypeOf(root, clazz.prototype);
+    (root as BaseComponent)._constructor();
+
+    (root as BaseComponent).attach();
+    (root as BaseComponent).insertElement();
   }
   stateIdNotIncluded = new Error('State Identifier/Key not specified');
   useState<T>(

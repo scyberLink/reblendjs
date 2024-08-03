@@ -31,9 +31,12 @@ function Link(
   }
 
   return (
-    <a href={to || href || '#'} onClick={onclick}>
-      {children}
-    </a>
+    <>
+      {/* @ts-ignore */}
+      <a href={to || href || '#'} onclick={onclick}>
+        {children}
+      </a>
+    </>
   );
 }
 

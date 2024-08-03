@@ -8,7 +8,7 @@ function Header({ i = 0, msg = '', logo = '' }) {
   const theme = useContext(ThemeContext);
 
   return (
-    <Container>
+    <>
       <header className="App-header">
         <TryCatchError>
           {error =>
@@ -37,7 +37,7 @@ function Header({ i = 0, msg = '', logo = '' }) {
           <Button onClick={() => alert("I'm clicked")}>Learn Reblend</Button>
         </Link>
       </header>
-    </Container>
+    </>
   );
 }
 
