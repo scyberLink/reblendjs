@@ -16,9 +16,9 @@ export default function Routing() {
       <Router />
       <h3>Testing Reblend Router</h3>
       <Route path={'/user/detail/:id([0-9]{10})?'} Component={Counter}></Route>
-      <StaticExample />
+      {/* <StaticExample />
       <BasicExample />
-      <DismissibleExample />
+      <DismissibleExample /> */}
     </Container>
   );
 }

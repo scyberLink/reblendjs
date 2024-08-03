@@ -32,7 +32,7 @@ function App() {
 
   return (
     <>
-      <>
+      {/* <>
         <CardExample class="p-2" />
         <Button variant="primary" onClick={() => setModalShow(!modalShow)}>
           Toggle vertically centered modal
@@ -42,7 +42,7 @@ function App() {
           show={modalShow}
           onHide={() => setModalShow(false)}
         />
-      </>
+      </> */}
       {/* @ts-ignore */}
       <Header1 />
       <div {...{ className: 'App' }}>

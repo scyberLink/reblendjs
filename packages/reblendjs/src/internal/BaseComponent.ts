@@ -8,6 +8,8 @@ import {
   cssString,
   isCallable,
   rand,
+  REBLEND_COMPONENT_ATTRIBUTE_NAME,
+  REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME,
   registerElement,
   snakeCase,
 } from '../common/utils';
@@ -138,7 +140,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.initialDisplay = 'initial';
     this._shadowed = '';
     this.styleUtil = StyleUtil;
-    this.setDataID();
+    BaseComponent.isReblendRenderedNodeStandard(this) && this.setDataID();
   }
 
   setDataID() {
@@ -893,28 +895,30 @@ class BaseComponent extends HTMLElement implements IDelegate {
     if (props && to) {
       to.props = { ...to.props, ...props };
 
-      if ('shadowed' in props) {
-        (to as BaseComponent).shadowed = props[`shadowed`];
-      }
+      if (BaseComponent.isReblendRenderedNodeStandard(to)) {
+        if ('shadowed' in props) {
+          (to as BaseComponent).shadowed = props[`shadowed`];
+        }
 
-      for (let propName in props) {
-        const _attributeName = attributeName(propName);
-        const propValue = props[propName];
-        if (propName.startsWith('on')) {
-          to[_attributeName] = this.fn(propValue) as any;
-        } else {
-          if (_attributeName === 'style') {
-            to.addStyle(propValue);
+        for (let propName in props) {
+          const _attributeName = attributeName(propName);
+          const propValue = props[propName];
+          if (propName.startsWith('on')) {
+            to[_attributeName] = this.fn(propValue) as any;
           } else {
-            const _shouldUseSetAttribute = shouldUseSetAttribute(propName);
-            try {
-              if (_shouldUseSetAttribute) {
-                to.setAttribute(_attributeName, propValue);
-              } else {
-                to[_attributeName] = propValue;
+            if (_attributeName === 'style') {
+              to.addStyle(propValue);
+            } else {
+              const _shouldUseSetAttribute = shouldUseSetAttribute(propName);
+              try {
+                if (_shouldUseSetAttribute) {
+                  to.setAttribute(_attributeName, propValue);
+                } else {
+                  to[_attributeName] = propValue;
+                }
+              } catch (error: any) {
+                /* empty */
               }
-            } catch (error: any) {
-              /* empty */
             }
           }
         }
@@ -1378,14 +1382,6 @@ class BaseComponent extends HTMLElement implements IDelegate {
       isTagStandard ? (type as string) : 'div'
     ) as Reblend;
 
-    element.type = tagName;
-    element.latestVChildren = children;
-    Object.setPrototypeOf(
-      element,
-      isTagStandard ? Reblend.prototype : clazz.prototype
-    );
-    element._constructor();
-
     element[
       isReactNode
         ? ReactToReblendNode
@@ -1393,6 +1389,20 @@ class BaseComponent extends HTMLElement implements IDelegate {
         ? ReblendNodeStandard
         : ReblendNode
     ] = true;
+    element.type = tagName;
+    element.latestVChildren = children;
+    Object.setPrototypeOf(
+      element,
+      isTagStandard ? Reblend.prototype : clazz.prototype
+    );
+    element._constructor();
+    if (!isTagStandard) {
+      if (isReactNode) {
+        element.setAttribute(REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME, tagName);
+      } else {
+        element.setAttribute(REBLEND_COMPONENT_ATTRIBUTE_NAME, tagName);
+      }
+    }
 
     if (!isReactNode && 'ref' in props) {
       if (!props.ref) {
