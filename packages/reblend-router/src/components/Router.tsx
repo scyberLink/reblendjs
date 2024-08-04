@@ -6,7 +6,9 @@ import { Requester } from 'reblend-routing';
 function Router({ children }: { children?: JSX.Element[] }) {
   const history = useContext(History);
   const handleHistoryChange = () => {
-    History.update(window.location.href);
+    if (history !== window.location.href) {
+      History.update(window.location.href);
+    }
   };
 
   addEventListener('popstate', handleHistoryChange);
@@ -14,7 +16,7 @@ function Router({ children }: { children?: JSX.Element[] }) {
   useEffect(() => {
     Requester.for(history, 'post');
 
-    return removeEventListener('popstate', handleHistoryChange);
+    return () => removeEventListener('popstate', handleHistoryChange);
   }, [history]);
 
   return <>{children}</>;

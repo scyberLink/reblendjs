@@ -305,9 +305,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return this.wrapper || this.shadowed ? this.shadowWrapper.dir : super.dir;
   }
 
-  appendChildren(...children: HTMLElement[]) {
+  appendChildren(...children: (HTMLElement | BaseComponent)[]) {
     for (const child of children) {
       this.appendChild(child);
+      (child as BaseComponent).connectedCallback &&
+        (child as BaseComponent).connectedCallback();
     }
   }
 
@@ -1299,10 +1301,12 @@ class BaseComponent extends HTMLElement implements IDelegate {
                   }
                 });
               }
-              return () => this.cleanUp(); /* 
-                this.containerRef.current!.childNodes.forEach(child =>
-                  this.containerRef.current?.removeChild(child)
-                ); */
+              return () => {
+                this.cleanUp();
+                this.containerRef?.current!.childNodes.forEach(child =>
+                  this.detach(child as any)
+                );
+              };
             }, []);
 
             return createElement(type as any, {
@@ -1358,12 +1362,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
         protected cleanUp(): void {
           try {
-            this.childrenToBeRendered?.forEach(
-              child =>
-                ((child as BaseComponent).disconnectedCallback !== undefined &&
-                  (child as BaseComponent).disconnectedCallback()) ||
-                (child.parentNode && child.parentNode.removeChild(child))
-            );
+            this.childrenToBeRendered?.forEach(child => {
+              this.detach(child as any);
+            });
             /* this.childrenToBeRendered = undefined;
             this.reactDomCreateRoot_root?.unmount(); */
           } catch (error) {
@@ -1398,9 +1399,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
     element._constructor();
     if (!isTagStandard) {
       if (isReactNode) {
-        element.setAttribute(REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME, tagName);
+        element.setAttribute(
+          REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME,
+          process?.env?.REBLEND_DEVELEOPMENT ? tagName : ''
+        );
       } else {
-        element.setAttribute(REBLEND_COMPONENT_ATTRIBUTE_NAME, tagName);
+        element.setAttribute(
+          REBLEND_COMPONENT_ATTRIBUTE_NAME,
+          process?.env?.REBLEND_DEVELEOPMENT ? tagName : ''
+        );
       }
     }
 
@@ -1441,19 +1448,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
           element && parent?.appendChild(element);
           break;
         case 'REMOVE':
-          oldNode && parent?.removeChild(oldNode);
+          this.detach(oldNode as any);
           break;
         case 'REPLACE':
           if (oldNode) {
             const newNodeElement = BaseComponent.createElement.bind(this)(
               newNode as VNode
             );
-            newNodeElement &&
-              oldNode?.parentNode?.replaceChild(newNodeElement, oldNode);
-            newNodeElement &&
-              oldNode &&
-              'disconnectedCallback' in oldNode &&
-              (oldNode as any).disconnectedCallback();
+            oldNode?.parentNode?.replaceChild(newNodeElement, oldNode);
+            this.detach(oldNode as any);
           }
           break;
         case 'TEXT':
@@ -1471,6 +1474,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
           (patches = null as any);
       }
     });
+  }
+
+  detach(node: BaseComponent | HTMLElement) {
+    if (BaseComponent.isPrimitive(node)) return;
+    if ('disconnectedCallback' in node) {
+      (node as any as BaseComponent).disconnectedCallback();
+    } else {
+      node.parentNode?.removeChild(node);
+    }
   }
 
   applyProps(patches?: PropPatch[]) {
@@ -1729,13 +1741,22 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.cleanUp();
     this.componentWillUnmount();
     this.disconnectEffects?.forEach(fn => fn());
-    {
-      this.shadow = null as any;
-      this.shadowWrapper = null as any;
-      this.props = null as any;
-      this._state = null as any;
-      this.parentElement?.removeChild(this);
+    for (let child of this.props?.children || []) {
+      this.detach(child);
+      child = null as any;
     }
+    this.parentElement?.removeChild(this);
+    this.shadow = null as any;
+    this.shadowWrapper = null as any;
+    this.props = null as any;
+    this._state = null as any;
+    this.effectsFn = null as any;
+    this.disconnectEffects = null as any;
+    this.onMountEffects = null as any;
+    this.renderingError = null as any;
+    this.renderingErrorHandler = null as any;
+    this.container = null as any;
+    this.latestVChildren = null as any;
   }
 
   protected cleanUp() {}

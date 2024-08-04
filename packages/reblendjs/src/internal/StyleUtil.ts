@@ -10,7 +10,7 @@ class StyleUtil {
   static instance: StyleUtil;
   elementStyles: ElementStyles = {
     [`[${REBLEND_COMPONENT_ATTRIBUTE_NAME}], [${REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME}]`]:
-      { display: 'contents' } as any,
+      { display: 'contents !important' } as any,
   };
   styleElement!: HTMLStyleElement;
 
