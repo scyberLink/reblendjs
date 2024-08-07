@@ -911,7 +911,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       );
     }
     // @ts-ignore
-    element.prototype.type = element.ELEMENT_NAME;
+    element.prototype!.type = element.ELEMENT_NAME;
     const typeName = `${snakeCase(element.ELEMENT_NAME)}-${rand(
       111111,
       999999
@@ -1158,7 +1158,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       this.reactDomCreateRoot_root?.render(
         createElement(this.ReactClass, {
           ...this.props,
-          children: this.type.toLowerCase().includes('img')
+          children: !this.props?.children?.length
             ? undefined
             : this.getChildrenWrapperForReact(),
         })
