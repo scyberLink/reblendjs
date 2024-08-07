@@ -216,6 +216,8 @@ export const isCallable = (obj: any) => {
   return true;
 };
 
-export const REBLEND_COMPONENT_ATTRIBUTE_NAME = 'ReblendComponent';
+export const REBLEND_COMPONENT_ATTRIBUTE_NAME = 'reblendcomponent';
 export const REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME =
-  'ReblendWrapperForReactComponent';
+  'reblendwrapperforreactcomponent';
+export const REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME =
+  'reblendchildrenwrapperforreactcomponent';

@@ -8,6 +8,7 @@ import {
   cssString,
   isCallable,
   rand,
+  REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME,
   REBLEND_COMPONENT_ATTRIBUTE_NAME,
   REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME,
   registerElement,
@@ -31,7 +32,13 @@ import {
 import * as lodash from 'lodash';
 import StyleUtil, { StyleUtilType } from './StyleUtil';
 import { createRoot, Root } from 'react-dom/client';
-import { createElement, createRef, forwardRef, useEffect } from 'react';
+import {
+  Component,
+  createElement,
+  createRef,
+  forwardRef,
+  useEffect,
+} from 'react';
 
 export type ChildWithProps = {
   child: BaseComponent;
@@ -117,10 +124,14 @@ class BaseComponent extends HTMLElement implements IDelegate {
   renderingError?: ReblendRenderingException;
   renderingErrorHandler?: (e: ReblendRenderingException) => void;
   container?: BaseComponent;
+  attached!: boolean;
+
   connectedCallback() {
-    /*     this.attached = true;
-     */ this.componentDidMount();
-    this.mountEffects!();
+    if (!this.attached) {
+      this.componentDidMount();
+      this.mountEffects!();
+      this.attached = true;
+    }
   }
 
   constructor() {
@@ -308,8 +319,6 @@ class BaseComponent extends HTMLElement implements IDelegate {
   appendChildren(...children: (HTMLElement | BaseComponent)[]) {
     for (const child of children) {
       this.appendChild(child);
-      (child as BaseComponent).connectedCallback &&
-        (child as BaseComponent).connectedCallback();
     }
   }
 
@@ -501,11 +510,50 @@ class BaseComponent extends HTMLElement implements IDelegate {
       : super.hasAttribute('disabled');
   }
 
+  set parentNode(node: ParentNode) {
+    this.wrapper || this.shadowed
+      ? //@ts-ignore
+        (this.shadowWrapper.parentNode = node)
+      : //@ts-ignore
+        (super.parentNode = node);
+    if (node) {
+      this.connectedCallback();
+    }
+  }
+
+  set parentElement(element: HTMLElement) {
+    this.wrapper || this.shadowed
+      ? //@ts-ignore
+        (this.shadowWrapper.parentElement = element)
+      : //@ts-ignore
+        (super.parentElement = element);
+    if (element) {
+      this.connectedCallback();
+    }
+  }
+
+  get parentNode() {
+    return (
+      this.wrapper || this.shadowed
+        ? this.shadowWrapper.parentNode
+        : super.parentNode
+    ) as any;
+  }
+
+  get parentElement() {
+    return (
+      this.wrapper || this.shadowed
+        ? this.shadowWrapper.parentElement
+        : super.parentElement
+    ) as any;
+  }
+
   appendChild<T extends Node>(node: T): T {
     const appended =
       this.wrapper || this.shadowed
         ? this.shadowWrapper.appendChild(node)
         : super.appendChild(node);
+    (node as any)?.connectedCallback && (node as any)?.connectedCallback();
     return appended;
   }
 
@@ -605,9 +653,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   append(...nodes: Array<Node | string>): void {
-    this.wrapper || this.shadowed
-      ? this.shadowWrapper.append(...nodes)
-      : super.append(...nodes);
+    for (const node of nodes) {
+      this.wrapper || this.shadowed
+        ? this.shadowWrapper.appendChild(node as any)
+        : super.appendChild(node as any);
+    }
   }
 
   blur(): void {
@@ -1058,6 +1108,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
         return this;
       }
 
+      disconnectedCallback() {}
+
       getData() {
         return this.reblendPrimitiveData;
       }
@@ -1070,6 +1122,90 @@ class BaseComponent extends HTMLElement implements IDelegate {
       }
     }
   );
+
+  ReactClass: any;
+
+  private static ReblendReactClass = class extends BaseComponent {
+    reactDomCreateRoot_root?: Root;
+
+    constructor() {
+      super();
+    }
+
+    _constructor(): void {
+      super._constructor();
+    }
+
+    protected html(): VNode | VNodeChildren {
+      return this.props.children;
+    }
+
+    init(): void {
+      super.init();
+      if (
+        !this.reactDomCreateRoot_root ||
+        !Object.values(this.reactDomCreateRoot_root)[0]
+      ) {
+        this.reactDomCreateRoot_root = createRoot(this);
+      }
+    }
+
+    private render() {
+      this.attach();
+    }
+
+    async attach() {
+      this.reactDomCreateRoot_root?.render(
+        createElement(this.ReactClass, {
+          ...this.props,
+          children: this.type.toLowerCase().includes('img')
+            ? undefined
+            : this.getChildrenWrapperForReact(),
+        })
+      );
+    }
+
+    protected cleanUp(): void {
+      try {
+        this.reactDomCreateRoot_root?.unmount();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  getChildrenWrapperForReact() {
+    const children: BaseComponent[] = this.props.children;
+    return createElement(
+      class extends Component {
+        containerRef: React.RefObject<HTMLDivElement>;
+        constructor(props) {
+          super(props);
+          this.containerRef = createRef<HTMLDivElement>();
+        }
+
+        componentDidMount(): void {
+          if (this.containerRef) {
+            children.forEach(child => {
+              this.containerRef.current?.appendChild(child);
+              child.connectedCallback && child.connectedCallback();
+            });
+          }
+        }
+
+        render() {
+          return createElement(
+            'div',
+            {
+              [REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME]: '',
+              ref: this.containerRef,
+            },
+            null
+          );
+        }
+      }
+    );
+  }
 
   diff(
     parent: BaseComponent,
@@ -1210,12 +1346,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return patches;
   }
 
-  latestVChildren?: VNodeChildren;
-
   diffChildren(parent: BaseComponent, oldNode: BaseComponent, newNode: VNode) {
     const oldChildren: DomNodeChildren = oldNode?.props?.children || [];
     const newChildren: VNodeChildren = newNode?.props?.children || [];
-    oldNode.latestVChildren = newChildren;
     const patches: Patch[] = [];
     const maxLength = Math.max(oldChildren.length, newChildren.length);
 
@@ -1268,113 +1401,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
     isTagStandard || (clazz.ELEMENT_NAME = tagName);
 
     if (isReactNode) {
-      clazz = class extends Reblend {
-        static ELEMENT_NAME: string = capitalize(
-          `${(type as unknown as ReactNode).displayName}`
-        );
-        reactDomCreateRoot_root?: Root;
-        containerRef?: React.RefObject<HTMLDivElement>;
-        childrenToBeRendered?: (BaseComponent | HTMLElement | Text)[];
-        WrapperComponent?: React.ForwardRefExoticComponent<
-          React.PropsWithoutRef<{}> & React.RefAttributes<HTMLDivElement>
-        >;
-        constructor() {
-          super();
-        }
-        _constructor(): void {
-          super._constructor();
-          this.containerRef = createRef<HTMLDivElement>();
-        }
-
-        init(): void {
-          super.init();
-          this.initRoot();
-          this.WrapperComponent = forwardRef<HTMLDivElement>((props, ref) => {
-            useEffect(() => {
-              if (
-                this.containerRef!.current instanceof HTMLElement &&
-                typeof this.containerRef!.current.appendChild === 'function'
-              ) {
-                this.props?.children?.forEach((child: HTMLElement) => {
-                  if (child instanceof HTMLElement) {
-                    this.containerRef!.current!.appendChild(child);
-                  }
-                });
-              }
-              return () => {
-                this.cleanUp();
-                this.containerRef?.current!.childNodes.forEach(child =>
-                  this.detach(child as any)
-                );
-              };
-            }, []);
-
-            return createElement(type as any, {
-              ...this.props,
-              children: undefined,
-              ref: node => {
-                // Assign the node to both refs
-                //@ts-ignore
-                this.containerRef.current = node;
-                if (typeof ref === 'function') {
-                  ref(node);
-                } else if (ref) {
-                  ref.current = node;
-                }
-              },
-            });
-          });
-
-          this.createChildrenToBeRendered();
-
-          this.render();
-        }
-
-        private render() {
-          this.WrapperComponent &&
-            this.reactDomCreateRoot_root?.render(
-              createElement(this.WrapperComponent)
-            );
-        }
-
-        private initRoot() {
-          if (!this.reactDomCreateRoot_root) {
-            /*  this.reactDomCreateRoot_root.unmount();
-            this.reactDomCreateRoot_root = undefined; */
-            this.reactDomCreateRoot_root = createRoot(this);
-          }
-        }
-
-        private createChildrenToBeRendered() {
-          this.childrenToBeRendered = (
-            BaseComponent.createChildren(
-              this.latestVChildren || this.props.children
-            ) || []
-          ).filter(Boolean);
-        }
-
-        protected remount() {
-          this.cleanUp();
-          this.initRoot();
-          this.createChildrenToBeRendered();
-          this.render();
-        }
-
-        protected cleanUp(): void {
-          try {
-            this.childrenToBeRendered?.forEach(child => {
-              this.detach(child as any);
-            });
-            /* this.childrenToBeRendered = undefined;
-            this.reactDomCreateRoot_root?.unmount(); */
-          } catch (error) {
-            console.log(error);
-          }
-        }
-        protected html() {
-          return this.latestVChildren;
-        }
-      };
+      clazz = BaseComponent.ReblendReactClass as any;
+      clazz.ELEMENT_NAME = capitalize(
+        `${(type as unknown as ReactNode).displayName}`
+      );
     }
 
     !isTagStandard && BaseComponent.register(clazz);
@@ -1391,7 +1421,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
         : ReblendNode
     ] = true;
     element.type = tagName;
-    element.latestVChildren = children;
+    if (isReactNode) {
+      element.ReactClass = type;
+    }
     Object.setPrototypeOf(
       element,
       isTagStandard ? Reblend.prototype : clazz.prototype
@@ -1401,12 +1433,14 @@ class BaseComponent extends HTMLElement implements IDelegate {
       if (isReactNode) {
         element.setAttribute(
           REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME,
-          process?.env?.REBLEND_DEVELEOPMENT ? tagName : ''
+          //Don't forget to uncomment this
+          `process?.env?.REBLEND_DEVELEOPMENT` ? tagName : ''
         );
       } else {
         element.setAttribute(
           REBLEND_COMPONENT_ATTRIBUTE_NAME,
-          process?.env?.REBLEND_DEVELEOPMENT ? tagName : ''
+          //Don't forget to uncomment this
+          `process?.env?.REBLEND_DEVELEOPMENT` ? tagName : ''
         );
       }
     }
@@ -1497,15 +1531,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
         nodes.add(node);
       }
     });
-    nodes.forEach(
-      node =>
-        BaseComponent.isReblendRenderedNodeStandard(node) ||
-        node[
-          BaseComponent.isReactToReblendRenderedNode(node)
-            ? 'remount'
-            : 'onStateChange'
-        ]()
-    );
+    nodes.forEach(node => {
+      if (!BaseComponent.isReblendRenderedNodeStandard(node)) {
+        if (BaseComponent.isReactToReblendRenderedNode(node)) {
+          (node as any)?.render();
+        } else {
+          node.onStateChange();
+        }
+      }
+    });
     nodes = null as any;
   }
 
@@ -1756,7 +1790,6 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.renderingError = null as any;
     this.renderingErrorHandler = null as any;
     this.container = null as any;
-    this.latestVChildren = null as any;
   }
 
   protected cleanUp() {}

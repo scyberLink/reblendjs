@@ -1,6 +1,7 @@
 import {
   cssObjectFromString,
   cssString,
+  REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME,
   REBLEND_COMPONENT_ATTRIBUTE_NAME,
   REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME,
 } from '../common/utils';
@@ -9,7 +10,7 @@ type ElementStyles = { [elementQuerySelector: string]: CSSStyleDeclaration };
 class StyleUtil {
   static instance: StyleUtil;
   elementStyles: ElementStyles = {
-    [`[${REBLEND_COMPONENT_ATTRIBUTE_NAME}], [${REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME}]`]:
+    [`[${REBLEND_COMPONENT_ATTRIBUTE_NAME}], [${REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME}], [${REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME}]`]:
       { display: 'contents !important' } as any,
   };
   styleElement!: HTMLStyleElement;
