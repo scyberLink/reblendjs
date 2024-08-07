@@ -13,12 +13,16 @@ export default function Routing() {
 
   return (
     <Container class="text-center py-5">
-      <Router />
-      <h3>Testing Reblend Router</h3>
-      <Route path={'/user/detail/:id([0-9]{10})?'} Component={Counter}></Route>
-      <StaticExample />
-      <BasicExample />
-      <DismissibleExample />
+      <Router>
+        <h3>Testing Reblend Router</h3>
+        <Route
+          path={'/user/detail/:id([0-9]{10})?'}
+          Component={Counter}
+        ></Route>
+        <StaticExample />
+        <BasicExample />
+        <DismissibleExample />
+      </Router>
     </Container>
   );
 }

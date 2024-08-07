@@ -14,10 +14,10 @@ function Header({ i = 0, msg = '', logo = '' }) {
           {error =>
             (error && <>{error.message}</>) || (
               <>
-                {
-                  //@ts-ignore Should throw error and should be caught
-                  inc.message + 1
-                }
+                {i % 2 == 2
+                  ? `No Error when ${i} is divisible by 2; else`
+                  : //@ts-ignore Should throw error and should be caught
+                    inc.message + 1}
               </>
             )
           }

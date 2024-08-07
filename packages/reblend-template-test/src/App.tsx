@@ -15,14 +15,14 @@ import AutoLayoutSizingExample from './grid/AutoLayoutSizingExample';
 function App() {
   const [msg, s] = useI();
 
-  const Header1 = useMemo(() => {
+  /*  const Header1 = useMemo(() => {
     return (
       <>
         <Header {...{ logo, msg, i: s }} />
         {s % 3 === 0 ? <ReblendComponent /> : null}
       </>
     );
-  }, [msg, s]);
+  }, [msg, s]); */
 
   const colors = ['azure', 'yellow', 'pink', 'purple', 'green', 'red'];
   setInterval(() => {
@@ -34,8 +34,8 @@ function App() {
     <>
       <>
         <CardExample class="p-2" />
-        <Button variant="primary" onClick={() => setModalShow(true)}>
-          Launch vertically centered modal
+        <Button variant="primary" onClick={() => setModalShow(!modalShow)}>
+          Toggle vertically centered modal
         </Button>
 
         <MyVerticallyCenteredModal
@@ -44,7 +44,7 @@ function App() {
         />
       </>
       {/* @ts-ignore */}
-      <Header1 />
+      {/* <Header1 /> */}
       <div {...{ className: 'App' }}>
         <Header {...{ logo, msg, i: s }} />
       </div>
