@@ -72,7 +72,7 @@ interface ReactNode {
 interface VNode {
   [reblendVComponent: symbol]: boolean;
   props: IAny & { children: VNodeChildren };
-  type: string | typeof Reblend | ReactNode;
+  displayName: string | typeof Reblend | ReactNode;
 }
 
 interface Patch {
@@ -93,7 +93,7 @@ const ReblendNodeStandard = Symbol('Reblend.Node.Standard');
 const ReblendVNodeStandard = Symbol('Reblend.VNode.Standard');
 
 interface BaseComponent {
-  type: string;
+  displayName: string;
   [reblendComponent: symbol]: boolean;
   //[stateKey: string]: any;
 }
@@ -911,7 +911,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
       );
     }
     // @ts-ignore
-    element.prototype!.type = element.ELEMENT_NAME;
+    element.prototype!.displayName = element.ELEMENT_NAME;
     const typeName = `${snakeCase(element.ELEMENT_NAME)}-${rand(
       111111,
       999999
@@ -1070,7 +1070,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
   isReblendPrimitiveElement(element: any) {
     return (
       !BaseComponent.isPrimitive(element) &&
-      element.type === REBLEND_PRIMITIVE_ELEMENT_NAME
+      element.displayName === REBLEND_PRIMITIVE_ELEMENT_NAME
     );
   }
 
@@ -1266,15 +1266,16 @@ class BaseComponent extends HTMLElement implements IDelegate {
       !BaseComponent.isPrimitive(newNode)
     ) {
       patches.push({ type: 'REPLACE', parent, newNode, oldNode });
-    } else if ('type' in oldNode && 'type' in (newNode as any)) {
+    } else if ('displayName' in oldNode && 'displayName' in (newNode as any)) {
       const oldNodeTag = (
-        (oldNode as BaseComponent).type as string
+        (oldNode as BaseComponent).displayName as string
       ).toLowerCase();
 
       const newNodeTag = (
-        (BaseComponent.isPrimitive((newNode as VNode).type)
-          ? (newNode as VNode).type
-          : ((newNode as VNode).type as typeof Reblend).ELEMENT_NAME) as string
+        (BaseComponent.isPrimitive((newNode as VNode).displayName)
+          ? (newNode as VNode).displayName
+          : ((newNode as VNode).displayName as typeof Reblend)
+              .ELEMENT_NAME) as string
       ).toLowerCase();
 
       if (oldNodeTag !== newNodeTag) {
@@ -1375,10 +1376,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
       return new BaseComponent.ReblendPrimitive().setData(vNode as Primitive);
     }
 
-    const { type } = vNode as VNode;
-    let clazz: typeof Reblend = type as any as typeof Reblend;
-    const isTagStandard = typeof type === 'string';
-    const isReactNode = BaseComponent.isReactNode(type as any);
+    const { displayName } = vNode as VNode;
+    let clazz: typeof Reblend = displayName as any as typeof Reblend;
+    const isTagStandard = typeof displayName === 'string';
+    const isReactNode = BaseComponent.isReactNode(displayName as any);
 
     const children: any[] = [];
     children.push(
@@ -1393,7 +1394,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     };
 
     let tagName = isTagStandard
-      ? type
+      ? displayName
       : (BaseComponent.isReactNode(clazz)
           ? (clazz as any as ReactNode).displayName
           : clazz.ELEMENT_NAME) || `Anonymous`;
@@ -1403,14 +1404,14 @@ class BaseComponent extends HTMLElement implements IDelegate {
     if (isReactNode) {
       clazz = BaseComponent.ReblendReactClass as any;
       clazz.ELEMENT_NAME = capitalize(
-        `${(type as unknown as ReactNode).displayName}`
+        `${(displayName as unknown as ReactNode).displayName}`
       );
     }
 
     !isTagStandard && BaseComponent.register(clazz);
 
     const element: Reblend = document.createElement(
-      isTagStandard ? (type as string) : 'div'
+      isTagStandard ? (displayName as string) : 'div'
     ) as Reblend;
 
     element[
@@ -1420,9 +1421,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
         ? ReblendNodeStandard
         : ReblendNode
     ] = true;
-    element.type = tagName;
+    element.displayName = tagName;
     if (isReactNode) {
-      element.ReactClass = type;
+      element.ReactClass = displayName;
     }
     Object.setPrototypeOf(
       element,
@@ -1468,8 +1469,12 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return element;
   }
 
-  static isReactNode(type: IAny): boolean {
-    return type && typeof type !== 'string' && '$$typeof' in type;
+  static isReactNode(displayName: IAny): boolean {
+    return (
+      displayName &&
+      typeof displayName !== 'string' &&
+      '$$typeof' in displayName
+    );
   }
 
   applyPatches(patches: Patch[]) {
@@ -1680,15 +1685,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   static construct(
-    type: typeof Reblend | string | VNode[],
+    displayName: typeof Reblend | string | VNode[],
     props: IAny,
     ...children: VNodeChildren
   ): VNode | VNodeChildren {
-    if (Array.isArray(type)) {
-      return type as [];
+    if (Array.isArray(displayName)) {
+      return displayName as [];
     }
-    let clazz: typeof Reblend = type as typeof Reblend;
-    const isTagStandard = typeof type === 'string';
+    let clazz: typeof Reblend = displayName as typeof Reblend;
+    const isTagStandard = typeof displayName === 'string';
     if (!isTagStandard && clazz.ELEMENT_NAME === 'Fragment') {
       return children || [];
     }
@@ -1712,7 +1717,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
         : BaseComponent.isReactNode(clazz)
         ? ReactToReblendVNode
         : ReblendVNode]: true,
-      type: clazz,
+      displayName: clazz,
       props: mergedProp,
     };
     return velement;
