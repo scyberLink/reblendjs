@@ -1,6 +1,6 @@
 {
   "name": "reblend-template-test",
-  "version": "2.0.18",
+  "version": "2.0.19",
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "repository": {
@@ -14,9 +14,9 @@
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18.3.1",
-    "reblend-router": "^0.1.12",
+    "reblend-router": "^0.1.13",
     "reblend-scripts": "^6.0.40",
-    "reblendjs": "^3.0.21",
+    "reblendjs": "^3.0.22",
     "typescript": "^4.9.5"
   },
   "scripts": {
