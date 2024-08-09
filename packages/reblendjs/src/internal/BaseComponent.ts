@@ -1485,8 +1485,14 @@ class BaseComponent extends HTMLElement implements IDelegate {
             newNode as VNode
           );
           element && parent?.appendChild(element);
+          parent?.props?.children?.push(element);
           break;
         case 'REMOVE':
+          const oldNodeIndex = parent?.props?.children?.indexOf(oldNode);
+          if (oldNodeIndex > -1) {
+            parent!.props.children[oldNodeIndex] =
+              new BaseComponent.ReblendPrimitive().setData(null);
+          }
           this.detach(oldNode as any);
           break;
         case 'REPLACE':
@@ -1494,7 +1500,11 @@ class BaseComponent extends HTMLElement implements IDelegate {
             const newNodeElement = BaseComponent.createElement.bind(this)(
               newNode as VNode
             );
-            oldNode?.parentNode?.replaceChild(newNodeElement, oldNode);
+            oldNode.parentNode?.replaceChild(newNodeElement, oldNode);
+            const oldNodeIndex = parent?.props?.children?.indexOf(oldNode);
+            if (oldNodeIndex > -1) {
+              parent!.props.children[oldNodeIndex] = newNodeElement;
+            }
             this.detach(oldNode as any);
           }
           break;
