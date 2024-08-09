@@ -32,7 +32,7 @@
   "devDependencies": {
     "@babel/cli": "^7.24.8",
     "@types/lodash": "^4.17.6",
-    "babel-preset-reblend": "^7.24.36",
+    "babel-preset-reblend": "^7.24.38",
     "typescript": "^5.5.3"
   },
   "dependencies": {
