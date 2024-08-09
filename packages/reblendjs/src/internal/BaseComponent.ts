@@ -1537,12 +1537,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
       }
     });
     nodes.forEach(node => {
-      if (!BaseComponent.isReblendRenderedNodeStandard(node)) {
-        if (BaseComponent.isReactToReblendRenderedNode(node)) {
-          (node as any)?.render();
-        } else {
-          node.onStateChange();
-        }
+      if (BaseComponent.isReactToReblendRenderedNode(node)) {
+        (node as any)?.render();
+      } else {
+        node.onStateChange();
       }
     });
     nodes = null as any;
