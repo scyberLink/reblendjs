@@ -4939,7 +4939,7 @@ export declare namespace ReblendTyping {
     nonce?: string | undefined;
     slot?: string | undefined;
     spellCheck?: Booleanish | undefined;
-    style?: CSSProperties | string | undefined;
+    style?: CSSProperties | string | undefined | null;
     tabIndex?: number | undefined;
     title?: string | undefined;
     translate?: 'yes' | 'no' | undefined;
@@ -5896,6 +5896,7 @@ export declare namespace ReblendTyping {
     xlinkActuate?: string | undefined;
     xlinkArcrole?: string | undefined;
     xlinkHref?: string | undefined;
+    'xlink:href'?: string | undefined;
     xlinkRole?: string | undefined;
     xlinkShow?: string | undefined;
     xlinkTitle?: string | undefined;

@@ -23,14 +23,7 @@ import { Reblend } from './Reblend';
 import { ShadowMode } from './ShadowMode';
 import * as lodash from 'lodash';
 import StyleUtil, { StyleUtilType } from './StyleUtil';
-import { createRoot, Root } from 'react-dom/client';
-import {
-  Component,
-  createElement,
-  createRef,
-  forwardRef,
-  useEffect,
-} from 'react';
+import { Root } from 'react-dom/client';
 
 export type ChildWithProps = {
   child: BaseComponent;
@@ -924,7 +917,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.scale = scale;
   }
 
-  init() {}
+  async init() {}
   componentDidMount() {}
 
   private setProps(props: IAny, init: boolean) {
@@ -1132,13 +1125,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
       return this.props.children;
     }
 
-    init(): void {
-      super.init();
+    async init() {
+      await super.init();
       if (
         !this.reactDomCreateRoot_root ||
         !Object.values(this.reactDomCreateRoot_root)[0]
       ) {
-        this.reactDomCreateRoot_root = createRoot(this);
+        const reactDom = await import('react-dom/client');
+
+        this.reactDomCreateRoot_root = reactDom.createRoot(this);
       }
     }
 
@@ -1147,12 +1142,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
     }
 
     async attach() {
+      //Lazy load react i.e it been bundled separately and only fetch when needed
+      const react = await import('react');
+
       this.reactDomCreateRoot_root?.render(
-        createElement(this.ReactClass, {
+        react.createElement(this.ReactClass, {
           ...this.props,
           children: !this.props?.children?.length
             ? undefined
-            : this.getChildrenWrapperForReact(),
+            : await this.getChildrenWrapperForReact(),
         })
       );
     }
@@ -1166,14 +1164,15 @@ class BaseComponent extends HTMLElement implements IDelegate {
     }
   };
 
-  getChildrenWrapperForReact() {
+  async getChildrenWrapperForReact() {
     const children: BaseComponent[] = this.props.children;
-    return createElement(
-      class extends Component {
+    const react = await import('react');
+    return react.createElement(
+      class extends react.Component {
         containerRef: React.RefObject<HTMLDivElement>;
         constructor(props) {
           super(props);
-          this.containerRef = createRef<HTMLDivElement>();
+          this.containerRef = react.createRef<HTMLDivElement>();
         }
 
         componentDidMount(): void {
@@ -1186,7 +1185,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
         }
 
         render() {
-          return createElement(
+          return react.createElement(
             'div',
             {
               [REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME]: '',
