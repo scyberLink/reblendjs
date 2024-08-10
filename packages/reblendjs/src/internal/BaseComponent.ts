@@ -1362,9 +1362,12 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
   protected static createElement(
     vNode: VNode | ReactNode | Primitive
-  ): BaseComponent {
+  ): BaseComponent[] {
+    if (Array.isArray(vNode)) {
+      return BaseComponent.createChildren(vNode) as any;
+    }
     if (BaseComponent.isPrimitive(vNode)) {
-      return new BaseComponent.ReblendPrimitive().setData(vNode as Primitive);
+      return [new BaseComponent.ReblendPrimitive().setData(vNode as Primitive)];
     }
 
     const { displayName } = vNode as VNode;
@@ -1457,7 +1460,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     BaseComponent.setProps(props, element, true);
     element.attach && element.attach();
     element.container = this as any as BaseComponent;
-    return element;
+    return [element];
   }
 
   static isReactNode(displayName: IAny): boolean {
@@ -1475,8 +1478,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
           const element = BaseComponent.createElement.bind(this)(
             newNode as VNode
           );
-          element && parent?.appendChild(element);
-          parent?.props?.children?.push(element);
+          element && parent?.appendChildren(...element);
+          parent?.props?.children?.push(...element);
           break;
         case 'REMOVE':
           const oldNodeIndex = parent?.props?.children?.indexOf(oldNode);
@@ -1491,10 +1494,19 @@ class BaseComponent extends HTMLElement implements IDelegate {
             const newNodeElement = BaseComponent.createElement.bind(this)(
               newNode as VNode
             );
-            oldNode.parentNode?.replaceChild(newNodeElement, oldNode);
+            let firstNewNode = newNodeElement.shift();
+            oldNode.parentNode?.replaceChild(
+              <BaseComponent>firstNewNode,
+              oldNode
+            );
             const oldNodeIndex = parent?.props?.children?.indexOf(oldNode);
             if (oldNodeIndex > -1) {
-              parent!.props.children[oldNodeIndex] = newNodeElement;
+              parent!.props.children[oldNodeIndex] = firstNewNode;
+            }
+            //Append the remaining node after the firstNewNode
+            for (const node of newNodeElement) {
+              firstNewNode?.after(node);
+              firstNewNode = node;
             }
             this.detach(oldNode as any);
           }
@@ -1760,7 +1772,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
         BaseComponent.isStandardVirtualNode(child)
       ) {
         const domChild = BaseComponent.createElement.bind(this)(child as any);
-        domChild && containerArr.push(domChild);
+        domChild && containerArr.push(...domChild);
       } else {
         throw new TypeError('Invalid child node  in children');
       }
