@@ -21,14 +21,6 @@ import { IPair } from '../interface/IPair';
 import IDelegate from './IDelegate';
 import { Reblend } from './Reblend';
 import { ShadowMode } from './ShadowMode';
-import {
-  Ref,
-  StateEffectiveFunction,
-  StateEffectiveMemoFunction,
-  StateFunction,
-  StateFunctionValue,
-  StateReducerFunction,
-} from './hooks';
 import * as lodash from 'lodash';
 import StyleUtil, { StyleUtilType } from './StyleUtil';
 import { createRoot, Root } from 'react-dom/client';
@@ -1004,7 +996,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return this._state || {};
   }
 
-  set state(value: StateFunctionValue<IAny>) {
+  set state(value: ReblendTyping.StateFunctionValue<IAny>) {
     this._state = {
       ...this._state,
       ...(typeof value == 'function' ? value(this._state) : value),
@@ -1012,7 +1004,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     this.onStateChange();
   }
 
-  setState(value: StateFunctionValue<IAny>) {
+  setState(value: ReblendTyping.StateFunctionValue<IAny>) {
     this.state = value;
   }
 
@@ -1777,7 +1769,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
     return containerArr;
   }
 
-  private onMountEffects?: StateEffectiveFunction[];
+  private onMountEffects?: ReblendTyping.StateEffectiveFunction[];
 
   private mountEffects() {
     this.onMountEffects?.forEach(fn => {
@@ -1810,8 +1802,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
   protected cleanUp() {}
   protected componentWillUnmount() {}
 
-  private effectsFn?: StateEffectiveFunction[];
-  private disconnectEffects?: StateEffectiveFunction[];
+  private effectsFn?: ReblendTyping.StateEffectiveFunction[];
+  private disconnectEffects?: ReblendTyping.StateEffectiveFunction[];
 
   static mountOn(
     elementId: string,
@@ -1832,9 +1824,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
   stateIdNotIncluded = new Error('State Identifier/Key not specified');
   useState<T>(
-    initial: StateFunctionValue<T>,
+    initial: ReblendTyping.StateFunctionValue<T>,
     ...dependencyStringAndOrStateKey: string[]
-  ): [T, StateFunction<T>] {
+  ): [T, ReblendTyping.StateFunction<T>] {
     const stateID: string | undefined = dependencyStringAndOrStateKey.pop();
 
     if (!stateID) {
@@ -1843,7 +1835,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
     if (typeof initial === 'function') initial = (initial as Function)();
     this[stateID] = initial;
-    const variableSetter: StateFunction<T> = (value: StateFunctionValue<T>) => {
+    const variableSetter: ReblendTyping.StateFunction<T> = (
+      value: ReblendTyping.StateFunctionValue<T>
+    ) => {
       if (typeof value === 'function') {
         value = (value as Function)(this[stateID]);
       }
@@ -1857,7 +1851,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   useEffect(
-    fn: StateEffectiveFunction,
+    fn: ReblendTyping.StateEffectiveFunction,
     dependencies: any[],
     ...dependencyStringAndOrStateKey: string[]
   ) {
@@ -1876,10 +1870,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   useReducer<T>(
-    reducer: StateReducerFunction<T>,
-    initial: StateFunctionValue<T>,
+    reducer: ReblendTyping.StateReducerFunction<T>,
+    initial: ReblendTyping.StateFunctionValue<T>,
     ...dependencyStringAndOrStateKey: string[]
-  ): [T, StateFunction<T>] {
+  ): [T, ReblendTyping.StateFunction<T>] {
     reducer = reducer.bind(this);
     const stateID: string | undefined = dependencyStringAndOrStateKey.pop();
 
@@ -1889,8 +1883,10 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
     let [state, setState] = this.useState<T>(initial, stateID);
     this[stateID] = state;
-    const fn: StateFunction<T> = (newValue: StateFunctionValue<T>) => {
-      let reducedVal: StateFunctionValue<T>;
+    const fn: ReblendTyping.StateFunction<T> = (
+      newValue: ReblendTyping.StateFunctionValue<T>
+    ) => {
+      let reducedVal: ReblendTyping.StateFunctionValue<T>;
       if (typeof newValue === 'function') {
         reducedVal = reducer(
           this[stateID],
@@ -1906,7 +1902,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
   }
 
   useMemo<T>(
-    fn: StateEffectiveMemoFunction<T>,
+    fn: ReblendTyping.StateEffectiveMemoFunction<T>,
     dependencies?: any[],
     ...dependencyStringAndOrStateKey: string[]
   ) {
@@ -1941,7 +1937,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
    * @returns Ref<T>
    */
   useRef<T>(initial?: T) {
-    const ref: Ref<T> = { current: initial };
+    const ref: ReblendTyping.Ref<T> = { current: initial };
     return ref;
   }
 

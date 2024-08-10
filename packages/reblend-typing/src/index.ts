@@ -8,19 +8,14 @@ interface KeyboardEvent extends Event {}
 interface MouseEvent extends Event {}
 interface TouchEvent extends Event {}
 interface PointerEvent extends Event {}
-interface ToggleEvent extends Event {}
 interface TransitionEvent extends Event {}
 interface UIEvent extends Event {}
 interface WheelEvent extends Event {}
-
 interface EventTarget {}
 interface Document {}
 interface DataTransfer {}
 interface StyleMedia {}
-
 interface Element {}
-interface DocumentFragment {}
-
 interface HTMLElement extends Element {}
 interface HTMLAnchorElement extends HTMLElement {}
 interface HTMLAreaElement extends HTMLElement {}
@@ -84,75 +79,10 @@ interface HTMLTrackElement extends HTMLElement {}
 interface HTMLUListElement extends HTMLElement {}
 interface HTMLVideoElement extends HTMLElement {}
 export interface HTMLWebViewElement extends HTMLElement {}
-
 interface SVGElement extends Element {}
-interface SVGSVGElement extends SVGElement {}
-interface SVGCircleElement extends SVGElement {}
-interface SVGClipPathElement extends SVGElement {}
-interface SVGDefsElement extends SVGElement {}
-interface SVGDescElement extends SVGElement {}
-interface SVGEllipseElement extends SVGElement {}
-interface SVGFEBlendElement extends SVGElement {}
-interface SVGFEColorMatrixElement extends SVGElement {}
-interface SVGFEComponentTransferElement extends SVGElement {}
-interface SVGFECompositeElement extends SVGElement {}
-interface SVGFEConvolveMatrixElement extends SVGElement {}
-interface SVGFEDiffuseLightingElement extends SVGElement {}
-interface SVGFEDisplacementMapElement extends SVGElement {}
-interface SVGFEDistantLightElement extends SVGElement {}
-interface SVGFEDropShadowElement extends SVGElement {}
-interface SVGFEFloodElement extends SVGElement {}
-interface SVGFEFuncAElement extends SVGElement {}
-interface SVGFEFuncBElement extends SVGElement {}
-interface SVGFEFuncGElement extends SVGElement {}
-interface SVGFEFuncRElement extends SVGElement {}
-interface SVGFEGaussianBlurElement extends SVGElement {}
-interface SVGFEImageElement extends SVGElement {}
-interface SVGFEMergeElement extends SVGElement {}
-interface SVGFEMergeNodeElement extends SVGElement {}
-interface SVGFEMorphologyElement extends SVGElement {}
-interface SVGFEOffsetElement extends SVGElement {}
-interface SVGFEPointLightElement extends SVGElement {}
-interface SVGFESpecularLightingElement extends SVGElement {}
-interface SVGFESpotLightElement extends SVGElement {}
-interface SVGFETileElement extends SVGElement {}
-interface SVGFETurbulenceElement extends SVGElement {}
-interface SVGFilterElement extends SVGElement {}
-interface SVGForeignObjectElement extends SVGElement {}
-interface SVGGElement extends SVGElement {}
-interface SVGImageElement extends SVGElement {}
-interface SVGLineElement extends SVGElement {}
-interface SVGLinearGradientElement extends SVGElement {}
-interface SVGMarkerElement extends SVGElement {}
-interface SVGMaskElement extends SVGElement {}
-interface SVGMetadataElement extends SVGElement {}
-interface SVGPathElement extends SVGElement {}
-interface SVGPatternElement extends SVGElement {}
-interface SVGPolygonElement extends SVGElement {}
-interface SVGPolylineElement extends SVGElement {}
-interface SVGRadialGradientElement extends SVGElement {}
-interface SVGRectElement extends SVGElement {}
-interface SVGSetElement extends SVGElement {}
-interface SVGStopElement extends SVGElement {}
-interface SVGSwitchElement extends SVGElement {}
-interface SVGSymbolElement extends SVGElement {}
-interface SVGTextElement extends SVGElement {}
-interface SVGTextPathElement extends SVGElement {}
-interface SVGTSpanElement extends SVGElement {}
-interface SVGUseElement extends SVGElement {}
-interface SVGViewElement extends SVGElement {}
-
-interface FormData {}
-interface Text {}
-interface TouchList {}
-interface WebGLRenderingContext {}
-interface WebGL2RenderingContext {}
-
 interface TrustedHTML {}
-
 import * as CSS from 'csstype';
 import * as PropTypes from 'prop-types';
-
 type NativeAnimationEvent = AnimationEvent;
 type NativeClipboardEvent = ClipboardEvent;
 type NativeCompositionEvent = CompositionEvent;
@@ -165,33 +95,36 @@ type NativePointerEvent = PointerEvent;
 type NativeTransitionEvent = TransitionEvent;
 type NativeUIEvent = UIEvent;
 type NativeWheelEvent = WheelEvent;
-
 /**
  * Used to represent DOM API's where users can either pass
  * true or false as a boolean or as its equivalent strings.
  */
 type Booleanish = boolean | 'true' | 'false';
-
 /**
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/crossorigin MDN}
  */
 type CrossOrigin = 'anonymous' | 'use-credentials' | '' | undefined;
-
 declare const UNDEFINED_VOID_ONLY: unique symbol;
-
 /**
  * The function returned from an effect passed to {@link ReblendTyping.useEffect useEffect},
  * which can be used to clean up the effect when the component unmounts.
  *
  * @see {@link https://reblend.dev/reference/reblend/useEffect Reblend Docs}
  */
-type Destructor = () => void | { [UNDEFINED_VOID_ONLY]: never };
-type VoidOrUndefinedOnly = void | { [UNDEFINED_VOID_ONLY]: never };
+type Destructor = () => void | {
+  [UNDEFINED_VOID_ONLY]: never;
+};
+type VoidOrUndefinedOnly = void | {
+  [UNDEFINED_VOID_ONLY]: never;
+};
 
 export declare namespace ReblendTyping {
-  //
-  // Reblend Elements
-  // ----------------------------------------------------------------------
+  type Ref<T> = { current?: T | HTMLElement };
+  type StateFunction<T> = (value: StateFunctionValue<T>) => void;
+  type StateFunctionValue<T> = ((previous: T) => T) | T;
+  type StateEffectiveMemoFunction<T> = () => T;
+  type StateEffectiveFunction = () => (() => any) | void;
+  type StateReducerFunction<T> = (previous: T, current: T) => any;
 
   /**
    * Used to retrieve the possible components which accept a given set of props.
@@ -229,13 +162,12 @@ export declare namespace ReblendTyping {
    */
   type ElementType<
     P = any,
-    //@ts-ignore
     Tag extends keyof JSX.IntrinsicElements = keyof JSX.IntrinsicElements
   > =
-    //@ts-ignore
-    | { [K in Tag]: P extends JSX.IntrinsicElements[K] ? K : never }[Tag]
+    | {
+        [K in Tag]: P extends JSX.IntrinsicElements[K] ? K : never;
+      }[Tag]
     | ComponentType<P>;
-
   /**
    * Represents any user-defined component, either as a function or a class.
    *
@@ -249,7 +181,6 @@ export declare namespace ReblendTyping {
    * @see {@link FunctionComponent}
    */
   type ComponentType<P = {}> = ComponentClass<P> | FunctionComponent<P>;
-
   /**
    * Represents any user-defined component, either as a function or a class.
    *
@@ -278,7 +209,6 @@ export declare namespace ReblendTyping {
          */
         deprecatedLegacyContext?: any
       ) => Component<any, any>);
-
   /**
    * A readonly ref container where {@link current} cannot be mutated.
    *
@@ -300,7 +230,6 @@ export declare namespace ReblendTyping {
      */
     readonly current: T | null;
   }
-
   interface DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES {}
   /**
    * A callback fired whenever the ref's value changes.
@@ -322,15 +251,13 @@ export declare namespace ReblendTyping {
       | void
       | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES];
   }['bivarianceHack'];
-
   /**
    * A union type of all possible shapes for Reblend refs.
    *
    * @see {@link RefCallback}
    * @see {@link RefObject}
    */
-
-  type Ref<T> = RefCallback<T> | RefObject<T> | null;
+  //type Ref<T> = RefCallback<T> | RefObject<T> | null;
   /**
    * A legacy implementation of refs where you can pass a string to a ref prop.
    *
@@ -342,9 +269,7 @@ export declare namespace ReblendTyping {
    * <div ref="myRef" />
    * ```
    */
-  // TODO: Remove the string ref special case from `PropsWithRef` once we remove LegacyRef
   type LegacyRef<T> = string | Ref<T>;
-
   /**
    * Retrieves the type of the 'ref' prop for a given component type or tag name.
    *
@@ -365,30 +290,25 @@ export declare namespace ReblendTyping {
   type ElementRef<
     C extends
       | ForwardRefExoticComponent<any>
-      | { new (props: any): Component<any> }
+      | {
+          new (props: any): Component<any>;
+        }
       | ((props: any, deprecatedLegacyContext?: any) => ReblendNode)
-      //@ts-ignore
       | keyof JSX.IntrinsicElements
-  > =
-    // need to check first if `ref` is a valid prop for ts@3.0
-    // otherwise it will infer `{}` instead of `never`
-    'ref' extends keyof ComponentPropsWithRef<C>
-      ? NonNullable<ComponentPropsWithRef<C>['ref']> extends RefAttributes<
-          infer Instance
-        >['ref']
-        ? Instance
-        : never
-      : never;
-
+  > = 'ref' extends keyof ComponentPropsWithRef<C>
+    ? NonNullable<ComponentPropsWithRef<C>['ref']> extends RefAttributes<
+        infer Instance
+      >['ref']
+      ? Instance
+      : never
+    : never;
   type ComponentState = any;
-
   /**
    * A value which uniquely identifies a node among items in an array.
    *
    * @see {@link https://reblend.dev/learn/rendering-lists#keeping-list-items-in-order-with-key Reblend Docs}
    */
   type Key = string | number | bigint;
-
   /**
    * @internal The props any component can receive.
    * You don't have to add this type. All components automatically accept these props.
@@ -448,12 +368,10 @@ export declare namespace ReblendTyping {
      */
     ref?: LegacyRef<T> | undefined;
   }
-
   /**
    * Represents the built-in attributes available to class components.
    */
   interface ClassAttributes<T> extends RefAttributes<T> {}
-
   /**
    * Represents a JSX element.
    *
@@ -470,26 +388,24 @@ export declare namespace ReblendTyping {
    * ```
    */
   type ReblendElement = HTMLElement;
-
   /**
    * @deprecated
    */
   interface ReblendComponentElement<
-    //@ts-ignore
     T extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>,
     P = Pick<ComponentProps<T>, Exclude<keyof ComponentProps<T>, 'key' | 'ref'>>
   > extends ReblendElement {}
-
   interface FunctionComponentElement<P> extends ReblendElement {
     ref?:
       | ('ref' extends keyof P
-          ? P extends { ref?: infer R | undefined }
+          ? P extends {
+              ref?: infer R | undefined;
+            }
             ? R
             : never
           : never)
       | undefined;
   }
-
   type CElement<P, T extends Component<P, ComponentState>> = ComponentElement<
     P,
     T
@@ -498,75 +414,55 @@ export declare namespace ReblendTyping {
     extends ReblendElement {
     ref?: LegacyRef<T> | undefined;
   }
-
   /**
    * @deprecated Use {@link ComponentElement} instead.
    */
   type ClassicElement<P> = CElement<P, ClassicComponent<P, ComponentState>>;
-
-  // string fallback for custom web-components
   interface DOMElement<
     P extends HTMLAttributes<T> | SVGAttributes<T>,
     T extends Element
   > extends ReblendElement {
     ref: LegacyRef<T>;
   }
-
-  // ReblendHTML for ReblendHTMLElement
   interface ReblendHTMLElement<T extends HTMLElement>
     extends DetailedReblendHTMLElement<AllHTMLAttributes<T>, T> {}
-
   interface DetailedReblendHTMLElement<
     P extends HTMLAttributes<T>,
     T extends HTMLElement
   > extends DOMElement<P, T> {
     type: keyof ReblendHTML;
   }
-
-  // ReblendSVG for ReblendSVGElement
   interface ReblendSVGElement
     extends DOMElement<SVGAttributes<SVGElement>, SVGElement> {
     type: keyof ReblendSVG;
   }
-
-  //
-  // Factories
-  // ----------------------------------------------------------------------
-
   type Factory<P> = (
     props?: Attributes & P,
     ...children: ReblendNode[]
   ) => ReblendElement;
-
   /**
    * @deprecated Please use `FunctionComponentFactory`
    */
   type SFCFactory<P> = FunctionComponentFactory<P>;
-
   type FunctionComponentFactory<P> = (
     props?: Attributes & P,
     ...children: ReblendNode[]
   ) => FunctionComponentElement<P>;
-
   type ComponentFactory<P, T extends Component<P, ComponentState>> = (
     props?: ClassAttributes<T> & P,
     ...children: ReblendNode[]
   ) => CElement<P, T>;
-
   type CFactory<P, T extends Component<P, ComponentState>> = ComponentFactory<
     P,
     T
   >;
   type ClassicFactory<P> = CFactory<P, ClassicComponent<P, ComponentState>>;
-
   type DOMFactory<P extends DOMAttributes<T>, T extends Element> = (
     props?: (ClassAttributes<T> & P) | null,
     ...children: ReblendNode[]
   ) => DOMElement<P, T>;
-
   interface HTMLFactory<T extends HTMLElement>
     extends DetailedHTMLFactory<AllHTMLAttributes<T>, T> {}
-
   interface DetailedHTMLFactory<
     P extends HTMLAttributes<T>,
     T extends HTMLElement
@@ -576,7 +472,6 @@ export declare namespace ReblendTyping {
       ...children: ReblendNode[]
     ): DetailedReblendHTMLElement<P, T>;
   }
-
   interface SVGFactory
     extends DOMFactory<SVGAttributes<SVGElement>, SVGElement> {
     (
@@ -584,7 +479,6 @@ export declare namespace ReblendTyping {
       ...children: ReblendNode[]
     ): ReblendSVGElement;
   }
-
   /**
    * @deprecated - This type is not relevant when using Reblend. Inline the type instead to make the intent clear.
    */
@@ -593,7 +487,6 @@ export declare namespace ReblendTyping {
    * @deprecated - This type is not relevant when using Reblend. Inline the type instead to make the intent clear.
    */
   type ReblendChild = ReblendElement | string | number;
-
   /**
    * @deprecated Use either `ReblendNode[]` if you need an array or `Iterable<ReblendNode>` if its passed to a host component.
    */
@@ -603,13 +496,11 @@ export declare namespace ReblendTyping {
    * @deprecated This type is not relevant when using Reblend. Inline the type instead to make the intent clear.
    */
   type ReblendFragment = Iterable<ReblendNode>;
-
   /**
    * Different release channels declare additional types of ReblendNode this particular release channel accepts.
    * App or library types should never augment this interface.
    */
   interface DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_REBLEND_NODES {}
-
   /**
    * Represents all of the things Reblend can render.
    *
@@ -639,7 +530,6 @@ export declare namespace ReblendTyping {
    * <Component customElement={<div>hello</div>} />
    * ```
    */
-  // non-thenables need to be kept in sync with AwaitedReblendNode
   type ReblendNode =
     | ReblendElement
     | string
@@ -649,12 +539,6 @@ export declare namespace ReblendTyping {
     | null
     | undefined
     | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_REBLEND_NODES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_REBLEND_NODES];
-
-  //
-  // Top Level API
-  // ----------------------------------------------------------------------
-
-  // DOM Elements
   /** @deprecated */
   function createFactory<T extends HTMLElement>(
     type: keyof ReblendHTML
@@ -665,8 +549,6 @@ export declare namespace ReblendTyping {
   function createFactory<P extends DOMAttributes<T>, T extends Element>(
     type: string
   ): DOMFactory<P, T>;
-
-  // Custom components
   /** @deprecated */
   function createFactory<P>(
     type: FunctionComponent<P>
@@ -679,9 +561,6 @@ export declare namespace ReblendTyping {
   >(type: ClassType<P, T, C>): CFactory<P, T>;
   /** @deprecated */
   function createFactory<P>(type: ComponentClass<P>): Factory<P>;
-
-  // DOM Elements
-  // TODO: generalize this to everything in `keyof ReblendHTML`, not just "input"
   function createElement(
     type: 'input',
     props?:
@@ -708,9 +587,6 @@ export declare namespace ReblendTyping {
     props?: (ClassAttributes<T> & P) | null,
     ...children: ReblendNode[]
   ): DOMElement<P, T>;
-
-  // Custom components
-
   function createElement<P extends {}>(
     type: FunctionComponent<P>,
     props?: (Attributes & P) | null,
@@ -730,34 +606,26 @@ export declare namespace ReblendTyping {
     props?: (Attributes & P) | null,
     ...children: ReblendNode[]
   ): ReblendElement;
-
-  // DOM Elements
-  // ReblendHTMLElement
   function cloneElement<P extends HTMLAttributes<T>, T extends HTMLElement>(
     element: DetailedReblendHTMLElement<P, T>,
     props?: P,
     ...children: ReblendNode[]
   ): DetailedReblendHTMLElement<P, T>;
-  // ReblendHTMLElement, less specific
   function cloneElement<P extends HTMLAttributes<T>, T extends HTMLElement>(
     element: ReblendHTMLElement<T>,
     props?: P,
     ...children: ReblendNode[]
   ): ReblendHTMLElement<T>;
-  // SVGElement
   function cloneElement<P extends SVGAttributes<T>, T extends SVGElement>(
     element: ReblendSVGElement,
     props?: P,
     ...children: ReblendNode[]
   ): ReblendSVGElement;
-  // DOM Element (has to be the last, because type checking stops at first overload that fits)
   function cloneElement<P extends DOMAttributes<T>, T extends Element>(
     element: DOMElement<P, T>,
     props?: DOMAttributes<T> & P,
     ...children: ReblendNode[]
   ): DOMElement<P, T>;
-
-  // Custom components
   function cloneElement<P>(
     element: FunctionComponentElement<P>,
     props?: Partial<P> & Attributes,
@@ -773,7 +641,6 @@ export declare namespace ReblendTyping {
     props?: Partial<P> & Attributes,
     ...children: ReblendNode[]
   ): ReblendElement;
-
   /**
    * Describes the props accepted by a Context {@link Provider}.
    *
@@ -783,7 +650,6 @@ export declare namespace ReblendTyping {
     value: T;
     children?: ReblendNode | undefined;
   }
-
   /**
    * Describes the props accepted by a Context {@link Consumer}.
    *
@@ -792,7 +658,6 @@ export declare namespace ReblendTyping {
   interface ConsumerProps<T> {
     children: (value: T) => ReblendNode;
   }
-
   /**
    * An object masquerading as a component. These are created by functions
    * like {@link forwardRef}, {@link memo}, and {@link createContext}.
@@ -809,7 +674,6 @@ export declare namespace ReblendTyping {
     (props: P): ReblendNode;
     readonly $$typeof: symbol;
   }
-
   /**
    * An {@link ExoticComponent} with a `displayName` property applied to it.
    *
@@ -825,7 +689,6 @@ export declare namespace ReblendTyping {
      */
     displayName?: string | undefined;
   }
-
   /**
    * An {@link ExoticComponent} with a `propTypes` property applied to it.
    *
@@ -834,7 +697,6 @@ export declare namespace ReblendTyping {
   interface ProviderExoticComponent<P> extends ExoticComponent<P> {
     propTypes?: WeakValidationMap<P> | undefined;
   }
-
   /**
    * Used to retrieve the type of a context object from a {@link Context}.
    *
@@ -854,7 +716,6 @@ export declare namespace ReblendTyping {
   type ContextType<C extends Context<any>> = C extends Context<infer T>
     ? T
     : never;
-
   /**
    * Wraps your components to specify the value of this context for all components inside.
    *
@@ -877,7 +738,6 @@ export declare namespace ReblendTyping {
    * ```
    */
   type Provider<T> = ProviderExoticComponent<ProviderProps<T>>;
-
   /**
    * The old way to read context, before {@link useContext} existed.
    *
@@ -898,7 +758,6 @@ export declare namespace ReblendTyping {
    * ```
    */
   type Consumer<T> = ExoticComponent<ConsumerProps<T>>;
-
   /**
    * Context lets components pass information deep down without explicitly
    * passing props.
@@ -928,7 +787,6 @@ export declare namespace ReblendTyping {
      */
     displayName?: string | undefined;
   }
-
   /**
    * Lets you create a {@link Context} that components can provide or read.
    *
@@ -947,16 +805,10 @@ export declare namespace ReblendTyping {
    * const ThemeContext = createContext('light');
    * ```
    */
-  function createContext<T>(
-    // If you thought this should be optional, see
-    // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/24509#issuecomment-382213106
-    defaultValue: T
-  ): Context<T>;
-
+  function createContext<T>(defaultValue: T): Context<T>;
   function isValidElement<P>(
     object: {} | null | undefined
   ): object is ReblendElement;
-
   /**
    * Maintainer's note: Sync with {@link ReblendChildren} until {@link ReblendChildren} is removed.
    */
@@ -1004,8 +856,9 @@ export declare namespace ReblendTyping {
    * </>
    * ```
    */
-  const Fragment: ExoticComponent<{ children?: ReblendNode | undefined }>;
-
+  const Fragment: ExoticComponent<{
+    children?: ReblendNode | undefined;
+  }>;
   /**
    * Lets you find common bugs in your components early during development.
    *
@@ -1021,8 +874,9 @@ export declare namespace ReblendTyping {
    * </StrictMode>
    * ```
    */
-  const StrictMode: ExoticComponent<{ children?: ReblendNode | undefined }>;
-
+  const StrictMode: ExoticComponent<{
+    children?: ReblendNode | undefined;
+  }>;
   /**
    * The props accepted by {@link Suspense}.
    *
@@ -1030,11 +884,9 @@ export declare namespace ReblendTyping {
    */
   interface SuspenseProps {
     children?: ReblendNode | undefined;
-
     /** A fallback reblend tree to show when a Suspense child (like Reblend.lazy) suspends */
     fallback?: ReblendNode;
   }
-
   /**
    * Lets you display a fallback until its children have finished loading.
    *
@@ -1052,7 +904,6 @@ export declare namespace ReblendTyping {
    */
   const Suspense: ExoticComponent<SuspenseProps>;
   const version: string;
-
   /**
    * The callback passed to {@link ProfilerProps.onRender}.
    *
@@ -1108,7 +959,6 @@ export declare namespace ReblendTyping {
      */
     commitTime: number
   ) => void;
-
   /**
    * The props accepted by {@link Profiler}.
    *
@@ -1119,7 +969,6 @@ export declare namespace ReblendTyping {
     id: string;
     onRender: ProfilerOnRenderCallback;
   }
-
   /**
    * Lets you measure rendering performance of a Reblend tree programmatically.
    *
@@ -1134,14 +983,7 @@ export declare namespace ReblendTyping {
    * ```
    */
   const Profiler: ExoticComponent<ProfilerProps>;
-
-  //
-  // Component API
-  // ----------------------------------------------------------------------
-
   type ReblendInstance = Component<any> | Element;
-
-  // Base component for plain JS classes
   interface Component<P = {}, S = {}, SS = any>
     extends ComponentLifecycle<P, S, SS> {}
   class Component<P, S> {
@@ -1166,7 +1008,6 @@ export declare namespace ReblendTyping {
      * @see {@link https://reblend.dev/reference/reblend/Component#static-contexttype}
      */
     static contextType?: Context<any> | undefined;
-
     /**
      * If using the new style context, re-declare this in your class to be the
      * `Reblend.ContextType` of your `static contextType`.
@@ -1184,17 +1025,12 @@ export declare namespace ReblendTyping {
      * @see {@link https://reblend.dev/reference/reblend/Component#context Reblend Docs}
      */
     context: unknown;
-
     constructor(props: P);
     /**
      * @deprecated
      * @see {@link https://legacy.reblendjs.org/docs/legacy-context.html Reblend Docs}
      */
     constructor(props: P, context: any);
-
-    // We MUST keep setState() as a unified signature because it allows proper checking of the method return type.
-    // See: https://github.com/DefinitelyTyped/DefinitelyTyped/issues/18365#issuecomment-351013257
-    // Also, the ` | S` allows intellisense to not be dumbisense
     setState<K extends keyof S>(
       state:
         | ((
@@ -1204,10 +1040,8 @@ export declare namespace ReblendTyping {
         | (Pick<S, K> | S | null),
       callback?: () => void
     ): void;
-
     forceUpdate(callback?: () => void): void;
     render(): ReblendNode;
-
     readonly props: Readonly<P>;
     state: Readonly<S>;
     /**
@@ -1219,9 +1053,7 @@ export declare namespace ReblendTyping {
       [key: string]: ReblendInstance;
     };
   }
-
   class PureComponent<P = {}, S = {}, SS = any> extends Component<P, S, SS> {}
-
   /**
    * @deprecated Use `ClassicComponent` from `create-reblend-class`
    *
@@ -1233,15 +1065,9 @@ export declare namespace ReblendTyping {
     isMounted(): boolean;
     getInitialState?(): S;
   }
-
   interface ChildContextProvider<CC> {
     getChildContext(): CC;
   }
-
-  //
-  // Class Interfaces
-  // ----------------------------------------------------------------------
-
   /**
    * Represents the type of a function component. Can optionally
    * receive a type argument that represents the props the component
@@ -1272,7 +1098,6 @@ export declare namespace ReblendTyping {
    * ```
    */
   type FC<P = {}> = FunctionComponent<P>;
-
   /**
    * Represents the type of a function component. Can optionally
    * receive a type argument that represents the props the component
@@ -1374,7 +1199,6 @@ export declare namespace ReblendTyping {
      */
     displayName?: string | undefined;
   }
-
   /**
    * @deprecated - Equivalent to {@link ReblendTyping.FunctionComponent}.
    *
@@ -1382,7 +1206,6 @@ export declare namespace ReblendTyping {
    * @alias {@link VoidFunctionComponent}
    */
   type VFC<P = {}> = VoidFunctionComponent<P>;
-
   /**
    * @deprecated - Equivalent to {@link ReblendTyping.FunctionComponent}.
    *
@@ -1406,7 +1229,6 @@ export declare namespace ReblendTyping {
     defaultProps?: Partial<P> | undefined;
     displayName?: string | undefined;
   }
-
   /**
    * The type of the ref received by a {@link ForwardRefRenderFunction}.
    *
@@ -1416,7 +1238,6 @@ export declare namespace ReblendTyping {
     | ((instance: T | null) => void)
     | MutableRefObject<T | null>
     | null;
-
   /**
    * The type of the function passed to {@link forwardRef}. This is considered different
    * to a normal {@link FunctionComponent} because it receives an additional argument,
@@ -1458,7 +1279,6 @@ export declare namespace ReblendTyping {
      */
     propTypes?: never | undefined;
   }
-
   /**
    * Represents a component class in Reblend.
    *
@@ -1519,7 +1339,6 @@ export declare namespace ReblendTyping {
      */
     displayName?: string | undefined;
   }
-
   /**
    * @deprecated Use `ClassicComponentClass` from `create-reblend-class`
    *
@@ -1533,7 +1352,6 @@ export declare namespace ReblendTyping {
     >;
     getDefaultProps?(): P;
   }
-
   /**
    * Used in {@link createElement} and {@link createFactory} to represent
    * a class.
@@ -1548,14 +1366,6 @@ export declare namespace ReblendTyping {
     T extends Component<P, ComponentState>,
     C extends ComponentClass<P>
   > = C & (new (props: P, deprecatedLegacyContext?: any) => T);
-
-  //
-  // Component Specs and Lifecycle
-  // ----------------------------------------------------------------------
-
-  // This should actually be something like `Lifecycle<P, S> | DeprecatedLifecycle<P, S>`,
-  // as Reblend will _not_ call the deprecated lifecycle methods if any of the new lifecycle
-  // methods are present.
   interface ComponentLifecycle<P, S, SS = any>
     extends NewLifecycle<P, S, SS>,
       DeprecatedLifecycle<P, S> {
@@ -1589,13 +1399,10 @@ export declare namespace ReblendTyping {
      */
     componentDidCatch?(error: Error, errorInfo: ErrorInfo): void;
   }
-
-  // Unfortunately, we have no way of declaring that the component constructor must implement this
   interface StaticLifecycle<P, S> {
     getDerivedStateFromProps?: GetDerivedStateFromProps<P, S> | undefined;
     getDerivedStateFromError?: GetDerivedStateFromError<P, S> | undefined;
   }
-
   type GetDerivedStateFromProps<P, S> =
     /**
      * Returns an update to a component's state based on its new props and old state.
@@ -1603,7 +1410,6 @@ export declare namespace ReblendTyping {
      * Note: its presence prevents any of the deprecated lifecycle methods from being invoked
      */
     (nextProps: Readonly<P>, prevState: S) => Partial<S> | null;
-
   type GetDerivedStateFromError<P, S> =
     /**
      * This lifecycle is invoked after an error has been thrown by a descendant component.
@@ -1612,8 +1418,6 @@ export declare namespace ReblendTyping {
      * Note: its presence prevents any of the deprecated lifecycle methods from being invoked
      */
     (error: any) => Partial<S> | null;
-
-  // This should be "infer SS" but can't use it yet
   interface NewLifecycle<P, S, SS> {
     /**
      * Runs before Reblend applies the result of {@link Component.render render} to the document, and
@@ -1638,7 +1442,6 @@ export declare namespace ReblendTyping {
       snapshot?: SS
     ): void;
   }
-
   interface DeprecatedLifecycle<P, S> {
     /**
      * Called immediately before mounting occurs, and before {@link Component.render}.
@@ -1744,7 +1547,6 @@ export declare namespace ReblendTyping {
       nextContext: any
     ): void;
   }
-
   /**
    * @deprecated
    *
@@ -1757,16 +1559,13 @@ export declare namespace ReblendTyping {
           [key: string]: any;
         }
       | undefined;
-
     displayName?: string | undefined;
     propTypes?: ValidationMap<any> | undefined;
     contextTypes?: ValidationMap<any> | undefined;
     childContextTypes?: ValidationMap<any> | undefined;
-
     getDefaultProps?(): P;
     getInitialState?(): S;
   }
-
   /**
    * @deprecated
    *
@@ -1774,12 +1573,9 @@ export declare namespace ReblendTyping {
    */
   interface ComponentSpec<P, S> extends Mixin<P, S> {
     render(): ReblendNode;
-
     [propertyName: string]: any;
   }
-
   function createRef<T>(): RefObject<T>;
-
   /**
    * The type of the component returned from {@link forwardRef}.
    *
@@ -1794,7 +1590,6 @@ export declare namespace ReblendTyping {
     defaultProps?: Partial<P> | undefined;
     propTypes?: WeakValidationMap<P> | undefined;
   }
-
   /**
    * Lets your component expose a DOM node to a parent component
    * using a ref.
@@ -1825,33 +1620,31 @@ export declare namespace ReblendTyping {
   function forwardRef<T, P = {}>(
     render: ForwardRefRenderFunction<T, P>
   ): ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<T>>;
-
   /**
    * Omits the 'ref' attribute from the given props object.
    *
    * @template P The props object type.
    */
-  type PropsWithoutRef<P> =
-    // Omit would not be sufficient for this. We'd like to avoid unnecessary mapping and need a distributive conditional to support unions.
-    // see: https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
-    // https://github.com/Microsoft/TypeScript/issues/28339
-    P extends any ? ('ref' extends keyof P ? Omit<P, 'ref'> : P) : P;
+  type PropsWithoutRef<P> = P extends any
+    ? 'ref' extends keyof P
+      ? Omit<P, 'ref'>
+      : P
+    : P;
   /** Ensures that the props do not include string ref, which cannot be forwarded */
-  type PropsWithRef<P> =
-    // Note: String refs can be forwarded. We can't fix this bug without breaking a bunch of libraries now though.
-    // Just "P extends { ref?: infer R }" looks sufficient, but R will infer as {} if P is {}.
-    'ref' extends keyof P
-      ? P extends { ref?: infer R | undefined }
-        ? string extends R
-          ? PropsWithoutRef<P> & { ref?: Exclude<R, string> | undefined }
-          : P
+  type PropsWithRef<P> = 'ref' extends keyof P
+    ? P extends {
+        ref?: infer R | undefined;
+      }
+      ? string extends R
+        ? PropsWithoutRef<P> & {
+            ref?: Exclude<R, string> | undefined;
+          }
         : P
-      : P;
-
+      : P
+    : P;
   type PropsWithChildren<P = unknown> = P & {
     children?: ReblendNode | undefined;
   };
-
   /**
    * Used to retrieve the props a component accepts. Can either be passed a string,
    * indicating a DOM element (e.g. 'div', 'span', etc.) or the type of a Reblend
@@ -1880,16 +1673,12 @@ export declare namespace ReblendTyping {
    * ```
    */
   type ComponentProps<
-    //@ts-ignore
     T extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>
   > = T extends JSXElementConstructor<infer P>
     ? P
-    : //@ts-ignore
-    T extends keyof JSX.IntrinsicElements
-    ? //@ts-ignore
-      JSX.IntrinsicElements[T]
+    : T extends keyof JSX.IntrinsicElements
+    ? JSX.IntrinsicElements[T]
     : {};
-
   /**
    * Used to retrieve the props a component accepts with its ref. Can either be
    * passed a string, indicating a DOM element (e.g. 'div', 'span', etc.) or the
@@ -1941,7 +1730,6 @@ export declare namespace ReblendTyping {
     : T extends (props: infer P, legacyContext?: any) => ReblendNode
     ? PropsWithRef<P>
     : never;
-
   /**
    * Used to retrieve the props a component accepts without its ref. Can either be
    * passed a string, indicating a DOM element (e.g. 'div', 'span', etc.) or the
@@ -1968,7 +1756,6 @@ export declare namespace ReblendTyping {
   type ComponentPropsWithoutRef<T extends ElementType> = PropsWithoutRef<
     ComponentProps<T>
   >;
-
   type ComponentRef<T extends ElementType> = T extends NamedExoticComponent<
     ComponentPropsWithoutRef<T> & RefAttributes<infer Method>
   >
@@ -1976,15 +1763,11 @@ export declare namespace ReblendTyping {
     : ComponentPropsWithRef<T> extends RefAttributes<infer Method>
     ? Method
     : never;
-
-  // will show `Memo(${Component.displayName || Component.name})` in devtools by default,
-  // but can be given its own specific name
   type MemoExoticComponent<T extends ComponentType<any>> = NamedExoticComponent<
     CustomComponentPropsWithRef<T>
   > & {
     readonly type: T;
   };
-
   /**
    * Lets you skip re-rendering a component when its props are unchanged.
    *
@@ -2014,12 +1797,10 @@ export declare namespace ReblendTyping {
       nextProps: Readonly<ComponentProps<T>>
     ) => boolean
   ): MemoExoticComponent<T>;
-
   interface LazyExoticComponent<T extends ComponentType<any>>
     extends ExoticComponent<CustomComponentPropsWithRef<T>> {
     readonly _result: T;
   }
-
   /**
    * Lets you defer loading a component’s code until it is rendered for the first time.
    *
@@ -2041,13 +1822,10 @@ export declare namespace ReblendTyping {
    * ```
    */
   function lazy<T extends ComponentType<any>>(
-    load: () => Promise<{ default: T }>
+    load: () => Promise<{
+      default: T;
+    }>
   ): LazyExoticComponent<T>;
-
-  //
-  // Reblend Hooks
-  // ----------------------------------------------------------------------
-
   /**
    * The instruction passed to a {@link Dispatch} function in {@link useState}
    * to tell Reblend what the next value of the {@link useState} should be.
@@ -2069,7 +1847,6 @@ export declare namespace ReblendTyping {
    * ```
    */
   type SetStateAction<S> = S | ((prevState: S) => S);
-
   /**
    * A function that can be used to update the state of a {@link useState}
    * or {@link useReducer} hook.
@@ -2079,12 +1856,8 @@ export declare namespace ReblendTyping {
    * A {@link Dispatch} function can sometimes be called without any arguments.
    */
   type DispatchWithoutAction = () => void;
-  // Unlike redux, the actions _can_ be anything
   type Reducer<S, A> = (prevState: S, action: A) => S;
-  // If useReducer accepts a reducer without action, dispatch may be called without any parameters.
   type ReducerWithoutAction<S> = (prevState: S) => S;
-  // types used to try and prevent the compiler from reducing S
-  // to a supertype common with the second argument to useReducer()
   type ReducerState<R extends Reducer<any, any>> = R extends Reducer<
     infer S,
     any
@@ -2097,19 +1870,13 @@ export declare namespace ReblendTyping {
   >
     ? A
     : never;
-  // The identity check is done with the SameValue algorithm (Object.is), which is stricter than ===
   type ReducerStateWithoutAction<R extends ReducerWithoutAction<any>> =
     R extends ReducerWithoutAction<infer S> ? S : never;
   type DependencyList = readonly unknown[];
-
-  // NOTE: callbacks are _only_ allowed to return either void, or a destructor.
   type EffectCallback = () => void | Destructor;
-
   interface MutableRefObject<T> {
     current: T;
   }
-
-  // This will technically work if you give a Consumer<T> or Provider<T> but it's deprecated and warns
   /**
    * Accepts a context object (the value returned from `Reblend.createContext`) and returns the current
    * context value, as given by the nearest context provider for the given context.
@@ -2117,9 +1884,7 @@ export declare namespace ReblendTyping {
    * @version 16.8.0
    * @see {@link https://reblend.dev/reference/reblend/useContext}
    */
-  function useContext<T>(
-    context: Context<T> /*, (not public API) observedBits?: number|boolean */
-  ): T;
+  function useContext<T>(context: Context<T>): T;
   /**
    * Returns a stateful value, and a function to update it.
    *
@@ -2129,7 +1894,6 @@ export declare namespace ReblendTyping {
   function useState<S>(
     initialState: S | (() => S)
   ): [S, Dispatch<SetStateAction<S>>];
-  // convenience overload when first argument is omitted
   /**
    * Returns a stateful value, and a function to update it.
    *
@@ -2150,7 +1914,6 @@ export declare namespace ReblendTyping {
    * @version 16.8.0
    * @see {@link https://reblend.dev/reference/reblend/useReducer}
    */
-  // overload where dispatch could accept 0 arguments.
   function useReducer<R extends ReducerWithoutAction<any>, I>(
     reducer: R,
     initializerArg: I,
@@ -2166,7 +1929,6 @@ export declare namespace ReblendTyping {
    * @version 16.8.0
    * @see {@link https://reblend.dev/reference/reblend/useReducer}
    */
-  // overload where dispatch could accept 0 arguments.
   function useReducer<R extends ReducerWithoutAction<any>>(
     reducer: R,
     initializerArg: ReducerStateWithoutAction<R>,
@@ -2182,9 +1944,6 @@ export declare namespace ReblendTyping {
    * @version 16.8.0
    * @see {@link https://reblend.dev/reference/reblend/useReducer}
    */
-  // overload where "I" may be a subset of ReducerState<R>; used to provide autocompletion.
-  // If "I" matches ReducerState<R> exactly then the last overload will allow initializer to be omitted.
-  // the last overload effectively behaves as if the identity function (x => x) is the initializer.
   function useReducer<R extends Reducer<any, any>, I>(
     reducer: R,
     initializerArg: I & ReducerState<R>,
@@ -2200,7 +1959,6 @@ export declare namespace ReblendTyping {
    * @version 16.8.0
    * @see {@link https://reblend.dev/reference/reblend/useReducer}
    */
-  // overload for free "I"; all goes as long as initializer converts it into "ReducerState<R>".
   function useReducer<R extends Reducer<any, any>, I>(
     reducer: R,
     initializerArg: I,
@@ -2216,16 +1974,6 @@ export declare namespace ReblendTyping {
    * @version 16.8.0
    * @see {@link https://reblend.dev/reference/reblend/useReducer}
    */
-
-  // I'm not sure if I keep this 2-ary or if I make it (2,3)-ary; it's currently (2,3)-ary.
-  // The Flow types do have an overload for 3-ary invocation with undefined initializer.
-
-  // NOTE: without the ReducerState indirection, TypeScript would reduce S to be the most common
-  // supertype between the reducer's return type and the initialState (or the initializer's return type),
-  // which would prevent autocompletion from ever working.
-
-  // TODO: double-check if this weird overload logic is necessary. It is possible it's either a bug
-  // in older versions, or a regression in newer versions of the typescript completion service.
   function useReducer<R extends Reducer<any, any>>(
     reducer: R,
     initialState: ReducerState<R>,
@@ -2242,7 +1990,6 @@ export declare namespace ReblendTyping {
    * @see {@link https://reblend.dev/reference/reblend/useRef}
    */
   function useRef<T>(initialValue: T): MutableRefObject<T>;
-  // convenience overload for refs given as a ref prop as they typically start with a null value
   /**
    * `useRef` returns a mutable ref object whose `.current` property is initialized to the passed argument
    * (`initialValue`). The returned object will persist for the full lifetime of the component.
@@ -2257,8 +2004,6 @@ export declare namespace ReblendTyping {
    * @see {@link https://reblend.dev/reference/reblend/useRef}
    */
   function useRef<T>(initialValue: T | null): RefObject<T>;
-  // convenience overload for potentially undefined initialValue / call with 0 arguments
-  // has a default to stop it from defaulting to {} instead
   /**
    * `useRef` returns a mutable ref object whose `.current` property is initialized to the passed argument
    * (`initialValue`). The returned object will persist for the full lifetime of the component.
@@ -2294,7 +2039,6 @@ export declare namespace ReblendTyping {
    * @see {@link https://reblend.dev/reference/reblend/useEffect}
    */
   function useEffect(effect: EffectCallback, deps?: DependencyList): void;
-  // NOTE: this does not accept strings, but this will have to be fixed by removing strings from type Ref<T>
   /**
    * `useImperativeHandle` customizes the instance value that is exposed to parent components when using
    * `ref`. As always, imperative code using refs should be avoided in most cases.
@@ -2309,8 +2053,6 @@ export declare namespace ReblendTyping {
     init: () => R,
     deps?: DependencyList
   ): void;
-  // I made 'inputs' required here and in useMemo as there's no point to memoizing without the memoization key
-  // useCallback(X) is identical to just using X, useMemo(() => Y) is identical to just using Y.
   /**
    * `useCallback` will return a memoized version of the callback that only changes if one of the `inputs`
    * has changed.
@@ -2318,9 +2060,6 @@ export declare namespace ReblendTyping {
    * @version 16.8.0
    * @see {@link https://reblend.dev/reference/reblend/useCallback}
    */
-  // A specific function type would not trigger implicit any.
-  // See https://github.com/DefinitelyTyped/DefinitelyTyped/issues/52873#issuecomment-845806435 for a comparison between `Function` and more specific types.
-  // eslint-disable-next-line @typescript-eslint/ban-types
   function useCallback<T extends Function>(
     callback: T,
     deps: DependencyList
@@ -2331,7 +2070,6 @@ export declare namespace ReblendTyping {
    * @version 16.8.0
    * @see {@link https://reblend.dev/reference/reblend/useMemo}
    */
-  // allow undefined, but don't make it optional as that is very likely a mistake
   function useMemo<T>(factory: () => T, deps: DependencyList): T;
   /**
    * `useDebugValue` can be used to display a label for custom hooks in Reblend DevTools.
@@ -2342,14 +2080,9 @@ export declare namespace ReblendTyping {
    * @version 16.8.0
    * @see {@link https://reblend.dev/reference/reblend/useDebugValue}
    */
-  // the name of the custom hook is itself derived from the function name at runtime:
-  // it's just the function name without the "use" prefix.
   function useDebugValue<T>(value: T, format?: (value: T) => any): void;
-
-  // must be synchronous
-  export type TransitionFunction = () => VoidOrUndefinedOnly;
-  // strange definition to allow vscode to show documentation on the invocation
-  export interface TransitionStartFunction {
+  type TransitionFunction = () => VoidOrUndefinedOnly;
+  interface TransitionStartFunction {
     /**
      * State updates caused inside the callback are allowed to be deferred.
      *
@@ -2359,7 +2092,6 @@ export declare namespace ReblendTyping {
      */
     (callback: TransitionFunction): void;
   }
-
   /**
    * Returns a deferred version of the value that may “lag behind” it.
    *
@@ -2372,8 +2104,7 @@ export declare namespace ReblendTyping {
    *
    * @see {@link https://reblend.dev/reference/reblend/useDeferredValue}
    */
-  export function useDeferredValue<T>(value: T): T;
-
+  function useDeferredValue<T>(value: T): T;
   /**
    * Allows components to avoid undesirable loading states by waiting for content to load
    * before transitioning to the next screen. It also allows components to defer slower,
@@ -2389,15 +2120,13 @@ export declare namespace ReblendTyping {
    *
    * @see {@link https://reblend.dev/reference/reblend/useTransition}
    */
-  export function useTransition(): [boolean, TransitionStartFunction];
-
+  function useTransition(): [boolean, TransitionStartFunction];
   /**
    * Similar to `useTransition` but allows uses where hooks are not available.
    *
    * @param callback A _synchronous_ function which causes state updates that can be deferred.
    */
-  export function startTransition(scope: TransitionFunction): void;
-
+  function startTransition(scope: TransitionFunction): void;
   /**
    * Wrap any code rendering and triggering updates to your components into `act()` calls.
    *
@@ -2409,40 +2138,30 @@ export declare namespace ReblendTyping {
    *
    * @see https://reblendjs.org/blog/2019/02/06/reblend-v16.8.0.html#testing-hooks
    */
-  // While act does always return Thenable, if a void function is passed, we pretend the return value is also void to not trigger dangling Promise lint rules.
-  export function act(callback: () => VoidOrUndefinedOnly): void;
-  export function act<T>(callback: () => T | Promise<T>): Promise<T>;
-
-  export function useId(): string;
-
+  function act(callback: () => VoidOrUndefinedOnly): void;
+  function act<T>(callback: () => T | Promise<T>): Promise<T>;
+  function useId(): string;
   /**
    * @param effect Imperative function that can return a cleanup function
    * @param deps If present, effect will only activate if the values in the list change.
    *
    * @see {@link https://github.com/facebook/reblend/pull/21913}
    */
-  export function useInsertionEffect(
+  function useInsertionEffect(
     effect: EffectCallback,
     deps?: DependencyList
   ): void;
-
   /**
    * @param subscribe
    * @param getSnapshot
    *
    * @see {@link https://github.com/reblendwg/reblend-18/discussions/86}
    */
-  // keep in sync with `useSyncExternalStore` from `use-sync-external-store`
-  export function useSyncExternalStore<Snapshot>(
+  function useSyncExternalStore<Snapshot>(
     subscribe: (onStoreChange: () => void) => () => void,
     getSnapshot: () => Snapshot,
     getServerSnapshot?: () => Snapshot
   ): Snapshot;
-
-  //
-  // Event System
-  // ----------------------------------------------------------------------
-  // TODO: change any to unknown when moving to TS v3
   interface BaseSyntheticEvent<E = object, C = any, T = any> {
     nativeEvent: E;
     currentTarget: C;
@@ -2460,7 +2179,6 @@ export declare namespace ReblendTyping {
     timeStamp: number;
     type: string;
   }
-
   /**
    * currentTarget - a reference to the element on which the event listener is registered.
    *
@@ -2470,21 +2188,17 @@ export declare namespace ReblendTyping {
    */
   interface SyntheticEvent<T = Element, E = Event>
     extends BaseSyntheticEvent<E, EventTarget & T, EventTarget> {}
-
   interface ClipboardEvent<T = Element>
     extends SyntheticEvent<T, NativeClipboardEvent> {
     clipboardData: DataTransfer;
   }
-
   interface CompositionEvent<T = Element>
     extends SyntheticEvent<T, NativeCompositionEvent> {
     data: string;
   }
-
   interface DragEvent<T = Element> extends MouseEvent<T, NativeDragEvent> {
     dataTransfer: DataTransfer;
   }
-
   interface PointerEvent<T = Element>
     extends MouseEvent<T, NativePointerEvent> {
     pointerId: number;
@@ -2498,24 +2212,19 @@ export declare namespace ReblendTyping {
     pointerType: 'mouse' | 'pen' | 'touch';
     isPrimary: boolean;
   }
-
   interface FocusEvent<Target = Element, RelatedTarget = Element>
     extends SyntheticEvent<Target, NativeFocusEvent> {
     relatedTarget: (EventTarget & RelatedTarget) | null;
     target: EventTarget & Target;
   }
-
   interface FormEvent<T = Element> extends SyntheticEvent<T> {}
-
   interface InvalidEvent<T = Element> extends SyntheticEvent<T> {
     target: EventTarget & T;
   }
-
   interface ChangeEvent<T = Element> extends SyntheticEvent<T> {
     target: EventTarget & T;
   }
-
-  export type ModifierKey =
+  type ModifierKey =
     | 'Alt'
     | 'AltGraph'
     | 'CapsLock'
@@ -2530,7 +2239,6 @@ export declare namespace ReblendTyping {
     | 'Super'
     | 'Symbol'
     | 'SymbolLock';
-
   interface KeyboardEvent<T = Element> extends UIEvent<T, NativeKeyboardEvent> {
     altKey: boolean;
     /** @deprecated */
@@ -2555,7 +2263,6 @@ export declare namespace ReblendTyping {
     /** @deprecated */
     which: number;
   }
-
   interface MouseEvent<T = Element, E = NativeMouseEvent>
     extends UIEvent<T, E> {
     altKey: boolean;
@@ -2578,7 +2285,6 @@ export declare namespace ReblendTyping {
     screenY: number;
     shiftKey: boolean;
   }
-
   interface TouchEvent<T = Element> extends UIEvent<T, NativeTouchEvent> {
     altKey: boolean;
     changedTouches: TouchList;
@@ -2592,44 +2298,33 @@ export declare namespace ReblendTyping {
     targetTouches: TouchList;
     touches: TouchList;
   }
-
   interface UIEvent<T = Element, E = NativeUIEvent>
     extends SyntheticEvent<T, E> {
     detail: number;
     view: AbstractView;
   }
-
   interface WheelEvent<T = Element> extends MouseEvent<T, NativeWheelEvent> {
     deltaMode: number;
     deltaX: number;
     deltaY: number;
     deltaZ: number;
   }
-
   interface AnimationEvent<T = Element>
     extends SyntheticEvent<T, NativeAnimationEvent> {
     animationName: string;
     elapsedTime: number;
     pseudoElement: string;
   }
-
   interface TransitionEvent<T = Element>
     extends SyntheticEvent<T, NativeTransitionEvent> {
     elapsedTime: number;
     propertyName: string;
     pseudoElement: string;
   }
-
-  //
-  // Event Handler Types
-  // ----------------------------------------------------------------------
-
   type EventHandler<E extends SyntheticEvent<any>> = {
     bivarianceHack(event: E): void;
   }['bivarianceHack'];
-
   type ReblendEventHandler<T = Element> = EventHandler<SyntheticEvent<T>>;
-
   type ClipboardEventHandler<T = Element> = EventHandler<ClipboardEvent<T>>;
   type CompositionEventHandler<T = Element> = EventHandler<CompositionEvent<T>>;
   type DragEventHandler<T = Element> = EventHandler<DragEvent<T>>;
@@ -2644,236 +2339,2263 @@ export declare namespace ReblendTyping {
   type WheelEventHandler<T = Element> = EventHandler<WheelEvent<T>>;
   type AnimationEventHandler<T = Element> = EventHandler<AnimationEvent<T>>;
   type TransitionEventHandler<T = Element> = EventHandler<TransitionEvent<T>>;
-
-  //
-  // Props / DOM Attributes
-  // ----------------------------------------------------------------------
-
   interface HTMLProps<T> extends AllHTMLAttributes<T>, ClassAttributes<T> {}
-
   type DetailedHTMLProps<E extends HTMLAttributes<T>, T> = ClassAttributes<T> &
     E;
-
   interface SVGProps<T> extends SVGAttributes<T>, ClassAttributes<T> {}
-
   interface SVGLineElementAttributes<T> extends SVGProps<T> {}
   interface SVGTextElementAttributes<T> extends SVGProps<T> {}
-
   interface DOMAttributes<T> {
     children?: ReblendNode | undefined;
     dangerouslySetInnerHTML?:
       | {
-          // Should be InnerHTML['innerHTML'].
-          // But unfortunately we're mixing renderer-specific type declarations.
           __html: string | TrustedHTML;
         }
       | undefined;
-
-    // Clipboard Events
-    onCopy?: ClipboardEventHandler<T> | undefined;
-    onCopyCapture?: ClipboardEventHandler<T> | undefined;
-    onCut?: ClipboardEventHandler<T> | undefined;
-    onCutCapture?: ClipboardEventHandler<T> | undefined;
-    onPaste?: ClipboardEventHandler<T> | undefined;
-    onPasteCapture?: ClipboardEventHandler<T> | undefined;
-
-    // Composition Events
-    onCompositionEnd?: CompositionEventHandler<T> | undefined;
-    onCompositionEndCapture?: CompositionEventHandler<T> | undefined;
-    onCompositionStart?: CompositionEventHandler<T> | undefined;
-    onCompositionStartCapture?: CompositionEventHandler<T> | undefined;
-    onCompositionUpdate?: CompositionEventHandler<T> | undefined;
-    onCompositionUpdateCapture?: CompositionEventHandler<T> | undefined;
-
-    // Focus Events
-    onFocus?: FocusEventHandler<T> | undefined;
-    onFocusCapture?: FocusEventHandler<T> | undefined;
-    onBlur?: FocusEventHandler<T> | undefined;
-    onBlurCapture?: FocusEventHandler<T> | undefined;
-
-    // Form Events
-    onChange?: FormEventHandler<T> | undefined;
-    onChangeCapture?: FormEventHandler<T> | undefined;
-    onBeforeInput?: FormEventHandler<T> | undefined;
-    onBeforeInputCapture?: FormEventHandler<T> | undefined;
-    onInput?: FormEventHandler<T> | undefined;
-    onInputCapture?: FormEventHandler<T> | undefined;
-    onReset?: FormEventHandler<T> | undefined;
-    onResetCapture?: FormEventHandler<T> | undefined;
-    onSubmit?: FormEventHandler<T> | undefined;
-    onSubmitCapture?: FormEventHandler<T> | undefined;
-    onInvalid?: FormEventHandler<T> | undefined;
-    onInvalidCapture?: FormEventHandler<T> | undefined;
-
-    // Image Events
-    onLoad?: ReblendEventHandler<T> | undefined;
-    onLoadCapture?: ReblendEventHandler<T> | undefined;
-    onError?: ReblendEventHandler<T> | undefined; // also a Media Event
-    onErrorCapture?: ReblendEventHandler<T> | undefined; // also a Media Event
-
-    // Keyboard Events
-    onKeyDown?: KeyboardEventHandler<T> | undefined;
-    onKeyDownCapture?: KeyboardEventHandler<T> | undefined;
+    onCopy?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncopy?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCopyCapture?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncopycapture?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCut?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncut?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCutCapture?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncutcapture?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPaste?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpaste?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPasteCapture?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpastecapture?:
+      | ClipboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCompositionEnd?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncompositionend?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCompositionEndCapture?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncompositionendcapture?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCompositionStart?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncompositionstart?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCompositionStartCapture?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncompositionstartcapture?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCompositionUpdate?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncompositionupdate?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCompositionUpdateCapture?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncompositionupdatecapture?:
+      | CompositionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onFocus?:
+      | FocusEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onfocus?:
+      | FocusEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onFocusCapture?:
+      | FocusEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onfocuscapture?:
+      | FocusEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onBlur?:
+      | FocusEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onblur?:
+      | FocusEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onBlurCapture?:
+      | FocusEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onblurcapture?:
+      | FocusEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onChange?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onchange?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onChangeCapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onchangecapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onBeforeInput?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onbeforeinput?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onBeforeInputCapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onbeforeinputcapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onInput?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oninput?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onInputCapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oninputcapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onReset?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onreset?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onResetCapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onresetcapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onSubmit?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onsubmit?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onSubmitCapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onsubmitcapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onInvalid?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oninvalid?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onInvalidCapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oninvalidcapture?:
+      | FormEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onLoad?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onload?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onLoadCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onloadcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onError?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onerror?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onErrorCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onerrorcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onKeyDown?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onkeydown?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onKeyDownCapture?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onkeydowncapture?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
     /** @deprecated */
-    onKeyPress?: KeyboardEventHandler<T> | undefined;
+    onKeyPress?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onkeypress?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
     /** @deprecated */
-    onKeyPressCapture?: KeyboardEventHandler<T> | undefined;
-    onKeyUp?: KeyboardEventHandler<T> | undefined;
-    onKeyUpCapture?: KeyboardEventHandler<T> | undefined;
-
-    // Media Events
-    onAbort?: ReblendEventHandler<T> | undefined;
-    onAbortCapture?: ReblendEventHandler<T> | undefined;
-    onCanPlay?: ReblendEventHandler<T> | undefined;
-    onCanPlayCapture?: ReblendEventHandler<T> | undefined;
-    onCanPlayThrough?: ReblendEventHandler<T> | undefined;
-    onCanPlayThroughCapture?: ReblendEventHandler<T> | undefined;
-    onDurationChange?: ReblendEventHandler<T> | undefined;
-    onDurationChangeCapture?: ReblendEventHandler<T> | undefined;
-    onEmptied?: ReblendEventHandler<T> | undefined;
-    onEmptiedCapture?: ReblendEventHandler<T> | undefined;
-    onEncrypted?: ReblendEventHandler<T> | undefined;
-    onEncryptedCapture?: ReblendEventHandler<T> | undefined;
-    onEnded?: ReblendEventHandler<T> | undefined;
-    onEndedCapture?: ReblendEventHandler<T> | undefined;
-    onLoadedData?: ReblendEventHandler<T> | undefined;
-    onLoadedDataCapture?: ReblendEventHandler<T> | undefined;
-    onLoadedMetadata?: ReblendEventHandler<T> | undefined;
-    onLoadedMetadataCapture?: ReblendEventHandler<T> | undefined;
-    onLoadStart?: ReblendEventHandler<T> | undefined;
-    onLoadStartCapture?: ReblendEventHandler<T> | undefined;
-    onPause?: ReblendEventHandler<T> | undefined;
-    onPauseCapture?: ReblendEventHandler<T> | undefined;
-    onPlay?: ReblendEventHandler<T> | undefined;
-    onPlayCapture?: ReblendEventHandler<T> | undefined;
-    onPlaying?: ReblendEventHandler<T> | undefined;
-    onPlayingCapture?: ReblendEventHandler<T> | undefined;
-    onProgress?: ReblendEventHandler<T> | undefined;
-    onProgressCapture?: ReblendEventHandler<T> | undefined;
-    onRateChange?: ReblendEventHandler<T> | undefined;
-    onRateChangeCapture?: ReblendEventHandler<T> | undefined;
-    onResize?: ReblendEventHandler<T> | undefined;
-    onResizeCapture?: ReblendEventHandler<T> | undefined;
-    onSeeked?: ReblendEventHandler<T> | undefined;
-    onSeekedCapture?: ReblendEventHandler<T> | undefined;
-    onSeeking?: ReblendEventHandler<T> | undefined;
-    onSeekingCapture?: ReblendEventHandler<T> | undefined;
-    onStalled?: ReblendEventHandler<T> | undefined;
-    onStalledCapture?: ReblendEventHandler<T> | undefined;
-    onSuspend?: ReblendEventHandler<T> | undefined;
-    onSuspendCapture?: ReblendEventHandler<T> | undefined;
-    onTimeUpdate?: ReblendEventHandler<T> | undefined;
-    onTimeUpdateCapture?: ReblendEventHandler<T> | undefined;
-    onVolumeChange?: ReblendEventHandler<T> | undefined;
-    onVolumeChangeCapture?: ReblendEventHandler<T> | undefined;
-    onWaiting?: ReblendEventHandler<T> | undefined;
-    onWaitingCapture?: ReblendEventHandler<T> | undefined;
-
-    // MouseEvents
-    onAuxClick?: MouseEventHandler<T> | undefined;
-    onAuxClickCapture?: MouseEventHandler<T> | undefined;
-    onClick?: MouseEventHandler<T> | undefined;
-    onClickCapture?: MouseEventHandler<T> | undefined;
-    onContextMenu?: MouseEventHandler<T> | undefined;
-    onContextMenuCapture?: MouseEventHandler<T> | undefined;
-    onDoubleClick?: MouseEventHandler<T> | undefined;
-    onDoubleClickCapture?: MouseEventHandler<T> | undefined;
-    onDrag?: DragEventHandler<T> | undefined;
-    onDragCapture?: DragEventHandler<T> | undefined;
-    onDragEnd?: DragEventHandler<T> | undefined;
-    onDragEndCapture?: DragEventHandler<T> | undefined;
-    onDragEnter?: DragEventHandler<T> | undefined;
-    onDragEnterCapture?: DragEventHandler<T> | undefined;
-    onDragExit?: DragEventHandler<T> | undefined;
-    onDragExitCapture?: DragEventHandler<T> | undefined;
-    onDragLeave?: DragEventHandler<T> | undefined;
-    onDragLeaveCapture?: DragEventHandler<T> | undefined;
-    onDragOver?: DragEventHandler<T> | undefined;
-    onDragOverCapture?: DragEventHandler<T> | undefined;
-    onDragStart?: DragEventHandler<T> | undefined;
-    onDragStartCapture?: DragEventHandler<T> | undefined;
-    onDrop?: DragEventHandler<T> | undefined;
-    onDropCapture?: DragEventHandler<T> | undefined;
-    onMouseDown?: MouseEventHandler<T> | undefined;
-    onMouseDownCapture?: MouseEventHandler<T> | undefined;
-    onMouseEnter?: MouseEventHandler<T> | undefined;
-    onMouseLeave?: MouseEventHandler<T> | undefined;
-    onMouseMove?: MouseEventHandler<T> | undefined;
-    onMouseMoveCapture?: MouseEventHandler<T> | undefined;
-    onMouseOut?: MouseEventHandler<T> | undefined;
-    onMouseOutCapture?: MouseEventHandler<T> | undefined;
-    onMouseOver?: MouseEventHandler<T> | undefined;
-    onMouseOverCapture?: MouseEventHandler<T> | undefined;
-    onMouseUp?: MouseEventHandler<T> | undefined;
-    onMouseUpCapture?: MouseEventHandler<T> | undefined;
-
-    // Selection Events
-    onSelect?: ReblendEventHandler<T> | undefined;
-    onSelectCapture?: ReblendEventHandler<T> | undefined;
-
-    // Touch Events
-    onTouchCancel?: TouchEventHandler<T> | undefined;
-    onTouchCancelCapture?: TouchEventHandler<T> | undefined;
-    onTouchEnd?: TouchEventHandler<T> | undefined;
-    onTouchEndCapture?: TouchEventHandler<T> | undefined;
-    onTouchMove?: TouchEventHandler<T> | undefined;
-    onTouchMoveCapture?: TouchEventHandler<T> | undefined;
-    onTouchStart?: TouchEventHandler<T> | undefined;
-    onTouchStartCapture?: TouchEventHandler<T> | undefined;
-
-    // Pointer Events
-    onPointerDown?: PointerEventHandler<T> | undefined;
-    onPointerDownCapture?: PointerEventHandler<T> | undefined;
-    onPointerMove?: PointerEventHandler<T> | undefined;
-    onPointerMoveCapture?: PointerEventHandler<T> | undefined;
-    onPointerUp?: PointerEventHandler<T> | undefined;
-    onPointerUpCapture?: PointerEventHandler<T> | undefined;
-    onPointerCancel?: PointerEventHandler<T> | undefined;
-    onPointerCancelCapture?: PointerEventHandler<T> | undefined;
-    onPointerEnter?: PointerEventHandler<T> | undefined;
-    onPointerLeave?: PointerEventHandler<T> | undefined;
-    onPointerOver?: PointerEventHandler<T> | undefined;
-    onPointerOverCapture?: PointerEventHandler<T> | undefined;
-    onPointerOut?: PointerEventHandler<T> | undefined;
-    onPointerOutCapture?: PointerEventHandler<T> | undefined;
-    onGotPointerCapture?: PointerEventHandler<T> | undefined;
-    onGotPointerCaptureCapture?: PointerEventHandler<T> | undefined;
-    onLostPointerCapture?: PointerEventHandler<T> | undefined;
-    onLostPointerCaptureCapture?: PointerEventHandler<T> | undefined;
-
-    // UI Events
-    onScroll?: UIEventHandler<T> | undefined;
-    onScrollCapture?: UIEventHandler<T> | undefined;
-
-    // Wheel Events
-    onWheel?: WheelEventHandler<T> | undefined;
-    onWheelCapture?: WheelEventHandler<T> | undefined;
-
-    // Animation Events
-    onAnimationStart?: AnimationEventHandler<T> | undefined;
-    onAnimationStartCapture?: AnimationEventHandler<T> | undefined;
-    onAnimationEnd?: AnimationEventHandler<T> | undefined;
-    onAnimationEndCapture?: AnimationEventHandler<T> | undefined;
-    onAnimationIteration?: AnimationEventHandler<T> | undefined;
-    onAnimationIterationCapture?: AnimationEventHandler<T> | undefined;
-
-    // Transition Events
-    onTransitionEnd?: TransitionEventHandler<T> | undefined;
-    onTransitionEndCapture?: TransitionEventHandler<T> | undefined;
+    onKeyPressCapture?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onkeypresscapture?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onKeyUp?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onkeyup?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onKeyUpCapture?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onkeyupcapture?:
+      | KeyboardEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onAbort?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onabort?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onAbortCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onabortcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCanPlay?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncanplay?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCanPlayCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncanplaycapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCanPlayThrough?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncanplaythrough?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onCanPlayThroughCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncanplaythroughcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDurationChange?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondurationchange?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDurationChangeCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondurationchangecapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onEmptied?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onemptied?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onEmptiedCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onemptiedcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onEncrypted?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onencrypted?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onEncryptedCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onencryptedcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onEnded?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onended?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onEndedCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onendedcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onLoadedData?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onloadeddata?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onLoadedDataCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onloadeddatacapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onLoadedMetadata?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onloadedmetadata?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onLoadedMetadataCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onloadedmetadatacapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onLoadStart?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onloadstart?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onLoadStartCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onloadstartcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPause?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpause?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPauseCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpausecapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPlay?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onplay?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPlayCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onplaycapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPlaying?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onplaying?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPlayingCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onplayingcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onProgress?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onprogress?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onProgressCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onprogresscapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onRateChange?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onratechange?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onRateChangeCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onratechangecapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onResize?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onresize?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onResizeCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onresizecapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onSeeked?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onseeked?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onSeekedCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onseekedcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onSeeking?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onseeking?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onSeekingCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onseekingcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onStalled?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onstalled?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onStalledCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onstalledcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onSuspend?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onsuspend?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onSuspendCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onsuspendcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTimeUpdate?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontimeupdate?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTimeUpdateCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontimeupdatecapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onVolumeChange?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onvolumechange?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onVolumeChangeCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onvolumechangecapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onWaiting?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onwaiting?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onWaitingCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onwaitingcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onAuxClick?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onauxclick?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onAuxClickCapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onauxclickcapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onClick?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onclick?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onClickCapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onclickcapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onContextMenu?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncontextmenu?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onContextMenuCapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    oncontextmenucapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDoubleClick?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondoubleclick?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDoubleClickCapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondoubleclickcapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDrag?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondrag?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragCapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragcapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragEnd?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragend?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragEndCapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragendcapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragEnter?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragenter?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragEnterCapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragentercapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragExit?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragexit?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragExitCapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragexitcapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragLeave?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragleave?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragLeaveCapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragleavecapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragOver?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragover?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragOverCapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragovercapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragStart?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragstart?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDragStartCapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondragstartcapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDrop?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondrop?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onDropCapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ondropcapture?:
+      | DragEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseDown?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmousedown?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseDownCapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmousedowncapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseEnter?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmouseenter?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseLeave?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmouseleave?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseMove?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmousemove?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseMoveCapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmousemovecapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseOut?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmouseout?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseOutCapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmouseoutcapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseOver?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmouseover?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseOverCapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmouseovercapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseUp?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmouseup?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onMouseUpCapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onmouseupcapture?:
+      | MouseEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onSelect?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onselect?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onSelectCapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onselectcapture?:
+      | ReblendEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTouchCancel?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontouchcancel?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTouchCancelCapture?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontouchcancelcapture?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTouchEnd?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontouchend?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTouchEndCapture?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontouchendcapture?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTouchMove?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontouchmove?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTouchMoveCapture?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontouchmovecapture?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTouchStart?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontouchstart?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTouchStartCapture?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontouchstartcapture?:
+      | TouchEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerDown?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointerdown?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerDownCapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointerdowncapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerMove?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointermove?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerMoveCapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointermovecapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerUp?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointerup?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerUpCapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointerupcapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerCancel?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointercancel?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerCancelCapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointercancelcapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerEnter?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointerenter?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerLeave?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointerleave?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerOver?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointerover?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerOverCapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointerovercapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerOut?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointerout?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onPointerOutCapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onpointeroutcapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onGotPointerCapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ongotpointercapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onGotPointerCaptureCapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ongotpointercapturecapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onLostPointerCapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onlostpointercapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onLostPointerCaptureCapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onlostpointercapturecapture?:
+      | PointerEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onScroll?:
+      | UIEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onscroll?:
+      | UIEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onScrollCapture?:
+      | UIEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onscrollcapture?:
+      | UIEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onWheel?:
+      | WheelEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onwheel?:
+      | WheelEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onWheelCapture?:
+      | WheelEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onwheelcapture?:
+      | WheelEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onAnimationStart?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onanimationstart?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onAnimationStartCapture?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onanimationstartcapture?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onAnimationEnd?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onanimationend?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onAnimationEndCapture?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onanimationendcapture?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onAnimationIteration?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onanimationiteration?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onAnimationIterationCapture?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onanimationiterationcapture?:
+      | AnimationEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTransitionEnd?:
+      | TransitionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontransitionend?:
+      | TransitionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    onTransitionEndCapture?:
+      | TransitionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
+    ontransitionendcapture?:
+      | TransitionEventHandler<T>
+      | undefined
+      | StateFunction<T>
+      | StateEffectiveMemoFunction<T>
+      | StateEffectiveFunction
+      | StateReducerFunction<T>;
   }
-
-  export interface CSSProperties extends CSS.Properties<string | number> {
-    /**
-     * The index signature was removed to enable closed typing for style
-     * using CSSType. You're able to use type assertion or module augmentation
-     * to add properties or an index signature of your own.
-     *
-     * For examples and more information, visit:
-     * https://github.com/frenic/csstype#what-should-i-do-when-i-get-type-errors
-     */
-  }
-
-  // All the WAI-ARIA 1.1 attributes from https://www.w3.org/TR/wai-aria-1.1/
+  interface CSSProperties extends CSS.Properties<string | number> {}
   interface AriaAttributes {
     /** Identifies the currently active element when DOM focus is on a composite widget, textbox, group, or application. */
     'aria-activedescendant'?: string | undefined;
@@ -3127,8 +4849,6 @@ export declare namespace ReblendTyping {
     /** Defines the human readable text alternative of aria-valuenow for a range widget. */
     'aria-valuetext'?: string | undefined;
   }
-
-  // All the WAI-ARIA 1.1 role attribute values from https://www.w3.org/TR/wai-aria-1.1/#role_definitions
   type AriaRole =
     | 'alert'
     | 'alertdialog'
@@ -3200,15 +4920,11 @@ export declare namespace ReblendTyping {
     | 'treegrid'
     | 'treeitem'
     | (string & {});
-
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
-    // Reblend-specific Attributes
     defaultChecked?: boolean | undefined;
     defaultValue?: string | number | readonly string[] | undefined;
     suppressContentEditableWarning?: boolean | undefined;
     suppressHydrationWarning?: boolean | undefined;
-
-    // Standard HTML Attributes
     accessKey?: string | undefined;
     autoFocus?: boolean | undefined;
     className?: string | undefined;
@@ -3227,14 +4943,8 @@ export declare namespace ReblendTyping {
     tabIndex?: number | undefined;
     title?: string | undefined;
     translate?: 'yes' | 'no' | undefined;
-
-    // Unknown
-    radioGroup?: string | undefined; // <command>, <menuitem>
-
-    // WAI-ARIA
+    radioGroup?: string | undefined;
     role?: AriaRole | undefined;
-
-    // RDFa Attributes
     about?: string | undefined;
     content?: string | undefined;
     datatype?: string | undefined;
@@ -3246,8 +4956,6 @@ export declare namespace ReblendTyping {
     rev?: string | undefined;
     typeof?: string | undefined;
     vocab?: string | undefined;
-
-    // Non-standard Attributes
     autoCapitalize?: string | undefined;
     autoCorrect?: string | undefined;
     autoSave?: string | undefined;
@@ -3260,8 +4968,6 @@ export declare namespace ReblendTyping {
     results?: number | undefined;
     security?: string | undefined;
     unselectable?: 'on' | 'off' | undefined;
-
-    // Living Standard
     /**
      * Hints at the type of data that might be entered by the user while editing the element or its contents
      * @see {@link https://html.spec.whatwg.org/multipage/interaction.html#input-modalities:-the-inputmode-attribute}
@@ -3282,16 +4988,13 @@ export declare namespace ReblendTyping {
      */
     is?: string | undefined;
   }
-
   /**
    * For internal usage only.
    * Different release channels declare additional types of ReblendNode this particular release channel accepts.
    * App or library types should never augment this interface.
    */
   interface DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS {}
-
   interface AllHTMLAttributes<T> extends HTMLAttributes<T> {
-    // Standard HTML Attributes
     accept?: string | undefined;
     acceptCharset?: string | undefined;
     acceptcharset?: string | undefined;
@@ -3342,7 +5045,6 @@ export declare namespace ReblendTyping {
       | string
       | undefined
       | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS];
-
     formEncType?: string | undefined;
     formMethod?: string | undefined;
     formNoValidate?: boolean | undefined;
@@ -3433,7 +5135,6 @@ export declare namespace ReblendTyping {
     wmode?: string | undefined;
     wrap?: string | undefined;
   }
-
   type HTMLAttributeReferrerPolicy =
     | ''
     | 'no-referrer'
@@ -3444,14 +5145,12 @@ export declare namespace ReblendTyping {
     | 'strict-origin'
     | 'strict-origin-when-cross-origin'
     | 'unsafe-url';
-
   type HTMLAttributeAnchorTarget =
     | '_self'
     | '_blank'
     | '_parent'
     | '_top'
     | (string & {});
-
   interface AnchorHTMLAttributes<T> extends HTMLAttributes<T> {
     download?: any;
     href?: string | undefined;
@@ -3462,9 +5161,7 @@ export declare namespace ReblendTyping {
     type?: string | undefined;
     referrerPolicy?: HTMLAttributeReferrerPolicy | undefined;
   }
-
   interface AudioHTMLAttributes<T> extends MediaHTMLAttributes<T> {}
-
   interface AreaHTMLAttributes<T> extends HTMLAttributes<T> {
     alt?: string | undefined;
     coords?: string | undefined;
@@ -3476,16 +5173,13 @@ export declare namespace ReblendTyping {
     shape?: string | undefined;
     target?: string | undefined;
   }
-
   interface BaseHTMLAttributes<T> extends HTMLAttributes<T> {
     href?: string | undefined;
     target?: string | undefined;
   }
-
   interface BlockquoteHTMLAttributes<T> extends HTMLAttributes<T> {
     cite?: string | undefined;
   }
-
   interface ButtonHTMLAttributes<T> extends HTMLAttributes<T> {
     disabled?: boolean | undefined;
     form?: string | undefined;
@@ -3501,55 +5195,45 @@ export declare namespace ReblendTyping {
     type?: 'submit' | 'reset' | 'button' | undefined;
     value?: string | readonly string[] | number | undefined;
   }
-
   interface CanvasHTMLAttributes<T> extends HTMLAttributes<T> {
     height?: number | string | undefined;
     width?: number | string | undefined;
   }
-
   interface ColHTMLAttributes<T> extends HTMLAttributes<T> {
     span?: number | undefined;
     width?: number | string | undefined;
   }
-
   interface ColgroupHTMLAttributes<T> extends HTMLAttributes<T> {
     span?: number | undefined;
   }
-
   interface DataHTMLAttributes<T> extends HTMLAttributes<T> {
     value?: string | readonly string[] | number | undefined;
   }
-
   interface DetailsHTMLAttributes<T> extends HTMLAttributes<T> {
     open?: boolean | undefined;
     onToggle?: ReblendEventHandler<T> | undefined;
     name?: string | undefined;
   }
-
   interface DelHTMLAttributes<T> extends HTMLAttributes<T> {
     cite?: string | undefined;
     dateTime?: string | undefined;
   }
-
   interface DialogHTMLAttributes<T> extends HTMLAttributes<T> {
     onCancel?: ReblendEventHandler<T> | undefined;
     onClose?: ReblendEventHandler<T> | undefined;
     open?: boolean | undefined;
   }
-
   interface EmbedHTMLAttributes<T> extends HTMLAttributes<T> {
     height?: number | string | undefined;
     src?: string | undefined;
     type?: string | undefined;
     width?: number | string | undefined;
   }
-
   interface FieldsetHTMLAttributes<T> extends HTMLAttributes<T> {
     disabled?: boolean | undefined;
     form?: string | undefined;
     name?: string | undefined;
   }
-
   interface FormHTMLAttributes<T> extends HTMLAttributes<T> {
     acceptCharset?: string | undefined;
     action?:
@@ -3563,11 +5247,9 @@ export declare namespace ReblendTyping {
     noValidate?: boolean | undefined;
     target?: string | undefined;
   }
-
   interface HtmlHTMLAttributes<T> extends HTMLAttributes<T> {
     manifest?: string | undefined;
   }
-
   interface IframeHTMLAttributes<T> extends HTMLAttributes<T> {
     allow?: string | undefined;
     allowFullScreen?: boolean | undefined;
@@ -3590,7 +5272,6 @@ export declare namespace ReblendTyping {
     srcDoc?: string | undefined;
     width?: number | string | undefined;
   }
-
   interface ImgHTMLAttributes<T> extends HTMLAttributes<T> {
     alt?: string | undefined;
     crossOrigin?: CrossOrigin;
@@ -3605,12 +5286,10 @@ export declare namespace ReblendTyping {
     useMap?: string | undefined;
     width?: number | string | undefined;
   }
-
   interface InsHTMLAttributes<T> extends HTMLAttributes<T> {
     cite?: string | undefined;
     dateTime?: string | undefined;
   }
-
   type HTMLInputTypeAttribute =
     | 'button'
     | 'checkbox'
@@ -3635,7 +5314,6 @@ export declare namespace ReblendTyping {
     | 'url'
     | 'week'
     | (string & {});
-
   type AutoFillAddressKind = 'billing' | 'shipping';
   type AutoFillBase = '' | 'off' | 'on';
   type AutoFillContactField =
@@ -3697,12 +5375,11 @@ export declare namespace ReblendTyping {
     | AutoFillBase
     | `${OptionalPrefixToken<AutoFillSection>}${OptionalPrefixToken<AutoFillAddressKind>}${AutoFillField}${OptionalPostfixToken<AutoFillCredentialField>}`;
   type HTMLInputAutoCompleteAttribute = AutoFill | (string & {});
-
   interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
     accept?: string | undefined;
     alt?: string | undefined;
     autoComplete?: HTMLInputAutoCompleteAttribute | undefined;
-    capture?: boolean | 'user' | 'environment' | undefined; // https://www.w3.org/TR/html-media-capture/#the-capture-attribute
+    capture?: boolean | 'user' | 'environment' | undefined;
     checked?: boolean | undefined;
     disabled?: boolean | undefined;
     enterKeyHint?:
@@ -3741,10 +5418,8 @@ export declare namespace ReblendTyping {
     type?: HTMLInputTypeAttribute | undefined;
     value?: string | readonly string[] | number | undefined;
     width?: number | string | undefined;
-
     onChange?: ChangeEventHandler<T> | undefined;
   }
-
   interface KeygenHTMLAttributes<T> extends HTMLAttributes<T> {
     challenge?: string | undefined;
     disabled?: boolean | undefined;
@@ -3753,16 +5428,13 @@ export declare namespace ReblendTyping {
     keyParams?: string | undefined;
     name?: string | undefined;
   }
-
   interface LabelHTMLAttributes<T> extends HTMLAttributes<T> {
     form?: string | undefined;
     htmlFor?: string | undefined;
   }
-
   interface LiHTMLAttributes<T> extends HTMLAttributes<T> {
     value?: string | readonly string[] | number | undefined;
   }
-
   interface LinkHTMLAttributes<T> extends HTMLAttributes<T> {
     as?: string | undefined;
     crossOrigin?: CrossOrigin;
@@ -3778,15 +5450,12 @@ export declare namespace ReblendTyping {
     type?: string | undefined;
     charSet?: string | undefined;
   }
-
   interface MapHTMLAttributes<T> extends HTMLAttributes<T> {
     name?: string | undefined;
   }
-
   interface MenuHTMLAttributes<T> extends HTMLAttributes<T> {
     type?: string | undefined;
   }
-
   interface MediaHTMLAttributes<T> extends HTMLAttributes<T> {
     autoPlay?: boolean | undefined;
     controls?: boolean | undefined;
@@ -3799,7 +5468,6 @@ export declare namespace ReblendTyping {
     preload?: string | undefined;
     src?: string | undefined;
   }
-
   interface MetaHTMLAttributes<T> extends HTMLAttributes<T> {
     charSet?: string | undefined;
     content?: string | undefined;
@@ -3807,7 +5475,6 @@ export declare namespace ReblendTyping {
     media?: string | undefined;
     name?: string | undefined;
   }
-
   interface MeterHTMLAttributes<T> extends HTMLAttributes<T> {
     form?: string | undefined;
     high?: number | undefined;
@@ -3817,11 +5484,9 @@ export declare namespace ReblendTyping {
     optimum?: number | undefined;
     value?: string | readonly string[] | number | undefined;
   }
-
   interface QuoteHTMLAttributes<T> extends HTMLAttributes<T> {
     cite?: string | undefined;
   }
-
   interface ObjectHTMLAttributes<T> extends HTMLAttributes<T> {
     classID?: string | undefined;
     data?: string | undefined;
@@ -3833,45 +5498,37 @@ export declare namespace ReblendTyping {
     width?: number | string | undefined;
     wmode?: string | undefined;
   }
-
   interface OlHTMLAttributes<T> extends HTMLAttributes<T> {
     reversed?: boolean | undefined;
     start?: number | undefined;
     type?: '1' | 'a' | 'A' | 'i' | 'I' | undefined;
   }
-
   interface OptgroupHTMLAttributes<T> extends HTMLAttributes<T> {
     disabled?: boolean | undefined;
     label?: string | undefined;
   }
-
   interface OptionHTMLAttributes<T> extends HTMLAttributes<T> {
     disabled?: boolean | undefined;
     label?: string | undefined;
     selected?: boolean | undefined;
     value?: string | readonly string[] | number | undefined;
   }
-
   interface OutputHTMLAttributes<T> extends HTMLAttributes<T> {
     form?: string | undefined;
     htmlFor?: string | undefined;
     name?: string | undefined;
   }
-
   interface ParamHTMLAttributes<T> extends HTMLAttributes<T> {
     name?: string | undefined;
     value?: string | readonly string[] | number | undefined;
   }
-
   interface ProgressHTMLAttributes<T> extends HTMLAttributes<T> {
     max?: number | string | undefined;
     value?: string | readonly string[] | number | undefined;
   }
-
   interface SlotHTMLAttributes<T> extends HTMLAttributes<T> {
     name?: string | undefined;
   }
-
   interface ScriptHTMLAttributes<T> extends HTMLAttributes<T> {
     async?: boolean | undefined;
     /** @deprecated */
@@ -3884,7 +5541,6 @@ export declare namespace ReblendTyping {
     src?: string | undefined;
     type?: string | undefined;
   }
-
   interface SelectHTMLAttributes<T> extends HTMLAttributes<T> {
     autoComplete?: string | undefined;
     disabled?: boolean | undefined;
@@ -3896,7 +5552,6 @@ export declare namespace ReblendTyping {
     value?: string | readonly string[] | number | undefined;
     onChange?: ChangeEventHandler<T> | undefined;
   }
-
   interface SourceHTMLAttributes<T> extends HTMLAttributes<T> {
     height?: number | string | undefined;
     media?: string | undefined;
@@ -3906,13 +5561,11 @@ export declare namespace ReblendTyping {
     type?: string | undefined;
     width?: number | string | undefined;
   }
-
   interface StyleHTMLAttributes<T> extends HTMLAttributes<T> {
     media?: string | undefined;
     scoped?: boolean | undefined;
     type?: string | undefined;
   }
-
   interface TableHTMLAttributes<T> extends HTMLAttributes<T> {
     align?: 'left' | 'center' | 'right' | undefined;
     bgcolor?: string | undefined;
@@ -3924,7 +5577,6 @@ export declare namespace ReblendTyping {
     summary?: string | undefined;
     width?: number | string | undefined;
   }
-
   interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
     autoComplete?: string | undefined;
     cols?: number | undefined;
@@ -3940,10 +5592,8 @@ export declare namespace ReblendTyping {
     rows?: number | undefined;
     value?: string | readonly string[] | number | undefined;
     wrap?: string | undefined;
-
     onChange?: ChangeEventHandler<T> | undefined;
   }
-
   interface TdHTMLAttributes<T> extends HTMLAttributes<T> {
     align?: 'left' | 'center' | 'right' | 'justify' | 'char' | undefined;
     colSpan?: number | undefined;
@@ -3955,7 +5605,6 @@ export declare namespace ReblendTyping {
     width?: number | string | undefined;
     valign?: 'top' | 'middle' | 'bottom' | 'baseline' | undefined;
   }
-
   interface ThHTMLAttributes<T> extends HTMLAttributes<T> {
     align?: 'left' | 'center' | 'right' | 'justify' | 'char' | undefined;
     colSpan?: number | undefined;
@@ -3964,11 +5613,9 @@ export declare namespace ReblendTyping {
     scope?: string | undefined;
     abbr?: string | undefined;
   }
-
   interface TimeHTMLAttributes<T> extends HTMLAttributes<T> {
     dateTime?: string | undefined;
   }
-
   interface TrackHTMLAttributes<T> extends HTMLAttributes<T> {
     default?: boolean | undefined;
     kind?: string | undefined;
@@ -3976,7 +5623,6 @@ export declare namespace ReblendTyping {
     src?: string | undefined;
     srcLang?: string | undefined;
   }
-
   interface VideoHTMLAttributes<T> extends MediaHTMLAttributes<T> {
     height?: number | string | undefined;
     playsInline?: boolean | undefined;
@@ -3985,21 +5631,8 @@ export declare namespace ReblendTyping {
     disablePictureInPicture?: boolean | undefined;
     disableRemotePlayback?: boolean | undefined;
   }
-
-  // this list is "complete" in that it contains every SVG attribute
-  // that Reblend supports, but the types can be improved.
-  // Full list here: https://facebook.github.io/reblend/docs/dom-elements.html
-  //
-  // The three broad type categories are (in order of restrictiveness):
-  //   - "number | string"
-  //   - "string"
-  //   - union of string literals
   interface SVGAttributes<T> extends AriaAttributes, DOMAttributes<T> {
-    // Reblend-specific Attributes
     suppressHydrationWarning?: boolean | undefined;
-
-    // Attributes which also defined in HTMLAttributes
-    // See comment in SVGDOMPropertyConfig.js
     className?: string | undefined;
     color?: string | undefined;
     height?: number | string | undefined;
@@ -4014,13 +5647,9 @@ export declare namespace ReblendTyping {
     target?: string | undefined;
     type?: string | undefined;
     width?: number | string | undefined;
-
-    // Other HTML properties supported by SVG elements in browsers
     role?: AriaRole | undefined;
     tabIndex?: number | undefined;
     crossOrigin?: CrossOrigin;
-
-    // SVG Specific attributes
     accentHeight?: number | string | undefined;
     accumulate?: 'none' | 'sum' | undefined;
     additive?: 'replace' | 'sum' | undefined;
@@ -4283,7 +5912,6 @@ export declare namespace ReblendTyping {
     z?: number | string | undefined;
     zoomAndPan?: string | undefined;
   }
-
   interface WebViewHTMLAttributes<T> extends HTMLAttributes<T> {
     allowFullScreen?: boolean | undefined;
     allowpopups?: boolean | undefined;
@@ -4302,11 +5930,6 @@ export declare namespace ReblendTyping {
     useragent?: string | undefined;
     webpreferences?: string | undefined;
   }
-
-  //
-  // Reblend.DOM
-  // ----------------------------------------------------------------------
-
   interface ReblendHTML {
     a: DetailedHTMLFactory<
       AnchorHTMLAttributes<HTMLAnchorElement>,
@@ -4604,7 +6227,6 @@ export declare namespace ReblendTyping {
       HTMLWebViewElement
     >;
   }
-
   interface ReblendSVG {
     animate: SVGFactory;
     circle: SVGFactory;
@@ -4662,28 +6284,19 @@ export declare namespace ReblendTyping {
     use: SVGFactory;
     view: SVGFactory;
   }
-
   interface ReblendDOM extends ReblendHTML, ReblendSVG {}
-
-  //
-  // Reblend.PropTypes
-  // ----------------------------------------------------------------------
-
   /**
    * @deprecated Use `Validator` from the ´prop-types` instead.
    */
   type Validator<T> = PropTypes.Validator<T>;
-
   /**
    * @deprecated Use `Requireable` from the ´prop-types` instead.
    */
   type Requireable<T> = PropTypes.Requireable<T>;
-
   /**
    * @deprecated Use `ValidationMap` from the ´prop-types` instead.
    */
   type ValidationMap<T> = PropTypes.ValidationMap<T>;
-
   /**
    * @deprecated Use `WeakValidationMap` from the ´prop-types` instead.
    */
@@ -4694,7 +6307,6 @@ export declare namespace ReblendTyping {
       ? Validator<T[K] | null | undefined>
       : Validator<T[K]>;
   };
-
   /**
    * @deprecated Use `PropTypes.*` where `PropTypes` comes from `import * as PropTypes from 'prop-types'` instead.
    */
@@ -4716,15 +6328,9 @@ export declare namespace ReblendTyping {
     shape: typeof PropTypes.shape;
     exact: typeof PropTypes.exact;
   }
-
-  //
-  // Reblend.Children
-  // ----------------------------------------------------------------------
-
   /**
    * @deprecated - Use `typeof Reblend.Children` instead.
    */
-  // Sync with type of `const Children`.
   interface ReblendChildren {
     map<T, C>(
       children: C | readonly C[],
@@ -4742,17 +6348,10 @@ export declare namespace ReblendTyping {
       children: ReblendNode | ReblendNode[]
     ): Array<Exclude<ReblendNode, boolean | null | undefined>>;
   }
-
-  //
-  // Browser Interfaces
-  // https://github.com/nikeee/2048-typescript/blob/master/2048/js/touch.d.ts
-  // ----------------------------------------------------------------------
-
   interface AbstractView {
     styleMedia: StyleMedia;
     document: Document;
   }
-
   interface Touch {
     identifier: number;
     target: EventTarget;
@@ -4763,17 +6362,12 @@ export declare namespace ReblendTyping {
     pageX: number;
     pageY: number;
   }
-
   interface TouchList {
     [index: number]: Touch;
     length: number;
     item(index: number): Touch;
     identifiedTouch(identifier: number): Touch;
   }
-
-  //
-  // Error Interfaces
-  // ----------------------------------------------------------------------
   interface ErrorInfo {
     /**
      * Captures which component contained the exception, and its ancestors.
@@ -4782,42 +6376,25 @@ export declare namespace ReblendTyping {
     digest?: string | null;
   }
 }
-
-// naked 'any' type in a conditional type will short circuit and union both the then/else branches
-// so boolean is only resolved for T = any
 type IsExactlyAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
-
 type ExactlyAnyPropertyKeys<T> = {
   [K in keyof T]: IsExactlyAny<T[K]> extends true ? K : never;
 }[keyof T];
 type NotExactlyAnyPropertyKeys<T> = Exclude<keyof T, ExactlyAnyPropertyKeys<T>>;
-
-// Try to resolve ill-defined props like for JS users: props can be any, or sometimes objects with properties of type any
-type MergePropTypes<P, T> =
-  // Distribute over P in case it is a union type
-  P extends any
-    ? // If props is type any, use propTypes definitions
-      IsExactlyAny<P> extends true
-      ? T
-      : // If declared props have indexed properties, ignore inferred props entirely as keyof gets widened
-      string extends keyof P
-      ? P
-      : // Prefer declared types which are not exactly any
-        Pick<P, NotExactlyAnyPropertyKeys<P>> &
-          // For props which are exactly any, use the type inferred from propTypes if present
-          Pick<T, Exclude<keyof T, NotExactlyAnyPropertyKeys<P>>> &
-          // Keep leftover props not specified in propTypes
-          Pick<P, Exclude<keyof P, keyof T>>
-    : never;
-
-type InexactPartial<T> = { [K in keyof T]?: T[K] | undefined };
-
-// Any prop that has a default prop becomes optional, but its type is unchanged
-// Undeclared default props are augmented into the resulting allowable attributes
-// If declared props have indexed properties, ignore default props entirely as keyof gets widened
-// Wrap in an outer-level conditional type to allow distribution over props that are unions
+type MergePropTypes<P, T> = P extends any
+  ? IsExactlyAny<P> extends true
+    ? T
+    : string extends keyof P
+    ? P // Prefer declared types which are not exactly any
+    : Pick<P, NotExactlyAnyPropertyKeys<P>> &
+        Pick<T, Exclude<keyof T, NotExactlyAnyPropertyKeys<P>>> &
+        Pick<P, Exclude<keyof P, keyof T>>
+  : never;
+type InexactPartial<T> = {
+  [K in keyof T]?: T[K] | undefined;
+};
 type Defaultize<P, D> = P extends any
   ? string extends keyof P
     ? P
@@ -4825,18 +6402,20 @@ type Defaultize<P, D> = P extends any
         InexactPartial<Pick<P, Extract<keyof P, keyof D>>> &
         InexactPartial<Pick<D, Exclude<keyof D, keyof P>>>
   : never;
-
 export type ReblendManagedAttributes<C, P> = C extends {
   propTypes: infer T;
   defaultProps: infer D;
 }
   ? Defaultize<MergePropTypes<P, PropTypes.InferProps<T>>, D>
-  : C extends { propTypes: infer T }
+  : C extends {
+      propTypes: infer T;
+    }
   ? MergePropTypes<P, PropTypes.InferProps<T>>
-  : C extends { defaultProps: infer D }
+  : C extends {
+      defaultProps: infer D;
+    }
   ? Defaultize<P, D>
   : P;
-
 export {
   allAttribute,
   shouldUseSetAttribute,
