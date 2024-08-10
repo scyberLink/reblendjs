@@ -9,10 +9,10 @@ import { Reblend } from '../../internal/Reblend';
 function TryCatchError(
   this: BaseComponent,
   {
-    children = () => <>{''}</>,
+    children = (_error => <>{''}</>) as any,
   }: {
     children?:
-      | ((error: ReblendRenderingException) => JSX.Element)
+      | ((error?: ReblendRenderingException) => JSX.Element)
       | JSX.Element
       | JSX.Element[];
     props?: any[];

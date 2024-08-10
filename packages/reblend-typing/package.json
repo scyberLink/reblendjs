@@ -1,6 +1,6 @@
 {
   "name": "reblend-typing",
-  "version": "3.0.15",
+  "version": "3.0.16",
   "description": "This is reblend jsx typing",
   "keywords": [
     "ReblendJs",
@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@types/prop-types": "^15.7.12",
+    "@types/react": "^18.3.3",
     "csstype": "^3.1.3",
     "prop-types": "^15.8.1"
   },

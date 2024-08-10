@@ -8,7 +8,7 @@ import {
 } from 'reblend-typing';
 
 declare global {
-  namespace JSX {
+  export namespace Reblend.JSX {
     type ElementType = string | ReblendTyping.JSXElementConstructor<any>;
     interface Element extends ReblendTyping.ReblendElement {}
     interface ElementClass extends ReblendTyping.Component<any> {

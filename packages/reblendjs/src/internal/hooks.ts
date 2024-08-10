@@ -1,12 +1,7 @@
 import { isEqual } from 'lodash';
 import { BaseComponent } from './BaseComponent';
+import { ReblendTyping } from 'reblend-typing';
 
-export type Ref<T> = { current?: T | HTMLElement };
-export type StateFunction<T> = (value: StateFunctionValue<T>) => void;
-export type StateFunctionValue<T> = ((previous: T) => T) | T;
-export type StateEffectiveMemoFunction<T> = () => T;
-export type StateEffectiveFunction = () => (() => any) | void;
-export type StateReducerFunction<T> = (previous: T, current: T) => any;
 export type ContextSubscriber = {
   component: BaseComponent;
   stateKey: string;
@@ -22,7 +17,7 @@ export type Context<T> = {
   [contextValue]: T;
   [contextValueInitial]: T;
   reset: () => void;
-  update(update: StateFunctionValue<T>): void;
+  update(update: ReblendTyping.StateFunctionValue<T>): void;
   [contextSubscribe](component: BaseComponent, stateKey: string): void;
 };
 
@@ -31,13 +26,13 @@ const invalidContext = new Error('Invalid context');
 export function useState<T>(
   initial: T,
   ...dependencyStringAndOrStateKey: string[]
-): [T, StateFunction<T>] {
+): [T, ReblendTyping.StateFunction<T>] {
   //@ts-ignore
   return this.useState(...arguments);
 }
 
 export function useEffect(
-  fn: StateEffectiveFunction,
+  fn: ReblendTyping.StateEffectiveFunction,
   dependencies?: any[],
   ...dependencyStringAndOrStateKey: string[]
 ): void {
@@ -46,16 +41,16 @@ export function useEffect(
 }
 
 export function useReducer<T>(
-  reducer: StateReducerFunction<T>,
+  reducer: ReblendTyping.StateReducerFunction<T>,
   initial: T,
   ...dependencyStringAndOrStateKey: string[]
-): [T, StateFunction<T>] {
+): [T, ReblendTyping.StateFunction<T>] {
   //@ts-ignore
   return this.useReducer(...arguments);
 }
 
 export function useMemo<T>(
-  fn: StateEffectiveMemoFunction<T>,
+  fn: ReblendTyping.StateEffectiveMemoFunction<T>,
   dependencies?: any[],
   ...dependencyStringAndOrStateKey: string[]
 ): T {
@@ -66,7 +61,7 @@ export function useMemo<T>(
 export function useRef<T>(
   initial?: T,
   ...dependencyStringAndOrStateKey: string[]
-): Ref<T> {
+): ReblendTyping.Ref<T> {
   //@ts-ignore
   return this.useRef(...arguments);
 }
@@ -113,7 +108,7 @@ export function createContext<T>(initial: T): Context<T> {
   const context: Context<T> = {
     [contextSubscribers]: [],
     [contextValue]: initial,
-    update(update: StateFunctionValue<T>) {
+    update(update: ReblendTyping.StateFunctionValue<T>) {
       const newValue =
         typeof update === 'function'
           ? (update as Function)(context[contextValue])

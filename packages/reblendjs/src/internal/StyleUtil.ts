@@ -31,7 +31,7 @@ class StyleUtil {
   }
 
   update(elementQuerySelector: string, style: CSSStyleDeclaration | string) {
-    if (!elementQuerySelector || !style) {
+    if (!elementQuerySelector) {
       throw new Error('Invalid query selector or style');
     }
 
