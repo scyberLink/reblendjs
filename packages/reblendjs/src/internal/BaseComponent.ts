@@ -1471,12 +1471,16 @@ class BaseComponent extends HTMLElement implements IDelegate {
     );
   }
 
+  static deepFlat<T>(data: T[]): T[] {
+    return data.flat(Number.MAX_VALUE) as any;
+  }
+
   applyPatches(patches: Patch[]) {
     patches?.forEach(({ type, newNode, oldNode, parent, patches }) => {
       switch (type) {
         case 'CREATE':
-          const element = BaseComponent.createElement.bind(this)(
-            newNode as VNode
+          const element = BaseComponent.deepFlat(
+            BaseComponent.createElement.bind(this)(newNode as VNode)
           );
           element && parent?.appendChildren(...element);
           parent?.props?.children?.push(...element);
@@ -1491,8 +1495,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
           break;
         case 'REPLACE':
           if (oldNode) {
-            const newNodeElement = BaseComponent.createElement.bind(this)(
-              newNode as VNode
+            const newNodeElement = BaseComponent.deepFlat(
+              BaseComponent.createElement.bind(this)(newNode as VNode)
             );
             let firstNewNode = newNodeElement.shift();
             oldNode.parentNode?.replaceChild(
@@ -1608,7 +1612,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
           vNodes = null as any;
           return;
         }
-        vNodes = BaseComponent.createElement.bind(this)(vNodes as VNode) as any;
+        vNodes = BaseComponent.deepFlat(
+          BaseComponent.createElement.bind(this)(vNodes as VNode) as any
+        );
         vNodes && this.appendChildren(vNodes as any);
       }
     });
@@ -1771,7 +1777,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
         BaseComponent.isReblendVirtualNode(child) ||
         BaseComponent.isStandardVirtualNode(child)
       ) {
-        const domChild = BaseComponent.createElement.bind(this)(child as any);
+        const domChild = BaseComponent.deepFlat(
+          BaseComponent.createElement.bind(this)(child as any)
+        );
         domChild && containerArr.push(...domChild);
       } else {
         throw new TypeError('Invalid child node  in children');
