@@ -1,6 +1,6 @@
 {
   "name": "reblend-router",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "main": "lib/index.js",
@@ -14,7 +14,7 @@
   ],
   "dependencies": {
     "reblend-routing": "^4.19.8",
-    "reblendjs": "^3.0.28"
+    "reblendjs": "^3.0.29"
   },
   "scripts": {
     "build": "tsc && babel dist --out-dir lib",
