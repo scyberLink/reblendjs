@@ -1615,7 +1615,7 @@ class BaseComponent extends HTMLElement implements IDelegate {
         vNodes = BaseComponent.deepFlat(
           BaseComponent.createElement.bind(this)(vNodes as VNode) as any
         );
-        vNodes && this.appendChildren(vNodes as any);
+        vNodes && this.appendChildren(...(vNodes as any));
       }
     });
   }
