@@ -1505,6 +1505,12 @@ class BaseComponent extends HTMLElement implements IDelegate {
             );
             const oldNodeIndex = parent?.props?.children?.indexOf(oldNode);
             if (oldNodeIndex > -1) {
+              // Spread the remaining elements after the oldNodeIndex
+              parent!.props.children.splice(
+                oldNodeIndex + 1,
+                0,
+                ...newNodeElement
+              );
               parent!.props.children[oldNodeIndex] = firstNewNode;
             }
             //Append the remaining node after the firstNewNode
