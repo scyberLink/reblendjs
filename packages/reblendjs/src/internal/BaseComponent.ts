@@ -1845,6 +1845,8 @@ class BaseComponent extends HTMLElement implements IDelegate {
     );
     for (const node of nodes) {
       root.append(node);
+      (node as BaseComponent).connectedCallback &&
+        (node as BaseComponent).connectedCallback();
     }
   }
   stateIdNotIncluded = new Error('State Identifier/Key not specified');
