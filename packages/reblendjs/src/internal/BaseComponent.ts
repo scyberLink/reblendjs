@@ -1340,7 +1340,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
 
   diffChildren(parent: BaseComponent, oldNode: BaseComponent, newNode: VNode) {
     const oldChildren: DomNodeChildren = oldNode?.props?.children || [];
-    const newChildren: VNodeChildren = newNode?.props?.children || [];
+    const newChildren: VNodeChildren = BaseComponent.deepFlat(
+      newNode?.props?.children || []
+    );
     const patches: Patch[] = [];
     const maxLength = Math.max(oldChildren.length, newChildren.length);
 
