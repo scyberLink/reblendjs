@@ -1490,8 +1490,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
         case 'REMOVE':
           const oldNodeIndex = parent?.props?.children?.indexOf(oldNode);
           if (oldNodeIndex > -1) {
-            parent!.props.children[oldNodeIndex] =
-              new BaseComponent.ReblendPrimitive().setData(null);
+            const replacer = new BaseComponent.ReblendPrimitive().setData(null);
+            parent!.props.children[oldNodeIndex] = replacer;
+            oldNode?.parentNode?.replaceChild(replacer, oldNode);
           }
           this.detach(oldNode as any);
           break;
