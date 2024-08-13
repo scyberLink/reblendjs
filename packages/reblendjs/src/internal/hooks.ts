@@ -17,6 +17,7 @@ export type Context<T> = {
   [contextValue]: T;
   [contextValueInitial]: T;
   reset: () => void;
+  getValue: () => T;
   update(update: ReblendTyping.StateFunctionValue<T>): void;
   [contextSubscribe](component: BaseComponent, stateKey: string): void;
 };
@@ -134,6 +135,9 @@ export function createContext<T>(initial: T): Context<T> {
     [contextValueInitial]: initial,
     reset() {
       context[contextValue] = context[contextValueInitial];
+    },
+    getValue() {
+      return context[contextValue];
     },
   };
   return context;
