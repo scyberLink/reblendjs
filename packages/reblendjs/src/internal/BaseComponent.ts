@@ -940,7 +940,9 @@ class BaseComponent extends HTMLElement implements IDelegate {
         for (let propName in props) {
           const _attributeName = attributeName(propName);
           const propValue = props[propName];
-          if (propName.startsWith('on')) {
+          if (propName == 'dangerouslySetInnerHTML') {
+            to.innerHTML = propValue;
+          } else if (propName.startsWith('on')) {
             to[_attributeName] = this.fn(propValue) as any;
           } else {
             if (_attributeName === 'style') {

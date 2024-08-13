@@ -656,12 +656,10 @@ export const attributeName = (key: string): string => {
     return attribute?.name || key;
   }
 
-  if (
-    attribute === null ||
-    attribute.startsWith('on') ||
-    attribute.startsWith('aria')
-  ) {
+  if (attribute === null || attribute.startsWith('aria')) {
     return key;
+  } else if (attribute.startsWith('on')) {
+    return key.toLowerCase();
   } else {
     return attribute;
   }
