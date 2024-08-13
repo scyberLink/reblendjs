@@ -1,6 +1,6 @@
 {
   "name": "reblendjs",
-  "version": "3.0.40",
+  "version": "3.0.41",
   "codename": "infant",
   "description": "This is build using react way of handling dom but with web components",
   "keywords": [
@@ -44,7 +44,7 @@
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "reblend-typing": "^3.0.20"
+    "reblend-typing": "^3.0.21"
   },
   "gitHead": "c3211f106cc2cea2c4a78523017f3f923b1455a9"
 }
