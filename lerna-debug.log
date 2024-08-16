@@ -7,7 +7,7 @@
 1 notice cli v4.0.0
 2 verbose rootPath /home/s/Desktop/proj/scyberLink/reblendjs
 3 info versioning independent
-4 verbose session 43f50a7db1a915f7
+4 verbose session f27e578980517adf
 5 verbose user-agent lerna/4.0.0/node@v20.16.0+x64 (linux)
 6 info publish rooted leaf detected, skipping synthetic root lifecycles
 7 silly argv { _: [ 'publish' ], composed: 'publish', lernaVersion: '4.0.0' }
@@ -21,8 +21,8 @@
 15 silly isBehindUpstream feat/reblendjs_v4 is behind origin/feat/reblendjs_v4 by 0 commit(s) and ahead by 1
 16 silly hasTags
 17 verbose hasTags true
-18 silly git-describe.sync "reblend-router@0.1.31-1-g2e73ea4" => {"lastTagName":"reblend-router@0.1.31","lastVersion":"0.1.31","refCount":"1","sha":"2e73ea4","isDirty":false}
-19 info Looking for changed packages since reblend-router@0.1.31
+18 silly git-describe.sync "reblend-router@0.1.32-1-g94ddf4e" => {"lastTagName":"reblend-router@0.1.32","lastVersion":"0.1.32","refCount":"1","sha":"94ddf4e","isDirty":false}
+19 info Looking for changed packages since reblend-router@0.1.32
 20 silly checking diff packages/reblend-router
 21 silly found diff in packages/reblend-router/package.json
 22 verbose filtered diff [ 'packages/reblend-router/package.json' ]
@@ -41,8 +41,8 @@
 35 verbose updated reblend-template-test
 36 verbose updated reblend-typing
 37 verbose updated reblendjs
-38 verbose git-describe undefined => "reblend-router@0.1.31-1-g2e73ea4"
-39 silly git-describe parsed => {"lastTagName":"reblend-router@0.1.31","lastVersion":"0.1.31","refCount":"1","sha":"2e73ea4","isDirty":false}
+38 verbose git-describe undefined => "reblend-router@0.1.32-1-g94ddf4e"
+39 silly git-describe parsed => {"lastTagName":"reblend-router@0.1.32","lastVersion":"0.1.32","refCount":"1","sha":"94ddf4e","isDirty":false}
 40 info execute Skipping releases
 41 silly lifecycle No script for "preversion" in "reblend-typing", continuing
 42 silly lifecycle No script for "version" in "reblend-typing", continuing
@@ -64,28 +64,28 @@
 49 silly gitAdd ]
 50 silly gitCommit Publish
 50 silly gitCommit
-50 silly gitCommit  - reblend-router@0.1.32
-50 silly gitCommit  - reblend-template-test@2.0.38
-50 silly gitCommit  - reblend-typing@3.0.21
-50 silly gitCommit  - reblendjs@3.0.41
+50 silly gitCommit  - reblend-router@0.1.33
+50 silly gitCommit  - reblend-template-test@2.0.39
+50 silly gitCommit  - reblend-typing@3.0.22
+50 silly gitCommit  - reblendjs@3.0.42
 51 verbose git [
 51 verbose git   'commit',
 51 verbose git   '-F',
-51 verbose git   '/tmp/c545cafb-f900-41cb-9610-5e291149a701/lerna-commit.txt'
+51 verbose git   '/tmp/a8c174b6-895d-4799-9621-22b9b2b7ef54/lerna-commit.txt'
 51 verbose git ]
-52 silly gitTag reblend-router@0.1.32
-53 verbose git [ 'tag', 'reblend-router@0.1.32', '-m', 'reblend-router@0.1.32' ]
-54 silly gitTag reblend-template-test@2.0.38
+52 silly gitTag reblend-router@0.1.33
+53 verbose git [ 'tag', 'reblend-router@0.1.33', '-m', 'reblend-router@0.1.33' ]
+54 silly gitTag reblend-template-test@2.0.39
 55 verbose git [
 55 verbose git   'tag',
-55 verbose git   'reblend-template-test@2.0.38',
+55 verbose git   'reblend-template-test@2.0.39',
 55 verbose git   '-m',
-55 verbose git   'reblend-template-test@2.0.38'
+55 verbose git   'reblend-template-test@2.0.39'
 55 verbose git ]
-56 silly gitTag reblend-typing@3.0.21
-57 verbose git [ 'tag', 'reblend-typing@3.0.21', '-m', 'reblend-typing@3.0.21' ]
-58 silly gitTag reblendjs@3.0.41
-59 verbose git [ 'tag', 'reblendjs@3.0.41', '-m', 'reblendjs@3.0.41' ]
+56 silly gitTag reblend-typing@3.0.22
+57 verbose git [ 'tag', 'reblend-typing@3.0.22', '-m', 'reblend-typing@3.0.22' ]
+58 silly gitTag reblendjs@3.0.42
+59 verbose git [ 'tag', 'reblendjs@3.0.42', '-m', 'reblendjs@3.0.42' ]
 60 silly lifecycle No script for "postversion" in "reblend-router", continuing
 61 silly lifecycle No script for "postversion" in "reblend-template-test", continuing
 62 silly lifecycle No script for "postversion" in "reblend-typing", continuing
@@ -95,26 +95,26 @@
 66 info publish Publishing packages to npm...
 67 info Verifying npm credentials
 68 verbose Retrieving npm user profile
-69 http fetch GET 200 https://registry.npmjs.org/-/npm/v1/user 1149ms
+69 http fetch GET 200 https://registry.npmjs.org/-/npm/v1/user 1237ms
 70 silly npm profile get received {"tfa":{"pending":false,"mode":"auth-and-writes"},"name":"scyber-link","email":"com.syber.emma@gmail.com","email_verified":true,"created":"2024-05-13T09:42:25.602Z","updated":"2024-05-16T12:03:28.524Z","cidr_whitelist":null,"fullname":"Scyber Link","github":"scansio"}
 71 silly get npm username received {"username":"scyber-link","tfa":{"pending":false,"mode":"auth-and-writes"},"name":"scyber-link","email":"com.syber.emma@gmail.com","email_verified":true,"created":"2024-05-13T09:42:25.602Z","updated":"2024-05-16T12:03:28.524Z","cidr_whitelist":null,"fullname":"Scyber Link","github":"scansio"}
 72 silly verifyNpmPackageAccess
-73 http fetch GET 200 https://registry.npmjs.org/-/org/scyber-link/package?format=cli 1174ms (cache updated)
+73 http fetch GET 200 https://registry.npmjs.org/-/org/scyber-link/package?format=cli 901ms (cache updated)
 74 info Checking two-factor auth mode
 75 verbose Retrieving npm user profile
-76 http fetch GET 200 https://registry.npmjs.org/-/npm/v1/user 452ms
+76 http fetch GET 200 https://registry.npmjs.org/-/npm/v1/user 440ms
 77 silly npm profile get received {"tfa":{"pending":false,"mode":"auth-and-writes"},"name":"scyber-link","email":"com.syber.emma@gmail.com","email_verified":true,"created":"2024-05-13T09:42:25.602Z","updated":"2024-05-16T12:03:28.524Z","cidr_whitelist":null,"fullname":"Scyber Link","github":"scansio"}
 78 silly 2FA { pending: false, mode: 'auth-and-writes' }
 79 silly getCurrentSHA
-80 verbose getCurrentSHA 55c54f5895b4c5e06cb5cbbc43956175d8ced171
+80 verbose getCurrentSHA 1396805fb85e7072865505dc1038d2cb45b720c1
 81 verbose pack-directory packages/reblend-typing
 82 silly lifecycle "prepublish" starting in "reblend-typing"
-83 info lifecycle reblend-typing@3.0.21~prepublish: reblend-typing@3.0.21
-84 verbose lifecycle reblend-typing@3.0.21~prepublish: unsafe-perm in lifecycle true
-85 verbose lifecycle reblend-typing@3.0.21~prepublish: PATH: /home/s/Desktop/proj/scyberLink/reblendjs/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/packages/reblend-typing/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/bin:/home/s/.nvm/versions/node/v20.16.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/sbin:/usr/sbin:/home/s/.nvm/versions/node/v14.21.3/bin:/home/s/.nvm/versions/node/v14.21.3/bin
-86 verbose lifecycle reblend-typing@3.0.21~prepublish: CWD: /home/s/Desktop/proj/scyberLink/reblendjs/packages/reblend-typing
-87 silly lifecycle reblend-typing@3.0.21~prepublish: Args: [ '-c', 'npm run build' ]
-88 silly lifecycle reblend-typing@3.0.21~prepublish: Returned: code: 0  signal: null
+83 info lifecycle reblend-typing@3.0.22~prepublish: reblend-typing@3.0.22
+84 verbose lifecycle reblend-typing@3.0.22~prepublish: unsafe-perm in lifecycle true
+85 verbose lifecycle reblend-typing@3.0.22~prepublish: PATH: /home/s/Desktop/proj/scyberLink/reblendjs/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/packages/reblend-typing/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/bin:/home/s/.nvm/versions/node/v20.16.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/sbin:/usr/sbin:/home/s/.nvm/versions/node/v14.21.3/bin:/home/s/.nvm/versions/node/v14.21.3/bin
+86 verbose lifecycle reblend-typing@3.0.22~prepublish: CWD: /home/s/Desktop/proj/scyberLink/reblendjs/packages/reblend-typing
+87 silly lifecycle reblend-typing@3.0.22~prepublish: Args: [ '-c', 'npm run build' ]
+88 silly lifecycle reblend-typing@3.0.22~prepublish: Returned: code: 0  signal: null
 89 silly lifecycle "prepublish" finished in "reblend-typing"
 90 silly lifecycle No script for "prepare" in "reblend-typing", continuing
 91 silly lifecycle No script for "prepublishOnly" in "reblend-typing", continuing
@@ -123,12 +123,12 @@
 94 verbose packed packages/reblend-typing
 95 verbose pack-directory packages/reblendjs
 96 silly lifecycle "prepublish" starting in "reblendjs"
-97 info lifecycle reblendjs@3.0.41~prepublish: reblendjs@3.0.41
-98 verbose lifecycle reblendjs@3.0.41~prepublish: unsafe-perm in lifecycle true
-99 verbose lifecycle reblendjs@3.0.41~prepublish: PATH: /home/s/Desktop/proj/scyberLink/reblendjs/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/packages/reblendjs/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/bin:/home/s/.nvm/versions/node/v20.16.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/sbin:/usr/sbin:/home/s/.nvm/versions/node/v14.21.3/bin:/home/s/.nvm/versions/node/v14.21.3/bin
-100 verbose lifecycle reblendjs@3.0.41~prepublish: CWD: /home/s/Desktop/proj/scyberLink/reblendjs/packages/reblendjs
-101 silly lifecycle reblendjs@3.0.41~prepublish: Args: [ '-c', 'npm run build' ]
-102 silly lifecycle reblendjs@3.0.41~prepublish: Returned: code: 0  signal: null
+97 info lifecycle reblendjs@3.0.42~prepublish: reblendjs@3.0.42
+98 verbose lifecycle reblendjs@3.0.42~prepublish: unsafe-perm in lifecycle true
+99 verbose lifecycle reblendjs@3.0.42~prepublish: PATH: /home/s/Desktop/proj/scyberLink/reblendjs/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/packages/reblendjs/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/bin:/home/s/.nvm/versions/node/v20.16.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/sbin:/usr/sbin:/home/s/.nvm/versions/node/v14.21.3/bin:/home/s/.nvm/versions/node/v14.21.3/bin
+100 verbose lifecycle reblendjs@3.0.42~prepublish: CWD: /home/s/Desktop/proj/scyberLink/reblendjs/packages/reblendjs
+101 silly lifecycle reblendjs@3.0.42~prepublish: Args: [ '-c', 'npm run build' ]
+102 silly lifecycle reblendjs@3.0.42~prepublish: Returned: code: 0  signal: null
 103 silly lifecycle "prepublish" finished in "reblendjs"
 104 silly lifecycle No script for "prepare" in "reblendjs", continuing
 105 silly lifecycle No script for "prepublishOnly" in "reblendjs", continuing
@@ -137,12 +137,12 @@
 108 verbose packed packages/reblendjs
 109 verbose pack-directory packages/reblend-router
 110 silly lifecycle "prepublish" starting in "reblend-router"
-111 info lifecycle reblend-router@0.1.32~prepublish: reblend-router@0.1.32
-112 verbose lifecycle reblend-router@0.1.32~prepublish: unsafe-perm in lifecycle true
-113 verbose lifecycle reblend-router@0.1.32~prepublish: PATH: /home/s/Desktop/proj/scyberLink/reblendjs/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/packages/reblend-router/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/bin:/home/s/.nvm/versions/node/v20.16.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/sbin:/usr/sbin:/home/s/.nvm/versions/node/v14.21.3/bin:/home/s/.nvm/versions/node/v14.21.3/bin
-114 verbose lifecycle reblend-router@0.1.32~prepublish: CWD: /home/s/Desktop/proj/scyberLink/reblendjs/packages/reblend-router
-115 silly lifecycle reblend-router@0.1.32~prepublish: Args: [ '-c', 'npm run build' ]
-116 silly lifecycle reblend-router@0.1.32~prepublish: Returned: code: 0  signal: null
+111 info lifecycle reblend-router@0.1.33~prepublish: reblend-router@0.1.33
+112 verbose lifecycle reblend-router@0.1.33~prepublish: unsafe-perm in lifecycle true
+113 verbose lifecycle reblend-router@0.1.33~prepublish: PATH: /home/s/Desktop/proj/scyberLink/reblendjs/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/packages/reblend-router/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/proj/scyberLink/reblendjs/node_modules/.bin:/home/s/.nvm/versions/node/v20.16.0/bin:/home/s/.nvm/versions/node/v20.16.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/sbin:/usr/sbin:/home/s/.nvm/versions/node/v14.21.3/bin:/home/s/.nvm/versions/node/v14.21.3/bin
+114 verbose lifecycle reblend-router@0.1.33~prepublish: CWD: /home/s/Desktop/proj/scyberLink/reblendjs/packages/reblend-router
+115 silly lifecycle reblend-router@0.1.33~prepublish: Args: [ '-c', 'npm run build' ]
+116 silly lifecycle reblend-router@0.1.33~prepublish: Returned: code: 0  signal: null
 117 silly lifecycle "prepublish" finished in "reblend-router"
 118 silly lifecycle No script for "prepare" in "reblend-router", continuing
 119 silly lifecycle No script for "prepublishOnly" in "reblend-router", continuing
