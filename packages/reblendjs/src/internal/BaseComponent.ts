@@ -11,10 +11,10 @@ import {
 import { IAny } from '../interface/IAny'
 import { IPair } from '../interface/IPair'
 import { Reblend } from './Reblend'
-import * as lodash from 'lodash'
 import StyleUtil, { StyleUtilType } from './StyleUtil'
 import { type Root } from 'react-dom/client'
 import { PrimitiveElementPool } from './PrimitiveElementPool'
+import { cloneDeep, isEqual } from 'lodash'
 
 export type ChildWithProps = {
   child: BaseComponent
@@ -738,7 +738,7 @@ class BaseComponent {
   }
   deepCompare(firstObject, secondObject) {
     if (typeof firstObject !== 'function' && secondObject !== 'function') {
-      return lodash.isEqual(firstObject, secondObject)
+      return isEqual(firstObject, secondObject)
     }
 
     // 1. Check if they are the same reference
@@ -751,7 +751,7 @@ class BaseComponent {
     if (firstObject.toString() !== secondObject.toString()) return false
 
     // 4. Compare prototypes
-    if (!lodash.isEqual(Object.getPrototypeOf(firstObject), Object.getPrototypeOf(secondObject))) {
+    if (!isEqual(Object.getPrototypeOf(firstObject), Object.getPrototypeOf(secondObject))) {
       return false
     }
 
@@ -759,12 +759,12 @@ class BaseComponent {
     const func1Props = Object.getOwnPropertyNames(firstObject)
     const func2Props = Object.getOwnPropertyNames(secondObject)
 
-    if (!lodash.isEqual(func1Props, func2Props)) {
+    if (!isEqual(func1Props, func2Props)) {
       return false
     }
 
     for (const prop of func1Props) {
-      if (!lodash.isEqual(firstObject[prop], secondObject[prop])) {
+      if (!isEqual(firstObject[prop], secondObject[prop])) {
         return false
       }
     }
@@ -1105,7 +1105,7 @@ class BaseComponent {
       if (typeof value === 'function') {
         value = (value as (v: T) => T)(this[stateID])
       }
-      if (!lodash.isEqual(this[stateID], value)) {
+      if (!isEqual(this[stateID], value)) {
         this[stateID] = value as T
         this.onStateChange()
       }
@@ -1121,10 +1121,10 @@ class BaseComponent {
   ) {
     fn = fn.bind(this)
     const dep = new Function(`return (${dependencies})`).bind(this)
-    const cacher = () => lodash.cloneDeep(dep())
+    const cacher = () => cloneDeep(dep())
     let caches = cacher()
     const internalFn = () => {
-      if (!dependencies || !lodash.isEqual(dep(), caches)) {
+      if (!dependencies || !isEqual(dep(), caches)) {
         caches = cacher()
         fn()
       }
@@ -1173,11 +1173,11 @@ class BaseComponent {
     const [state, setState] = this.useState<T>(fn(), stateID)
     this[stateID] = state
     const dep = new Function(`return (${dependencies})`).bind(this)
-    const cacher = () => lodash.cloneDeep(dep())
+    const cacher = () => cloneDeep(dep())
     let caches = cacher()
     const internalFn = () => {
       const depData = dep()
-      if (!dependencies || !lodash.isEqual(depData, caches)) {
+      if (!dependencies || !isEqual(depData, caches)) {
         caches = cacher()
         setState(fn())
       }

@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { registerElement } from '../common/utils'
 import { IAny } from '../interface/IAny'
 import { BaseComponent } from './BaseComponent'
 import { ReblendTyping, ReblendManagedAttributes, HTMLWebViewElement } from 'reblend-typing'
