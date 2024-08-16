@@ -12,7 +12,7 @@ declare global {
     type ElementType = string | ReblendTyping.JSXElementConstructor<any>
     interface Element extends ReblendTyping.ReblendElement {}
     interface ElementClass extends ReblendTyping.Component<any> {
-      html(): ReblendTyping.ReblendNode | undefined
+      html?: () => ReblendTyping.ReblendNode
     }
     interface ElementAttributesProperty {
       props: { children: ReblendTyping.ReblendElement[] } & IAny
@@ -262,7 +262,5 @@ class Reblend extends BaseComponent {
     return this.props.children
   }
 }
-
-registerElement(`ReblendFragment`, Reblend)
 
 export { Reblend }

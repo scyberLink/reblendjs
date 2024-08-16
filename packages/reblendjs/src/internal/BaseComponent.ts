@@ -95,8 +95,7 @@ class BaseComponent {
     protected html(): VNode | VNodeChildren {
       return this.props.children
     }
-    async init() {
-      await super.init()
+    async initRoot() {
       if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
         const reactDom = await import('react-dom/client')
 
@@ -106,26 +105,29 @@ class BaseComponent {
     private render() {
       this.attach()
     }
-    async attach() {
-      //Lazy load react i.e it been bundled separately and only fetch when needed
-      const react = await import('react')
 
-      this.reactDomCreateRoot_root?.render(
-        react.createElement(this.ReactClass, {
-          ...this.props,
-          children: !this.props?.children?.length ? undefined : await this.getChildrenWrapperForReact(),
-        }),
-      )
+    async attach() {
+      this.catchErrorFrom(async () => {
+        await this.initRoot()
+        //Lazy load react i.e it been bundled separately and only fetch when needed
+        const react = await import('react')
+        const childrenWrapper = await this.getChildrenWrapperForReact()
+
+        this.reactDomCreateRoot_root?.render(
+          react.createElement(this.ReactClass, {
+            ...this.props,
+            children: !this.props?.children?.length ? undefined : childrenWrapper,
+          }),
+        )
+      })
     }
+
     protected cleanUp(): void {
       try {
         this.reactDomCreateRoot_root?.unmount()
       } catch (error) {
         console.log(error)
       }
-    }
-    _constructor(): void {
-      super._constructor()
     }
   }
   static extendPrototype(target, prototype) {
@@ -357,7 +359,8 @@ class BaseComponent {
 
     const tagName = isTagStandard
       ? displayName
-      : (BaseComponent.isReactNode(clazz) ? (clazz as any as ReactNode).displayName : clazz.ELEMENT_NAME) || `Anonymous`
+      : (BaseComponent.isReactNode(clazz) ? (clazz as any as ReactNode).displayName : clazz?.ELEMENT_NAME) ||
+        `Anonymous`
 
     isTagStandard || (clazz.ELEMENT_NAME = tagName)
 
