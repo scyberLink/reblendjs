@@ -123,11 +123,7 @@ class BaseComponent {
     }
 
     protected cleanUp(): void {
-      try {
-        this.reactDomCreateRoot_root?.unmount()
-      } catch (error) {
-        console.log(error)
-      }
+      this.reactDomCreateRoot_root = null as any
     }
   }
   static extendPrototype(target, prototype) {
@@ -334,7 +330,7 @@ class BaseComponent {
     span.disconnectedCallback = BaseComponent.prototype.disconnectedCallback
     return span
   }
-  protected static createElement(vNode: VNode | ReactNode | Primitive): BaseComponent[] {
+  static createElement(vNode: VNode | ReactNode | Primitive): BaseComponent[] {
     if (Array.isArray(vNode)) {
       return BaseComponent.createChildren(vNode) as any
     }
@@ -519,6 +515,26 @@ class BaseComponent {
     for (const node of nodes) {
       root.append(node)
       ;(node as BaseComponent).connectedCallback && (node as BaseComponent).connectedCallback()
+    }
+  }
+  private static detach(node: BaseComponent | HTMLElement) {
+    if (BaseComponent.isPrimitive(node)) return
+    if ('disconnectedCallback' in node) {
+      ;(node as any as BaseComponent).disconnectedCallback()
+    } else {
+      node.parentNode?.removeChild(node)
+    }
+  }
+  private static detachChildren(node: BaseComponent) {
+    if (BaseComponent.isPrimitive(node)) return
+    if (node.props) {
+      for (const child of node.props?.children || []) {
+        this.detach(child)
+      }
+      node.props.children = []
+    }
+    for (const child of node.childNodes || []) {
+      this.detach(child as any)
     }
   }
   dataIdQuerySelector!: string
@@ -891,38 +907,12 @@ class BaseComponent {
       }
     })
   }
-  detach(node: BaseComponent | HTMLElement) {
-    if (BaseComponent.isPrimitive(node)) return
-    if ('disconnectedCallback' in node) {
-      ;(node as any as BaseComponent).disconnectedCallback()
-    } else {
-      node.parentNode?.removeChild(node)
-    }
-  }
-  detachChildren(node: BaseComponent) {
-    for (const child of node?.props?.children || []) {
-      if (BaseComponent.isPrimitive(child)) return
-      if ('disconnectedCallback' in child) {
-        ;(child as any as BaseComponent).disconnectedCallback()
-      } else {
-        child.parentNode?.removeChild(child)
-      }
-    }
-    this.props.children = []
-    for (const child of node?.childNodes || []) {
-      if (BaseComponent.isPrimitive(child)) return
-      if ('disconnectedCallback' in child) {
-        ;(child as any as BaseComponent).disconnectedCallback()
-      } else {
-        child.parentNode?.removeChild(child)
-      }
-    }
-  }
+
   replaceOperation(oldNode: BaseComponent, operation: () => void) {
     //Release some memory before doing the replace operation
-    this?.detachChildren(oldNode)
+    BaseComponent.detachChildren(oldNode)
     operation()
-    this.detach(oldNode)
+    BaseComponent.detach(oldNode)
   }
   applyProps(patches?: PropPatch[]) {
     //This helps reduce onStateChange call for updates of the same node
@@ -1068,14 +1058,7 @@ class BaseComponent {
       }
     }
     this.disconnectEffects?.forEach((fn) => fn())
-    for (let child of this.props?.children || []) {
-      this.detach(child)
-      child = null as any
-    }
-    for (let child of this.childNodes || []) {
-      this.detach(child as any)
-      child = null as any
-    }
+    BaseComponent.detachChildren(this)
     this.parentElement?.removeChild(this)
     this.props = null as any
     this._state = null as any
