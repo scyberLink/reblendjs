@@ -537,6 +537,14 @@ class BaseComponent {
       this.detach(child as any)
     }
   }
+
+  static connected<T extends BaseComponent | HTMLElement>(node: T | undefined) {
+    if (!node) return
+    if ((node as BaseComponent).connectedCallback) {
+      ;(node as BaseComponent).connectedCallback()
+    }
+  }
+
   dataIdQuerySelector!: string
 
   props!: IAny
@@ -667,7 +675,7 @@ class BaseComponent {
     return patches
   }
   async getChildrenWrapperForReact() {
-    const children: BaseComponent[] = this.props.children
+    const children: BaseComponent[] | null = this.props?.children
     const react = await import('react')
     return react.createElement(
       class extends react.Component {
@@ -679,7 +687,7 @@ class BaseComponent {
 
         componentDidMount(): void {
           if (this.containerRef) {
-            children.forEach((child) => {
+            children?.forEach((child) => {
               this.containerRef.current?.appendChild(child)
               child.connectedCallback && child.connectedCallback()
             })
@@ -872,6 +880,7 @@ class BaseComponent {
                 const newNodeElement = BaseComponent.deepFlat(BaseComponent.createElement.bind(this)(newNode as VNode))
                 let firstNewNode = newNodeElement.shift()
                 oldNode!.parentNode?.replaceChild(<BaseComponent>firstNewNode, oldNode!)
+                BaseComponent.connected(firstNewNode)
                 const oldNodeIndex = parent?.props?.children?.indexOf(oldNode)
                 if (oldNodeIndex > -1) {
                   // Spread the remaining elements after the oldNodeIndex
@@ -881,6 +890,7 @@ class BaseComponent {
                 //Append the remaining node after the firstNewNode
                 for (const node of newNodeElement) {
                   firstNewNode?.after(node)
+                  BaseComponent.connected(node)
                   firstNewNode = node
                 }
               })
