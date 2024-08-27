@@ -24,7 +24,7 @@ export interface PropPatch {
   type: 'REMOVE' | 'UPDATE'
   node: string
   key: string
-  propValue?: string
+  newVnodeId?: string
 }
 
 export type Primitive = boolean | null | number | string | undefined

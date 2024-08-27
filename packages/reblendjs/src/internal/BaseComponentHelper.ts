@@ -1,23 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { attributeName, ReblendTyping, shouldUseSetAttribute } from 'reblend-typing'
-import {
-  capitalize,
-  isCallable,
-  rand,
-  REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME,
-  REBLEND_COMPONENT_ATTRIBUTE_NAME,
-  REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME,
-} from '../common/utils'
+import { attributeName, shouldUseSetAttribute } from 'reblend-typing'
+import { isCallable, rand, REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME } from '../common/utils'
 import { IAny } from '../interface/IAny'
-import type { BaseComponent, ReblendReactClass } from './BaseComponent'
+import type { BaseComponent } from './BaseComponent'
 import {
   Patch,
   Primitive,
   PropPatch,
-  ReactNode,
   ReactToReblendNode,
   ReactToReblendVNode,
-  REBLEND_PRIMITIVE_ELEMENT_NAME,
   ReblendNode,
   ReblendNodeStandard,
   ReblendPrimitive,
@@ -29,10 +20,9 @@ import {
   VNodeChildren,
   WorkerData,
 } from './BaseComponentType'
-import { PrimitiveElementPool } from './PrimitiveElementPool'
-import { Reblend } from './Reblend'
+import type { Reblend } from './Reblend'
 import { isEqual } from 'lodash'
-import { getElement, setElement } from './ElementDictionary'
+import { getElement } from './ElementDictionary'
 
 export const extendPrototype = (target, prototype) => {
   if (!prototype) {
@@ -143,7 +133,7 @@ export const createElementWithNamespace = (tag: string) => {
   }
 }
 
-export const setProps = (props: IAny, to: BaseComponent, init: boolean) => {
+export const setProps = async (props: IAny, to: BaseComponent, init: boolean) => {
   if (props && to) {
     to.props = { ...to.props, ...props }
 
@@ -178,7 +168,7 @@ export const setProps = (props: IAny, to: BaseComponent, init: boolean) => {
     init && to.init && to.init()
   }
 }
-export const removeProps = (props: IAny, to: BaseComponent) => {
+export const removeProps = async (props: IAny, to: BaseComponent) => {
   if (props && to) {
     to.props = { ...to.props, ...props }
 
@@ -231,23 +221,6 @@ export const isReactToReblendVirtualNode = (node: any): boolean => {
 
 export const isStandardVirtualNode = (node: any): boolean => {
   return !isPrimitive(node) && node![ReblendVNodeStandard]
-}
-
-export const isReactNode = (displayName: IAny): boolean => {
-  return (
-    displayName &&
-    typeof displayName !== 'string' &&
-    ('$$typeof' in displayName ||
-      (typeof displayName === 'function' && displayName.prototype && displayName.prototype.isReactComponent))
-  )
-}
-
-export const injectNodeType = (clazz: object, node: object): void => {
-  if (!clazz || !node) {
-    throw new Error('No clazz or Node')
-  }
-  node[typeof clazz === 'string' ? ReblendVNodeStandard : isReactNode(clazz) ? ReactToReblendVNode : ReblendVNode] =
-    true
 }
 
 export const deepFlat = <T>(data: T[]): T[] => {
@@ -443,8 +416,8 @@ export const diffProps = (newNode: VNode, oldNode: VNode) => {
         patches.push({
           type: 'UPDATE',
           node: oldNode.internalIdentifier,
+          newVnodeId: newNode.internalIdentifier,
           key,
-          propValue: newProps[key],
         })
       }
     }
@@ -455,8 +428,8 @@ export const diffProps = (newNode: VNode, oldNode: VNode) => {
       patches.push({
         type: 'REMOVE',
         node: oldNode.internalIdentifier,
+        newVnodeId: newNode.internalIdentifier,
         key,
-        propValue: undefined,
       })
     }
   }
@@ -493,31 +466,33 @@ export const replaceOperation = (oldNode: BaseComponent, operation: () => void) 
   detach(oldNode)
 }
 
-export const applyProps = (patches?: PropPatch[]) => {
-  requestAnimationFrame(() => {
-    //This helps reduce onStateChange call for updates of the same node
-    let nodes = new Set<BaseComponent>()
-    patches?.forEach(({ type, node, key, propValue }) => {
-      const element = getElement(node)
-      if (type === 'UPDATE') {
-        setProps({ [key]: propValue }, element, false)
-        nodes.add(element)
-      } else if (type === 'REMOVE') {
-        removeProps({ [key]: undefined }, element)
-        nodes.add(element)
-      }
-    })
-    nodes.forEach((node) => {
-      if (!isReblendRenderedNodeStandard(node)) {
-        if (isReactToReblendRenderedNode(node)) {
-          ;(node as any)?.render()
-        } else {
-          node.onStateChange()
-        }
-      }
-    })
-    nodes = null as any
+export const applyProps = (patches: PropPatch[], vNodes: VNode | VNodeChildren) => {
+  //requestAnimationFrame(() => {
+  //This helps reduce onStateChange call for updates of the same node
+  let nodes = new Set<BaseComponent>()
+  patches?.forEach(({ type, node, key, newVnodeId }) => {
+    const element = getElement(node)
+    if (type === 'UPDATE') {
+      let newNode = findNodeIn(vNodes, newVnodeId)
+      const propValue = newNode?.props[key]
+      setProps({ [key]: propValue }, element, false)
+      nodes.add(element)
+    } else if (type === 'REMOVE') {
+      removeProps({ [key]: undefined }, element)
+      nodes.add(element)
+    }
   })
+  nodes.forEach((node) => {
+    if (!isReblendRenderedNodeStandard(node)) {
+      if (isReactToReblendRenderedNode(node)) {
+        ;(node as any)?.render()
+      } else {
+        node.onStateChange()
+      }
+    }
+  })
+  nodes = null as any
+  //})
 }
 
 export const isTextNode = (node: Node): node is Text => {
@@ -586,7 +561,14 @@ export const findNodeIn = (vNodes: VNode | VNodeChildren, newNodeId: string | un
   }
 
   for (const vNode of vNodes) {
-    if (isPrimitive(vNode) || !(vNode as VNode).internalIdentifier) {
+    if (isPrimitive(vNode)) {
+      continue
+    } else if (Array.isArray(vNode)) {
+      const found = findNodeIn(vNode, newNodeId)
+      if (found) {
+        return found
+      }
+    } else if (!(vNode as VNode).internalIdentifier) {
       continue
     } else if ((vNode as VNode).internalIdentifier === newNodeId) {
       return vNode as VNode

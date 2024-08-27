@@ -19,9 +19,7 @@ import {
   findNodeIn,
   flattenVNodeChildren,
   getInternalIdentifier,
-  injectNodeType,
   isPrimitive,
-  isReactNode,
   isReactToReblendVirtualNode,
   isReblendPrimitive,
   isReblendRenderedNode,
@@ -37,12 +35,15 @@ import {
   Primitive,
   ReactNode,
   ReactToReblendNode,
+  ReactToReblendVNode,
   REBLEND_PRIMITIVE_ELEMENT_NAME,
   ReblendNode,
   ReblendNodeStandard,
   ReblendPrimitive,
   ReblendPrimitiveNode,
   ReblendRenderingException,
+  ReblendVNode,
+  ReblendVNodeStandard,
   VNode,
   VNodeChild,
   VNodeChildren,
@@ -138,6 +139,17 @@ class BaseComponent {
       props: mergedProp,
       toJSON: () => ({
         ...velement,
+        props: (() => {
+          const mergedPropTemp: any = {}
+          Object.entries(mergedProp).forEach(([key, value]) => {
+            mergedPropTemp[key] = isCallable(value)
+              ? (value as any)?.name
+              : key === 'children' && Array.isArray(value)
+              ? value.map((childrenValue) => (isCallable(childrenValue) ? (childrenValue as any)?.name : childrenValue))
+              : value
+          })
+          return mergedPropTemp
+        })(),
         displayName:
           typeof displayName === 'string'
             ? displayName
@@ -305,7 +317,9 @@ class BaseComponent {
   }
 
   applyEffects() {
+    this.stateEffectRunning = true
     this.effectsFn?.forEach((effectFn) => effectFn())
+    this.stateEffectRunning = false
   }
 
   handleError(error: Error) {
@@ -329,6 +343,8 @@ class BaseComponent {
       this.handleError.bind(this)(error as Error)
     }
   }
+
+  stateEffectRunning = false
 
   async onStateChange() {
     this.catchErrorFrom.bind(this)(async () => {
@@ -365,7 +381,10 @@ class BaseComponent {
         .then(parseResult)
         .catch((error) => {
           throw error
-        })
+        }) /* 
+        .finally(() => {
+          this.stateEffectRunning = false
+        }) */
     })
   }
 
@@ -374,10 +393,13 @@ class BaseComponent {
   }
 
   mountEffects() {
+    this.stateEffectRunning = true
     this.onMountEffects?.forEach((fn) => {
       const disconnectEffect = fn()
       disconnectEffect && this.disconnectEffects?.push(disconnectEffect)
     })
+    this.stateEffectRunning = false
+    //this.onStateChange()
   }
 
   disconnectedCallback() {
@@ -397,9 +419,9 @@ class BaseComponent {
       }
     }
     this.disconnectEffects?.forEach((fn) => fn())
-    requestIdleCallback(() => {
-      detachChildren(this)
-    })
+    //requestIdleCallback(() => {
+    detachChildren(this)
+    //})
     this.parentElement?.removeChild(this)
     deleteElement(this)
     this.props = null as any
@@ -430,11 +452,15 @@ class BaseComponent {
     this[stateID] = initial
     const variableSetter: ReblendTyping.StateFunction<T> = (value: ReblendTyping.StateFunctionValue<T>) => {
       if (typeof value === 'function') {
+        this.stateEffectRunning = true
         value = (value as (v: T) => T)(this[stateID])
+        this.stateEffectRunning = false
       }
       if (!isEqual(this[stateID], value)) {
         this[stateID] = value as T
-        this.onStateChange()
+        if (!this.stateEffectRunning) {
+          this.onStateChange()
+        }
       }
     }
 
@@ -477,11 +503,13 @@ class BaseComponent {
     this[stateID] = state
     const fn: ReblendTyping.StateFunction<I> = (newValue: ReblendTyping.StateFunctionValue<I>) => {
       let reducedVal: ReblendTyping.StateFunctionValue<T>
+      this.stateEffectRunning = true
       if (typeof newValue === 'function') {
         reducedVal = reducer(this[stateID], (newValue as (v: T) => I)(this[stateID]))
       } else {
         reducedVal = reducer(this[stateID], newValue as any)
       }
+      this.stateEffectRunning = false
       setState(reducedVal)
     }
 
@@ -509,7 +537,8 @@ class BaseComponent {
       const depData = dep()
       if (!dependencies || !isEqual(depData, caches)) {
         caches = cacher()
-        setState(fn())
+        const v = fn()
+        setState(v)
       }
     }
     this.effectsFn?.push(internalFn)
@@ -540,8 +569,18 @@ class BaseComponent {
       'undefined_node_type']: true,
       displayName: isPrimitive(this.displayName)
         ? this.displayName
-        : (this.displayName as any).ELEMENT_NAME || 'Anonymous',
-      props: this.props,
+        : (this.displayName as any).ELEMENT_NAME || (this.displayName as any).displayName || 'Anonymous',
+      props: (() => {
+        const mergedPropTemp = {}
+        Object.entries(this.props || {}).forEach(([key, value]) => {
+          mergedPropTemp[key] = isCallable(value)
+            ? (value as any)?.name
+            : key === 'children' && Array.isArray(value)
+            ? value.map((childrenValue) => (isCallable(childrenValue) ? (childrenValue as any)?.name : childrenValue))
+            : value
+        })
+        return mergedPropTemp
+      })(),
       internalIdentifier: this.internalIdentifier,
     }
   }
@@ -673,13 +712,14 @@ export const createElement = (vNode: VNode | ReactNode | Primitive): BaseCompone
 
   const tagName = isTagStandard
     ? displayName
-    : (isReactNode(clazz) ? (clazz as any as ReactNode)?.displayName : clazz?.ELEMENT_NAME) || `Anonymous`
+    : (isReactNode(clazz) ? (clazz as any as ReactNode)?.displayName || `React_Anonymous` : clazz?.ELEMENT_NAME) ||
+      `Anonymous`
 
   isTagStandard || (clazz.ELEMENT_NAME = tagName)
 
   if (_isReactNode) {
     clazz = ReblendReactClass as any
-    clazz.ELEMENT_NAME = capitalize(`${(displayName as unknown as ReactNode).displayName}`)
+    clazz.ELEMENT_NAME = capitalize(`${(displayName as unknown as ReactNode).displayName || `React_Anonymous`}`)
   }
 
   const element: Reblend = createElementWithNamespace(isTagStandard ? (displayName as string) : 'div') as Reblend
@@ -727,8 +767,10 @@ export const createElement = (vNode: VNode | ReactNode | Primitive): BaseCompone
     element.ref = ref
   }
 
-  setProps(props, element, true)
-  element.attach && element.attach()
+  setProps(props, element, true).then(() => {
+    element.attach && element.attach()
+  })
+
   element.container = this as any as BaseComponent
   element.internalIdentifier = (vNode as VNode)?.internalIdentifier
   setElement(element)
@@ -772,7 +814,7 @@ export const applyPatches = (patches: Patch[], vNodes: VNode | VNodeChildren) =>
               const oldNodeIndex = parent?.props?.children?.indexOf(oldNodeId)
               if (oldNodeIndex > -1) {
                 // Spread the remaining elements after the oldNodeIndex
-                parent!.props.children.splice(oldNodeIndex + 1, 0, ...newNodeElement)
+                parent!.props?.children?.splice(oldNodeIndex + 1, 0, ...newNodeElement)
                 parent!.props.children[oldNodeIndex] = firstNewNode
               }
               //Append the remaining node after the firstNewNode
@@ -793,7 +835,7 @@ export const applyPatches = (patches: Patch[], vNodes: VNode | VNodeChildren) =>
         break
       case 'UPDATE':
         {
-          applyProps(patches)
+          applyProps(patches || [], vNodes)
         }
         break
     }
@@ -808,6 +850,24 @@ export const applyPatches = (patches: Patch[], vNodes: VNode | VNodeChildren) =>
       newNode = null as any
     }
   })
+}
+
+export const isReactNode = (displayName: IAny): boolean => {
+  return (
+    displayName &&
+    typeof displayName !== 'string' &&
+    ('$$typeof' in displayName ||
+      (displayName.prototype && displayName.prototype.isReactComponent) ||
+      (isCallable(displayName) && !(displayName instanceof Reblend)))
+  )
+}
+
+export const injectNodeType = (clazz: object, node: object): void => {
+  if (!clazz || !node) {
+    throw new Error('No clazz or Node')
+  }
+  node[typeof clazz === 'string' ? ReblendVNodeStandard : isReactNode(clazz) ? ReactToReblendVNode : ReblendVNode] =
+    true
 }
 
 export { ReblendReactClass }
