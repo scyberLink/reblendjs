@@ -24,8 +24,8 @@
     "directory": "packages/reblendjs"
   },
   "scripts": {
-    "build": "tsc && babel dist --out-dir lib",
-    "prepublish": "npm run build",
+    "build": "tsc && babel dist --out-dir lib && rollup -c rollup.config.mjs",
+    "prepublish": "rm -rf dist; rm -rf lib; npm run build",
     "format": "prettier --write ./src",
     "lint": "eslint ./src",
     "lint:autofix": "eslint ./src --fix",
@@ -36,6 +36,9 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/cli": "^7.24.8",
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
     "@types/lodash": "^4.17.6",
     "babel-preset-reblend": "^7.24.39",
     "eslint": "^8.57.0",
@@ -47,6 +50,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-sort-class-members": "^1.20.0",
     "prettier": "^3.2.5",
+    "rollup": "^4.21.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^7.6.0"
   },

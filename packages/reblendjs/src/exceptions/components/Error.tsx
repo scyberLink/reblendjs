@@ -1,9 +1,11 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck Any
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { isCallable } from '../../common/utils'
-import { BaseComponent, ReblendRenderingException } from '../../internal/BaseComponent'
+import { BaseComponent } from '../../internal/BaseComponent'
+import { ReblendRenderingException } from '../../internal/BaseComponentType'
 import { Reblend } from '../../internal/Reblend'
-
 //@ReblendComponent
 function TryCatchError(
   this: BaseComponent,

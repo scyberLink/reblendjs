@@ -27,7 +27,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "prepublish": "npm run build"
+    "prepublish": "rm -rf dist; rm -rf lib; npm run build"
   },
   "dependencies": {
     "@types/prop-types": "^15.7.12",

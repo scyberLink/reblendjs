@@ -1,452 +1,110 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ReblendTyping, attributeName, shouldUseSetAttribute } from 'reblend-typing'
+import { capitalize, cloneDeep, isEqual } from 'lodash'
+import { ReblendTyping } from 'reblend-typing'
 import {
-  capitalize,
   isCallable,
   rand,
-  REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME,
   REBLEND_COMPONENT_ATTRIBUTE_NAME,
   REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME,
 } from '../common/utils'
 import { IAny } from '../interface/IAny'
 import { IPair } from '../interface/IPair'
+import {
+  applyProps,
+  connected,
+  createElementWithNamespace,
+  deepFlat,
+  detachChildren,
+  extendPrototype,
+  findNodeIn,
+  flattenVNodeChildren,
+  getInternalIdentifier,
+  injectNodeType,
+  isPrimitive,
+  isReactNode,
+  isReactToReblendVirtualNode,
+  isReblendPrimitive,
+  isReblendRenderedNode,
+  isReblendRenderedNodeStandard,
+  isReblendVirtualNode,
+  isStandardVirtualNode,
+  replaceOperation,
+  setProps,
+} from './BaseComponentHelper'
+import {
+  DomNodeChild,
+  Patch,
+  Primitive,
+  ReactNode,
+  ReactToReblendNode,
+  REBLEND_PRIMITIVE_ELEMENT_NAME,
+  ReblendNode,
+  ReblendNodeStandard,
+  ReblendPrimitive,
+  ReblendPrimitiveNode,
+  ReblendRenderingException,
+  VNode,
+  VNodeChild,
+  VNodeChildren,
+} from './BaseComponentType'
+import { PrimitiveElementPool } from './PrimitiveElementPool'
 import { Reblend } from './Reblend'
 import StyleUtil, { StyleUtilType } from './StyleUtil'
-import { type Root } from 'react-dom/client'
-import { PrimitiveElementPool } from './PrimitiveElementPool'
-import { cloneDeep, isEqual } from 'lodash'
-
-export type ChildWithProps = {
-  child: BaseComponent
-  propsKey: string[]
-}
-
-export const ERROR_EVENTNAME = 'reblend-render-error'
-export type ReblendRenderingException = Error & { component: BaseComponent }
-
-interface PropPatch {
-  type: 'REMOVE' | 'UPDATE'
-  node: BaseComponent
-  key: string
-  propValue?: string
-}
-
-export type Primitive = boolean | null | number | string | undefined
-export const REBLEND_PRIMITIVE_ELEMENT_NAME = 'ReblendPrimitive'
-
-type VNodeChild = Primitive | VNode
-type VNodeChildren = VNodeChild[]
-type DomNodeChild = Text | BaseComponent | ReblendPrimitive
-type DomNodeChildren = DomNodeChild[]
-
-interface ReactNode {
-  $$typeof: symbol
-  displayName: string
-  render: (props: any) => any
-}
-
-interface VNode {
-  [reblendVComponent: symbol]: boolean
-  props: IAny & { children: VNodeChildren }
-  displayName: string | typeof Reblend | ReactNode
-}
-
-interface Patch {
-  type: 'CREATE' | 'REMOVE' | 'REPLACE' | 'UPDATE' | 'TEXT'
-  newNode?: VNodeChild
-  oldNode?: DomNodeChild
-  parent?: BaseComponent
-  patches?: PropPatch[]
-}
-
-const ReblendNode = Symbol('Reblend.Node')
-const ReblendVNode = Symbol('Reblend.VNode')
-
-const ReactToReblendNode = Symbol('React.Reblend.Node')
-const ReactToReblendVNode = Symbol('React.Reblend.VNode')
-
-const ReblendNodeStandard = Symbol('Reblend.Node.Standard')
-const ReblendVNodeStandard = Symbol('Reblend.VNode.Standard')
+import { WorkerPool } from './WorkerPool'
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 interface BaseComponent extends HTMLElement {
   displayName: string
-  [reblendComponent: symbol]: boolean
+  internalIdentifier: string
+  'Reblend.Node.Primitive'?: boolean
+  'Reblend.Node'?: boolean
+  'Reblend.VNode'?: boolean
+  'React.Reblend.Node'?: boolean
+  'React.Reblend.VNode'?: boolean
+  'Reblend.Node.Standard'?: boolean
+  'Reblend.VNode.Standard'?: boolean
   //[stateKey: string]: any;
-}
-
-export interface ReblendPrimitive extends BaseComponent {
-  reblendPrimitiveData: any
-  setData(data: Primitive): this
-  getData(): Primitive
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 class BaseComponent {
   static ELEMENT_NAME = 'BaseComponent'
   static props: IAny
-  private static ReblendReactClass = class extends BaseComponent {
-    reactDomCreateRoot_root?: Root
 
-    constructor() {
-      super()
+  static mountOn = (elementId: string, app: typeof Reblend | ReblendTyping.FunctionComponent, props?: IAny) => {
+    const root = document.getElementById(elementId)
+    if (!root) {
+      throw new Error('Invalid root id')
     }
-
-    protected html(): VNode | VNodeChildren {
-      return this.props.children
-    }
-    async initRoot() {
-      if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
-        const reactDom = await import('react-dom/client')
-
-        this.reactDomCreateRoot_root = reactDom.createRoot(this)
-      }
-    }
-    private render() {
-      this.attach()
-    }
-
-    async attach() {
-      this.catchErrorFrom(async () => {
-        await this.initRoot()
-        //Lazy load react i.e it been bundled separately and only fetch when needed
-        const react = await import('react')
-        const childrenWrapper = await this.getChildrenWrapperForReact()
-
-        this.reactDomCreateRoot_root?.render(
-          react.createElement(this.ReactClass, {
-            ...this.props,
-            children: !this.props?.children?.length ? undefined : childrenWrapper,
-          }),
-        )
-      })
-    }
-
-    protected cleanUp(): void {
-      this.reactDomCreateRoot_root = null as any
+    const vNodes = BaseComponent.construct(app as any, props || {}, ...[])
+    const nodes = BaseComponent.createChildren.bind(this)(Array.isArray(vNodes) ? (vNodes as any) : [vNodes])
+    for (const node of nodes) {
+      root.append(node)
+      ;(node as BaseComponent).connectedCallback && (node as BaseComponent).connectedCallback()
     }
   }
-  static extendPrototype(target, prototype) {
-    const descriptors = Object.getOwnPropertyDescriptors(prototype)
 
-    for (const key in descriptors) {
-      if (Object.prototype.hasOwnProperty.call(descriptors, key)) {
-        // Skip the constructor
-        if (key === 'constructor') continue
-
-        const descriptor = descriptors[key]
-
-        // Avoid replacing existing functions on the target
-        if (!(key in target) || (typeof descriptor.value !== 'function' && !(key in target))) {
-          Object.defineProperty(target, key, descriptor)
-        }
-      }
-    }
-
-    // If there's a prototype chain, continue copying from the prototype chain
-    const proto = Object.getPrototypeOf(prototype)
-    if (proto && proto !== Object.prototype) {
-      BaseComponent.extendPrototype(target, proto)
-    }
-  }
-  static hasName(element: typeof BaseComponent) {
-    return element.ELEMENT_NAME && element.ELEMENT_NAME !== 'BaseComponent'
-  }
-  static fn(eventCallback: (e: Event) => any = () => {}) {
-    return (e) => eventCallback(e)
-  }
-  static setAttributesWithNamespace(element: HTMLElement | SVGElement, attributes: Record<string, string>) {
-    const svgAttributes = [
-      /* 'x',
-      'y', */
-      /* 'width',
-      'height', */
-      /* 'fill',
-      'stroke',
-      'viewBox',
-      'preserveAspectRatio',
-      'cx',
-      'cy',
-      'r',
-      'd',
-      'pathLength',
-      'transform',
-      'href', */
-    ]
-    const mathMLAttributes = ['displaystyle', 'scriptlevel', 'mathvariant', 'mathsize', 'lspace', 'rspace']
-
-    for (const [key, value] of Object.entries(attributes)) {
-      if (key.startsWith('xmlns:')) {
-        // Handle XML namespace attributes
-        element.setAttributeNS('http://www.w3.org/2000/xmlns/', key, value)
-      } else if (key === 'xmlns') {
-        // Handle default XML namespace attribute
-        element.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', value)
-      } else if (element instanceof SVGElement && svgAttributes.includes(key as never)) {
-        // Handle SVG attributes
-        element.setAttributeNS('http://www.w3.org/2000/svg', key, value)
-      } else if (element instanceof Element && mathMLAttributes.includes(key)) {
-        // Handle MathML attributes
-        element.setAttributeNS('http://www.w3.org/1998/Math/MathML', key, value)
-      } else if (key.startsWith('xlink:')) {
-        // Handle XLink attributes
-        element.setAttributeNS('http://www.w3.org/1999/xlink', key, value)
+  static createChildren = (children: VNodeChildren, containerArr: (BaseComponent | HTMLElement | Text)[] = []) => {
+    for (const child of children) {
+      if (isCallable(child) || child instanceof Reblend || child instanceof Node) {
+        containerArr.push(child as any)
+      } else if (Array.isArray(child)) {
+        BaseComponent.createChildren.bind(this)(child as any, containerArr)
+      } else if (
+        isPrimitive(child) ||
+        isReactToReblendVirtualNode(child) ||
+        isReblendVirtualNode(child) ||
+        isStandardVirtualNode(child)
+      ) {
+        const domChild = deepFlat(createElement.bind(this)(child as any))
+        domChild && containerArr.push(...domChild)
       } else {
-        // Handle standard HTML attributes
-        element.setAttribute(key, value)
+        throw new TypeError('Invalid child node  in children')
       }
     }
-  }
-  static createElementWithNamespace(tag: string) {
-    const svgTags = [
-      'svg',
-      'path',
-      'circle',
-      'rect',
-      'line',
-      'text',
-      'use',
-      'g',
-      'defs',
-      'clipPath',
-      'polygon',
-      'polyline',
-      'image',
-      'symbol',
-    ]
-    const mathMLTags = ['math', 'mi', 'mn', 'mo', 'ms', 'mtext']
-    const xmlTags = ['xml', 'xmlns']
-
-    if (svgTags.includes(tag)) {
-      return document.createElementNS('http://www.w3.org/2000/svg', tag)
-    } else if (mathMLTags.includes(tag)) {
-      return document.createElementNS('http://www.w3.org/1998/Math/MathML', tag)
-    } else if (xmlTags.includes(tag)) {
-      return document.createElementNS('http://www.w3.org/XML/1998/namespace', tag)
-    } else {
-      return document.createElement(tag) // Default to HTML namespace
-    }
-  }
-  static setProps(props: IAny, to: BaseComponent, init: boolean) {
-    if (props && to) {
-      to.props = { ...to.props, ...props }
-
-      if (BaseComponent.isReblendRenderedNodeStandard(to)) {
-        for (const propName in props) {
-          const _attributeName = attributeName(propName)
-          const propValue = props[propName]
-          if (propName == 'dangerouslySetInnerHTML') {
-            to.innerHTML = propValue?.__html
-          } else if (propName.startsWith('on')) {
-            to[_attributeName] = this.fn(propValue) as any
-          } else {
-            if (_attributeName === 'style') {
-              to.addStyle(propValue)
-            } else {
-              const _shouldUseSetAttribute = shouldUseSetAttribute(_attributeName)
-              try {
-                if (_shouldUseSetAttribute) {
-                  BaseComponent.setAttributesWithNamespace(to, {
-                    [_attributeName]: propValue,
-                  })
-                } else {
-                  to[_attributeName] = propValue
-                }
-              } catch (error: any) {
-                /* empty */
-              }
-            }
-          }
-        }
-      }
-      init && to.init && to.init()
-    }
-  }
-  static removeProps(props: IAny, to: BaseComponent) {
-    if (props && to) {
-      to.props = { ...to.props, ...props }
-
-      for (const propName in props) {
-        const _attributeName = attributeName(propName)
-        const _shouldUseSetAttribute = shouldUseSetAttribute(propName)
-
-        try {
-          if (_shouldUseSetAttribute) {
-            to.removeAttribute(_attributeName)
-            delete to?.props[_attributeName]
-          } else {
-            to[_attributeName] = props[propName]
-            delete to[_attributeName]
-          }
-        } catch (error: any) {
-          /* empty */
-        }
-      }
-    }
-  }
-  static isReblendRenderedNode(node: any): boolean {
-    return typeof node !== 'string' && node![ReblendNode]
-  }
-  static isReblendVirtualNode(node: any): boolean {
-    return typeof node !== 'string' && node![ReblendVNode]
-  }
-  static isReblendRenderedNodeStandard(node: any): boolean {
-    return typeof node !== 'string' && node![ReblendNodeStandard]
-  }
-  static isReblendVirtualNodeStandard(node: any): boolean {
-    return typeof node !== 'string' && node![ReblendVNodeStandard]
-  }
-  static isReactToReblendRenderedNode(node: any): boolean {
-    return typeof node !== 'string' && node![ReactToReblendNode]
-  }
-  static isReactToReblendVirtualNode(node: any): boolean {
-    return typeof node !== 'string' && node![ReactToReblendVNode]
-  }
-  static isStandardVirtualNode(node: any): boolean {
-    return typeof node !== 'string' && node![ReblendVNodeStandard]
-  }
-  static isReblendPrimitiveElement(element: any) {
-    return !BaseComponent.isPrimitive(element) && element.displayName === REBLEND_PRIMITIVE_ELEMENT_NAME
-  }
-  static newReblendPrimitive() {
-    const span: ReblendPrimitive = document.createElement('span') as ReblendPrimitive
-    span.displayName = REBLEND_PRIMITIVE_ELEMENT_NAME
-
-    span.setData = function (data: Primitive) {
-      this.reblendPrimitiveData = data
-      if (this.reblendPrimitiveData !== undefined && this.reblendPrimitiveData !== null) {
-        const textContent = `${this.reblendPrimitiveData}`
-        this.innerText = textContent
-      } else {
-        this.innerText = ''
-      }
-      return this
-    }
-
-    span.getData = function () {
-      return this.reblendPrimitiveData
-    }
-
-    span.disconnectedCallback = BaseComponent.prototype.disconnectedCallback
-    return span
-  }
-  static createElement(vNode: VNode | ReactNode | Primitive): BaseComponent[] {
-    if (Array.isArray(vNode)) {
-      return BaseComponent.createChildren(vNode) as any
-    }
-    if (BaseComponent.isPrimitive(vNode)) {
-      return [PrimitiveElementPool.get().setData(vNode as Primitive)]
-    }
-
-    const { displayName } = vNode as VNode
-    let clazz: typeof Reblend = displayName as any as typeof Reblend
-    const isTagStandard = typeof displayName === 'string'
-    const isReactNode = BaseComponent.isReactNode(displayName as any)
-
-    const children: unknown[] = []
-    children.push(...((isTagStandard && clazz.props ? clazz.props : {}).children || []))
-    children.push(...((vNode as VNode)?.props?.children || []))
-
-    const props = {
-      ...(isTagStandard && clazz.props ? clazz.props : {}),
-      ...(vNode as VNode).props,
-      children: BaseComponent.createChildren.bind(this)(children as any),
-    }
-
-    const tagName = isTagStandard
-      ? displayName
-      : (BaseComponent.isReactNode(clazz) ? (clazz as any as ReactNode).displayName : clazz?.ELEMENT_NAME) ||
-        `Anonymous`
-
-    isTagStandard || (clazz.ELEMENT_NAME = tagName)
-
-    if (isReactNode) {
-      clazz = BaseComponent.ReblendReactClass as any
-      clazz.ELEMENT_NAME = capitalize(`${(displayName as unknown as ReactNode).displayName}`)
-    }
-
-    const element: Reblend = BaseComponent.createElementWithNamespace(
-      isTagStandard ? (displayName as string) : 'div',
-    ) as Reblend
-
-    element[isReactNode ? ReactToReblendNode : isTagStandard ? ReblendNodeStandard : ReblendNode] = true
-    element.displayName = tagName
-    if (isReactNode) {
-      element.ReactClass = displayName
-    }
-    if (isTagStandard) {
-      BaseComponent.extendPrototype(element, Reblend.prototype)
-    } else {
-      BaseComponent.extendPrototype(element, clazz.prototype)
-    }
-    element._constructor()
-    if (!isTagStandard) {
-      if (isReactNode) {
-        element.setAttribute(REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME, process?.env?.REBLEND_DEVELEOPMENT ? tagName : '')
-      } else {
-        element.setAttribute(
-          REBLEND_COMPONENT_ATTRIBUTE_NAME,
-          //Don't forget to uncomment this
-          process?.env?.REBLEND_DEVELEOPMENT ? tagName : '',
-        )
-      }
-    }
-
-    if (isTagStandard && 'ref' in props) {
-      if (!props.ref) {
-        throw new Error('Invalid ref object')
-      }
-      const ref = props.ref
-      delete props.ref
-      const descriptor = Object.getOwnPropertyDescriptor(ref, 'current')
-
-      if (typeof ref === 'function') {
-        ref(element)
-      } else if (!descriptor || descriptor.configurable) {
-        Object.defineProperty(ref, 'current', {
-          value: element,
-          configurable: false,
-          writable: false,
-        })
-      }
-      element.ref = ref
-    }
-
-    BaseComponent.setProps(props, element, true)
-    element.attach && element.attach()
-    element.container = this as any as BaseComponent
-    return [element]
-  }
-  static isReactNode(displayName: IAny): boolean {
-    return (
-      displayName &&
-      typeof displayName !== 'string' &&
-      ('$$typeof' in displayName ||
-        (typeof displayName === 'function' && displayName.prototype && displayName.prototype.isReactComponent))
-    )
-  }
-  static deepFlat<T>(data: T[]): T[] {
-    return data.flat(Number.MAX_VALUE) as any
-  }
-  static isArray(obj: unknown) {
-    const arrayProperties = ['pop', 'push', 'length', 'shift', 'unshift', 'splice', 'slice', 'find', 'includes']
-    return typeof obj === 'object' && arrayProperties.every((property) => property in obj!)
-  }
-  static flattenVNodeChildren<T>(arr: (T | T[])[], containerArr: T[] = []): T[] {
-    if (!arr || arr.length < 1) {
-      return []
-    }
-
-    for (const item of arr) {
-      if (Array.isArray(item)) {
-        BaseComponent.flattenVNodeChildren(item as T[], containerArr)
-      } else {
-        containerArr.push(item as T)
-      }
-    }
-
     return containerArr
   }
+
   static construct(
     displayName: typeof Reblend | string | VNode[],
     props: IAny,
@@ -466,6 +124,8 @@ class BaseComponent {
     children.push(...((isTagStandard && clazz.props ? clazz.props : {}).children || []))
     children.push(...(props?.children || []))
 
+    const internalIdentifier = getInternalIdentifier(clazz)
+
     const mergedProp = {
       ...(isTagStandard && clazz.props ? clazz.props : {}),
       ...props,
@@ -473,76 +133,21 @@ class BaseComponent {
     }
 
     const velement = {
-      [isTagStandard ? ReblendVNodeStandard : BaseComponent.isReactNode(clazz) ? ReactToReblendVNode : ReblendVNode]:
-        true,
+      internalIdentifier,
       displayName: clazz,
       props: mergedProp,
+      toJSON: () => ({
+        ...velement,
+        displayName:
+          typeof displayName === 'string'
+            ? displayName
+            : (isReactNode(clazz) ? (clazz as any as ReactNode)?.displayName : clazz?.ELEMENT_NAME) || `Anonymous`,
+      }),
     }
-    return velement
-  }
-  static isPrimitive(data: any) {
-    const primitves = ['string', 'number', 'boolean', 'bigint', 'null', 'undefined', 'symbol']
-    const dataType = typeof data
-    return primitves.some((primitve) => primitve === (data === null ? 'null' : dataType))
-  }
-  protected static createChildren(children: VNodeChildren, containerArr: (BaseComponent | HTMLElement | Text)[] = []) {
-    for (const child of children) {
-      if (isCallable(child) || child instanceof Reblend || child instanceof Node) {
-        containerArr.push(child as any)
-      } else if (Array.isArray(child)) {
-        BaseComponent.createChildren.bind(this)(child as any, containerArr)
-      } else if (
-        BaseComponent.isPrimitive(child) ||
-        BaseComponent.isReactToReblendVirtualNode(child) ||
-        BaseComponent.isReblendVirtualNode(child) ||
-        BaseComponent.isStandardVirtualNode(child)
-      ) {
-        const domChild = BaseComponent.deepFlat(BaseComponent.createElement.bind(this)(child as any))
-        domChild && containerArr.push(...domChild)
-      } else {
-        throw new TypeError('Invalid child node  in children')
-      }
-    }
-    return containerArr
-  }
-  static mountOn(elementId: string, app: typeof Reblend | ReblendTyping.FunctionComponent, props?: IAny) {
-    const root = document.getElementById(elementId)
-    if (!root) {
-      throw new Error('Invalid root id')
-    }
-    const vNodes = BaseComponent.construct(app as any, props || {}, ...[])
-    const nodes = BaseComponent.createChildren.bind(this)(Array.isArray(vNodes) ? (vNodes as any) : [vNodes])
-    for (const node of nodes) {
-      root.append(node)
-      ;(node as BaseComponent).connectedCallback && (node as BaseComponent).connectedCallback()
-    }
-  }
-  private static detach(node: BaseComponent | HTMLElement) {
-    if (BaseComponent.isPrimitive(node)) return
-    if ('disconnectedCallback' in node) {
-      ;(node as any as BaseComponent).disconnectedCallback()
-    } else {
-      node.parentNode?.removeChild(node)
-    }
-  }
-  private static detachChildren(node: BaseComponent) {
-    if (BaseComponent.isPrimitive(node)) return
-    if (node.props) {
-      for (const child of node.props?.children || []) {
-        this.detach(child)
-      }
-      node.props.children = []
-    }
-    for (const child of node.childNodes || []) {
-      this.detach(child as any)
-    }
-  }
 
-  static connected<T extends BaseComponent | HTMLElement>(node: T | undefined) {
-    if (!node) return
-    if ((node as BaseComponent).connectedCallback) {
-      ;(node as BaseComponent).connectedCallback()
-    }
+    injectNodeType(clazz, velement)
+
+    return velement
   }
 
   dataIdQuerySelector!: string
@@ -640,8 +245,8 @@ class BaseComponent {
   }
   async init() {}
   componentDidMount() {}
-  private setProps(props: IAny, init: boolean) {
-    BaseComponent.setProps(props, this, init)
+  setProps(props: IAny, init: boolean) {
+    setProps(props, this, init)
   }
   get state(): IAny {
     return this._state || {}
@@ -658,299 +263,11 @@ class BaseComponent {
   setState(value: ReblendTyping.StateFunctionValue<IAny>) {
     this.state = value
   }
-  isTextNode(node: Node): node is Text {
-    return node?.nodeType === Node.TEXT_NODE
-  }
-  isEmpty(data: any) {
-    return data === undefined || data === null
-  }
-  diffCreateOrRemove(parent: BaseComponent, oldNode: DomNodeChild, newNode: VNodeChild) {
-    const patches: Patch[] = []
-    if (!oldNode) {
-      patches.push({ type: 'CREATE', parent, newNode })
-    } else if (!newNode) {
-      patches.push({ type: 'REMOVE', parent, oldNode })
-    }
 
-    return patches
-  }
-  async getChildrenWrapperForReact() {
-    const children: BaseComponent[] | null = this.props?.children
-    const react = await import('react')
-    return react.createElement(
-      class extends react.Component {
-        containerRef: React.RefObject<HTMLDivElement>
-        constructor(props) {
-          super(props)
-          this.containerRef = react.createRef<HTMLDivElement>()
-        }
-
-        componentDidMount(): void {
-          if (this.containerRef) {
-            children?.forEach((child) => {
-              this.containerRef.current?.appendChild(child)
-              child.connectedCallback && child.connectedCallback()
-            })
-          }
-        }
-
-        render() {
-          return react.createElement(
-            'div',
-            {
-              [REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME]: '',
-              ref: this.containerRef,
-            },
-            null,
-          )
-        }
-      },
-    )
-  }
-  diff(parent: BaseComponent, oldNode: DomNodeChild, newNode: VNodeChild): Patch[] {
-    const patches: Patch[] = []
-    if (isCallable(oldNode) || isCallable(newNode)) {
-      return []
-    }
-
-    if (BaseComponent.isPrimitive(oldNode) && BaseComponent.isPrimitive(newNode)) {
-      patches.push({ type: 'CREATE', parent, newNode })
-    } else if (BaseComponent.isPrimitive(oldNode) && !BaseComponent.isPrimitive(newNode)) {
-      patches.push({ type: 'CREATE', parent, newNode })
-    } else if (BaseComponent.isReblendPrimitiveElement(oldNode) && BaseComponent.isPrimitive(newNode)) {
-      if ((<ReblendPrimitive>oldNode).getData() !== newNode) {
-        ;(<ReblendPrimitive>oldNode).setData(newNode as Primitive)
-      }
-    } else if (BaseComponent.isReblendPrimitiveElement(oldNode) && !BaseComponent.isPrimitive(newNode)) {
-      patches.push({ type: 'REPLACE', parent, newNode, oldNode })
-    } else if (this.isTextNode(oldNode) && BaseComponent.isPrimitive(newNode)) {
-      if (oldNode.textContent !== newNode) {
-        patches.push({ type: 'TEXT', newNode, oldNode })
-      }
-    } else if (this.isTextNode(oldNode) && !BaseComponent.isPrimitive(newNode)) {
-      patches.push({ type: 'REPLACE', parent, newNode, oldNode })
-    } else if (!BaseComponent.isReblendPrimitiveElement(oldNode) && BaseComponent.isPrimitive(newNode)) {
-      patches.push({ type: 'REPLACE', parent, newNode, oldNode })
-    } else if (this.isEmpty(oldNode) && !this.isEmpty(newNode)) {
-      patches.push({ type: 'CREATE', parent, newNode })
-    } else if (!this.isEmpty(oldNode) && this.isEmpty(newNode)) {
-      patches.push({ type: 'REMOVE', parent, oldNode })
-    } else if ('displayName' in oldNode && 'displayName' in (newNode as any)) {
-      const oldNodeTag = ((oldNode as BaseComponent).displayName as string).toLowerCase()
-
-      const newNodeTag = (
-        (BaseComponent.isPrimitive((newNode as VNode).displayName)
-          ? (newNode as VNode).displayName
-          : ((newNode as VNode).displayName as typeof Reblend).ELEMENT_NAME) as string
-      ).toLowerCase()
-
-      if (oldNodeTag !== newNodeTag) {
-        patches.push({ type: 'REPLACE', parent, newNode, oldNode })
-      } else {
-        const propsDiff = this.diffProps(newNode as VNode, oldNode as BaseComponent)
-        if (propsDiff && propsDiff.length > 0) {
-          patches.push({
-            type: 'UPDATE',
-            patches: propsDiff,
-          })
-        }
-        patches.push(...this.diffChildren(oldNode as BaseComponent, oldNode as BaseComponent, newNode as VNode))
-      }
-    }
-
-    return patches
-  }
-  deepCompare(firstObject, secondObject) {
-    if (typeof firstObject !== 'function' && secondObject !== 'function') {
-      return isEqual(firstObject, secondObject)
-    }
-
-    // 1. Check if they are the same reference
-    if (firstObject === secondObject) return true
-
-    // 2. Compare function names (useful for named functions)
-    if (firstObject.name !== secondObject.name) return false
-
-    // 3. Compare the source code using toString()
-    if (firstObject.toString() !== secondObject.toString()) return false
-
-    // 4. Compare prototypes
-    if (!isEqual(Object.getPrototypeOf(firstObject), Object.getPrototypeOf(secondObject))) {
-      return false
-    }
-
-    // 5. Compare the properties of the functions (if they have custom properties)
-    const func1Props = Object.getOwnPropertyNames(firstObject)
-    const func2Props = Object.getOwnPropertyNames(secondObject)
-
-    if (!isEqual(func1Props, func2Props)) {
-      return false
-    }
-
-    for (const prop of func1Props) {
-      if (!isEqual(firstObject[prop], secondObject[prop])) {
-        return false
-      }
-    }
-
-    return true
-  }
-
-  diffProps(newNode: VNode, oldNode: BaseComponent) {
-    const patches: PropPatch[] = []
-    const oldProps: IAny = oldNode?.props || []
-    const newProps: IAny = newNode?.props || []
-    for (const key in newProps) {
-      if (key !== 'children') {
-        let oldProp = oldProps[key]
-        let newProp = newProps[key]
-        if (!this.deepCompare(oldProp, newProp)) {
-          oldProp = null
-          newProp = null
-          patches.push({
-            type: 'UPDATE',
-            node: oldNode,
-            key,
-            propValue: newProps[key],
-          })
-        }
-      }
-    }
-
-    for (const key in oldProps) {
-      if (key !== 'children' && !(key in newProps)) {
-        patches.push({
-          type: 'REMOVE',
-          node: oldNode,
-          key,
-          propValue: undefined,
-        })
-      }
-    }
-
-    return patches
-  }
-  diffChildren(parent: BaseComponent, oldNode: BaseComponent, newNode: VNode) {
-    const oldChildren: DomNodeChildren = oldNode?.props?.children || []
-    const newChildren: VNodeChildren = BaseComponent.deepFlat(newNode?.props?.children || [])
-    const patches: Patch[] = []
-    const maxLength = Math.max(oldChildren.length, newChildren.length)
-
-    for (let i = 0; i < maxLength; i++) {
-      const oldChild = oldChildren[i]
-      const newChild = newChildren[i]
-      if (isCallable(oldChild) || isCallable(newChild)) {
-        continue
-      }
-      if (oldChild === undefined || newChild === undefined) {
-        patches.push(...this.diffCreateOrRemove(parent, oldChild, newChild))
-      } else {
-        patches.push(...this.diff(parent, oldChild, newChild))
-      }
-    }
-
-    return patches
-  }
-  applyPatches(patches: Patch[]) {
-    patches?.forEach(({ type, newNode, oldNode, parent, patches }) => {
-      switch (type) {
-        case 'CREATE':
-          {
-            const element = BaseComponent.deepFlat(BaseComponent.createElement.bind(this)(newNode as VNode))
-            element && parent?.appendChildren(...element)
-            parent?.props?.children?.push(...element)
-          }
-          break
-        case 'REMOVE':
-          {
-            this.replaceOperation(oldNode as any, () => {
-              const oldNodeIndex = parent?.props?.children?.indexOf(oldNode)
-              if (oldNodeIndex > -1) {
-                const replacer = PrimitiveElementPool.get()
-                parent!.props.children[oldNodeIndex] = replacer
-                oldNode?.parentNode?.replaceChild(replacer, oldNode)
-              }
-            })
-          }
-          break
-        case 'REPLACE':
-          {
-            if (oldNode) {
-              this.replaceOperation(oldNode as any, () => {
-                const newNodeElement = BaseComponent.deepFlat(BaseComponent.createElement.bind(this)(newNode as VNode))
-                let firstNewNode = newNodeElement.shift()
-                oldNode!.parentNode?.replaceChild(<BaseComponent>firstNewNode, oldNode!)
-                BaseComponent.connected(firstNewNode)
-                const oldNodeIndex = parent?.props?.children?.indexOf(oldNode)
-                if (oldNodeIndex > -1) {
-                  // Spread the remaining elements after the oldNodeIndex
-                  parent!.props.children.splice(oldNodeIndex + 1, 0, ...newNodeElement)
-                  parent!.props.children[oldNodeIndex] = firstNewNode
-                }
-                //Append the remaining node after the firstNewNode
-                for (const node of newNodeElement) {
-                  firstNewNode?.after(node)
-                  BaseComponent.connected(node)
-                  firstNewNode = node
-                }
-              })
-            }
-          }
-          break
-        case 'TEXT':
-          {
-            oldNode && (oldNode.textContent = newNode as string)
-          }
-          break
-        case 'UPDATE':
-          {
-            this.applyProps(patches)
-          }
-          break
-      }
-      {
-        ;(type = null as any),
-          (newNode = null as any),
-          (oldNode = null as any),
-          (parent = null as any),
-          (patches = null as any)
-      }
-    })
-  }
-
-  replaceOperation(oldNode: BaseComponent, operation: () => void) {
-    //Release some memory before doing the replace operation
-    BaseComponent.detachChildren(oldNode)
-    operation()
-    BaseComponent.detach(oldNode)
-  }
-  applyProps(patches?: PropPatch[]) {
-    //This helps reduce onStateChange call for updates of the same node
-    let nodes = new Set<BaseComponent>()
-    patches?.forEach(({ type, node, key, propValue }) => {
-      if (type === 'UPDATE') {
-        BaseComponent.setProps({ [key]: propValue }, node, false)
-        nodes.add(node)
-      } else if (type === 'REMOVE') {
-        BaseComponent.removeProps({ [key]: undefined }, node)
-        nodes.add(node)
-      }
-    })
-    nodes.forEach((node) => {
-      if (!BaseComponent.isReblendRenderedNodeStandard(node)) {
-        if (BaseComponent.isReactToReblendRenderedNode(node)) {
-          ;(node as any)?.render()
-        } else {
-          node.onStateChange()
-        }
-      }
-    })
-    nodes = null as any
-  }
-  protected async attach() {
+  async attach() {
     this.catchErrorFrom(async () => {
       let vNodes = this.html()
-      /* if (BaseComponent.isReactToReblendRenderedNode(this)) {
+      /* if (isReactToReblendRenderedNode(this)) {
         return;
       } */
       if (!vNodes) return
@@ -959,7 +276,7 @@ class BaseComponent {
         return
       }
       if (isVNodesArray) {
-        vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren)
+        vNodes = flattenVNodeChildren(vNodes as VNodeChildren)
       }
       if (isVNodesArray) {
         if (vNodes[0] && vNodes[0].parentNode) {
@@ -978,7 +295,7 @@ class BaseComponent {
           vNodes = null as any
           return
         }
-        vNodes = BaseComponent.deepFlat(BaseComponent.createElement.bind(this)(vNodes as VNode) as any)
+        vNodes = deepFlat(createElement.bind(this)(vNodes as VNode) as any)
         if ((vNodes as VNodeChildren)?.length > 0) {
           this.innerHTML = ''
           this.appendChildren(...(vNodes as any))
@@ -986,19 +303,22 @@ class BaseComponent {
       }
     })
   }
-  private applyEffects() {
+
+  applyEffects() {
     this.effectsFn?.forEach((effectFn) => effectFn())
   }
-  private handleError(error: Error) {
+
+  handleError(error: Error) {
     if (this.renderingErrorHandler) {
       this.renderingErrorHandler((((error as any).component = this), error) as ReblendRenderingException)
-    } else if (this.container && this.container[ReblendNode]) {
+    } else if (this.container && isReblendRenderedNode(this.container)) {
       this.container.handleError(error)
     } else {
       throw error
     }
   }
-  private catchErrorFrom(fn: () => Promise<void>) {
+
+  catchErrorFrom(fn: () => Promise<void>) {
     try {
       const result = fn.bind(this)()
       // Check if the result is a promise
@@ -1009,14 +329,14 @@ class BaseComponent {
       this.handleError.bind(this)(error as Error)
     }
   }
+
   async onStateChange() {
     this.catchErrorFrom.bind(this)(async () => {
       this.applyEffects()
       let vNodes = this.html()
-      const patches: Patch[] = []
       const isVNodesArray = Array.isArray(vNodes)
       if (isVNodesArray) {
-        vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren)
+        vNodes = flattenVNodeChildren(vNodes as VNodeChildren)
       }
       if (isVNodesArray) {
         if (vNodes[0] && vNodes[0].parentNode) {
@@ -1029,30 +349,39 @@ class BaseComponent {
           return
         }
       }
-      const maxLength = Math.max(
-        this.childNodes.length,
-        isVNodesArray ? (vNodes as VNodeChildren).length : vNodes ? 1 : 0,
-      )
-      for (let i = 0; i < maxLength; i++) {
-        const newVNode: VNodeChild = isVNodesArray ? vNodes[i] : vNodes
-        const currentVNode = this.childNodes[i]
-        patches.push(...this.diff(this, currentVNode as any, newVNode))
-      }
-      vNodes = null as any
-      this.applyPatches(patches)
+
+      const parseResult = ((result) => {
+        if (result && result.length > 0) {
+          applyPatches(result, vNodes)
+          vNodes = null as any
+        }
+      }).bind(this)
+
+      WorkerPool.executeTask({
+        oldVnodes: this.childNodes as unknown as DomNodeChild[],
+        newVNodes: isVNodesArray ? (vNodes as VNodeChild[]) : [vNodes as VNodeChild],
+        parentId: this.internalIdentifier,
+      })
+        .then(parseResult)
+        .catch((error) => {
+          throw error
+        })
     })
   }
+
   protected html(): VNode | VNodeChildren {
     return null as any
   }
-  private mountEffects() {
+
+  mountEffects() {
     this.onMountEffects?.forEach((fn) => {
       const disconnectEffect = fn()
       disconnectEffect && this.disconnectEffects?.push(disconnectEffect)
     })
   }
+
   disconnectedCallback() {
-    if (BaseComponent.isReblendPrimitiveElement(this)) {
+    if (isReblendPrimitive(this)) {
       this.parentElement?.removeChild(this)
       ;(<any>this).setData(null)
       PrimitiveElementPool.add(this as any)
@@ -1068,8 +397,11 @@ class BaseComponent {
       }
     }
     this.disconnectEffects?.forEach((fn) => fn())
-    BaseComponent.detachChildren(this)
+    requestIdleCallback(() => {
+      detachChildren(this)
+    })
     this.parentElement?.removeChild(this)
+    deleteElement(this)
     this.props = null as any
     this._state = null as any
     this.effectsFn = null as any
@@ -1080,8 +412,10 @@ class BaseComponent {
     this.container = null as any
     this.ref = null as any
   }
-  protected cleanUp() {}
-  protected componentWillUnmount() {}
+
+  cleanUp() {}
+  componentWillUnmount() {}
+
   useState<T>(
     initial: ReblendTyping.StateFunctionValue<T>,
     ...dependencyStringAndOrStateKey: string[]
@@ -1106,6 +440,7 @@ class BaseComponent {
 
     return [initial as T, variableSetter]
   }
+
   useEffect(
     fn: ReblendTyping.StateEffectiveFunction,
     dependencies: any[],
@@ -1125,6 +460,7 @@ class BaseComponent {
     this.effectsFn?.push(internalFn)
     this.onMountEffects?.push(fn)
   }
+
   useReducer<T, I>(
     reducer: ReblendTyping.StateReducerFunction<T, I>,
     initial: ReblendTyping.StateFunctionValue<T>,
@@ -1151,6 +487,7 @@ class BaseComponent {
 
     return [this[stateID], fn]
   }
+
   useMemo<T>(
     fn: ReblendTyping.StateEffectiveMemoFunction<T>,
     dependencies?: any[],
@@ -1178,6 +515,7 @@ class BaseComponent {
     this.effectsFn?.push(internalFn)
     return this[stateID]
   }
+
   /**
    * Keeps variable out of state management
    *
@@ -1189,10 +527,24 @@ class BaseComponent {
     const ref: ReblendTyping.Ref<T> = { current: initial }
     return ref
   }
+
   useCallback(fn: () => any) {
     return fn.bind(this)
   }
 
+  toJSON(): any {
+    return {
+      [(this[ReblendNode] && ReblendNode) ||
+      (this[ReblendNodeStandard] && ReblendNodeStandard) ||
+      (this[ReactToReblendNode] && ReactToReblendNode) ||
+      'undefined_node_type']: true,
+      displayName: isPrimitive(this.displayName)
+        ? this.displayName
+        : (this.displayName as any).ELEMENT_NAME || 'Anonymous',
+      props: this.props,
+      internalIdentifier: this.internalIdentifier,
+    }
+  }
   /**
    * For compatibility incase standard element inherits this prototype; we can manually exec this constructor
    */
@@ -1201,7 +553,7 @@ class BaseComponent {
     this.onMountEffects = []
     this.disconnectEffects = []
     this.styleUtil = StyleUtil
-    BaseComponent.isReblendRenderedNodeStandard(this) && this.setDataID()
+    isReblendRenderedNodeStandard(this) && this.setDataID()
   }
 
   _appendChild<T extends Node>(node: T): T {
@@ -1210,5 +562,254 @@ class BaseComponent {
     return appended
   }
 }
+
+//@ts-expect-error
+import { Root } from 'react-dom/client'
+import { getChildrenWrapperForReact } from './BaseComponentHelper'
+import { deleteElement, getElement, setElement } from './ElementDictionary'
+
+class ReblendReactClass extends BaseComponent {
+  reactDomCreateRoot_root?: Root
+
+  constructor() {
+    super()
+  }
+
+  protected html(): VNode | VNodeChildren {
+    return this.props.children
+  }
+  async initRoot() {
+    if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
+      //@ts-expect-error
+      const reactDom = await import('react-dom/client')
+
+      this.reactDomCreateRoot_root = reactDom.createRoot(this)
+    }
+  }
+  render() {
+    this.attach()
+  }
+
+  async attach() {
+    this.catchErrorFrom(async () => {
+      await this.initRoot()
+      //Lazy load react i.e it been bundled separately and only fetch when needed
+      const react = await import('react')
+      const childrenWrapper = await getChildrenWrapperForReact(this.props?.children)
+
+      this.reactDomCreateRoot_root?.render(
+        react.createElement(this.ReactClass, {
+          ...this.props,
+          children: !this.props?.children?.length ? undefined : childrenWrapper,
+        }),
+      )
+    })
+  }
+
+  cleanUp(): void {
+    this.reactDomCreateRoot_root = null as unknown
+  }
+}
+
+export const newReblendPrimitive = () => {
+  const span: ReblendPrimitive & BaseComponent = document.createElement('span') as any
+  span.displayName = REBLEND_PRIMITIVE_ELEMENT_NAME
+  span.internalIdentifier = getInternalIdentifier(REBLEND_PRIMITIVE_ELEMENT_NAME)
+
+  span.setData = function (data: Primitive) {
+    this.reblendPrimitiveData = data
+    if (this.reblendPrimitiveData !== undefined && this.reblendPrimitiveData !== null) {
+      const textContent = `${this.reblendPrimitiveData}`
+      this.innerText = textContent
+    } else {
+      this.innerText = ''
+    }
+    return this
+  }
+
+  span.getData = function () {
+    return this.reblendPrimitiveData
+  }
+
+  span.disconnectedCallback = BaseComponent.prototype.disconnectedCallback
+  span.cleanUp = BaseComponent.prototype.cleanUp
+  span.componentWillUnmount = BaseComponent.prototype.componentWillUnmount
+
+  span.toJSON = function () {
+    return {
+      displayName: REBLEND_PRIMITIVE_ELEMENT_NAME,
+      internalIdentifier: this.internalIdentifier,
+      [ReblendPrimitiveNode]: true,
+      reblendPrimitiveData: this.reblendPrimitiveData,
+    }
+  }
+  return span
+}
+
+export const createElement = (vNode: VNode | ReactNode | Primitive): BaseComponent[] => {
+  if (Array.isArray(vNode)) {
+    return BaseComponent.createChildren(vNode) as any
+  }
+  if (isPrimitive(vNode)) {
+    const ele = PrimitiveElementPool.get().setData(vNode as Primitive)
+    setElement(ele)
+    return [ele]
+  }
+
+  const { displayName } = vNode as VNode
+  let clazz: typeof Reblend = displayName as any as typeof Reblend
+  const isTagStandard = typeof displayName === 'string'
+  const _isReactNode = isReactNode(displayName as any)
+
+  const children: unknown[] = []
+  children.push(...((isTagStandard && clazz.props ? clazz.props : {}).children || []))
+  children.push(...((vNode as VNode)?.props?.children || []))
+
+  const props = {
+    ...(isTagStandard && clazz.props ? clazz.props : {}),
+    ...(vNode as VNode).props,
+    children: BaseComponent.createChildren.bind(this)(children as any),
+  }
+
+  const tagName = isTagStandard
+    ? displayName
+    : (isReactNode(clazz) ? (clazz as any as ReactNode)?.displayName : clazz?.ELEMENT_NAME) || `Anonymous`
+
+  isTagStandard || (clazz.ELEMENT_NAME = tagName)
+
+  if (_isReactNode) {
+    clazz = ReblendReactClass as any
+    clazz.ELEMENT_NAME = capitalize(`${(displayName as unknown as ReactNode).displayName}`)
+  }
+
+  const element: Reblend = createElementWithNamespace(isTagStandard ? (displayName as string) : 'div') as Reblend
+
+  element[_isReactNode ? ReactToReblendNode : isTagStandard ? ReblendNodeStandard : ReblendNode] = true
+  element.displayName = tagName
+  if (_isReactNode) {
+    element.ReactClass = displayName
+  }
+  if (isTagStandard) {
+    extendPrototype(element, Reblend.prototype)
+  } else {
+    extendPrototype(element, clazz.prototype)
+  }
+  element._constructor()
+  if (!isTagStandard) {
+    if (_isReactNode) {
+      element.setAttribute(REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME, process?.env?.REBLEND_DEVELEOPMENT ? tagName : '')
+    } else {
+      element.setAttribute(
+        REBLEND_COMPONENT_ATTRIBUTE_NAME,
+        //Don't forget to uncomment this
+        process?.env?.REBLEND_DEVELEOPMENT ? tagName : '',
+      )
+    }
+  }
+
+  if (isTagStandard && 'ref' in props) {
+    if (!props.ref) {
+      throw new Error('Invalid ref object')
+    }
+    const ref = props.ref
+    delete props.ref
+    const descriptor = Object.getOwnPropertyDescriptor(ref, 'current')
+
+    if (typeof ref === 'function') {
+      ref(element)
+    } else if (!descriptor || descriptor.configurable) {
+      Object.defineProperty(ref, 'current', {
+        value: element,
+        configurable: false,
+        writable: false,
+      })
+    }
+    element.ref = ref
+  }
+
+  setProps(props, element, true)
+  element.attach && element.attach()
+  element.container = this as any as BaseComponent
+  element.internalIdentifier = (vNode as VNode)?.internalIdentifier
+  setElement(element)
+  return [element]
+}
+
+export const applyPatches = (patches: Patch[], vNodes: VNode | VNodeChildren) => {
+  patches?.forEach(({ type, newNodeId: newNodeId, primitive, oldNodeId: oldNodeId, parentId, patches }) => {
+    let parent = getElement(parentId as string)
+    let oldNode = getElement(oldNodeId as string)
+    let newNode = primitive ? primitive.newData : newNodeId && findNodeIn(vNodes, newNodeId)
+
+    switch (type) {
+      case 'CREATE':
+        {
+          const element = deepFlat(createElement.bind(this)(newNode as VNode))
+          element && parent?.appendChildren(...element)
+          parent?.props?.children?.push(...element)
+        }
+        break
+      case 'REMOVE':
+        {
+          replaceOperation(oldNode, () => {
+            const oldNodeIndex = parent?.props?.children?.indexOf(oldNodeId)
+            if (oldNodeIndex > -1) {
+              const replacer = PrimitiveElementPool.get()
+              parent!.props.children[oldNodeIndex] = replacer
+              oldNode?.parentNode?.replaceChild(replacer, oldNode)
+            }
+          })
+        }
+        break
+      case 'REPLACE':
+        {
+          if (oldNode) {
+            replaceOperation(oldNode, () => {
+              const newNodeElement = deepFlat(createElement.bind(this)(newNode as VNode))
+              let firstNewNode = newNodeElement.shift()
+              oldNode!.parentNode?.replaceChild(<BaseComponent>firstNewNode, oldNode!)
+              connected(firstNewNode)
+              const oldNodeIndex = parent?.props?.children?.indexOf(oldNodeId)
+              if (oldNodeIndex > -1) {
+                // Spread the remaining elements after the oldNodeIndex
+                parent!.props.children.splice(oldNodeIndex + 1, 0, ...newNodeElement)
+                parent!.props.children[oldNodeIndex] = firstNewNode
+              }
+              //Append the remaining node after the firstNewNode
+              for (const node of newNodeElement) {
+                firstNewNode?.after(node)
+                connected(node)
+                firstNewNode = node
+              }
+            })
+          }
+        }
+        break
+      case 'TEXT':
+        {
+          const element = getElement(oldNodeId as string)
+          element && (element.textContent = primitive?.newData as string)
+        }
+        break
+      case 'UPDATE':
+        {
+          applyProps(patches)
+        }
+        break
+    }
+    {
+      type = null as any
+      newNodeId = null as any
+      oldNodeId = null as any
+      parent = null as any
+      patches = null as any
+      parent = null as any
+      oldNode = null as any
+      newNode = null as any
+    }
+  })
+}
+
+export { ReblendReactClass }
 
 export { BaseComponent }

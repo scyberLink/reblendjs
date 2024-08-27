@@ -4,6 +4,7 @@ import ReblendRouting from 'reblend-routing';
 import { Query } from './query';
 import { Params } from './params';
 import { Location } from './location';
+import { Hash } from './hash';
 
 type RoutePath = { [path: string]: Reblend };
 
@@ -16,6 +17,7 @@ const createRoute = (route: RoutePath) => {
     previousState.post(
       key,
       res => (
+        Hash.update(res.urlObject.hash),
         Query.update(res.query),
         Params.update(res.params),
         Location.update(res.urlObject),

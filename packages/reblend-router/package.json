@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build": "tsc && babel dist --out-dir lib",
-    "prepublish": "npm run build"
+    "prepublish": "rm -rf dist; rm -rf lib; npm run build"
   },
   "browserslist": {
     "production": [

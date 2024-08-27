@@ -11,7 +11,7 @@
     "start": "cd packages/reblend-template-test && npm start",
     "alex": "alex .",
     "eslint": "eslint .",
-    "prettier": "prettier .",
+    "prettier": "prettier ./src",
     "format": "npm run prettier -- --write"
   },
   "devDependencies": {
