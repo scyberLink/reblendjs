@@ -54,7 +54,7 @@
     "lodash": "^4.17.21",
     "reblend-typing": "latest"
   },
-  "optionalDependencies": {
+  "optionalPeerDependencies": {
     "react": ">=18.3.1",
     "react-dom": ">=18.3.1"
   },

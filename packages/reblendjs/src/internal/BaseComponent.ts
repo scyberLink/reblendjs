@@ -12,6 +12,8 @@ import { IAny } from '../interface/IAny'
 import { IPair } from '../interface/IPair'
 import { Reblend } from './Reblend'
 import StyleUtil, { StyleUtilType } from './StyleUtil'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
 import { type Root } from 'react-dom/client'
 import { PrimitiveElementPool } from './PrimitiveElementPool'
 import { cloneDeep, isEqual } from 'lodash'
@@ -97,6 +99,8 @@ class BaseComponent {
     }
     async initRoot() {
       if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
         const reactDom = await import('react-dom/client')
 
         this.reactDomCreateRoot_root = reactDom.createRoot(this)
@@ -413,7 +417,6 @@ class BaseComponent {
     }
 
     BaseComponent.setProps(props, element, true)
-    element.attach && element.attach()
     element.container = this as any as BaseComponent
     return [element]
   }
@@ -422,7 +425,8 @@ class BaseComponent {
       displayName &&
       typeof displayName !== 'string' &&
       ('$$typeof' in displayName ||
-        (typeof displayName === 'function' && displayName.prototype && displayName.prototype.isReactComponent))
+        (displayName.prototype && displayName.prototype.isReactComponent) ||
+        (isCallable(displayName) && !(displayName instanceof Reblend)))
     )
   }
   static deepFlat<T>(data: T[]): T[] {
@@ -515,6 +519,7 @@ class BaseComponent {
     for (const node of nodes) {
       root.append(node)
       ;(node as BaseComponent).connectedCallback && (node as BaseComponent).connectedCallback()
+      ;(node as BaseComponent).attach && (node as BaseComponent).attach()
     }
   }
   private static detach(node: BaseComponent | HTMLElement) {
@@ -543,6 +548,9 @@ class BaseComponent {
     if ((node as BaseComponent).connectedCallback) {
       ;(node as BaseComponent).connectedCallback()
     }
+    if ((node as BaseComponent).attach) {
+      ;(node as BaseComponent).attach()
+    }
   }
 
   dataIdQuerySelector!: string
@@ -565,6 +573,7 @@ class BaseComponent {
   private effectsFn?: ReblendTyping.StateEffectiveFunction[]
   private disconnectEffects?: ReblendTyping.StateEffectiveFunction[]
   stateIdNotIncluded = new Error('State Identifier/Key not specified')
+  stateEffectRunning = false
   private _dataId!: string
 
   private _state!: IAny
@@ -925,27 +934,29 @@ class BaseComponent {
     BaseComponent.detach(oldNode)
   }
   applyProps(patches?: PropPatch[]) {
-    //This helps reduce onStateChange call for updates of the same node
-    let nodes = new Set<BaseComponent>()
-    patches?.forEach(({ type, node, key, propValue }) => {
-      if (type === 'UPDATE') {
-        BaseComponent.setProps({ [key]: propValue }, node, false)
-        nodes.add(node)
-      } else if (type === 'REMOVE') {
-        BaseComponent.removeProps({ [key]: undefined }, node)
-        nodes.add(node)
-      }
-    })
-    nodes.forEach((node) => {
-      if (!BaseComponent.isReblendRenderedNodeStandard(node)) {
-        if (BaseComponent.isReactToReblendRenderedNode(node)) {
-          ;(node as any)?.render()
-        } else {
-          node.onStateChange()
+    requestAnimationFrame(() => {
+      //This helps reduce onStateChange call for updates of the same node
+      let nodes = new Set<BaseComponent>()
+      patches?.forEach(({ type, node, key, propValue }) => {
+        if (type === 'UPDATE') {
+          BaseComponent.setProps({ [key]: propValue }, node, false)
+          nodes.add(node)
+        } else if (type === 'REMOVE') {
+          BaseComponent.removeProps({ [key]: undefined }, node)
+          nodes.add(node)
         }
-      }
+      })
+      nodes.forEach((node) => {
+        if (!BaseComponent.isReblendRenderedNodeStandard(node)) {
+          if (BaseComponent.isReactToReblendRenderedNode(node)) {
+            ;(node as any)?.render()
+          } else {
+            node.onStateChange()
+          }
+        }
+      })
+      nodes = null as any
     })
-    nodes = null as any
   }
   protected async attach() {
     this.catchErrorFrom(async () => {
@@ -986,9 +997,13 @@ class BaseComponent {
       }
     })
   }
+
   private applyEffects() {
+    this.stateEffectRunning = true
     this.effectsFn?.forEach((effectFn) => effectFn())
+    this.stateEffectRunning = false
   }
+
   private handleError(error: Error) {
     if (this.renderingErrorHandler) {
       this.renderingErrorHandler((((error as any).component = this), error) as ReblendRenderingException)
@@ -1068,7 +1083,9 @@ class BaseComponent {
       }
     }
     this.disconnectEffects?.forEach((fn) => fn())
-    BaseComponent.detachChildren(this)
+    requestIdleCallback(() => {
+      BaseComponent.detachChildren(this)
+    })
     this.parentElement?.removeChild(this)
     this.props = null as any
     this._state = null as any
@@ -1082,6 +1099,7 @@ class BaseComponent {
   }
   protected cleanUp() {}
   protected componentWillUnmount() {}
+
   useState<T>(
     initial: ReblendTyping.StateFunctionValue<T>,
     ...dependencyStringAndOrStateKey: string[]
@@ -1096,11 +1114,15 @@ class BaseComponent {
     this[stateID] = initial
     const variableSetter: ReblendTyping.StateFunction<T> = (value: ReblendTyping.StateFunctionValue<T>) => {
       if (typeof value === 'function') {
+        this.stateEffectRunning = true
         value = (value as (v: T) => T)(this[stateID])
+        this.stateEffectRunning = false
       }
       if (!isEqual(this[stateID], value)) {
         this[stateID] = value as T
-        this.onStateChange()
+        if (!this.stateEffectRunning) {
+          this.onStateChange()
+        }
       }
     }
 
@@ -1141,11 +1163,13 @@ class BaseComponent {
     this[stateID] = state
     const fn: ReblendTyping.StateFunction<I> = (newValue: ReblendTyping.StateFunctionValue<I>) => {
       let reducedVal: ReblendTyping.StateFunctionValue<T>
+      this.stateEffectRunning = true
       if (typeof newValue === 'function') {
         reducedVal = reducer(this[stateID], (newValue as (v: T) => I)(this[stateID]))
       } else {
         reducedVal = reducer(this[stateID], newValue as any)
       }
+      this.stateEffectRunning = false
       setState(reducedVal)
     }
 
@@ -1207,6 +1231,7 @@ class BaseComponent {
   _appendChild<T extends Node>(node: T): T {
     const appended = this.appendChild(node)
     ;(node as any)?.connectedCallback && (node as any)?.connectedCallback()
+    ;(node as any).attach && (node as any).attach()
     return appended
   }
 }
