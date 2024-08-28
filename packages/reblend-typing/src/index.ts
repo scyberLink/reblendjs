@@ -124,7 +124,10 @@ export declare namespace ReblendTyping {
   type StateFunctionValue<T> = ((previous: T) => T) | T;
   type StateEffectiveMemoFunction<T> = () => T;
   type StateEffectiveFunction = () => (() => any) | void;
-  type StateReducerFunction<T> = (previous: T, current: T) => any;
+  type StateReducerFunction<ValueType, IncomingType> = (
+    previous: ValueType,
+    current: IncomingType
+  ) => ValueType;
 
   /**
    * Used to retrieve the possible components which accept a given set of props.
@@ -269,7 +272,7 @@ export declare namespace ReblendTyping {
    * <div ref="myRef" />
    * ```
    */
-  type LegacyRef<T> = string | Ref<T>;
+  type LegacyRef<T> = Ref<T>;
   /**
    * Retrieves the type of the 'ref' prop for a given component type or tag name.
    *
@@ -2355,2245 +2358,1605 @@ export declare namespace ReblendTyping {
     onCopy?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncopy?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCopyCapture?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncopycapture?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCut?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncut?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCutCapture?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncutcapture?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPaste?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpaste?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPasteCapture?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpastecapture?:
       | ClipboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCompositionEnd?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncompositionend?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCompositionEndCapture?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncompositionendcapture?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCompositionStart?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncompositionstart?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCompositionStartCapture?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncompositionstartcapture?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCompositionUpdate?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncompositionupdate?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCompositionUpdateCapture?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncompositionupdatecapture?:
       | CompositionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onFocus?:
       | FocusEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onfocus?:
       | FocusEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onFocusCapture?:
       | FocusEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onfocuscapture?:
       | FocusEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onBlur?:
       | FocusEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onblur?:
       | FocusEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onBlurCapture?:
       | FocusEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onblurcapture?:
       | FocusEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onChange?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onchange?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onChangeCapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onchangecapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onBeforeInput?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onbeforeinput?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onBeforeInputCapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onbeforeinputcapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onInput?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oninput?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onInputCapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oninputcapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onReset?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onreset?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onResetCapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onresetcapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onSubmit?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onsubmit?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onSubmitCapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onsubmitcapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onInvalid?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oninvalid?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onInvalidCapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oninvalidcapture?:
       | FormEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onLoad?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onload?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onLoadCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onloadcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onError?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onerror?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onErrorCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onerrorcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onKeyDown?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onkeydown?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onKeyDownCapture?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onkeydowncapture?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     /** @deprecated */
     onKeyPress?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onkeypress?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     /** @deprecated */
     onKeyPressCapture?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onkeypresscapture?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onKeyUp?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onkeyup?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onKeyUpCapture?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onkeyupcapture?:
       | KeyboardEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onAbort?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onabort?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onAbortCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onabortcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCanPlay?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncanplay?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCanPlayCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncanplaycapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCanPlayThrough?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncanplaythrough?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onCanPlayThroughCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncanplaythroughcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDurationChange?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondurationchange?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDurationChangeCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondurationchangecapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onEmptied?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onemptied?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onEmptiedCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onemptiedcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onEncrypted?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onencrypted?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onEncryptedCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onencryptedcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onEnded?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onended?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onEndedCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onendedcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onLoadedData?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onloadeddata?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onLoadedDataCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onloadeddatacapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onLoadedMetadata?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onloadedmetadata?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onLoadedMetadataCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onloadedmetadatacapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onLoadStart?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onloadstart?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onLoadStartCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onloadstartcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPause?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpause?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPauseCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpausecapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPlay?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onplay?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPlayCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onplaycapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPlaying?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onplaying?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPlayingCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onplayingcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onProgress?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onprogress?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onProgressCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onprogresscapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onRateChange?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onratechange?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onRateChangeCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onratechangecapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onResize?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onresize?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onResizeCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onresizecapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onSeeked?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onseeked?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onSeekedCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onseekedcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onSeeking?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onseeking?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onSeekingCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onseekingcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onStalled?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onstalled?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onStalledCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onstalledcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onSuspend?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onsuspend?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onSuspendCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onsuspendcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTimeUpdate?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontimeupdate?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTimeUpdateCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontimeupdatecapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onVolumeChange?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onvolumechange?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onVolumeChangeCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onvolumechangecapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onWaiting?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onwaiting?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onWaitingCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onwaitingcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onAuxClick?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onauxclick?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onAuxClickCapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onauxclickcapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onClick?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onclick?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onClickCapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onclickcapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onContextMenu?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncontextmenu?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onContextMenuCapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     oncontextmenucapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDoubleClick?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondoubleclick?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDoubleClickCapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondoubleclickcapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDrag?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondrag?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragCapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragcapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragEnd?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragend?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragEndCapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragendcapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragEnter?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragenter?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragEnterCapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragentercapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragExit?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragexit?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragExitCapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragexitcapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragLeave?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragleave?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragLeaveCapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragleavecapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragOver?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragover?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragOverCapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragovercapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragStart?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragstart?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDragStartCapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondragstartcapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDrop?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondrop?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onDropCapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ondropcapture?:
       | DragEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseDown?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmousedown?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseDownCapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmousedowncapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseEnter?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmouseenter?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseLeave?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmouseleave?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseMove?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmousemove?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseMoveCapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmousemovecapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseOut?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmouseout?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseOutCapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmouseoutcapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseOver?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmouseover?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseOverCapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmouseovercapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseUp?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmouseup?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onMouseUpCapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onmouseupcapture?:
       | MouseEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onSelect?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onselect?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onSelectCapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onselectcapture?:
       | ReblendEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTouchCancel?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontouchcancel?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTouchCancelCapture?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontouchcancelcapture?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTouchEnd?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontouchend?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTouchEndCapture?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontouchendcapture?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTouchMove?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontouchmove?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTouchMoveCapture?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontouchmovecapture?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTouchStart?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontouchstart?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTouchStartCapture?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontouchstartcapture?:
       | TouchEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerDown?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointerdown?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerDownCapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointerdowncapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerMove?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointermove?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerMoveCapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointermovecapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerUp?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointerup?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerUpCapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointerupcapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerCancel?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointercancel?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerCancelCapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointercancelcapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerEnter?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointerenter?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerLeave?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointerleave?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerOver?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointerover?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerOverCapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointerovercapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerOut?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointerout?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onPointerOutCapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onpointeroutcapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onGotPointerCapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ongotpointercapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onGotPointerCaptureCapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ongotpointercapturecapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onLostPointerCapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onlostpointercapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onLostPointerCaptureCapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onlostpointercapturecapture?:
       | PointerEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onScroll?:
       | UIEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onscroll?:
       | UIEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onScrollCapture?:
       | UIEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onscrollcapture?:
       | UIEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onWheel?:
       | WheelEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onwheel?:
       | WheelEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onWheelCapture?:
       | WheelEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onwheelcapture?:
       | WheelEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onAnimationStart?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onanimationstart?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onAnimationStartCapture?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onanimationstartcapture?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onAnimationEnd?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onanimationend?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onAnimationEndCapture?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onanimationendcapture?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onAnimationIteration?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onanimationiteration?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onAnimationIterationCapture?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onanimationiterationcapture?:
       | AnimationEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTransitionEnd?:
       | TransitionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontransitionend?:
       | TransitionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     onTransitionEndCapture?:
       | TransitionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
     ontransitionendcapture?:
       | TransitionEventHandler<T>
       | undefined
-      | StateFunction<T>
-      | StateEffectiveMemoFunction<T>
-      | StateEffectiveFunction
-      | StateReducerFunction<T>;
+      | (() => any)
+      | ((value: any) => any);
   }
   interface CSSProperties extends CSS.Properties<string | number> {}
   interface AriaAttributes {
@@ -4939,7 +4302,7 @@ export declare namespace ReblendTyping {
     nonce?: string | undefined;
     slot?: string | undefined;
     spellCheck?: Booleanish | undefined;
-    style?: CSSProperties | string | undefined;
+    style?: CSSProperties | string | undefined | null;
     tabIndex?: number | undefined;
     title?: string | undefined;
     translate?: 'yes' | 'no' | undefined;
@@ -5431,6 +4794,7 @@ export declare namespace ReblendTyping {
   interface LabelHTMLAttributes<T> extends HTMLAttributes<T> {
     form?: string | undefined;
     htmlFor?: string | undefined;
+    for?: string | undefined;
   }
   interface LiHTMLAttributes<T> extends HTMLAttributes<T> {
     value?: string | readonly string[] | number | undefined;
@@ -5634,6 +4998,7 @@ export declare namespace ReblendTyping {
   interface SVGAttributes<T> extends AriaAttributes, DOMAttributes<T> {
     suppressHydrationWarning?: boolean | undefined;
     className?: string | undefined;
+    class?: string | undefined;
     color?: string | undefined;
     height?: number | string | undefined;
     id?: string | undefined;
@@ -5896,6 +5261,7 @@ export declare namespace ReblendTyping {
     xlinkActuate?: string | undefined;
     xlinkArcrole?: string | undefined;
     xlinkHref?: string | undefined;
+    'xlink:href'?: string | undefined;
     xlinkRole?: string | undefined;
     xlinkShow?: string | undefined;
     xlinkTitle?: string | undefined;

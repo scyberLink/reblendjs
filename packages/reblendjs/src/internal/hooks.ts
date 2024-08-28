@@ -1,140 +1,125 @@
-import { isEqual } from 'lodash';
-import { BaseComponent } from './BaseComponent';
-import { ReblendTyping } from 'reblend-typing';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable prefer-rest-params */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { isEqual } from 'lodash'
+import { BaseComponent } from './BaseComponent'
+import { ReblendTyping } from 'reblend-typing'
 
-export type ContextSubscriber = {
-  component: BaseComponent;
-  stateKey: string;
-};
-
-const contextValue = Symbol('Reblend.contextValue');
-const contextValueInitial = Symbol('Reblend.contextValueInitial');
-const contextSubscribers = Symbol('Reblend.contextSubscrbers');
-const contextSubscribe = Symbol('Reblend.contextSubscribe');
+const contextValue = Symbol('Reblend.contextValue')
+const contextValueInitial = Symbol('Reblend.contextValueInitial')
+const contextSubscribers = Symbol('Reblend.contextSubscrbers')
+const contextSubscribe = Symbol('Reblend.contextSubscribe')
 
 export type Context<T> = {
-  [contextSubscribers]: ContextSubscriber[];
-  [contextValue]: T;
-  [contextValueInitial]: T;
-  reset: () => void;
-  update(update: ReblendTyping.StateFunctionValue<T>): void;
-  [contextSubscribe](component: BaseComponent, stateKey: string): void;
-};
+  [contextSubscribers]: Map<BaseComponent, string>
+  [contextValue]: T
+  [contextValueInitial]: T
+  reset: () => void
+  getValue: () => T
+  update(update: ReblendTyping.StateFunctionValue<T>): void
+  [contextSubscribe](component: BaseComponent, stateKey: string): void
+}
 
-const invalidContext = new Error('Invalid context');
+const invalidContext = new Error('Invalid context')
 
 export function useState<T>(
-  initial: T,
-  ...dependencyStringAndOrStateKey: string[]
+  _initial: T,
+  ..._dependencyStringAndOrStateKey: string[]
 ): [T, ReblendTyping.StateFunction<T>] {
-  //@ts-ignore
-  return this.useState(...arguments);
+  //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+  return this.useState(...arguments)
 }
 
 export function useEffect(
-  fn: ReblendTyping.StateEffectiveFunction,
-  dependencies?: any[],
-  ...dependencyStringAndOrStateKey: string[]
+  _fn: ReblendTyping.StateEffectiveFunction,
+  _dependencies?: any[],
+  ..._dependencyStringAndOrStateKey: string[]
 ): void {
-  //@ts-ignore
-  return this.useEffect(...arguments);
+  //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+  return this.useEffect(...arguments)
 }
 
-export function useReducer<T>(
-  reducer: ReblendTyping.StateReducerFunction<T>,
-  initial: T,
-  ...dependencyStringAndOrStateKey: string[]
+export function useReducer<T, I>(
+  _reducer: ReblendTyping.StateReducerFunction<T, I>,
+  _initial: T,
+  ..._dependencyStringAndOrStateKey: string[]
 ): [T, ReblendTyping.StateFunction<T>] {
-  //@ts-ignore
-  return this.useReducer(...arguments);
+  //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+  return this.useReducer(...arguments)
 }
 
 export function useMemo<T>(
-  fn: ReblendTyping.StateEffectiveMemoFunction<T>,
-  dependencies?: any[],
-  ...dependencyStringAndOrStateKey: string[]
+  _fn: ReblendTyping.StateEffectiveMemoFunction<T>,
+  _dependencies?: any[],
+  ..._dependencyStringAndOrStateKey: string[]
 ): T {
-  //@ts-ignore
-  return this.useMemo(...arguments);
+  //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+  return this.useMemo(...arguments)
 }
 
-export function useRef<T>(
-  initial?: T,
-  ...dependencyStringAndOrStateKey: string[]
-): ReblendTyping.Ref<T> {
-  //@ts-ignore
-  return this.useRef(...arguments);
+export function useRef<T>(_initial?: T, ..._dependencyStringAndOrStateKey: string[]): ReblendTyping.Ref<T> {
+  //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+  return this.useRef(...arguments)
 }
 
-export function useCallback(
-  fn: Function,
-  ...dependencyStringAndOrStateKey: string[]
-): Function {
-  //@ts-ignore
-  return this.useCallback(...arguments);
+export function useCallback(_fn: () => any, ..._dependencyStringAndOrStateKey: string[]): () => any {
+  //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+  return this.useCallback(...arguments)
 }
 
-export function useContext<T>(
-  context: Context<T>,
-  ...dependencyStringAndOrStateKey: string[]
-): T {
-  if (
-    !(
-      contextSubscribers in context ||
-      contextValue in context ||
-      contextSubscribe in context
-    )
-  ) {
-    throw invalidContext;
+export function useContext<T>(context: Context<T>, ...dependencyStringAndOrStateKey: string[]): T {
+  if (!(contextSubscribers in context || contextValue in context || contextSubscribe in context)) {
+    throw invalidContext
   }
-  const stateID: string | undefined = dependencyStringAndOrStateKey.pop();
+  const stateID: string | undefined = dependencyStringAndOrStateKey.pop()
 
   if (!stateID) {
-    //@ts-ignore
-    throw this.stateIdNotIncluded;
+    //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+    throw this.stateIdNotIncluded
   }
 
   if (typeof stateID !== 'string') {
-    throw new Error(
-      'Invalid state key. Make sure you are calling useContext correctly'
-    );
+    throw new Error('Invalid state key. Make sure you are calling useContext correctly')
   }
-  //@ts-ignore
-  context[contextSubscribe](this, stateID);
-  return context[contextValue];
+  //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+  context[contextSubscribe](this, stateID)
+  return context[contextValue]
 }
 
 export function createContext<T>(initial: T): Context<T> {
   const context: Context<T> = {
-    [contextSubscribers]: [],
+    [contextSubscribers]: new Map<BaseComponent, string>(),
     [contextValue]: initial,
     update(update: ReblendTyping.StateFunctionValue<T>) {
-      const newValue =
-        typeof update === 'function'
-          ? (update as Function)(context[contextValue])
-          : update;
+      const newValue = typeof update === 'function' ? (update as (v: T) => T)(context[contextValue]) : update
       if (!isEqual(newValue, context[contextValue])) {
-        context[contextValue] = newValue;
-        context[contextSubscribers].forEach(subscriber => {
-          subscriber.component[subscriber.stateKey] = context[contextValue];
-          //@ts-ignore
-          subscriber.component.onStateChange();
-        });
+        context[contextValue] = newValue
+        context[contextSubscribers].forEach((stateKey, component) => {
+          component[stateKey] = context[contextValue]
+          component.onStateChange()
+        })
       }
     },
     [contextSubscribe](component: BaseComponent, stateKey: string) {
       if (!component) {
-        throw new Error('Invalid component');
+        throw new Error('Invalid component')
       }
       if (!stateKey) {
-        throw new Error('Invalid state key');
+        throw new Error('Invalid state key')
       }
-      context[contextSubscribers].push({ component, stateKey });
+      const destructor = () => {
+        context[contextSubscribers].delete(component)
+      }
+      context[contextSubscribers].set(component, stateKey)
+      component.addDisconnectedEffect(destructor)
     },
     [contextValueInitial]: initial,
     reset() {
-      context[contextValue] = context[contextValueInitial];
+      context[contextValue] = context[contextValueInitial]
     },
-  };
-  return context;
+    getValue() {
+      return context[contextValue]
+    },
+  }
+  return context
 }

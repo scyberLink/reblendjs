@@ -1,6 +1,6 @@
 interface IPair {
-  name: string;
-  value: any;
+  name: string
+  value: never
 }
 
-export { IPair };
+export { IPair }

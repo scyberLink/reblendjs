@@ -1,6 +1,6 @@
 {
   "name": "reblend-router",
-  "version": "0.1.14",
+  "version": "0.1.39",
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "main": "lib/index.js",
@@ -14,7 +14,7 @@
   ],
   "dependencies": {
     "reblend-routing": "^4.19.8",
-    "reblendjs": "^3.0.23"
+    "reblendjs": "^3.0.48"
   },
   "scripts": {
     "build": "tsc && babel dist --out-dir lib",
@@ -37,5 +37,5 @@
     "babel-preset-reblend": "^7.24.39",
     "typescript": "^4.9.5"
   },
-  "gitHead": "d6cf58b691138277be408e87393a0e6e703b589b"
+  "gitHead": "c7e80e2f71eb29297d61bb957f6fe55c96c1a983"
 }

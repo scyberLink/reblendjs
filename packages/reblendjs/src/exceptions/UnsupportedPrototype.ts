@@ -3,9 +3,9 @@ class UnsupportedPrototype extends Error {
     super(
       `Prototype ${
         clazz ? `"${clazz}" ` : ''
-      } not supported. Please extend Reblend and define html method that returns your JSX/HTMLElement`
-    );
+      } not supported. Please extend Reblend and define html method that returns your JSX/HTMLElement`,
+    )
   }
 }
 
-export default UnsupportedPrototype;
+export default UnsupportedPrototype

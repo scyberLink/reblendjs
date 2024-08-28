@@ -630,19 +630,32 @@ export const allAttribute: Record<string, string | null | { name: string }> = {
   zoomAndPan: 'zoomAndPan',
 };
 
+// A list of attributes that have corresponding properties and should not use setAttribute
+const attributesWithDirectProperties = [
+  'value',
+  'checked',
+  'selected',
+  'disabled',
+];
+
 export const shouldUseSetAttribute = (key: string): boolean => {
+  if (key.includes(':')) {
+    return true;
+  }
   const attribute = allAttribute[key];
 
+  // Handle cases where we should use direct property access
   if (
     !attribute ||
     attribute instanceof Object ||
     attribute.startsWith('on') ||
-    attribute.startsWith('aria')
+    attribute.startsWith('aria') ||
+    attributesWithDirectProperties.includes(key)
   ) {
     return false;
   }
 
-  return !!attribute;
+  return true;
 };
 
 export const attributeName = (key: string): string => {
@@ -656,12 +669,10 @@ export const attributeName = (key: string): string => {
     return attribute?.name || key;
   }
 
-  if (
-    attribute === null ||
-    attribute.startsWith('on') ||
-    attribute.startsWith('aria')
-  ) {
+  if (attribute === null || attribute.startsWith('aria-')) {
     return key;
+  } else if (attribute.startsWith('on')) {
+    return key.toLowerCase();
   } else {
     return attribute;
   }
