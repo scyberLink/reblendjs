@@ -4,6 +4,7 @@ import ReblendRouting from 'reblend-routing';
 import { Query } from './query';
 import { Params } from './params';
 import { Location } from './location';
+import { Hash } from './hash';
 
 type RoutePath = { [path: string]: Reblend };
 
@@ -19,6 +20,7 @@ const createRoute = (route: RoutePath) => {
         Query.update(res.query),
         Params.update(res.params),
         Location.update(res.urlObject),
+        Hash.update(res.urlObject.hash),
         MatchedRoute.update(value)
       )
     );

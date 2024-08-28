@@ -7,10 +7,6 @@ import BasicExample from './Dropdown/BasicExample';
 import DismissibleExample from './toast/DismissibleExample';
 
 export default function Routing() {
-  const [i, setI] = useState(0);
-
-  setInterval(() => setI(i + 1), 100);
-
   return (
     <Container class="text-center py-5">
       <Router>

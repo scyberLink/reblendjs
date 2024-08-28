@@ -3,7 +3,7 @@ import { useContext } from 'reblendjs';
 import { History } from '../contexts/history';
 import { Requester } from 'reblend-routing';
 
-function Router({ children }: { children?: JSX.Element[] }) {
+function Router({ children }: { children?: any }) {
   const history = useContext(History);
   const handleHistoryChange = () => {
     if (history !== window.location.href) {

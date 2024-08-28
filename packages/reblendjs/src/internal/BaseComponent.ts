@@ -418,6 +418,7 @@ class BaseComponent {
 
     BaseComponent.setProps(props, element, true)
     element.container = this as any as BaseComponent
+    element.attach()
     return [element]
   }
   static isReactNode(displayName: IAny): boolean {
@@ -518,8 +519,7 @@ class BaseComponent {
     const nodes = BaseComponent.createChildren.bind(this)(Array.isArray(vNodes) ? (vNodes as any) : [vNodes])
     for (const node of nodes) {
       root.append(node)
-      ;(node as BaseComponent).connectedCallback && (node as BaseComponent).connectedCallback()
-      ;(node as BaseComponent).attach && (node as BaseComponent).attach()
+      BaseComponent.connected(node as any)
     }
   }
   private static detach(node: BaseComponent | HTMLElement) {
@@ -548,9 +548,9 @@ class BaseComponent {
     if ((node as BaseComponent).connectedCallback) {
       ;(node as BaseComponent).connectedCallback()
     }
-    if ((node as BaseComponent).attach) {
+    /* if ((node as BaseComponent).attach) {
       ;(node as BaseComponent).attach()
-    }
+    } */
   }
 
   dataIdQuerySelector!: string
@@ -698,7 +698,7 @@ class BaseComponent {
           if (this.containerRef) {
             children?.forEach((child) => {
               this.containerRef.current?.appendChild(child)
-              child.connectedCallback && child.connectedCallback()
+              BaseComponent.connected(child)
             })
           }
         }
@@ -1230,8 +1230,7 @@ class BaseComponent {
 
   _appendChild<T extends Node>(node: T): T {
     const appended = this.appendChild(node)
-    ;(node as any)?.connectedCallback && (node as any)?.connectedCallback()
-    ;(node as any).attach && (node as any).attach()
+    BaseComponent.connected(node as any)
     return appended
   }
 }
