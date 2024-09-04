@@ -19,7 +19,7 @@ function App() {
     return (
       <>
         <Header {...{ logo, msg, i: s }} />
-        {s % 3 === 0 ? <ReblendComponent /> : null}
+        {s % 3 === 0 ? <ReblendComponent width={150} height={150} /> : null}
       </>
     );
   }, [msg, s]);
@@ -34,6 +34,7 @@ function App() {
     <>
       <>
         <CardExample class="p-2" />
+
         <Button variant="primary" onClick={() => setModalShow(!modalShow)}>
           Toggle vertically centered modal
         </Button>

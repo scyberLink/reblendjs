@@ -28,7 +28,7 @@ function DismissibleExample() {
             Toggle Toast <strong>with</strong> Animation
           </Button>
           <Toast show={showA} onClose={toggleShowA}>
-            <Toast.Header>
+            <Toast.Header closeButton={false}>
               <img
                 src="holder.js/20x20?text=%20"
                 className="rounded me-2"
@@ -47,7 +47,7 @@ function DismissibleExample() {
             Toggle Toast <strong>without</strong> Animation
           </Button>
           <Toast onClose={toggleShowB} show={showB} animation={false}>
-            <Toast.Header>
+            <Toast.Header closeButton={false}>
               <img
                 src="holder.js/20x20?text=%20"
                 className="rounded me-2"
