@@ -34,8 +34,9 @@ function Header({ i = 0, msg = '', logo = '' }) {
           Edit <Cde code={i} /> and save to reload. {`{${msg}}`}
         </p>
         <Link class="mx-1 p-3 my-5 App-link" href="user/detail">
-          <Button onClick={() => alert("I'm clicked")}>Learn Reblend</Button>
+          Link
         </Link>
+        <Button onClick={() => alert("I'm clicked")}>Learn Reblend</Button>
       </header>
     </Container>
   );

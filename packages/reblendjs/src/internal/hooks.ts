@@ -96,9 +96,9 @@ export function createContext<T>(initial: T): Context<T> {
         context[contextValue] = newValue
         context[contextSubscribers].forEach((stateKey, component) => {
           component[stateKey] = context[contextValue]
-          //if (!component.stateEffectRunning) {
-          component.onStateChange()
-          //}
+          if (!component.stateEffectRunning && component.attached) {
+            component.onStateChange()
+          }
         })
       }
     },

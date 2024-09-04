@@ -15,7 +15,6 @@ import StyleUtil, { StyleUtilType } from './StyleUtil'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import { type Root } from 'react-dom/client'
-import { PrimitiveElementPool } from './PrimitiveElementPool'
 import { cloneDeep, isEqual } from 'lodash'
 
 export type ChildWithProps = {
@@ -38,7 +37,7 @@ export const REBLEND_PRIMITIVE_ELEMENT_NAME = 'ReblendPrimitive'
 
 type VNodeChild = Primitive | VNode
 type VNodeChildren = VNodeChild[]
-type DomNodeChild = Text | BaseComponent | ReblendPrimitive
+type DomNodeChild = BaseComponent | ReblendPrimitive
 type DomNodeChildren = DomNodeChild[]
 
 interface ReactNode {
@@ -90,6 +89,7 @@ class BaseComponent {
   private static ReblendReactClass = class extends BaseComponent {
     reactDomCreateRoot_root?: Root
 
+    completedAppend = false
     constructor() {
       super()
     }
@@ -97,6 +97,7 @@ class BaseComponent {
     protected html(): VNode | VNodeChildren {
       return this.props.children
     }
+
     async initRoot() {
       if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -104,32 +105,113 @@ class BaseComponent {
         const reactDom = await import('react-dom/client')
 
         this.reactDomCreateRoot_root = reactDom.createRoot(this)
+        this.htmlElements = []
       }
     }
     private render() {
       this.attach()
     }
 
-    async attach() {
-      this.catchErrorFrom(async () => {
-        await this.initRoot()
-        //Lazy load react i.e it been bundled separately and only fetch when needed
-        const react = await import('react')
-        const childrenWrapper = await this.getChildrenWrapperForReact()
+    async getChildrenWrapperForReact() {
+      const children: BaseComponent[] | null = this.props?.children
+      const displayName = this.displayName || ''
+      const react = await import('react')
+      return react.createElement(
+        class extends react.Component {
+          containerRef: React.RefObject<HTMLDivElement>
+          constructor(props) {
+            super(props)
+            this.containerRef = react.createRef<HTMLDivElement>()
+          }
 
+          componentDidMount(): void {
+            if (this.containerRef.current) {
+              const standardParent: HTMLElement | null = this.containerRef.current?.parentElement
+              children?.forEach((child) => {
+                if (BaseComponent.isStandard(child)) {
+                  standardParent?.appendChild(child)
+                  BaseComponent.attachElementsAt(child, child)
+                } else {
+                  BaseComponent.attachElementsAt(standardParent!, child)
+                }
+              })
+              standardParent?.removeChild(this.containerRef.current)
+            }
+          }
+
+          render() {
+            return react.createElement(
+              'div',
+              {
+                [REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME]: displayName,
+                ref: this.containerRef,
+              },
+              null,
+            )
+          }
+        },
+      )
+    }
+
+    async attach() {
+      await this.catchErrorFrom(async () => {
+        await this.initRoot()
+        const childrenWrapper = await this.getChildrenWrapperForReact()
+        //Lazy load react i.e it should be bundled separately and only fetch when needed
+        const react = await import('react')
         this.reactDomCreateRoot_root?.render(
           react.createElement(this.ReactClass, {
             ...this.props,
             children: !this.props?.children?.length ? undefined : childrenWrapper,
           }),
         )
+
+        //Delay to enable append child to run
+        await new Promise((resolve: (value?) => void) => {
+          setTimeout(() => {
+            resolve()
+          }, 0)
+        })
       })
+    }
+
+    appendChild<T extends Node>(node: T): T {
+      BaseComponent.extendPrototype(node, Reblend.prototype)
+      node[ReblendNodeStandard] = true
+      !this.htmlElements && (this.htmlElements = [])
+      this.htmlElements?.push(node as any)
+      this.completedAppend = true
+      return node
     }
 
     protected cleanUp(): void {
       this.reactDomCreateRoot_root = null as any
     }
   }
+
+  static findStandardParentOf(node: BaseComponent) {
+    if (!node) return null
+    if (BaseComponent.isStandard(node)) {
+      return node
+    } else {
+      return BaseComponent.findStandardParentOf(node.directParent!)
+    }
+  }
+
+  /*   static findStandardParentOf(parentComponent: BaseComponent, node: BaseComponent) {
+    if (parentComponent.htmlElements?.includes(node)) {
+      return parentComponent
+    } else {
+      for (const htmlElement of parentComponent.htmlElements || []) {
+        const found = BaseComponent.findStandardParentOf(htmlElement, node)
+        if (found) {
+          return found
+        }
+      }
+    }
+    return null
+  } */
+
   static extendPrototype(target, prototype) {
     const descriptors = Object.getOwnPropertyDescriptors(prototype)
 
@@ -314,6 +396,7 @@ class BaseComponent {
   }
   static newReblendPrimitive() {
     const span: ReblendPrimitive = document.createElement('span') as ReblendPrimitive
+    BaseComponent.extendPrototype(span, Reblend.prototype)
     span.displayName = REBLEND_PRIMITIVE_ELEMENT_NAME
 
     span.setData = function (data: Primitive) {
@@ -331,96 +414,9 @@ class BaseComponent {
       return this.reblendPrimitiveData
     }
 
-    span.disconnectedCallback = BaseComponent.prototype.disconnectedCallback
     return span
   }
-  static createElement(vNode: VNode | ReactNode | Primitive): BaseComponent[] {
-    if (Array.isArray(vNode)) {
-      return BaseComponent.createChildren(vNode) as any
-    }
-    if (BaseComponent.isPrimitive(vNode)) {
-      return [PrimitiveElementPool.get().setData(vNode as Primitive)]
-    }
 
-    const { displayName } = vNode as VNode
-    let clazz: typeof Reblend = displayName as any as typeof Reblend
-    const isTagStandard = typeof displayName === 'string'
-    const isReactNode = BaseComponent.isReactNode(displayName as any)
-
-    const children: unknown[] = []
-    children.push(...((isTagStandard && clazz.props ? clazz.props : {}).children || []))
-    children.push(...((vNode as VNode)?.props?.children || []))
-
-    const props = {
-      ...(isTagStandard && clazz.props ? clazz.props : {}),
-      ...(vNode as VNode).props,
-      children: BaseComponent.createChildren.bind(this)(children as any),
-    }
-
-    const tagName = isTagStandard
-      ? displayName
-      : (BaseComponent.isReactNode(clazz) ? (clazz as any as ReactNode).displayName : clazz?.ELEMENT_NAME) ||
-        `Anonymous`
-
-    isTagStandard || (clazz.ELEMENT_NAME = tagName)
-
-    if (isReactNode) {
-      clazz = BaseComponent.ReblendReactClass as any
-      clazz.ELEMENT_NAME = capitalize(`${(displayName as unknown as ReactNode).displayName}`)
-    }
-
-    const element: Reblend = BaseComponent.createElementWithNamespace(
-      isTagStandard ? (displayName as string) : 'div',
-    ) as Reblend
-
-    element[isReactNode ? ReactToReblendNode : isTagStandard ? ReblendNodeStandard : ReblendNode] = true
-    element.displayName = tagName
-    if (isReactNode) {
-      element.ReactClass = displayName
-    }
-    if (isTagStandard) {
-      BaseComponent.extendPrototype(element, Reblend.prototype)
-    } else {
-      BaseComponent.extendPrototype(element, clazz.prototype)
-    }
-    element._constructor()
-    if (!isTagStandard) {
-      if (isReactNode) {
-        element.setAttribute(REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME, process?.env?.REBLEND_DEVELEOPMENT ? tagName : '')
-      } else {
-        element.setAttribute(
-          REBLEND_COMPONENT_ATTRIBUTE_NAME,
-          //Don't forget to uncomment this
-          process?.env?.REBLEND_DEVELEOPMENT ? tagName : '',
-        )
-      }
-    }
-
-    if (isTagStandard && 'ref' in props) {
-      if (!props.ref) {
-        throw new Error('Invalid ref object')
-      }
-      const ref = props.ref
-      delete props.ref
-      const descriptor = Object.getOwnPropertyDescriptor(ref, 'current')
-
-      if (typeof ref === 'function') {
-        ref(element)
-      } else if (!descriptor || descriptor.configurable) {
-        Object.defineProperty(ref, 'current', {
-          value: element,
-          configurable: false,
-          writable: false,
-        })
-      }
-      element.ref = ref
-    }
-
-    BaseComponent.setProps(props, element, true)
-    element.container = this as any as BaseComponent
-    element.attach()
-    return [element]
-  }
   static isReactNode(displayName: IAny): boolean {
     return (
       displayName &&
@@ -490,19 +486,22 @@ class BaseComponent {
     const dataType = typeof data
     return primitves.some((primitve) => primitve === (data === null ? 'null' : dataType))
   }
-  protected static createChildren(children: VNodeChildren, containerArr: (BaseComponent | HTMLElement | Text)[] = []) {
+  protected static async createChildren(
+    children: VNodeChildren,
+    containerArr: (BaseComponent | HTMLElement | Text)[] = [],
+  ) {
     for (const child of children) {
       if (isCallable(child) || child instanceof Reblend || child instanceof Node) {
         containerArr.push(child as any)
       } else if (Array.isArray(child)) {
-        BaseComponent.createChildren.bind(this)(child as any, containerArr)
+        await BaseComponent.createChildren(child as any, containerArr)
       } else if (
         BaseComponent.isPrimitive(child) ||
         BaseComponent.isReactToReblendVirtualNode(child) ||
         BaseComponent.isReblendVirtualNode(child) ||
         BaseComponent.isStandardVirtualNode(child)
       ) {
-        const domChild = BaseComponent.deepFlat(BaseComponent.createElement.bind(this)(child as any))
+        const domChild = BaseComponent.deepFlat(await BaseComponent.createElement(child as any))
         domChild && containerArr.push(...domChild)
       } else {
         throw new TypeError('Invalid child node  in children')
@@ -510,18 +509,27 @@ class BaseComponent {
     }
     return containerArr
   }
-  static mountOn(elementId: string, app: typeof Reblend | ReblendTyping.FunctionComponent, props?: IAny) {
+
+  static async mountOn(elementId: string, app: typeof Reblend | ReblendTyping.FunctionComponent, props?: IAny) {
     const root = document.getElementById(elementId)
     if (!root) {
       throw new Error('Invalid root id')
     }
     const vNodes = BaseComponent.construct(app as any, props || {}, ...[])
-    const nodes = BaseComponent.createChildren.bind(this)(Array.isArray(vNodes) ? (vNodes as any) : [vNodes])
+    const nodes: BaseComponent[] = (await BaseComponent.createChildren(
+      Array.isArray(vNodes) ? (vNodes as any) : [vNodes],
+    )) as any
     for (const node of nodes) {
-      root.append(node)
-      BaseComponent.connected(node as any)
+      if (BaseComponent.isStandard(node)) {
+        root.appendChild(node)
+        node.nearestStandardParent = root
+        BaseComponent.connected(node)
+      } else {
+        BaseComponent.attachElementsAt(root, node)
+      }
     }
   }
+
   private static detach(node: BaseComponent | HTMLElement) {
     if (BaseComponent.isPrimitive(node)) return
     if ('disconnectedCallback' in node) {
@@ -541,6 +549,9 @@ class BaseComponent {
     for (const child of node.childNodes || []) {
       this.detach(child as any)
     }
+    for (const htmlElement of node.htmlElements || []) {
+      this.detach(htmlElement as any)
+    }
   }
 
   static connected<T extends BaseComponent | HTMLElement>(node: T | undefined) {
@@ -553,36 +564,212 @@ class BaseComponent {
     } */
   }
 
+  static async createElement(vNode: VNode | VNode[] | ReactNode | Primitive): Promise<BaseComponent[]> {
+    if (Array.isArray(vNode)) {
+      return (await BaseComponent.createChildren(vNode)) as any
+    }
+    if (BaseComponent.isPrimitive(vNode)) {
+      return [BaseComponent.newReblendPrimitive().setData(vNode as Primitive)]
+    }
+
+    const { displayName } = vNode as VNode
+    let clazz: typeof Reblend = displayName as any as typeof Reblend
+    const isTagStandard = typeof displayName === 'string'
+    const isReactNode = BaseComponent.isReactNode(displayName as any)
+
+    const children: unknown[] = []
+    children.push(...((isTagStandard && clazz.props ? clazz.props : {}).children || []))
+    children.push(...((vNode as VNode)?.props?.children || []))
+
+    const props = {
+      ...(isTagStandard && clazz.props ? clazz.props : {}),
+      ...(vNode as VNode).props,
+      children: await BaseComponent.createChildren(children as any),
+    }
+
+    const tagName = isTagStandard
+      ? displayName
+      : (BaseComponent.isReactNode(clazz) ? (clazz as any as ReactNode).displayName : clazz?.ELEMENT_NAME) ||
+        `Anonymous`
+
+    isTagStandard || (clazz.ELEMENT_NAME = tagName)
+
+    if (isReactNode) {
+      clazz = BaseComponent.ReblendReactClass as any
+      clazz.ELEMENT_NAME = capitalize(`${(displayName as unknown as ReactNode).displayName}`)
+    }
+
+    const element: Reblend = BaseComponent.createElementWithNamespace(
+      isTagStandard ? (displayName as string) : 'div',
+    ) as Reblend
+
+    element[isReactNode ? ReactToReblendNode : isTagStandard ? ReblendNodeStandard : ReblendNode] = true
+    element.displayName = tagName
+    //element.parentComponent = parentComponent
+    if (isReactNode) {
+      element.ReactClass = displayName
+      element.appendChild = BaseComponent.ReblendReactClass.prototype.appendChild
+    }
+    if (isTagStandard) {
+      BaseComponent.extendPrototype(element, Reblend.prototype)
+    } else {
+      BaseComponent.extendPrototype(element, clazz.prototype)
+    }
+    element._constructor()
+    if (!isTagStandard) {
+      if (isReactNode) {
+        element.setAttribute(REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME, process?.env?.REBLEND_DEVELEOPMENT ? tagName : '')
+      } else {
+        element.setAttribute(
+          REBLEND_COMPONENT_ATTRIBUTE_NAME,
+          //Don't forget to uncomment this
+          process?.env?.REBLEND_DEVELEOPMENT ? tagName : '',
+        )
+      }
+    }
+
+    if (isTagStandard && 'ref' in props) {
+      if (!props.ref) {
+        throw new Error('Invalid ref object')
+      }
+      const ref = props.ref
+      delete props.ref
+      const descriptor = Object.getOwnPropertyDescriptor(ref, 'current')
+
+      if (typeof ref === 'function') {
+        ref(element)
+      } else if (!descriptor || descriptor.configurable) {
+        Object.defineProperty(ref, 'current', {
+          value: element,
+          configurable: false,
+          writable: false,
+        })
+      }
+      element.ref = ref
+    }
+
+    BaseComponent.setProps(props, element, true)
+    await element.attach()
+    /* if (isReactNode) {
+    } else {
+      element.attach()
+    } */
+    return [element]
+  }
+
+  static async attachElementsAt(standardElement: HTMLElement, reblendElement: BaseComponent) {
+    if (!reblendElement?.htmlElements || !standardElement) {
+      return
+    }
+
+    for (const htmlElement of reblendElement.htmlElements || []) {
+      if (
+        BaseComponent.isReblendRenderedNodeStandard(htmlElement) ||
+        BaseComponent.isReblendPrimitiveElement(htmlElement)
+      ) {
+        standardElement.appendChild(htmlElement)
+        await BaseComponent.attachElementsAt(htmlElement, htmlElement)
+      } else {
+        const standardElementsFromCustomElement = htmlElement.getAttachableElements()
+        htmlElement.firstStandardElement = standardElementsFromCustomElement[0]
+        for (const standardElementFromCustomElement of standardElementsFromCustomElement) {
+          standardElement.appendChild(standardElementFromCustomElement)
+          await BaseComponent.attachElementsAt(standardElementFromCustomElement, standardElementFromCustomElement)
+        }
+        htmlElement.nearestStandardParent = standardElement
+        BaseComponent.connected(htmlElement)
+      }
+    }
+    reblendElement.nearestStandardParent = standardElement
+    BaseComponent.connected(reblendElement)
+  }
+
+  private static async replaceOldNode(
+    newNode: BaseComponent | BaseComponent[],
+    oldNode: BaseComponent,
+  ): Promise<BaseComponent | null> {
+    if (!BaseComponent.isReblendRenderedNodeStandard(oldNode) && !BaseComponent.isReblendPrimitiveElement(oldNode)) {
+      oldNode = oldNode.firstStandardElement as BaseComponent
+    }
+    if (!newNode || !oldNode) {
+      return null
+    }
+    !Array.isArray(newNode) && (newNode = [newNode])
+    let lastInsertedNode: BaseComponent | null = null
+    let firstStandardElement: HTMLElement | undefined
+
+    for (const n of newNode) {
+      if (!BaseComponent.isReblendRenderedNodeStandard(n) && !BaseComponent.isReblendPrimitiveElement(n)) {
+        n.nearestStandardParent = (lastInsertedNode || oldNode).parentElement as any
+        lastInsertedNode = await this.replaceOldNode(n.htmlElements!, lastInsertedNode || oldNode)
+        if (!firstStandardElement) {
+          firstStandardElement = lastInsertedNode as any
+        }
+        BaseComponent.connected(n)
+      } else {
+        ;(lastInsertedNode || oldNode).after(n)
+        lastInsertedNode = n
+        if (!firstStandardElement) {
+          firstStandardElement = n
+        }
+        BaseComponent.attachElementsAt(n, n)
+        //BaseComponent.connected(n)
+      }
+    }
+    newNode.forEach((nn) => (nn.firstStandardElement = firstStandardElement))
+    return lastInsertedNode
+  }
+
+  static isStandard(node: BaseComponent) {
+    if (!node) {
+      return false
+    }
+    return BaseComponent.isReblendRenderedNodeStandard(node) || BaseComponent.isReblendPrimitiveElement(node)
+  }
+  private nearestStandardParent?: HTMLElement
+  private firstStandardElement?: HTMLElement
   dataIdQuerySelector!: string
-
   props!: IAny
-
   styleUtil!: StyleUtilType
-
   renderingError?: ReblendRenderingException
-
   renderingErrorHandler?: (e: ReblendRenderingException) => void
-
-  container?: BaseComponent
-
   attached!: boolean
-
   ReactClass: any
   ref!: ReblendTyping.Ref<HTMLElement> | ((node: HTMLElement) => any)
+  directParent: this | undefined
   private onMountEffects?: ReblendTyping.StateEffectiveFunction[]
   private effectsFn?: ReblendTyping.StateEffectiveFunction[]
   private disconnectEffects?: ReblendTyping.StateEffectiveFunction[]
   stateIdNotIncluded = new Error('State Identifier/Key not specified')
   stateEffectRunning = false
+  private htmlElements?: BaseComponent[]
   private _dataId!: string
-
   private _state!: IAny
+
+  private getAttachableElements() {
+    const elements: BaseComponent[] = []
+    if (BaseComponent.isReblendRenderedNodeStandard(this) || BaseComponent.isReblendPrimitiveElement(this)) {
+      elements.push(this)
+    } else {
+      for (const nodeElement of this.htmlElements || []) {
+        if (
+          BaseComponent.isReblendRenderedNodeStandard(nodeElement) ||
+          BaseComponent.isReblendPrimitiveElement(nodeElement)
+        ) {
+          elements.push(nodeElement)
+        } else {
+          elements.push(...nodeElement.getAttachableElements())
+        }
+      }
+    }
+    return elements
+  }
 
   connectedCallback() {
     if (!this.attached) {
+      this.attached = true
       this.componentDidMount()
       this.mountEffects!()
-      this.attached = true
     }
   }
 
@@ -635,23 +822,31 @@ class BaseComponent {
       this.styleUtil.update(this.dataIdQuerySelector, styleString)
     }
   }
+
   addInlineStyle({ name, value }: IPair) {
     this.style[name as any] = value
   }
+
   addClassNames(...classNames: string[]) {
     this.classList.add(...classNames)
   }
+
   removeClassNames(...classNames: string[]) {
     this.classList.remove(...classNames)
   }
+
   replaceClassName(oldClassName: string, newClassName: string) {
     return this.classList.replace(oldClassName, newClassName)
   }
+
   async init() {}
+
   componentDidMount() {}
+
   private setProps(props: IAny, init: boolean) {
     BaseComponent.setProps(props, this, init)
   }
+
   get state(): IAny {
     return this._state || {}
   }
@@ -667,14 +862,24 @@ class BaseComponent {
   setState(value: ReblendTyping.StateFunctionValue<IAny>) {
     this.state = value
   }
+
   isTextNode(node: Node): node is Text {
     return node?.nodeType === Node.TEXT_NODE
   }
+
   isEmpty(data: any) {
     return data === undefined || data === null
   }
+
   diffCreateOrRemove(parent: BaseComponent, oldNode: DomNodeChild, newNode: VNodeChild) {
     const patches: Patch[] = []
+    if (
+      !BaseComponent.isPrimitive(oldNode) &&
+      Object.hasOwn(oldNode, 'reblendPrimitiveData') &&
+      (oldNode as ReblendPrimitive).reblendPrimitiveData == newNode
+    ) {
+      return []
+    }
     if (!oldNode) {
       patches.push({ type: 'CREATE', parent, newNode })
     } else if (!newNode) {
@@ -683,39 +888,7 @@ class BaseComponent {
 
     return patches
   }
-  async getChildrenWrapperForReact() {
-    const children: BaseComponent[] | null = this.props?.children
-    const react = await import('react')
-    return react.createElement(
-      class extends react.Component {
-        containerRef: React.RefObject<HTMLDivElement>
-        constructor(props) {
-          super(props)
-          this.containerRef = react.createRef<HTMLDivElement>()
-        }
 
-        componentDidMount(): void {
-          if (this.containerRef) {
-            children?.forEach((child) => {
-              this.containerRef.current?.appendChild(child)
-              BaseComponent.connected(child)
-            })
-          }
-        }
-
-        render() {
-          return react.createElement(
-            'div',
-            {
-              [REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME]: '',
-              ref: this.containerRef,
-            },
-            null,
-          )
-        }
-      },
-    )
-  }
   diff(parent: BaseComponent, oldNode: DomNodeChild, newNode: VNodeChild): Patch[] {
     const patches: Patch[] = []
     if (isCallable(oldNode) || isCallable(newNode)) {
@@ -769,6 +942,7 @@ class BaseComponent {
 
     return patches
   }
+
   deepCompare(firstObject, secondObject) {
     if (typeof firstObject !== 'function' && secondObject !== 'function') {
       return isEqual(firstObject, secondObject)
@@ -839,6 +1013,7 @@ class BaseComponent {
 
     return patches
   }
+
   diffChildren(parent: BaseComponent, oldNode: BaseComponent, newNode: VNode) {
     const oldChildren: DomNodeChildren = oldNode?.props?.children || []
     const newChildren: VNodeChildren = BaseComponent.deepFlat(newNode?.props?.children || [])
@@ -860,80 +1035,14 @@ class BaseComponent {
 
     return patches
   }
-  applyPatches(patches: Patch[]) {
-    patches?.forEach(({ type, newNode, oldNode, parent, patches }) => {
-      switch (type) {
-        case 'CREATE':
-          {
-            const element = BaseComponent.deepFlat(BaseComponent.createElement.bind(this)(newNode as VNode))
-            element && parent?.appendChildren(...element)
-            parent?.props?.children?.push(...element)
-          }
-          break
-        case 'REMOVE':
-          {
-            this.replaceOperation(oldNode as any, () => {
-              const oldNodeIndex = parent?.props?.children?.indexOf(oldNode)
-              if (oldNodeIndex > -1) {
-                const replacer = PrimitiveElementPool.get()
-                parent!.props.children[oldNodeIndex] = replacer
-                oldNode?.parentNode?.replaceChild(replacer, oldNode)
-              }
-            })
-          }
-          break
-        case 'REPLACE':
-          {
-            if (oldNode) {
-              this.replaceOperation(oldNode as any, () => {
-                const newNodeElement = BaseComponent.deepFlat(BaseComponent.createElement.bind(this)(newNode as VNode))
-                let firstNewNode = newNodeElement.shift()
-                oldNode!.parentNode?.replaceChild(<BaseComponent>firstNewNode, oldNode!)
-                BaseComponent.connected(firstNewNode)
-                const oldNodeIndex = parent?.props?.children?.indexOf(oldNode)
-                if (oldNodeIndex > -1) {
-                  // Spread the remaining elements after the oldNodeIndex
-                  parent!.props.children.splice(oldNodeIndex + 1, 0, ...newNodeElement)
-                  parent!.props.children[oldNodeIndex] = firstNewNode
-                }
-                //Append the remaining node after the firstNewNode
-                for (const node of newNodeElement) {
-                  firstNewNode?.after(node)
-                  BaseComponent.connected(node)
-                  firstNewNode = node
-                }
-              })
-            }
-          }
-          break
-        case 'TEXT':
-          {
-            oldNode && (oldNode.textContent = newNode as string)
-          }
-          break
-        case 'UPDATE':
-          {
-            this.applyProps(patches)
-          }
-          break
-      }
-      {
-        ;(type = null as any),
-          (newNode = null as any),
-          (oldNode = null as any),
-          (parent = null as any),
-          (patches = null as any)
-      }
-    })
-  }
 
-  replaceOperation(oldNode: BaseComponent, operation: () => void) {
-    //Release some memory before doing the replace operation
+  async replaceOperation(oldNode: BaseComponent, operation: () => Promise<void>) {
+    await operation()
     BaseComponent.detachChildren(oldNode)
-    operation()
     BaseComponent.detach(oldNode)
   }
-  applyProps(patches?: PropPatch[]) {
+
+  async applyProps(patches?: PropPatch[]) {
     requestAnimationFrame(() => {
       //This helps reduce onStateChange call for updates of the same node
       let nodes = new Set<BaseComponent>()
@@ -958,45 +1067,6 @@ class BaseComponent {
       nodes = null as any
     })
   }
-  protected async attach() {
-    this.catchErrorFrom(async () => {
-      let vNodes = this.html()
-      /* if (BaseComponent.isReactToReblendRenderedNode(this)) {
-        return;
-      } */
-      if (!vNodes) return
-      const isVNodesArray = Array.isArray(vNodes)
-      if (isVNodesArray && (vNodes as []).length < 1) {
-        return
-      }
-      if (isVNodesArray) {
-        vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren)
-      }
-      if (isVNodesArray) {
-        if (vNodes[0] && vNodes[0].parentNode) {
-          vNodes = null as any
-          return
-        }
-        vNodes = BaseComponent.createChildren.bind(this)(vNodes as VNodeChildren) as any
-        vNodes = (vNodes as any).filter(Boolean)
-
-        if ((vNodes as VNodeChildren)?.length > 0) {
-          this.innerHTML = ''
-          this.appendChildren(...(vNodes as any))
-        }
-      } else {
-        if ((vNodes as any)?.parentNode) {
-          vNodes = null as any
-          return
-        }
-        vNodes = BaseComponent.deepFlat(BaseComponent.createElement.bind(this)(vNodes as VNode) as any)
-        if ((vNodes as VNodeChildren)?.length > 0) {
-          this.innerHTML = ''
-          this.appendChildren(...(vNodes as any))
-        }
-      }
-    })
-  }
 
   private applyEffects() {
     this.stateEffectRunning = true
@@ -1007,13 +1077,13 @@ class BaseComponent {
   private handleError(error: Error) {
     if (this.renderingErrorHandler) {
       this.renderingErrorHandler((((error as any).component = this), error) as ReblendRenderingException)
-    } else if (this.container && this.container[ReblendNode]) {
-      this.container.handleError(error)
+    } else if (this.directParent) {
+      this.directParent.handleError(error)
     } else {
       throw error
     }
   }
-  private catchErrorFrom(fn: () => Promise<void>) {
+  private async catchErrorFrom(fn: () => Promise<void> | void) {
     try {
       const result = fn.bind(this)()
       // Check if the result is a promise
@@ -1025,32 +1095,22 @@ class BaseComponent {
     }
   }
   async onStateChange() {
-    this.catchErrorFrom.bind(this)(async () => {
+    await this.catchErrorFrom.bind(this)(async () => {
       this.applyEffects()
       let vNodes = this.html()
       const patches: Patch[] = []
-      const isVNodesArray = Array.isArray(vNodes)
-      if (isVNodesArray) {
-        vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren)
+      if (!Array.isArray(vNodes)) {
+        vNodes = [vNodes as any]
       }
-      if (isVNodesArray) {
-        if (vNodes[0] && vNodes[0].parentNode) {
-          vNodes = null as any
-          return
-        }
-      } else {
-        if ((vNodes as any)?.parentNode) {
-          vNodes = null as any
-          return
-        }
+      vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren)
+      if (vNodes[0] && (vNodes[0] as any).parentNode) {
+        vNodes = null as any
+        return
       }
-      const maxLength = Math.max(
-        this.childNodes.length,
-        isVNodesArray ? (vNodes as VNodeChildren).length : vNodes ? 1 : 0,
-      )
+      const maxLength = Math.max(this.childNodes.length, (vNodes as VNodeChildren).length)
       for (let i = 0; i < maxLength; i++) {
-        const newVNode: VNodeChild = isVNodesArray ? vNodes[i] : vNodes
-        const currentVNode = this.childNodes[i]
+        const newVNode: VNodeChild = vNodes[i]
+        const currentVNode = this.htmlElements && this.htmlElements[i]
         patches.push(...this.diff(this, currentVNode as any, newVNode))
       }
       vNodes = null as any
@@ -1067,12 +1127,6 @@ class BaseComponent {
     })
   }
   disconnectedCallback() {
-    if (BaseComponent.isReblendPrimitiveElement(this)) {
-      this.parentElement?.removeChild(this)
-      ;(<any>this).setData(null)
-      PrimitiveElementPool.add(this as any)
-      return
-    }
     this.cleanUp()
     this.componentWillUnmount()
     if (this.ref) {
@@ -1085,17 +1139,21 @@ class BaseComponent {
     this.disconnectEffects?.forEach((fn) => fn())
     requestIdleCallback(() => {
       BaseComponent.detachChildren(this)
+      this.props = null as any
+      this.htmlElements = null as any
     })
     this.parentElement?.removeChild(this)
-    this.props = null as any
     this._state = null as any
     this.effectsFn = null as any
     this.disconnectEffects = null as any
     this.onMountEffects = null as any
     this.renderingError = null as any
     this.renderingErrorHandler = null as any
-    this.container = null as any
+    this.nearestStandardParent = null as any
+    this.firstStandardElement = null as any
+    this.ReactClass = null as any
     this.ref = null as any
+    this.directParent = null as any
   }
   protected cleanUp() {}
   protected componentWillUnmount() {}
@@ -1120,7 +1178,7 @@ class BaseComponent {
       }
       if (!isEqual(this[stateID], value)) {
         this[stateID] = value as T
-        if (!this.stateEffectRunning) {
+        if (!this.stateEffectRunning && this.attached) {
           this.onStateChange()
         }
       }
@@ -1217,6 +1275,106 @@ class BaseComponent {
     return fn.bind(this)
   }
 
+  async attach() {
+    await this.catchErrorFrom(async () => {
+      let vNodes: VNode[] = this.html() as VNode[]
+      /* if (BaseComponent.isReactToReblendRenderedNode(this)) {
+        return;
+      } */
+      if (!vNodes) return
+      const isVNodesArray = Array.isArray(vNodes)
+      if (!isVNodesArray) {
+        vNodes = [vNodes as any]
+      }
+      vNodes = BaseComponent.flattenVNodeChildren(vNodes as VNodeChildren) as any
+      if (vNodes[0] && (vNodes[0] as any).parentNode) {
+        vNodes = null as any
+        return
+      }
+      vNodes = (await BaseComponent.createChildren(vNodes as VNodeChildren)) as any
+      /* for (const vNode of vNodes as any as BaseComponent[]) {
+        vNode.attach && vNode.attach()
+      } */
+      this.htmlElements = vNodes as any
+      this.htmlElements?.forEach((htmlElement) => (htmlElement.directParent = this))
+    })
+  }
+
+  async applyPatches(patches: Patch[]) {
+    for (const { type, newNode, oldNode, parent, patches: patchess } of patches || []) {
+      switch (type) {
+        case 'CREATE':
+          {
+            const elements = await BaseComponent.createElement(newNode as VNode)
+
+            parent?.htmlElements?.push(...elements)
+            parent?.props?.children?.push(...elements)
+
+            elements.forEach((element) =>
+              BaseComponent.attachElementsAt(
+                BaseComponent.isStandard(parent!) ? parent! : parent!.nearestStandardParent!,
+                element,
+              ),
+            )
+          }
+          break
+        case 'REMOVE':
+          if (oldNode) {
+            this.replaceOperation(oldNode, async () => {
+              //For htmlElements
+              const indexOfOldNodeInHtmlElements = parent?.htmlElements?.indexOf(oldNode as any) as number
+              if (indexOfOldNodeInHtmlElements > -1) {
+                parent!.htmlElements![indexOfOldNodeInHtmlElements] = null as any
+                parent!.htmlElements = parent!.htmlElements?.filter(Boolean)
+              }
+
+              //For props children
+              const indexOfOldNodeInPropsChildren = parent?.props.children?.indexOf(oldNode as any) as number
+              if (indexOfOldNodeInPropsChildren > -1) {
+                parent!.props.children![indexOfOldNodeInPropsChildren] = null as any
+                parent!.props.children = parent!.props.children?.filter(Boolean)
+              }
+            })
+          }
+          break
+        case 'REPLACE':
+          if (oldNode) {
+            this.replaceOperation(oldNode, async () => {
+              const newNodeElements = await BaseComponent.createElement(newNode as VNode)
+              const firstNewNode = newNodeElements.shift()
+
+              //For htmlElements
+              const indexOfOldNodeInHtmlElements = parent?.htmlElements?.indexOf(oldNode!) as number
+              if (indexOfOldNodeInHtmlElements > -1) {
+                // Spread the remaining elements after the oldNodeIndex
+                parent!.htmlElements &&
+                  parent!.htmlElements?.splice(indexOfOldNodeInHtmlElements + 1, 0, ...newNodeElements)
+                parent!.htmlElements && (parent!.htmlElements[indexOfOldNodeInHtmlElements] = firstNewNode as any)
+              }
+
+              //For props children
+              const indexOfOldNodeInPropsChildren = parent?.props.children?.indexOf(oldNode!) as number
+              if (indexOfOldNodeInPropsChildren > -1) {
+                // Spread the remaining elements after the oldNodeIndex
+                parent!.props.children &&
+                  parent!.props.children?.splice(indexOfOldNodeInPropsChildren + 1, 0, ...newNodeElements)
+                parent!.props.children && (parent!.props.children[indexOfOldNodeInPropsChildren] = firstNewNode as any)
+              }
+
+              newNodeElements.unshift(firstNewNode as any)
+              BaseComponent.replaceOldNode(newNodeElements, oldNode!)
+            })
+          }
+          break
+        case 'TEXT':
+          oldNode && (oldNode.textContent = newNode as string)
+          break
+        case 'UPDATE':
+          this.applyProps(patchess)
+          break
+      }
+    }
+  }
   /**
    * For compatibility incase standard element inherits this prototype; we can manually exec this constructor
    */
