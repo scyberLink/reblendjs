@@ -14,7 +14,14 @@ function TryCatchError(
     props?: any[]
   },
 ) {
-  this.renderingErrorHandler = (e: ReblendRenderingException) => ((this.renderingError = e), this.onStateChange())
+  this.renderingErrorHandler = (e: ReblendRenderingException) => {
+    this.renderingError = e
+    //if (!this.stateEffectRunning && this.attached) {
+    Promise.resolve().then(() => {
+      this.onStateChange()
+    })
+    //}
+  }
 
   const view = () => {
     const arr: any[] = []

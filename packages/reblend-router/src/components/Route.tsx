@@ -12,5 +12,5 @@ export function Route({ Component, element, path }: any) {
 
   const matchedRoute = useContext(MatchedRoute);
 
-  return matchedRoute == thisRoute ? matchedRoute : <span />;
+  return <>{matchedRoute == thisRoute ? matchedRoute : null}</>;
 }

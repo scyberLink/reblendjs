@@ -15,6 +15,7 @@ import {
   methods,
   MethodsType,
   REQUEST_EVENT,
+  REQUEST_NOTFOUND,
 } from './utils';
 //@ts-ignore
 import flatten from 'array-flatten';
@@ -119,14 +120,20 @@ class ReblendRouting implements ReblendRoutingWithMethods {
 
   handle(req: Request, callback?: Function) {
     const router = this._router;
+    const notfoundFn = () => {
+      dispatchEvent(
+        new CustomEvent(REQUEST_NOTFOUND, { detail: { ...arguments } })
+      );
+    };
 
     // no routes
     if (!router) {
       debug('no routes defined on app');
+      notfoundFn();
       return;
     }
 
-    router.handle(req, () => {});
+    router.handle(req, notfoundFn);
   }
 
   use(...args: any[]) {
