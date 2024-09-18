@@ -19,6 +19,7 @@ export {
   useCallback,
   createContext,
   useContext,
+  CacheType,
 } from './internal/hooks'
 
 export default Reblend

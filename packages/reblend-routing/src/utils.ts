@@ -91,3 +91,4 @@ export type MethodsType = {
 };
 export const methods = ['get', 'put', 'post', 'update', 'option', 'patch'];
 export const REQUEST_EVENT = 'routing-request';
+export const REQUEST_NOTFOUND = 'routing-request-notfound';

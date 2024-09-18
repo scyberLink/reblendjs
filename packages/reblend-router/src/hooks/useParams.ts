@@ -3,6 +3,6 @@ import { Params } from '../contexts/params';
 
 //@reblendcustomhook
 export function useParams() {
-  const paramsContext = useContext(Params);
+  const [paramsContext] = useContext(Params);
   return paramsContext;
 }

@@ -3,6 +3,6 @@ import { Location } from '../contexts/location';
 
 //@reblendcustomhook
 export function useLocation() {
-  const locationContext = useContext(Location);
+  const [locationContext] = useContext(Location);
   return locationContext;
 }

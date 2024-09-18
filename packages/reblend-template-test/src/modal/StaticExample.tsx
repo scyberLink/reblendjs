@@ -9,7 +9,7 @@ function StaticExample() {
       style={{ display: 'block', position: 'initial' }}
     >
       <Modal.Dialog>
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title>Modal title</Modal.Title>
         </Modal.Header>
 

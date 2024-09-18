@@ -10,11 +10,18 @@ function TryCatchError(
   {
     children = ((_error) => <>{''}</>) as any,
   }: {
-    children?: ((error?: ReblendRenderingException) => JSX.Element) | JSX.Element | JSX.Element[]
+    children?: (error?: ReblendRenderingException) => JSX.Element | JSX.Element[]
     props?: any[]
   },
 ) {
-  this.renderingErrorHandler = (e: ReblendRenderingException) => ((this.renderingError = e), this.onStateChange())
+  this.renderingErrorHandler = (e: ReblendRenderingException) => {
+    this.renderingError = e
+    //if (!this.stateEffectRunning && this.attached) {
+    //Promise.resolve().then(() => {
+    this.onStateChange()
+    //})
+    //}
+  }
 
   const view = () => {
     const arr: any[] = []
@@ -26,10 +33,10 @@ function TryCatchError(
       }
     }
 
-    this.renderingError && delete this.renderingError
+    this.renderingError = null as any
     return arr
   }
-  return view()
+  return <div>{view()}</div>
 }
 
 export { TryCatchError }

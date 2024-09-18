@@ -10,7 +10,7 @@ export function Route({ Component, element, path }: any) {
 
   createRoute({ [path]: thisRoute });
 
-  const matchedRoute = useContext(MatchedRoute);
+  const [matchedRoute] = useContext(MatchedRoute);
 
-  return matchedRoute == thisRoute ? matchedRoute : null;
+  return <>{matchedRoute == thisRoute ? matchedRoute : null}</>;
 }

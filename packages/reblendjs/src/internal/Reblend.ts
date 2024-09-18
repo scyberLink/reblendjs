@@ -257,8 +257,8 @@ class Reblend extends BaseComponent {
     super()
   }
 
-  protected html() {
-    return this.props.children
+  html() {
+    return this?.props?.children
   }
 }
 
