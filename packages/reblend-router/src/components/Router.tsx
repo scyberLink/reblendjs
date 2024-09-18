@@ -6,11 +6,11 @@ import { MatchedRoute, PageNotfound } from '../contexts/routes';
 import { REQUEST_NOTFOUND } from 'reblend-routing/lib/utils';
 
 function Router({ children }: { children?: any }) {
-  const history = useContext(History);
+  const [history, setHistory] = useContext(History);
 
   const handleHistoryChange = () => {
     if (history !== window.location.href) {
-      History.update(window.location.href);
+      setHistory(window.location.href);
     }
   };
 

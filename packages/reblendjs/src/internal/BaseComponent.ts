@@ -62,8 +62,17 @@ interface VNode {
   displayName: string | typeof Reblend | ReactNode
 }
 
+enum PatchTypeAndOrder {
+  NONE,
+  REMOVE,
+  TEXT,
+  CREATE,
+  REPLACE,
+  UPDATE,
+}
+
 interface Patch {
-  type: 'CREATE' | 'REMOVE' | 'REPLACE' | 'UPDATE' | 'TEXT'
+  type: PatchTypeAndOrder
   newNode?: VNodeChild
   oldNode?: DomNodeChild
   parent?: BaseComponent
@@ -71,8 +80,8 @@ interface Patch {
 }
 
 enum ChildrenPropsUpdateType {
-  CHILDREN,
   NON_CHILDREN,
+  CHILDREN,
 }
 
 const ReblendNode = Symbol('Reblend.Node')
@@ -126,7 +135,7 @@ class BaseComponent {
 
     //Should only be use on React Reblend node
     async checkPropsChange() {
-      for (const type of this.childrenPropsUpdate || []) {
+      for (const type of Array.from(this.childrenPropsUpdate || []).sort()) {
         this.childrenPropsUpdate?.delete(type)
 
         switch (type) {
@@ -140,7 +149,6 @@ class BaseComponent {
 
           default:
             throw new Error('Invalid props update type provided')
-            break
         }
       }
     }
@@ -442,26 +450,26 @@ class BaseComponent {
     return !BaseComponent.isPrimitive(element) && element.displayName === REBLEND_PRIMITIVE_ELEMENT_NAME
   }
   static newReblendPrimitive() {
-    const span: ReblendPrimitive = document.createElement('span') as ReblendPrimitive
-    BaseComponent.extendPrototype(span, Reblend.prototype)
-    span.displayName = REBLEND_PRIMITIVE_ELEMENT_NAME
+    const text: ReblendPrimitive = document.createTextNode('') as any as ReblendPrimitive
+    BaseComponent.extendPrototype(text, Reblend.prototype)
+    text.displayName = REBLEND_PRIMITIVE_ELEMENT_NAME
 
-    span.setData = function (data: Primitive) {
+    text.setData = function (data: Primitive) {
       this.reblendPrimitiveData = data
       if (this.reblendPrimitiveData !== undefined && this.reblendPrimitiveData !== null) {
         const textContent = `${this.reblendPrimitiveData}`
-        this.innerText = textContent
+        this.nodeValue = textContent
       } else {
-        this.innerText = ''
+        this.nodeValue = ''
       }
       return this
     }
 
-    span.getData = function () {
+    text.getData = function () {
       return this.reblendPrimitiveData
     }
 
-    return span
+    return text
   }
 
   static isReactNode(displayName: IAny): boolean {
@@ -599,13 +607,13 @@ class BaseComponent {
     for (const node of nodes) {
       if (BaseComponent.isStandard(node)) {
         root.appendChild(node)
-        Promise.resolve().then(() => {
-          BaseComponent.attachElementsAt(node, node)
-        })
+        //Promise.resolve().then(() => {
+        BaseComponent.attachElementsAt(node, node)
+        //})
       } else {
-        Promise.resolve().then(() => {
-          BaseComponent.attachElementsAt(root, node)
-        })
+        //Promise.resolve().then(() => {
+        BaseComponent.attachElementsAt(root, node)
+        //})
       }
     }
   }
@@ -723,11 +731,7 @@ class BaseComponent {
 
     BaseComponent.setProps((vNode as VNode).props, element, true)
 
-    element.catchErrorFrom(() => {
-      element.htmlElements = (
-        BaseComponent.createChildren(BaseComponent.flattenVNodeChildren(element.html())) as BaseComponent[]
-      ).map((child) => ((child.directParent = element), child))
-    })
+    element.populateHtmlElements()
     /* if (isReactNode) {
     } else {
       element.attach()
@@ -763,7 +767,6 @@ class BaseComponent {
     reblendElement.nearestStandardParent = standardElement
     BaseComponent.connected(reblendElement)
   }
-
   private static replaceOldNode(
     newNode: BaseComponent | BaseComponent[],
     oldNode: BaseComponent,
@@ -813,12 +816,298 @@ class BaseComponent {
     newNode.forEach((nn) => (nn.firstStandardElement = firstStandardElement))
     return lastInsertedNode
   }
-
   static isStandard(node: BaseComponent | HTMLElement) {
     if (!node) {
       return false
     }
     return BaseComponent.isReblendRenderedNodeStandard(node) || BaseComponent.isReblendPrimitiveElement(node)
+  }
+  static diffCreateOrRemove(parent: BaseComponent, oldNode: DomNodeChild, newNode: VNodeChild) {
+    const patches: Patch[] = []
+    if (
+      !BaseComponent.isPrimitive(oldNode) &&
+      Object.hasOwn(oldNode, 'reblendPrimitiveData') &&
+      (oldNode as ReblendPrimitive).reblendPrimitiveData == newNode
+    ) {
+      return []
+    }
+    if (!oldNode) {
+      patches.push({ type: PatchTypeAndOrder.CREATE, parent, newNode })
+    } else if (!newNode) {
+      patches.push({ type: PatchTypeAndOrder.REMOVE, parent, oldNode })
+    }
+
+    return patches
+  }
+  static diff(parent: BaseComponent, oldNode: DomNodeChild, newNode: VNodeChild): Patch[] {
+    const patches: Patch[] = []
+    if (isCallable(oldNode) || isCallable(newNode)) {
+      return []
+    }
+
+    if (BaseComponent.isPrimitive(oldNode) && BaseComponent.isPrimitive(newNode)) {
+      patches.push({ type: PatchTypeAndOrder.CREATE, parent, newNode })
+    } else if (BaseComponent.isPrimitive(oldNode) && !BaseComponent.isPrimitive(newNode)) {
+      patches.push({ type: PatchTypeAndOrder.CREATE, parent, newNode })
+    } else if (BaseComponent.isReblendPrimitiveElement(oldNode) && BaseComponent.isPrimitive(newNode)) {
+      if ((<ReblendPrimitive>oldNode).getData() !== newNode) {
+        ;(<ReblendPrimitive>oldNode).setData(newNode as Primitive)
+      }
+    } else if (BaseComponent.isReblendPrimitiveElement(oldNode) && !BaseComponent.isPrimitive(newNode)) {
+      patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
+    } else if (BaseComponent.isTextNode(oldNode) && BaseComponent.isPrimitive(newNode)) {
+      if (oldNode.textContent !== newNode) {
+        patches.push({ type: PatchTypeAndOrder.TEXT, newNode, oldNode })
+      }
+    } else if (BaseComponent.isTextNode(oldNode) && !BaseComponent.isPrimitive(newNode)) {
+      patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
+    } else if (!BaseComponent.isReblendPrimitiveElement(oldNode) && BaseComponent.isPrimitive(newNode)) {
+      patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
+    } else if (BaseComponent.isEmpty(oldNode) && !BaseComponent.isEmpty(newNode)) {
+      patches.push({ type: PatchTypeAndOrder.CREATE, parent, newNode })
+    } else if (!BaseComponent.isEmpty(oldNode) && BaseComponent.isEmpty(newNode)) {
+      patches.push({ type: PatchTypeAndOrder.REMOVE, parent, oldNode })
+    } else if ('displayName' in oldNode && 'displayName' in (newNode as any)) {
+      const oldNodeTag = ((oldNode as BaseComponent).displayName as string).toLowerCase()
+
+      const newNodeTag = (
+        (BaseComponent.isPrimitive((newNode as VNode).displayName)
+          ? (newNode as VNode).displayName
+          : ((newNode as VNode).displayName as typeof Reblend).ELEMENT_NAME) as string
+      ).toLowerCase()
+
+      if (oldNodeTag !== newNodeTag) {
+        patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
+      } else {
+        const propsDiff = BaseComponent.diffProps(newNode as VNode, oldNode as BaseComponent)
+        if (propsDiff && propsDiff.length > 0) {
+          patches.push({
+            type: PatchTypeAndOrder.UPDATE,
+            patches: propsDiff,
+          })
+        }
+        patches.push(
+          ...BaseComponent.diffChildren(oldNode as BaseComponent, oldNode as BaseComponent, newNode as VNode),
+        )
+      }
+    }
+
+    return patches
+  }
+  static diffProps(newNode: VNode, oldNode: BaseComponent) {
+    const patches: PropPatch[] = []
+    const oldProps: IAny = oldNode?.props || []
+    const newProps: IAny = newNode?.props || []
+    for (const key in newProps) {
+      if (key !== 'children' || BaseComponent.isReblendRenderedNode(oldNode)) {
+        let oldProp = oldProps[key]
+        let newProp = newProps[key]
+        if (!this.deepCompare(oldProp, newProp)) {
+          oldProp = null
+          newProp = null
+          patches.push({
+            type: 'UPDATE',
+            node: oldNode,
+            key,
+            propValue: newProps[key],
+          })
+        }
+      }
+    }
+
+    for (const key in oldProps) {
+      if (/* key !== 'children' &&  */ !(key in newProps)) {
+        patches.push({
+          type: 'REMOVE',
+          node: oldNode,
+          key,
+          propValue: undefined,
+        })
+      }
+    }
+
+    return patches
+  }
+  static diffChildren(parent: BaseComponent, oldNode: BaseComponent, newNode: VNode) {
+    if (!BaseComponent.isStandard(oldNode) && !BaseComponent.isReactToReblendRenderedNode(oldNode)) {
+      return []
+    }
+    const oldChildren: DomNodeChildren = oldNode?.htmlElements || []
+    const newChildren: VNodeChildren = BaseComponent.deepFlat(newNode?.props?.children || [])
+    const patches: Patch[] = []
+    const maxLength = Math.max(oldChildren.length, newChildren.length)
+
+    for (let i = 0; i < maxLength; i++) {
+      const oldChild = oldChildren[i]
+      const newChild = newChildren[i]
+      if (isCallable(oldChild) || isCallable(newChild)) {
+        continue
+      }
+      if (oldChild === undefined || newChild === undefined) {
+        patches.push(...BaseComponent.diffCreateOrRemove(parent, oldChild, newChild))
+      } else {
+        patches.push(...BaseComponent.diff(parent, oldChild, newChild))
+      }
+    }
+
+    oldNode?.props && (oldNode.props.children = newChildren)
+
+    return patches
+  }
+  static isTextNode(node: Node): node is Text {
+    return node?.nodeType === Node.TEXT_NODE
+  }
+  static isEmpty(data: any) {
+    return data === undefined || data === null
+  }
+  static deepCompare(firstObject, secondObject) {
+    if (typeof firstObject !== 'function' && secondObject !== 'function') {
+      return isEqual(firstObject, secondObject)
+    }
+
+    // 1. Check if they are the same reference
+    if (firstObject === secondObject) return true
+
+    if (!firstObject || !secondObject) return false
+
+    // 2. Compare function names (useful for named functions)
+    if (firstObject.name !== secondObject.name) return false
+
+    // 3. Compare the source code using toString()
+    if (firstObject.toString() !== secondObject.toString()) return false
+
+    // 4. Compare prototypes
+    if (!isEqual(Object.getPrototypeOf(firstObject), Object.getPrototypeOf(secondObject))) {
+      return false
+    }
+
+    // 5. Compare the properties of the functions (if they have custom properties)
+    const func1Props = Object.getOwnPropertyNames(firstObject)
+    const func2Props = Object.getOwnPropertyNames(secondObject)
+
+    if (!isEqual(func1Props, func2Props)) {
+      return false
+    }
+
+    for (const prop of func1Props) {
+      if (!isEqual(firstObject[prop], secondObject[prop])) {
+        return false
+      }
+    }
+
+    return true
+  }
+  private static applyPatches(patches: Patch[]) {
+    for (const { type, newNode, oldNode, parent, patches: patchess } of (patches || []).sort(
+      (a, b) => a.type - b.type,
+    )) {
+      switch (type) {
+        case PatchTypeAndOrder.CREATE:
+          {
+            const elements = BaseComponent.createElement(newNode as VNode)
+            parent?.htmlElements || (parent!.htmlElements = [])
+            parent?.htmlElements.push(...elements)
+            const standardParent = BaseComponent.isStandard(parent!) ? parent! : parent!.nearestStandardParent!
+            if (standardParent) {
+              for (const element of elements || []) {
+                if (BaseComponent.isStandard(element)) {
+                  standardParent.appendChild(element)
+                  BaseComponent.attachElementsAt(element, element)
+                  element.nearestStandardParent = standardParent
+                  BaseComponent.connected(element)
+                } else {
+                  BaseComponent.attachElementsAt(standardParent, element)
+                }
+              }
+            }
+          }
+          break
+        case PatchTypeAndOrder.REMOVE:
+          if (oldNode) {
+            this.replaceOperation(oldNode, () => {
+              if (parent?.htmlElements) {
+                const indexOfOldNodeInHtmlElements = parent.htmlElements.indexOf(oldNode!)
+
+                if (indexOfOldNodeInHtmlElements > -1) {
+                  // Remove the old node
+                  parent.htmlElements.splice(indexOfOldNodeInHtmlElements, 1)
+                }
+              }
+            })
+          }
+          break
+        case PatchTypeAndOrder.REPLACE:
+          if (oldNode) {
+            this.replaceOperation(oldNode, () => {
+              const newNodeElements = BaseComponent.createElement(newNode as VNode)
+              const firstNewNode = newNodeElements.shift()
+
+              if (parent?.htmlElements) {
+                const indexOfOldNodeInHtmlElements = parent.htmlElements.indexOf(oldNode!)
+
+                if (indexOfOldNodeInHtmlElements > -1) {
+                  // Remove the old node and insert the new elements
+                  parent.htmlElements.splice(indexOfOldNodeInHtmlElements + 1, 0, ...newNodeElements)
+                  parent.htmlElements[indexOfOldNodeInHtmlElements] = firstNewNode as any
+                }
+              }
+
+              newNodeElements.unshift(firstNewNode as any)
+              BaseComponent.replaceOldNode(newNodeElements, oldNode!)
+            })
+          }
+          break
+        case PatchTypeAndOrder.TEXT:
+          oldNode && (oldNode.textContent = newNode as string)
+          break
+        case PatchTypeAndOrder.UPDATE:
+          // Promise.resolve().then(() => {
+          this.applyProps(patchess)
+          // })
+          break
+      }
+    }
+  }
+  static async applyProps(patches?: PropPatch[]) {
+    //requestAnimationFrame(() => {
+    //This helps reduce onStateChange call for updates of the same node
+    let nodes = new Set<BaseComponent>()
+    patches?.forEach(({ type, node, key, propValue }) => {
+      if (type === 'UPDATE') {
+        BaseComponent.setProps({ [key]: propValue }, node, false)
+        nodes.add(node)
+      } else if (type === 'REMOVE') {
+        BaseComponent.removeProps({ [key]: undefined }, node)
+        nodes.add(node)
+      }
+      if (BaseComponent.isReactToReblendRenderedNode(node)) {
+        if (key === 'children') {
+          node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.CHILDREN)
+        } else {
+          node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.NON_CHILDREN)
+        }
+      }
+    })
+    nodes.forEach((node) => {
+      //if (!BaseComponent.isReblendRenderedNodeStandard(node)) {
+      if (BaseComponent.isReactToReblendRenderedNode(node)) {
+        //Promise.resolve().then(() => {
+        ;(node as any)?.checkPropsChange()
+        //})
+      } else {
+        //Promise.resolve().then(() => {
+        node.onStateChange()
+        //})
+      }
+      //}
+    })
+    nodes = null as any
+    //})
+  }
+  static replaceOperation(oldNode: BaseComponent, operation: () => void) {
+    operation()
+    BaseComponent.detachChildren(oldNode)
+    BaseComponent.detach(oldNode)
   }
   private nearestStandardParent?: HTMLElement
   dataIdQuerySelector!: string
@@ -837,9 +1126,22 @@ class BaseComponent {
   private htmlElements?: BaseComponent[]
   childrenPropsUpdate?: Set<ChildrenPropsUpdateType>
   private _firstStandardElement?: HTMLElement | undefined
-
   private _dataId!: string
   private _state!: IAny
+
+  populateHtmlElements() {
+    this.catchErrorFrom(() => {
+      let htmlVNodes = this.html()
+      if (!Array.isArray(htmlVNodes)) {
+        htmlVNodes = [htmlVNodes]
+      }
+      htmlVNodes = BaseComponent.flattenVNodeChildren(htmlVNodes)
+      const htmlElements: BaseComponent[] = BaseComponent.createChildren(htmlVNodes) as any
+      htmlElements.forEach((htmlElement) => (htmlElement.directParent = this))
+      this.htmlElements = htmlElements
+    })
+  }
+
   public get firstStandardElement(): HTMLElement | undefined /* eslint-disable @typescript-eslint/no-explicit-any */ {
     return this._firstStandardElement && this._firstStandardElement.parentNode
       ? this._firstStandardElement
@@ -968,224 +1270,6 @@ class BaseComponent {
     this.state = value
   }
 
-  isTextNode(node: Node): node is Text {
-    return node?.nodeType === Node.TEXT_NODE
-  }
-
-  isEmpty(data: any) {
-    return data === undefined || data === null
-  }
-
-  diffCreateOrRemove(parent: BaseComponent, oldNode: DomNodeChild, newNode: VNodeChild) {
-    const patches: Patch[] = []
-    if (
-      !BaseComponent.isPrimitive(oldNode) &&
-      Object.hasOwn(oldNode, 'reblendPrimitiveData') &&
-      (oldNode as ReblendPrimitive).reblendPrimitiveData == newNode
-    ) {
-      return []
-    }
-    if (!oldNode) {
-      patches.push({ type: 'CREATE', parent, newNode })
-    } else if (!newNode) {
-      patches.push({ type: 'REMOVE', parent, oldNode })
-    }
-
-    return patches
-  }
-
-  diff(parent: BaseComponent, oldNode: DomNodeChild, newNode: VNodeChild): Patch[] {
-    const patches: Patch[] = []
-    if (isCallable(oldNode) || isCallable(newNode)) {
-      return []
-    }
-
-    if (BaseComponent.isPrimitive(oldNode) && BaseComponent.isPrimitive(newNode)) {
-      patches.push({ type: 'CREATE', parent, newNode })
-    } else if (BaseComponent.isPrimitive(oldNode) && !BaseComponent.isPrimitive(newNode)) {
-      patches.push({ type: 'CREATE', parent, newNode })
-    } else if (BaseComponent.isReblendPrimitiveElement(oldNode) && BaseComponent.isPrimitive(newNode)) {
-      if ((<ReblendPrimitive>oldNode).getData() !== newNode) {
-        ;(<ReblendPrimitive>oldNode).setData(newNode as Primitive)
-      }
-    } else if (BaseComponent.isReblendPrimitiveElement(oldNode) && !BaseComponent.isPrimitive(newNode)) {
-      patches.push({ type: 'REPLACE', parent, newNode, oldNode })
-    } else if (this.isTextNode(oldNode) && BaseComponent.isPrimitive(newNode)) {
-      if (oldNode.textContent !== newNode) {
-        patches.push({ type: 'TEXT', newNode, oldNode })
-      }
-    } else if (this.isTextNode(oldNode) && !BaseComponent.isPrimitive(newNode)) {
-      patches.push({ type: 'REPLACE', parent, newNode, oldNode })
-    } else if (!BaseComponent.isReblendPrimitiveElement(oldNode) && BaseComponent.isPrimitive(newNode)) {
-      patches.push({ type: 'REPLACE', parent, newNode, oldNode })
-    } else if (this.isEmpty(oldNode) && !this.isEmpty(newNode)) {
-      patches.push({ type: 'CREATE', parent, newNode })
-    } else if (!this.isEmpty(oldNode) && this.isEmpty(newNode)) {
-      patches.push({ type: 'REMOVE', parent, oldNode })
-    } else if ('displayName' in oldNode && 'displayName' in (newNode as any)) {
-      const oldNodeTag = ((oldNode as BaseComponent).displayName as string).toLowerCase()
-
-      const newNodeTag = (
-        (BaseComponent.isPrimitive((newNode as VNode).displayName)
-          ? (newNode as VNode).displayName
-          : ((newNode as VNode).displayName as typeof Reblend).ELEMENT_NAME) as string
-      ).toLowerCase()
-
-      if (oldNodeTag !== newNodeTag) {
-        patches.push({ type: 'REPLACE', parent, newNode, oldNode })
-      } else {
-        const propsDiff = this.diffProps(newNode as VNode, oldNode as BaseComponent)
-        if (propsDiff && propsDiff.length > 0) {
-          patches.push({
-            type: 'UPDATE',
-            patches: propsDiff,
-          })
-        }
-        //patches.push(...this.diffHtmlElements(oldNode as BaseComponent, oldNode as BaseComponent, newNode as VNode))
-      }
-    }
-
-    return patches
-  }
-
-  deepCompare(firstObject, secondObject) {
-    if (typeof firstObject !== 'function' && secondObject !== 'function') {
-      return isEqual(firstObject, secondObject)
-    }
-
-    // 1. Check if they are the same reference
-    if (firstObject === secondObject) return true
-
-    if (!firstObject || !secondObject) return false
-
-    // 2. Compare function names (useful for named functions)
-    if (firstObject.name !== secondObject.name) return false
-
-    // 3. Compare the source code using toString()
-    if (firstObject.toString() !== secondObject.toString()) return false
-
-    // 4. Compare prototypes
-    if (!isEqual(Object.getPrototypeOf(firstObject), Object.getPrototypeOf(secondObject))) {
-      return false
-    }
-
-    // 5. Compare the properties of the functions (if they have custom properties)
-    const func1Props = Object.getOwnPropertyNames(firstObject)
-    const func2Props = Object.getOwnPropertyNames(secondObject)
-
-    if (!isEqual(func1Props, func2Props)) {
-      return false
-    }
-
-    for (const prop of func1Props) {
-      if (!isEqual(firstObject[prop], secondObject[prop])) {
-        return false
-      }
-    }
-
-    return true
-  }
-
-  diffProps(newNode: VNode, oldNode: BaseComponent) {
-    const patches: PropPatch[] = []
-    const oldProps: IAny = oldNode?.props || []
-    const newProps: IAny = newNode?.props || []
-    for (const key in newProps) {
-      //if (key !== 'children') {
-      let oldProp = oldProps[key]
-      let newProp = newProps[key]
-      if (!this.deepCompare(oldProp, newProp)) {
-        oldProp = null
-        newProp = null
-        patches.push({
-          type: 'UPDATE',
-          node: oldNode,
-          key,
-          propValue: newProps[key],
-        })
-      }
-      //}
-    }
-
-    for (const key in oldProps) {
-      if (/* key !== 'children' &&  */ !(key in newProps)) {
-        patches.push({
-          type: 'REMOVE',
-          node: oldNode,
-          key,
-          propValue: undefined,
-        })
-      }
-    }
-
-    return patches
-  }
-
-  /*   diffHtmlElements(parent: BaseComponent, oldNode: BaseComponent, newNode: VNode) {
-    const oldChildren: DomNodeChildren = BaseComponent.deepFlat(oldNode?.htmlElements || [])
-    const newChildren: VNodeChildren = BaseComponent.deepFlat(newNode?.htmlElements || [])
-    const patches: Patch[] = []
-    const maxLength = Math.max(oldChildren.length, newChildren.length)
-
-    for (let i = 0; i < maxLength; i++) {
-      const oldChild = oldChildren[i]
-      const newChild = newChildren[i]
-      if (isCallable(oldChild) || isCallable(newChild)) {
-        continue
-      }
-      if (oldChild === undefined || newChild === undefined) {
-        patches.push(...this.diffCreateOrRemove(parent, oldChild, newChild))
-      } else {
-        patches.push(...this.diff(parent, oldChild, newChild))
-      }
-    }
-
-    return patches
-  } */
-
-  replaceOperation(oldNode: BaseComponent, operation: () => void) {
-    operation()
-    BaseComponent.detachChildren(oldNode)
-    BaseComponent.detach(oldNode)
-  }
-
-  applyProps(patches?: PropPatch[]) {
-    //requestAnimationFrame(() => {
-    //This helps reduce onStateChange call for updates of the same node
-    let nodes = new Set<BaseComponent>()
-    patches?.forEach(({ type, node, key, propValue }) => {
-      if (type === 'UPDATE') {
-        BaseComponent.setProps({ [key]: propValue }, node, false)
-        nodes.add(node)
-      } else if (type === 'REMOVE') {
-        BaseComponent.removeProps({ [key]: undefined }, node)
-        nodes.add(node)
-      }
-      if (BaseComponent.isReactToReblendRenderedNode(node)) {
-        if (key === 'children') {
-          node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.CHILDREN)
-        } else {
-          node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.NON_CHILDREN)
-        }
-      }
-    })
-    nodes.forEach((node) => {
-      //if (!BaseComponent.isReblendRenderedNodeStandard(node)) {
-      if (BaseComponent.isReactToReblendRenderedNode(node)) {
-        //Promise.resolve().then(() => {
-        ;(node as any)?.checkPropsChange()
-        //})
-      } else {
-        //Promise.resolve().then(() => {
-        node.onStateChange()
-        //})
-      }
-      //}
-    })
-    nodes = null as any
-    //})
-  }
-
   private applyEffects() {
     this.stateEffectRunning = true
     this.effectsFn?.forEach((effectFn) => effectFn())
@@ -1223,12 +1307,12 @@ class BaseComponent {
       for (let i = 0; i < maxLength; i++) {
         const newVNode: VNodeChild = newVNodes[i]
         const currentVNode = oldNodes[i]
-        patches.push(...this.diff(this, currentVNode as any, newVNode))
+        patches.push(...BaseComponent.diff(this, currentVNode as any, newVNode))
       }
       newVNodes = null as any
-      Promise.resolve().then(() => {
-        this.applyPatches(patches)
-      })
+      //Promise.resolve().then(() => {
+      BaseComponent.applyPatches(patches)
+      //})
     })
   }
   protected html(): VNode | VNodeChildren {
@@ -1390,75 +1474,6 @@ class BaseComponent {
     return fn.bind(this)
   }
 
-  private applyPatches(patches: Patch[]) {
-    for (const { type, newNode, oldNode, parent, patches: patchess } of patches || []) {
-      switch (type) {
-        case 'CREATE':
-          {
-            const elements = BaseComponent.createElement(newNode as VNode)
-            parent?.htmlElements || (parent!.htmlElements = [])
-            parent?.htmlElements.push(...elements)
-            const standardParent = BaseComponent.isStandard(parent!) ? parent! : parent!.nearestStandardParent!
-            if (standardParent) {
-              for (const element of elements || []) {
-                if (BaseComponent.isStandard(element)) {
-                  standardParent.appendChild(element)
-                  BaseComponent.attachElementsAt(element, element)
-                  element.nearestStandardParent = standardParent
-                  BaseComponent.connected(element)
-                } else {
-                  BaseComponent.attachElementsAt(standardParent, element)
-                }
-              }
-            }
-          }
-          break
-        case 'REMOVE':
-          if (oldNode) {
-            this.replaceOperation(oldNode, () => {
-              if (parent?.htmlElements) {
-                const indexOfOldNodeInHtmlElements = parent.htmlElements.indexOf(oldNode!)
-
-                if (indexOfOldNodeInHtmlElements > -1) {
-                  // Remove the old node
-                  parent.htmlElements.splice(indexOfOldNodeInHtmlElements, 1)
-                }
-              }
-            })
-          }
-          break
-        case 'REPLACE':
-          if (oldNode) {
-            this.replaceOperation(oldNode, () => {
-              const newNodeElements = BaseComponent.createElement(newNode as VNode)
-              const firstNewNode = newNodeElements.shift()
-
-              if (parent?.htmlElements) {
-                const indexOfOldNodeInHtmlElements = parent.htmlElements.indexOf(oldNode!)
-
-                if (indexOfOldNodeInHtmlElements > -1) {
-                  // Remove the old node and insert the new elements
-                  parent.htmlElements.splice(indexOfOldNodeInHtmlElements + 1, 0, ...newNodeElements)
-                  parent.htmlElements[indexOfOldNodeInHtmlElements] = firstNewNode as any
-                }
-              }
-
-              newNodeElements.unshift(firstNewNode as any)
-              BaseComponent.replaceOldNode(newNodeElements, oldNode!)
-            })
-          }
-          break
-        case 'TEXT':
-          oldNode && (oldNode.textContent = newNode as string)
-          break
-        case 'UPDATE':
-          Promise.resolve().then(() => {
-            this.applyProps(patchess)
-          })
-          break
-      }
-    }
-  }
   /**
    * For compatibility incase standard element inherits this prototype; we can manually exec this constructor
    */

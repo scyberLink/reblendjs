@@ -5,7 +5,7 @@ import { Link } from 'reblend-router';
 import { Button, Container } from 'react-bootstrap';
 
 function Header({ i = 0, msg = '', logo = '' }) {
-  const theme = useContext(ThemeContext);
+  const [theme] = useContext(ThemeContext);
 
   return (
     <Container>
@@ -14,8 +14,8 @@ function Header({ i = 0, msg = '', logo = '' }) {
           {error =>
             (error && <>{error.message}</>) || (
               <>
-                {i % 2 == 2
-                  ? `No Error when ${i} is divisible by 2; else`
+                {i % 3 === 0
+                  ? `No Error because ${i} is divisible by 3`
                   : //@ts-ignore Should throw error and should be caught
                     inc.message + 1}
               </>

@@ -262,7 +262,7 @@ class GlobalConfig {
     return this.__get(key, this.LOCAL_STORAGE)
   }
 
-  setLocalData(key: string, value: string | number | undefined) {
+  setLocalData(key: string, value: any) {
     this.__set(key, value, this.LOCAL_STORAGE)
   }
 
@@ -270,11 +270,11 @@ class GlobalConfig {
     return this.__get(key, this.SESSION_STORAGE)
   }
 
-  setSessionData(key: string, value: boolean) {
+  setSessionData(key: string, value: any) {
     this.__set(key, value, this.SESSION_STORAGE)
   }
 
-  has(key: any) {
+  has(key: string) {
     return this.__has(key, this.MEMORY_STORAGE)
   }
 
