@@ -83,6 +83,7 @@ interface SVGElement extends Element {}
 interface TrustedHTML {}
 import * as CSS from 'csstype';
 import * as PropTypes from 'prop-types';
+import React from 'react';
 type NativeAnimationEvent = AnimationEvent;
 type NativeClipboardEvent = ClipboardEvent;
 type NativeCompositionEvent = CompositionEvent;
@@ -193,25 +194,8 @@ export declare namespace ReblendTyping {
    *
    * @template P The props the component accepts.
    */
-  type JSXElementConstructor<P> =
-    | ((
-        props: P,
-        /**
-         * @deprecated
-         *
-         * @see {@link https://legacy.reblendjs.org/docs/legacy-context.html#referencing-context-in-stateless-function-components Reblend Docs}
-         */
-        deprecatedLegacyContext?: any
-      ) => ReblendNode)
-    | (new (
-        props: P,
-        /**
-         * @deprecated
-         *
-         * @see {@link https://legacy.reblendjs.org/docs/legacy-context.html#referencing-context-in-lifecycle-methods Reblend Docs}
-         */
-        deprecatedLegacyContext?: any
-      ) => Component<any, any>);
+  type JSXElementConstructor<P> = (props: P) => ReblendNode | ReblendNode[];
+  /* | (new (props: P) => Component<any, any>); */
   /**
    * A readonly ref container where {@link current} cannot be mutated.
    *
@@ -290,21 +274,7 @@ export declare namespace ReblendTyping {
    * type DivRef = Reblend.ElementRef<'div'>;
    * ```
    */
-  type ElementRef<
-    C extends
-      | ForwardRefExoticComponent<any>
-      | {
-          new (props: any): Component<any>;
-        }
-      | ((props: any, deprecatedLegacyContext?: any) => ReblendNode)
-      | keyof JSX.IntrinsicElements
-  > = 'ref' extends keyof ComponentPropsWithRef<C>
-    ? NonNullable<ComponentPropsWithRef<C>['ref']> extends RefAttributes<
-        infer Instance
-      >['ref']
-      ? Instance
-      : never
-    : never;
+
   type ComponentState = any;
   /**
    * A value which uniquely identifies a node among items in an array.
@@ -390,7 +360,71 @@ export declare namespace ReblendTyping {
    * const element: ReblendElement = <div />;
    * ```
    */
-  type ReblendElement = HTMLElement;
+  type HTMLs =
+    | HTMLAnchorElement
+    | HTMLAreaElement
+    | HTMLAudioElement
+    | HTMLBaseElement
+    | HTMLBodyElement
+    | HTMLBRElement
+    | HTMLButtonElement
+    | HTMLCanvasElement
+    | HTMLDataElement
+    | HTMLDataListElement
+    | HTMLDetailsElement
+    | HTMLDialogElement
+    | HTMLDivElement
+    | HTMLDListElement
+    | HTMLEmbedElement
+    | HTMLFieldSetElement
+    | HTMLFormElement
+    | HTMLHeadingElement
+    | HTMLHeadElement
+    | HTMLHRElement
+    | HTMLHtmlElement
+    | HTMLIFrameElement
+    | HTMLImageElement
+    | HTMLInputElement
+    | HTMLModElement
+    | HTMLLabelElement
+    | HTMLLegendElement
+    | HTMLLIElement
+    | HTMLLinkElement
+    | HTMLMapElement
+    | HTMLMetaElement
+    | HTMLMeterElement
+    | HTMLObjectElement
+    | HTMLOListElement
+    | HTMLOptGroupElement
+    | HTMLOptionElement
+    | HTMLOutputElement
+    | HTMLParagraphElement
+    | HTMLParamElement
+    | HTMLPreElement
+    | HTMLProgressElement
+    | HTMLQuoteElement
+    | HTMLSlotElement
+    | HTMLScriptElement
+    | HTMLSelectElement
+    | HTMLSourceElement
+    | HTMLSpanElement
+    | HTMLStyleElement
+    | HTMLTableElement
+    | HTMLTableColElement
+    | HTMLTableDataCellElement
+    | HTMLTableHeaderCellElement
+    | HTMLTableRowElement
+    | HTMLTableSectionElement
+    | HTMLTemplateElement
+    | HTMLTextAreaElement
+    | HTMLTimeElement
+    | HTMLTitleElement
+    | HTMLTrackElement
+    | HTMLUListElement
+    | HTMLVideoElement
+    | HTMLWebViewElement
+    | SVGElement;
+  type ReblendElement = HTMLElement & React.ReactElement & React.ReactPortal;
   /**
    * @deprecated
    */
@@ -535,13 +569,11 @@ export declare namespace ReblendTyping {
    */
   type ReblendNode =
     | ReblendElement
-    | string
-    | number
+    | HTMLs
+    | React.ReactNode
     | Iterable<ReblendNode>
-    | boolean
-    | null
-    | undefined
     | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_REBLEND_NODES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_REBLEND_NODES];
+
   /** @deprecated */
   function createFactory<T extends HTMLElement>(
     type: keyof ReblendHTML
@@ -1705,11 +1737,6 @@ export declare namespace ReblendTyping {
    * type MyComponentPropsWithRef = Reblend.ComponentPropsWithRef<typeof MyComponent>;
    * ```
    */
-  type ComponentPropsWithRef<T extends ElementType> = T extends new (
-    props: infer P
-  ) => Component<any, any>
-    ? PropsWithoutRef<P> & RefAttributes<InstanceType<T>>
-    : PropsWithRef<ComponentProps<T>>;
   /**
    * Used to retrieve the props a custom component accepts with its ref.
    *
@@ -1756,16 +1783,6 @@ export declare namespace ReblendTyping {
    * type MyComponentPropsWithoutRef = Reblend.ComponentPropsWithoutRef<typeof MyComponent>;
    * ```
    */
-  type ComponentPropsWithoutRef<T extends ElementType> = PropsWithoutRef<
-    ComponentProps<T>
-  >;
-  type ComponentRef<T extends ElementType> = T extends NamedExoticComponent<
-    ComponentPropsWithoutRef<T> & RefAttributes<infer Method>
-  >
-    ? Method
-    : ComponentPropsWithRef<T> extends RefAttributes<infer Method>
-    ? Method
-    : never;
   type MemoExoticComponent<T extends ComponentType<any>> = NamedExoticComponent<
     CustomComponentPropsWithRef<T>
   > & {
@@ -1793,13 +1810,6 @@ export declare namespace ReblendTyping {
     Component: FunctionComponent<P>,
     propsAreEqual?: (prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean
   ): NamedExoticComponent<P>;
-  function memo<T extends ComponentType<any>>(
-    Component: T,
-    propsAreEqual?: (
-      prevProps: Readonly<ComponentProps<T>>,
-      nextProps: Readonly<ComponentProps<T>>
-    ) => boolean
-  ): MemoExoticComponent<T>;
   interface LazyExoticComponent<T extends ComponentType<any>>
     extends ExoticComponent<CustomComponentPropsWithRef<T>> {
     readonly _result: T;

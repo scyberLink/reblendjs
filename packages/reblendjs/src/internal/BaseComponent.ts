@@ -110,9 +110,9 @@ export interface ReblendPrimitive extends BaseComponent {
 class BaseComponent {
   static ELEMENT_NAME = 'BaseComponent'
   static props: IAny
+
   private static ReblendReactClass = class extends BaseComponent {
     reactDomCreateRoot_root?: Root
-    standardContainer!: HTMLElement
 
     constructor() {
       super()
@@ -122,8 +122,8 @@ class BaseComponent {
       return this.props.children
     }
 
-    setStandardContainer(node: HTMLElement) {
-      this.standardContainer = node
+    protected setReblendReactStandardContainer(node: HTMLElement) {
+      this.reblendReactStandardContainer = node
       this.initRoot()
     }
 
@@ -144,7 +144,7 @@ class BaseComponent {
             break
 
           case ChildrenPropsUpdateType.NON_CHILDREN:
-            await (this as any)?.render()
+            await this.reactReblendMount()
             break
 
           default:
@@ -205,7 +205,7 @@ class BaseComponent {
       )
     }
 
-    render() {
+    protected reactReblendMount() {
       this.catchErrorFrom(() => {
         this.initRoot()
         const childrenWrapper = this.getChildrenWrapperForReact()
@@ -228,7 +228,7 @@ class BaseComponent {
                   ...this.props,
                   children: !this.props?.children?.length ? undefined : childrenWrapper,
                 }),
-                this.standardContainer,
+                this.reblendReactStandardContainer,
               ),
             ),
           )
@@ -245,6 +245,7 @@ class BaseComponent {
       super.cleanUp()
     }
   }
+
   static getFirstStandardElementFrom(node: BaseComponent): HTMLElement | undefined {
     if (!node) {
       return
@@ -576,11 +577,13 @@ class BaseComponent {
       children = [children]
     }
     for (const child of children instanceof Set ? Array.from(children) : children) {
-      if (isCallable(child) || child instanceof Reblend || child instanceof Node) {
+      if (isCallable(child)) {
         containerArr.push(child as any)
       } else if (Array.isArray(child)) {
         BaseComponent.createChildren(child as any, containerArr)
       } else if (
+        child instanceof Reblend ||
+        child instanceof Node ||
         BaseComponent.isPrimitive(child) ||
         BaseComponent.isReactToReblendVirtualNode(child) ||
         BaseComponent.isReblendVirtualNode(child) ||
@@ -623,7 +626,12 @@ class BaseComponent {
     if ('disconnectedCallback' in node) {
       ;(node as any as BaseComponent).disconnectedCallback()
     } else {
-      node.parentNode?.removeChild(node)
+      if (node.parentNode) {
+        node.parentNode?.removeChild(node)
+      }
+      if (node?.remove) {
+        node?.remove()
+      }
     }
   }
   private static detachChildren(node: BaseComponent) {
@@ -654,7 +662,13 @@ class BaseComponent {
   }
 
   static createElement(vNode: VNode | VNode[] | ReactNode | Primitive): BaseComponent[] {
-    if (vNode instanceof Node) {
+    if (vNode instanceof Reblend || vNode instanceof Node) {
+      if (!(vNode as any).displayName) {
+        ;(vNode as any).displayName = capitalize((vNode as any as HTMLElement).tagName)
+        BaseComponent.extendPrototype(vNode, Reblend.prototype)
+        ;(vNode as any)[ReblendNodeStandard] = true
+        ;(vNode as any)._constructor()
+      }
       return [vNode as any]
     }
     if (Array.isArray(vNode)) {
@@ -745,8 +759,8 @@ class BaseComponent {
     }
 
     if (BaseComponent.isReactToReblendRenderedNode(reblendElement)) {
-      ;(reblendElement as any).setStandardContainer(standardElement)
-      ;(reblendElement as any).render()
+      reblendElement.setReblendReactStandardContainer(standardElement)
+      reblendElement.reactReblendMount()
       return
     }
 
@@ -785,17 +799,26 @@ class BaseComponent {
       if (!BaseComponent.isReblendRenderedNodeStandard(n) && !BaseComponent.isReblendPrimitiveElement(n)) {
         n.nearestStandardParent = (lastInsertedNode || oldNode).parentElement as any
         if (BaseComponent.isReactToReblendRenderedNode(n)) {
-          const div = document.createElement('div')
+          const div: HTMLDivElement & { delegatedChildren?: HTMLElement[] } = document.createElement('div')
+          div.delegatedChildren = []
           //This delegate the node and insert it after oldNode or lastInsertedNode
           div.appendChild = (node: any) => {
             ;(lastInsertedNode || oldNode).after(node)
             if (!firstStandardElement) {
               firstStandardElement = node as any
             }
+
+            div.delegatedChildren?.push(node)
+
             return node
           }
-          ;(n as any).setStandardContainer(div)
-          ;(n as any).render()
+          div.remove = () => {
+            for (const delegatedChild of div.delegatedChildren || []) {
+              delegatedChild.remove()
+            }
+          }
+          n.setReblendReactStandardContainer(div)
+          n.reactReblendMount()
         } else {
           lastInsertedNode = this.replaceOldNode(n.htmlElements!, lastInsertedNode || oldNode)
           if (!firstStandardElement) {
@@ -1110,6 +1133,7 @@ class BaseComponent {
     BaseComponent.detach(oldNode)
   }
   private nearestStandardParent?: HTMLElement
+  private reblendReactStandardContainer!: HTMLElement
   dataIdQuerySelector!: string
   props!: IAny
   renderingError?: ReblendRenderingException
@@ -1126,8 +1150,13 @@ class BaseComponent {
   private htmlElements?: BaseComponent[]
   childrenPropsUpdate?: Set<ChildrenPropsUpdateType>
   private _firstStandardElement?: HTMLElement | undefined
-  private _dataId!: string
   private _state!: IAny
+
+  protected setReblendReactStandardContainer(node: HTMLElement) {
+    this.reblendReactStandardContainer = node
+  }
+
+  protected reactReblendMount() {}
 
   populateHtmlElements() {
     this.catchErrorFrom(() => {
@@ -1180,24 +1209,10 @@ class BaseComponent {
     }
   }
 
-  setDataID() {
-    this.dataId = `${rand(1111111, 9999999)}`
-    this.dataIdQuerySelector = `[data-id="${this.dataId}"]`
-  }
-
   appendChildren(...children: (HTMLElement | BaseComponent)[]) {
     for (const child of children) {
       this._appendChild(child)
     }
-  }
-
-  get dataId(): string {
-    return this.getAttribute(`data-id`) || this._dataId
-  }
-
-  set dataId(value: string) {
-    this._dataId = value
-    this.setAttribute(`data-id`, this._dataId)
   }
 
   append(...nodes: Array<Node | string>): void {
@@ -1338,6 +1353,7 @@ class BaseComponent {
     this.parentElement?.removeChild(this)
     ;(this.parentElement as any)?._removeChild && (this.parentElement as any)?._removeChild(this)
     BaseComponent.detachChildren(this)
+    BaseComponent.detach(this.reblendReactStandardContainer)
     this.props = null as any
     this.htmlElements = null as any
     this._state = null as any
@@ -1482,7 +1498,6 @@ class BaseComponent {
     this.onMountEffects = []
     this.disconnectEffects = []
     this.childrenPropsUpdate = new Set()
-    BaseComponent.isReblendRenderedNodeStandard(this) && this.setDataID()
   }
 
   _appendChild<T extends Node>(node: T): T {

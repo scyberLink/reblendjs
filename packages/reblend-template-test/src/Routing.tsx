@@ -1,4 +1,4 @@
-import Reblend, { useState } from 'reblendjs';
+import Reblend, { TryCatchError, useState } from 'reblendjs';
 import Router, { Route } from 'reblend-router';
 import Counter from './Counter';
 import { Container } from 'react-bootstrap';
@@ -11,10 +11,12 @@ export default function Routing() {
     <Container class="text-center py-5">
       <Router>
         <h3>Testing Reblend Router</h3>
-        <Route
-          path={'/user/detail/:id([0-9]{10})?'}
-          Component={Counter}
-        ></Route>
+        <TryCatchError>
+          {error => {
+            return error && <b>{error.message}</b>;
+          }}
+          <Route path={'/user/detail/:id([0-9]{10})?'} Component={Counter} />
+        </TryCatchError>
         <StaticExample />
         <BasicExample />
         <DismissibleExample />

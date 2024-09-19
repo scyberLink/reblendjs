@@ -4,8 +4,20 @@ import Cde from './C';
 import { Link } from 'reblend-router';
 import { Button, Container } from 'react-bootstrap';
 
-function Header({ i = 0, msg = '', logo = '' }) {
+function Header({
+  i = 0,
+  msg = '',
+  logo = '',
+  children,
+}: {
+  i: number;
+  msg: string;
+  logo: string;
+  children: Reblend.JSX.Element | Reblend.JSX.Element[];
+}) {
   const [theme] = useContext(ThemeContext);
+  const image = new Image(50, 50);
+  image.src = logo;
 
   return (
     <Container>
@@ -33,7 +45,8 @@ function Header({ i = 0, msg = '', logo = '' }) {
         <p style={{ background: theme }}>
           Edit <Cde code={i} /> and save to reload. {`{${msg}}`}
         </p>
-        <Link class="mx-1 p-3 my-5 App-link" href="user/detail">
+        <Link className="mx-1 p-3 my-5 App-link" href="user/detail">
+          {image}
           Link
         </Link>
         <Button onClick={() => alert("I'm clicked")}>Learn Reblend</Button>

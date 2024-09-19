@@ -18,7 +18,9 @@ function App() {
   const Header1 = useMemo(() => {
     return (
       <>
-        <Header {...{ logo, msg, i: s }} />
+        <Header {...{ logo, msg, i: s }}>
+          <i></i>
+        </Header>
         {s % 3 === 0 ? <ReblendComponent width={150} height={150} /> : null}
       </>
     );
@@ -26,7 +28,7 @@ function App() {
 
   const colors = ['azure', 'yellow', 'pink', 'purple', 'green', 'red'];
   setInterval(() => {
-    ThemeContext.update(colors[rand(0, colors.length)]);
+    ThemeContext.update(colors[rand(-1, colors.length + 1)]);
   }, 2000);
   const [modalShow, setModalShow] = useState(false);
 
