@@ -10,8 +10,10 @@ function TryCatchError(
   {
     children = ((_error) => <>{''}</>) as any,
   }: {
-    children?: (error?: ReblendRenderingException) => JSX.Element | JSX.Element[]
-    props?: any[]
+    children?:
+      | ((error?: ReblendRenderingException) => Reblend.JSX.Element | Reblend.JSX.Element[])
+      | Reblend.JSX.Element
+      | Reblend.JSX.Element[]
   },
 ) {
   this.renderingErrorHandler = (e: ReblendRenderingException) => {

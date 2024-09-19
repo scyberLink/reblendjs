@@ -9,7 +9,7 @@ function TooltipPositionedExample() {
       {['top', 'right', 'bottom', 'left'].map(placement => (
         <OverlayTrigger
           key={placement}
-          placement={placement}
+          placement={'auto'}
           overlay={
             <Tooltip id={`tooltip-${placement}`}>
               Tooltip on <strong>{placement}</strong>.

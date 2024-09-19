@@ -8,7 +8,7 @@ export * as utils from './common/utils'
 export { SharedConfig } from './common/SharedConfig'
 export { ERROR_EVENTNAME } from './internal/BaseComponent'
 export type { ReblendRenderingException } from './internal/BaseComponent'
-export { TryCatchError } from './exceptions/components/Error'
+export { TryCatchError } from './exceptions/components/TryCatchError'
 
 export {
   useState,
