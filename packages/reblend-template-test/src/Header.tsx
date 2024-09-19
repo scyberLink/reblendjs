@@ -1,8 +1,14 @@
-import Reblend, { TryCatchError, useContext } from 'reblendjs';
+import Reblend, {
+  TryCatchError,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'reblendjs';
 import { ThemeContext } from './context';
 import Cde from './C';
 import { Link } from 'reblend-router';
 import { Button, Container } from 'react-bootstrap';
+import { rand } from 'reblendjs/lib/common/utils';
 
 function Header({
   i = 0,
@@ -16,8 +22,13 @@ function Header({
   children: Reblend.JSX.Element | Reblend.JSX.Element[];
 }) {
   const [theme] = useContext(ThemeContext);
-  const image = new Image(50, 50);
-  image.src = logo;
+  const img = new Image(0, 50);
+  img.src = logo;
+
+  useEffect(() => {
+    img.width = rand(10, 500) + 50;
+    img.height = rand(5, 200);
+  }, [i]);
 
   return (
     <Container>
@@ -46,7 +57,7 @@ function Header({
           Edit <Cde code={i} /> and save to reload. {`{${msg}}`}
         </p>
         <Link className="mx-1 p-3 my-5 App-link" href="user/detail">
-          {image}
+          {img}
           Link
         </Link>
         <Button onClick={() => alert("I'm clicked")}>Learn Reblend</Button>
