@@ -35,7 +35,7 @@
     "csstype": "^3.1.3",
     "prop-types": "^15.8.1"
   },
-  "gitHead": "f83510b294dc1672cc8d1e606ea5374424e92963",
+  "gitHead": "f4a751a14549e4477661958c3dc3b8543933c317",
   "devDependencies": {
     "typescript": "^5.5.3"
   }
