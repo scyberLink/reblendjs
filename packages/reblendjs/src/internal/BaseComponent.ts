@@ -4,7 +4,6 @@ import { attributeName, ReblendTyping, shouldUseSetAttribute } from 'reblend-typ
 import {
   capitalize,
   isCallable,
-  rand,
   REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME,
   REBLEND_COMPONENT_ATTRIBUTE_NAME,
   REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME,
@@ -291,12 +290,15 @@ class BaseComponent {
       BaseComponent.extendPrototype(target, proto)
     }
   }
+
   static hasName(element: typeof BaseComponent) {
     return element.ELEMENT_NAME && element.ELEMENT_NAME !== 'BaseComponent'
   }
+
   static fn(eventCallback: (e: Event) => any = () => {}) {
-    return (e) => eventCallback(e)
+    return (e) => eventCallback && eventCallback(e)
   }
+
   static setAttributesWithNamespace(element: HTMLElement | SVGElement, attributes: Record<string, string>) {
     const svgAttributes = [
       /* 'x',
@@ -339,6 +341,7 @@ class BaseComponent {
       }
     }
   }
+
   static createElementWithNamespace(tag: string) {
     const svgTags = [
       'svg',
@@ -369,9 +372,14 @@ class BaseComponent {
       return document.createElement(tag) // Default to HTML namespace
     }
   }
+
   static setProps(props: IAny, to: BaseComponent, init: boolean) {
     if (props && to) {
-      to.props = { ...to.props, ...props }
+      if (init && to.initProps) {
+        to.initProps(props)
+      } else {
+        to.props = { ...(to.props || {}), ...(props || {}) }
+      }
 
       if (BaseComponent.isReblendRenderedNodeStandard(to)) {
         for (const propName in props) {
@@ -380,7 +388,7 @@ class BaseComponent {
           if (propName == 'dangerouslySetInnerHTML') {
             to.innerHTML = propValue?.__html
           } else if (propName.startsWith('on')) {
-            to[_attributeName] = this.fn(propValue) as any
+            to[_attributeName] = BaseComponent.fn(propValue) as any
           } else {
             if (_attributeName === 'style') {
               to.addStyle(propValue)
@@ -401,9 +409,13 @@ class BaseComponent {
           }
         }
       }
-      init && to.init && to.init()
+
+      if (init && to.initState) {
+        to.initState()
+      }
     }
   }
+
   static removeProps(props: IAny, to: BaseComponent) {
     if (props && to) {
       to.props = { ...to.props, ...props }
@@ -426,30 +438,39 @@ class BaseComponent {
       }
     }
   }
+
   static isReblendRenderedNode(node: any): boolean {
     return typeof node !== 'string' && node![ReblendNode]
   }
+
   static isReblendVirtualNode(node: any): boolean {
     return typeof node !== 'string' && node![ReblendVNode]
   }
+
   static isReblendRenderedNodeStandard(node: any): boolean {
     return typeof node !== 'string' && node![ReblendNodeStandard]
   }
+
   static isReblendVirtualNodeStandard(node: any): boolean {
     return typeof node !== 'string' && node![ReblendVNodeStandard]
   }
+
   static isReactToReblendRenderedNode(node: any): boolean {
     return typeof node !== 'string' && node![ReactToReblendNode]
   }
+
   static isReactToReblendVirtualNode(node: any): boolean {
     return typeof node !== 'string' && node![ReactToReblendVNode]
   }
+
   static isStandardVirtualNode(node: any): boolean {
     return typeof node !== 'string' && node![ReblendVNodeStandard]
   }
+
   static isReblendPrimitiveElement(element: any) {
     return !BaseComponent.isPrimitive(element) && element.displayName === REBLEND_PRIMITIVE_ELEMENT_NAME
   }
+
   static newReblendPrimitive() {
     const text: ReblendPrimitive = document.createTextNode('') as any as ReblendPrimitive
     BaseComponent.extendPrototype(text, Reblend.prototype)
@@ -482,6 +503,7 @@ class BaseComponent {
         (isCallable(displayName) && !(displayName instanceof Reblend)))
     )
   }
+
   static deepFlat<T>(data: T[] | Set<T>): T[] {
     if (!data) {
       return []
@@ -499,10 +521,12 @@ class BaseComponent {
     }
     return ts
   }
+
   static isArray(obj: unknown) {
     const arrayProperties = ['pop', 'push', 'length', 'shift', 'unshift', 'splice', 'slice', 'find', 'includes']
     return typeof obj === 'object' && arrayProperties.every((property) => property in obj!)
   }
+
   static flattenVNodeChildren<T>(arr: (T | T[])[] | Set<T | T[]>, containerArr: T[] = []): T[] {
     if (!arr) {
       return []
@@ -526,6 +550,7 @@ class BaseComponent {
 
     return containerArr
   }
+
   static construct(
     displayName: typeof Reblend | string | VNode[],
     props: IAny,
@@ -1263,7 +1288,10 @@ class BaseComponent {
     return this.classList.replace(oldClassName, newClassName)
   }
 
-  init() {}
+  initState() {}
+  initProps(props: IAny) {
+    this.props = props || {}
+  }
 
   componentDidMount() {}
 
@@ -1285,7 +1313,7 @@ class BaseComponent {
     this.state = value
   }
 
-  private applyEffects() {
+  applyEffects() {
     this.stateEffectRunning = true
     this.effectsFn?.forEach((effectFn) => effectFn())
     this.stateEffectRunning = false
@@ -1395,6 +1423,8 @@ class BaseComponent {
           //Promise.resolve().then(() => {
           this.onStateChange()
           //})
+        } else {
+          this.applyEffects()
         }
       }
     }

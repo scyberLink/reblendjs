@@ -52,7 +52,7 @@ function App() {
         <Header {...{ logo, msg, i: s }} />
       </div>
 
-      <Routing />
+      <Routing {...{ s }} />
       <AutoLayoutSizingExample />
     </>
   );

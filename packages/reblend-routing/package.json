@@ -1,7 +1,7 @@
 {
   "name": "reblend-routing",
   "description": "Fast, unopinionated, minimalist web framework",
-  "version": "4.19.8",
+  "version": "4.19.12",
   "author": "Emmanuel Paul Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "repository": "expressjs/express",
@@ -55,5 +55,5 @@
     "test-cov": "nyc --reporter=html --reporter=text npm test",
     "test-tap": "mocha --require test/support/env --reporter tap --check-leaks test/ test/acceptance/"
   },
-  "gitHead": "5580e7fd4293308d8e1c7179a9b4637a694e43da"
+  "gitHead": "c0cf77febb3ceced8a3b07a86ed07a3e58744e0e"
 }

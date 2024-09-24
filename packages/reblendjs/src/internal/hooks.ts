@@ -176,6 +176,8 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
               //Promise.resolve().then(() => {
               await component.onStateChange()
               //})
+            } else {
+              component.applyEffects()
             }
           } else {
             context[contextSubscriberModificationTracker] = []
