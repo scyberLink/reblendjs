@@ -37,5 +37,5 @@
     "babel-preset-reblend": "latest",
     "typescript": "^4.9.5"
   },
-  "gitHead": "e94fd2e2472a4f117dcfb118669f68d605264bd2"
+  "gitHead": "c0cf77febb3ceced8a3b07a86ed07a3e58744e0e"
 }
