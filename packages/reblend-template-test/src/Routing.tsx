@@ -1,4 +1,4 @@
-import Reblend, { TryCatchError, useState } from 'reblendjs';
+import Reblend, { TryCatchError, useEffect, useState } from 'reblendjs';
 import Router, { Route } from 'reblend-router';
 import Counter from './Counter';
 import { Container } from 'react-bootstrap';
@@ -6,7 +6,13 @@ import StaticExample from './modal/StaticExample';
 import BasicExample from './Dropdown/BasicExample';
 import DismissibleExample from './toast/DismissibleExample';
 
-export default function Routing() {
+export default function Routing({ s }) {
+  const span = document.createElement('span');
+
+  useEffect(() => {
+    span.textContent = (s * 2) as any;
+  }, [s]);
+
   return (
     <Container class="text-center py-5">
       <Router>
@@ -15,6 +21,7 @@ export default function Routing() {
           {error => {
             return error && <b>{error.message}</b>;
           }}
+          <Route path={'/user/detail/:id([0-9]{10})?'} element={span} />
           <Route path={'/user/detail/:id([0-9]{10})?'} Component={Counter} />
         </TryCatchError>
         <StaticExample />

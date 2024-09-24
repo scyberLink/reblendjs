@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { isCallable } from '../../common/utils'
@@ -25,16 +26,18 @@ function TryCatchError(
     //}
   }
 
-  const view = () => {
+  function view() {
     const arr: any[] = []
     for (const child of children as any as []) {
       if (isCallable(child)) {
+        //@ts-ignore
         arr.push((child as any)(this.renderingError))
       } else {
         arr.push(child)
       }
     }
 
+    //@ts-ignore
     this.renderingError = null as any
     return arr
   }
