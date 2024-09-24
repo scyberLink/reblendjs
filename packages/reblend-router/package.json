@@ -1,6 +1,6 @@
 {
   "name": "reblend-router",
-  "version": "0.1.41",
+  "version": "0.1.42",
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "main": "lib/index.js",
@@ -13,7 +13,7 @@
     "dist"
   ],
   "dependencies": {
-    "reblend-routing": "^4.19.10",
+    "reblend-routing": "^4.19.11",
     "reblendjs": "latest"
   },
   "scripts": {
