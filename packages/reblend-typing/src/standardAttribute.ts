@@ -1,3 +1,14 @@
+/**
+ * A map of attribute keys to their corresponding standard HTML attribute names, default values,
+ * or React-specific properties. The object supports various attribute types such as standard
+ * HTML attributes, RDFa attributes, microdata attributes, React-specific attributes, and more.
+ *
+ * - If the value is a string, it represents the corresponding HTML attribute name.
+ * - If the value is `null`, the attribute does not map to an HTML attribute (e.g., React-specific attributes like `children`).
+ * - If the value is an object, it represents an attribute with a custom name that should be used for the corresponding property (e.g., `dangerouslySetInnerHTML` maps to the `innerHTML` property).
+ *
+ * @type {Record<string, string | null | { name: string }>}
+ */
 export const allAttribute: Record<string, string | null | { name: string }> = {
   // Standard HTML attributes
   accept: 'accept',
@@ -122,6 +133,17 @@ export const allAttribute: Record<string, string | null | { name: string }> = {
   width: 'width',
   wmode: 'wmode',
   wrap: 'wrap',
+  /**
+   * A map of attribute keys to their corresponding standard HTML attribute names, default values,
+   * or React-specific properties. The object supports various attribute types such as standard
+   * HTML attributes, RDFa attributes, microdata attributes, React-specific attributes, and more.
+   *
+   * - If the value is a string, it represents the corresponding HTML attribute name.
+   * - If the value is `null`, the attribute does not map to an HTML attribute (e.g., React-specific attributes like `children`).
+   * - If the value is an object, it represents an attribute with a custom name that should be used for the corresponding property (e.g., `dangerouslySetInnerHTML` maps to the `innerHTML` property).
+   *
+   * @type {Record<string, string | null | { name: string }>}
+   */
 
   // Referrer policy attributes
   referrerPolicy: 'referrerpolicy',
@@ -630,7 +652,10 @@ export const allAttribute: Record<string, string | null | { name: string }> = {
   zoomAndPan: 'zoomAndPan',
 };
 
-// A list of attributes that have corresponding properties and should not use setAttribute
+/**
+ * A list of attributes that have corresponding properties and should not use `setAttribute`.
+ * Instead, these attributes should directly manipulate the corresponding property on the element.
+ */
 const attributesWithDirectProperties = [
   'value',
   'checked',
@@ -638,6 +663,12 @@ const attributesWithDirectProperties = [
   'disabled',
 ];
 
+/**
+ * Determines whether to use `setAttribute` for a given attribute key.
+ *
+ * @param {string} key - The attribute key to check.
+ * @returns {boolean} - Returns true if `setAttribute` should be used, false if the direct property should be accessed.
+ */
 export const shouldUseSetAttribute = (key: string): boolean => {
   if (key.includes(':')) {
     return true;
@@ -658,6 +689,12 @@ export const shouldUseSetAttribute = (key: string): boolean => {
   return true;
 };
 
+/**
+ * Returns the correct attribute name for a given key.
+ *
+ * @param {string} key - The key to be transformed into an attribute name.
+ * @returns {string} - The corresponding attribute name.
+ */
 export const attributeName = (key: string): string => {
   const attribute = allAttribute[key];
 

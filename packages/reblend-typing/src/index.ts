@@ -1,101 +1,852 @@
+/**
+ * Represents a generic event in the DOM.
+ *
+ * @interface Event
+ * @typedef {Event}
+ */
 interface Event {}
+
+/**
+ * Represents an event triggered by CSS animations.
+ *
+ * @interface AnimationEvent
+ * @typedef {AnimationEvent}
+ * @extends {Event}
+ */
 interface AnimationEvent extends Event {}
+
+/**
+ * Represents an event triggered by interactions with the clipboard (e.g., cut, copy, paste).
+ *
+ * @interface ClipboardEvent
+ * @typedef {ClipboardEvent}
+ * @extends {Event}
+ */
 interface ClipboardEvent extends Event {}
+
+/**
+ * Represents an event triggered by input composition (e.g., for non-Latin text).
+ *
+ * @interface CompositionEvent
+ * @typedef {CompositionEvent}
+ * @extends {Event}
+ */
 interface CompositionEvent extends Event {}
+
+/**
+ * Represents an event related to drag-and-drop operations.
+ *
+ * @interface DragEvent
+ * @typedef {DragEvent}
+ * @extends {Event}
+ */
 interface DragEvent extends Event {}
+
+/**
+ * Represents an event triggered when an element gains or loses focus.
+ *
+ * @interface FocusEvent
+ * @typedef {FocusEvent}
+ * @extends {Event}
+ */
 interface FocusEvent extends Event {}
+
+/**
+ * Represents an event triggered by keyboard input.
+ *
+ * @interface KeyboardEvent
+ * @typedef {KeyboardEvent}
+ * @extends {Event}
+ */
 interface KeyboardEvent extends Event {}
+
+/**
+ * Represents an event triggered by mouse interactions.
+ *
+ * @interface MouseEvent
+ * @typedef {MouseEvent}
+ * @extends {Event}
+ */
 interface MouseEvent extends Event {}
+
+/**
+ * Represents an event triggered by touch interactions on touch devices.
+ *
+ * @interface TouchEvent
+ * @typedef {TouchEvent}
+ * @extends {Event}
+ */
 interface TouchEvent extends Event {}
+
+/**
+ * Represents an event triggered by pointer device interactions (e.g., mouse, pen, touch).
+ *
+ * @interface PointerEvent
+ * @typedef {PointerEvent}
+ * @extends {Event}
+ */
 interface PointerEvent extends Event {}
+
+/**
+ * Represents an event triggered by CSS transitions.
+ *
+ * @interface TransitionEvent
+ * @typedef {TransitionEvent}
+ * @extends {Event}
+ */
 interface TransitionEvent extends Event {}
+
+/**
+ * Represents a user interface event in the DOM.
+ *
+ * @interface UIEvent
+ * @typedef {UIEvent}
+ * @extends {Event}
+ */
 interface UIEvent extends Event {}
+
+/**
+ * Represents an event triggered by the scrolling of a mouse wheel or similar device.
+ *
+ * @interface WheelEvent
+ * @typedef {WheelEvent}
+ * @extends {Event}
+ */
 interface WheelEvent extends Event {}
+
+/**
+ * Represents a DOM object that can receive events.
+ *
+ * @interface EventTarget
+ * @typedef {EventTarget}
+ */
 interface EventTarget {}
+
+/**
+ * Represents the HTML document in the DOM.
+ *
+ * @interface Document
+ * @typedef {Document}
+ */
 interface Document {}
+
+/**
+ * Represents the data transferred during a drag-and-drop operation.
+ *
+ * @interface DataTransfer
+ * @typedef {DataTransfer}
+ */
 interface DataTransfer {}
+
+/**
+ * Represents the media queries associated with the current document.
+ *
+ * @interface StyleMedia
+ * @typedef {StyleMedia}
+ */
 interface StyleMedia {}
+
+/**
+ * Represents a generic element in the DOM.
+ *
+ * @interface Element
+ * @typedef {Element}
+ */
 interface Element {}
+
+/**
+ * Represents an HTML element in the DOM.
+ *
+ * @interface HTMLElement
+ * @typedef {HTMLElement}
+ * @extends {Element}
+ */
 interface HTMLElement extends Element {}
+
+/**
+ * Represents an HTML anchor element (`<a>`).
+ *
+ * @interface HTMLAnchorElement
+ * @typedef {HTMLAnchorElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLAnchorElement extends HTMLElement {}
+
+/**
+ * Represents an HTML area element (`<area>`).
+ *
+ * @interface HTMLAreaElement
+ * @typedef {HTMLAreaElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLAreaElement extends HTMLElement {}
+
+/**
+ * Represents an HTML audio element (`<audio>`).
+ *
+ * @interface HTMLAudioElement
+ * @typedef {HTMLAudioElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLAudioElement extends HTMLElement {}
+
+/**
+ * Represents an HTML base element (`<base>`).
+ *
+ * @interface HTMLBaseElement
+ * @typedef {HTMLBaseElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLBaseElement extends HTMLElement {}
+
+/**
+ * Represents an HTML body element (`<body>`).
+ *
+ * @interface HTMLBodyElement
+ * @typedef {HTMLBodyElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLBodyElement extends HTMLElement {}
+
+/**
+ * Represents an HTML break element (`<br>`).
+ *
+ * @interface HTMLBRElement
+ * @typedef {HTMLBRElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLBRElement extends HTMLElement {}
+
+/**
+ * Represents an HTML button element (`<button>`).
+ *
+ * @interface HTMLButtonElement
+ * @typedef {HTMLButtonElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLButtonElement extends HTMLElement {}
+
+/**
+ * Represents an HTML canvas element (`<canvas>`).
+ *
+ * @interface HTMLCanvasElement
+ * @typedef {HTMLCanvasElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLCanvasElement extends HTMLElement {}
+
+/**
+ * Represents an HTML data element (`<data>`).
+ *
+ * @interface HTMLDataElement
+ * @typedef {HTMLDataElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLDataElement extends HTMLElement {}
+
+/**
+ * Represents an HTML data list element (`<datalist>`).
+ *
+ * @interface HTMLDataListElement
+ * @typedef {HTMLDataListElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLDataListElement extends HTMLElement {}
+
+/**
+ * Represents an HTML details element (`<details>`).
+ *
+ * @interface HTMLDetailsElement
+ * @typedef {HTMLDetailsElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLDetailsElement extends HTMLElement {}
+
+/**
+ * Represents an HTML dialog element (`<dialog>`).
+ *
+ * @interface HTMLDialogElement
+ * @typedef {HTMLDialogElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLDialogElement extends HTMLElement {}
+
+/**
+ * Represents an HTML div element (`<div>`).
+ *
+ * @interface HTMLDivElement
+ * @typedef {HTMLDivElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLDivElement extends HTMLElement {}
+
+/**
+ * Represents an HTML description list element (`<dl>`).
+ *
+ * @interface HTMLDListElement
+ * @typedef {HTMLDListElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLDListElement extends HTMLElement {}
+
+/**
+ * Represents an HTML embed element (`<embed>`).
+ *
+ * @interface HTMLEmbedElement
+ * @typedef {HTMLEmbedElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLEmbedElement extends HTMLElement {}
+
+/**
+ * Represents an HTML field set element (`<fieldset>`).
+ *
+ * @interface HTMLFieldSetElement
+ * @typedef {HTMLFieldSetElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLFieldSetElement extends HTMLElement {}
+
+/**
+ * Represents an HTML form element (`<form>`).
+ *
+ * @interface HTMLFormElement
+ * @typedef {HTMLFormElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLFormElement extends HTMLElement {}
+
+/**
+ * Represents an HTML heading element (`<h1>`-`<h6>`).
+ *
+ * @interface HTMLHeadingElement
+ * @typedef {HTMLHeadingElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLHeadingElement extends HTMLElement {}
+
+/**
+ * Represents an HTML head element (`<head>`).
+ *
+ * @interface HTMLHeadElement
+ * @typedef {HTMLHeadElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLHeadElement extends HTMLElement {}
+
+/**
+ * Represents an HTML horizontal rule element (`<hr>`).
+ *
+ * @interface HTMLHRElement
+ * @typedef {HTMLHRElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLHRElement extends HTMLElement {}
+
+/**
+ * Represents an HTML root element (`<html>`).
+ *
+ * @interface HTMLHtmlElement
+ * @typedef {HTMLHtmlElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLHtmlElement extends HTMLElement {}
+
+/**
+ * Represents an HTML iframe element (`<iframe>`).
+ *
+ * @interface HTMLIFrameElement
+ * @typedef {HTMLIFrameElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLIFrameElement extends HTMLElement {}
+
+/**
+ * Represents an HTML image element (`<img>`).
+ *
+ * @interface HTMLImageElement
+ * @typedef {HTMLImageElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLImageElement extends HTMLElement {}
+
+/**
+ * Represents an HTML input element (`<input>`).
+ *
+ * @interface HTMLInputElement
+ * @typedef {HTMLInputElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLInputElement extends HTMLElement {}
+
+/**
+ * Represents an HTML modification element (`<del>` and `<ins>`).
+ *
+ * @interface HTMLModElement
+ * @typedef {HTMLModElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLModElement extends HTMLElement {}
+
+/**
+ * Represents an HTML label element (`<label>`).
+ *
+ * @interface HTMLLabelElement
+ * @typedef {HTMLLabelElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLLabelElement extends HTMLElement {}
+
+/**
+ * Represents an HTML legend element (`<legend>`).
+ *
+ * @interface HTMLLegendElement
+ * @typedef {HTMLLegendElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLLegendElement extends HTMLElement {}
+
+/**
+ * Represents an HTML list item element (`<li>`).
+ *
+ * @interface HTMLLIElement
+ * @typedef {HTMLLIElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLLIElement extends HTMLElement {}
+
+/**
+ * Represents an HTML link element (`<link>`).
+ *
+ * @interface HTMLLinkElement
+ * @typedef {HTMLLinkElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLLinkElement extends HTMLElement {}
+
+/**
+ * Represents an HTML map element (`<map>`).
+ *
+ * @interface HTMLMapElement
+ * @typedef {HTMLMapElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLMapElement extends HTMLElement {}
+
+/**
+ * Represents an HTML menu element (`<menu>`).
+ *
+ * @interface HTMLMenuElement
+ * @typedef {HTMLMenuElement}
+ * @extends {HTMLElement}
+ */
+interface HTMLMenuElement extends HTMLElement {}
+
+/**
+ * Represents an HTML meta element (`<meta>`).
+ *
+ * @interface HTMLMetaElement
+ * @typedef {HTMLMetaElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLMetaElement extends HTMLElement {}
+
+/**
+ * Represents an HTML meter element (`<meter>`).
+ *
+ * @interface HTMLMeterElement
+ * @typedef {HTMLMeterElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLMeterElement extends HTMLElement {}
+
+/**
+ * Represents an HTML object element (`<object>`).
+ *
+ * @interface HTMLObjectElement
+ * @typedef {HTMLObjectElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLObjectElement extends HTMLElement {}
-interface HTMLOListElement extends HTMLElement {}
-interface HTMLOptGroupElement extends HTMLElement {}
+
+/**
+ * Represents an HTML option element (`<option>`).
+ *
+ * @interface HTMLOptionElement
+ * @typedef {HTMLOptionElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLOptionElement extends HTMLElement {}
-interface HTMLOutputElement extends HTMLElement {}
+
+/**
+ * Represents an HTML paragraph element (`<p>`).
+ *
+ * @interface HTMLParagraphElement
+ * @typedef {HTMLParagraphElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLParagraphElement extends HTMLElement {}
-interface HTMLParamElement extends HTMLElement {}
-interface HTMLPreElement extends HTMLElement {}
+
+/**
+ * Represents an HTML progress element (`<progress>`).
+ *
+ * @interface HTMLProgressElement
+ * @typedef {HTMLProgressElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLProgressElement extends HTMLElement {}
-interface HTMLQuoteElement extends HTMLElement {}
-interface HTMLSlotElement extends HTMLElement {}
+
+/**
+ * Represents an HTML script element (`<script>`).
+ *
+ * @interface HTMLScriptElement
+ * @typedef {HTMLScriptElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLScriptElement extends HTMLElement {}
+
+/**
+ * Represents an HTML select element (`<select>`).
+ *
+ * @interface HTMLSelectElement
+ * @typedef {HTMLSelectElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLSelectElement extends HTMLElement {}
+
+/**
+ * Represents an HTML source element (`<source>`).
+ *
+ * @interface HTMLSourceElement
+ * @typedef {HTMLSourceElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLSourceElement extends HTMLElement {}
+
+/**
+ * Represents an HTML span element (`<span>`).
+ *
+ * @interface HTMLSpanElement
+ * @typedef {HTMLSpanElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLSpanElement extends HTMLElement {}
+
+/**
+ * Represents an HTML style element (`<style>`).
+ *
+ * @interface HTMLStyleElement
+ * @typedef {HTMLStyleElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLStyleElement extends HTMLElement {}
+
+/**
+ * Represents an HTML table element (`<table>`).
+ *
+ * @interface HTMLTableElement
+ * @typedef {HTMLTableElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLTableElement extends HTMLElement {}
+
+/**
+ * Represents an HTML table caption element (`<caption>`).
+ *
+ * @interface HTMLTableCaptionElement
+ * @typedef {HTMLTableCaptionElement}
+ * @extends {HTMLElement}
+ */
+interface HTMLTableCaptionElement extends HTMLElement {}
+
+/**
+ * Represents an HTML table cell element (`<td>` and `<th>`).
+ *
+ * @interface HTMLTableCellElement
+ * @typedef {HTMLTableCellElement}
+ * @extends {HTMLElement}
+ */
+interface HTMLTableCellElement extends HTMLElement {}
+
+/**
+ * Represents an HTML table column element (`<col>`).
+ *
+ * @interface HTMLTableColElement
+ * @typedef {HTMLTableColElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLTableColElement extends HTMLElement {}
-interface HTMLTableDataCellElement extends HTMLElement {}
-interface HTMLTableHeaderCellElement extends HTMLElement {}
+
+/**
+ * Represents an HTML table row element (`<tr>`).
+ *
+ * @interface HTMLTableRowElement
+ * @typedef {HTMLTableRowElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLTableRowElement extends HTMLElement {}
+
+/**
+ * Represents an HTML table section element (`<thead>`, `<tbody>`, and `<tfoot>`).
+ *
+ * @interface HTMLTableSectionElement
+ * @typedef {HTMLTableSectionElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLTableSectionElement extends HTMLElement {}
+
+/**
+ * Represents an HTML template element (`<template>`).
+ *
+ * @interface HTMLTemplateElement
+ * @typedef {HTMLTemplateElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLTemplateElement extends HTMLElement {}
+
+/**
+ * Represents an HTML text area element (`<textarea>`).
+ *
+ * @interface HTMLTextAreaElement
+ * @typedef {HTMLTextAreaElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLTextAreaElement extends HTMLElement {}
+
+/**
+ * Represents an HTML time element (`<time>`).
+ *
+ * @interface HTMLTimeElement
+ * @typedef {HTMLTimeElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLTimeElement extends HTMLElement {}
+
+/**
+ * Represents an HTML title element (`<title>`).
+ *
+ * @interface HTMLTitleElement
+ * @typedef {HTMLTitleElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLTitleElement extends HTMLElement {}
+
+/**
+ * Represents an HTML track element (`<track>`).
+ *
+ * @interface HTMLTrackElement
+ * @typedef {HTMLTrackElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLTrackElement extends HTMLElement {}
-interface HTMLUListElement extends HTMLElement {}
+
+/**
+ * Represents an HTML video element (`<video>`).
+ *
+ * @interface HTMLVideoElement
+ * @typedef {HTMLVideoElement}
+ * @extends {HTMLElement}
+ */
 interface HTMLVideoElement extends HTMLElement {}
-export interface HTMLWebViewElement extends HTMLElement {}
-interface SVGElement extends Element {}
-interface TrustedHTML {}
+
+/**
+ * Represents a fragment of HTML or XML that can be used to update the DOM.
+ *
+ * @interface DocumentFragment
+ * @typedef {DocumentFragment}
+ * @extends {Node}
+ */
+interface DocumentFragment extends Node {}
+
+/**
+ * Represents a node in the document tree.
+ *
+ * @interface Node
+ * @typedef {Node}
+ */
+interface Node {}
+
+/**
+ * Represents a named node map, used primarily for attributes.
+ *
+ * @interface NamedNodeMap
+ * @typedef {NamedNodeMap}
+ */
+interface NamedNodeMap {}
+
+/**
+ * Represents a DOM token list, commonly used for the `classList` property.
+ *
+ * @interface DOMTokenList
+ * @typedef {DOMTokenList}
+ */
+interface DOMTokenList {}
+
+/**
+ * Represents a DOM implementation object, providing methods for operations not specific to a particular document.
+ *
+ * @interface DOMImplementation
+ * @typedef {DOMImplementation}
+ */
+interface DOMImplementation {}
+
+/**
+ * Represents a rectangular area in the DOM (e.g., bounding box of an element).
+ *
+ * @interface DOMRect
+ * @typedef {DOMRect}
+ */
+interface DOMRect {}
+
+/**
+ * Represents a selection of text in a document.
+ *
+ * @interface Selection
+ * @typedef {Selection}
+ */
+interface Selection {}
+
+/**
+ * Represents an event that involves text input.
+ *
+ * @interface InputEvent
+ * @typedef {InputEvent}
+ * @extends {UIEvent}
+ */
+interface InputEvent extends UIEvent {}
+
+/**
+ * Represents an event triggered when a form is submitted.
+ *
+ * @interface SubmitEvent
+ * @typedef {SubmitEvent}
+ * @extends {Event}
+ */
+interface SubmitEvent extends Event {}
+
+/**
+ * Represents an event triggered when the user scrolls an element.
+ *
+ * @interface ScrollEvent
+ * @typedef {ScrollEvent}
+ * @extends {UIEvent}
+ */
+interface ScrollEvent extends UIEvent {}
+
+/**
+ * Represents an event triggered by storage-related changes (e.g., `localStorage` or `sessionStorage`).
+ *
+ * @interface StorageEvent
+ * @typedef {StorageEvent}
+ * @extends {Event}
+ */
+interface StorageEvent extends Event {}
+
+/**
+ * Represents an event triggered by fullscreen changes.
+ *
+ * @interface FullscreenChangeEvent
+ * @typedef {FullscreenChangeEvent}
+ * @extends {Event}
+ */
+interface FullscreenChangeEvent extends Event {}
+
+/**
+ * Represents an event triggered when the state of a media element is updated.
+ *
+ * @interface MediaEvent
+ * @typedef {MediaEvent}
+ * @extends {Event}
+ */
+interface MediaEvent extends Event {}
+
 import * as CSS from 'csstype';
 import * as PropTypes from 'prop-types';
 import React from 'react';
+/**
+ * Represents a native animation event, typically fired when a CSS animation starts, ends, or is repeated.
+ *
+ * @typedef {NativeAnimationEvent}
+ */
 type NativeAnimationEvent = AnimationEvent;
+
+/**
+ * Represents a native clipboard event, used when performing clipboard actions such as copy, paste, and cut.
+ *
+ * @typedef {NativeClipboardEvent}
+ */
 type NativeClipboardEvent = ClipboardEvent;
+
+/**
+ * Represents a native composition event, which occurs when the user is composing text via an input method editor (IME).
+ *
+ * @typedef {NativeCompositionEvent}
+ */
 type NativeCompositionEvent = CompositionEvent;
+
+/**
+ * Represents a native drag event, triggered when an element or text selection is being dragged.
+ *
+ * @typedef {NativeDragEvent}
+ */
 type NativeDragEvent = DragEvent;
+
+/**
+ * Represents a native focus event, which occurs when an element gains or loses focus.
+ *
+ * @typedef {NativeFocusEvent}
+ */
 type NativeFocusEvent = FocusEvent;
+
+/**
+ * Represents a native keyboard event, fired when the user presses or releases a key on the keyboard.
+ *
+ * @typedef {NativeKeyboardEvent}
+ */
 type NativeKeyboardEvent = KeyboardEvent;
+
+/**
+ * Represents a native mouse event, typically triggered by mouse actions such as clicks or movements.
+ *
+ * @typedef {NativeMouseEvent}
+ */
 type NativeMouseEvent = MouseEvent;
+
+/**
+ * Represents a native touch event, used when the user interacts with a touch screen.
+ *
+ * @typedef {NativeTouchEvent}
+ */
 type NativeTouchEvent = TouchEvent;
+
+/**
+ * Represents a native pointer event, which encompasses mouse, touch, and pen/stylus input.
+ *
+ * @typedef {NativePointerEvent}
+ */
 type NativePointerEvent = PointerEvent;
+
+/**
+ * Represents a native transition event, fired when a CSS transition ends.
+ *
+ * @typedef {NativeTransitionEvent}
+ */
 type NativeTransitionEvent = TransitionEvent;
+
+/**
+ * Represents a native UI event, which provides basic information about user interface events like focus or blur.
+ *
+ * @typedef {NativeUIEvent}
+ */
 type NativeUIEvent = UIEvent;
+
+/**
+ * Represents a native wheel event, typically triggered when the user rotates a wheel device (e.g., a mouse wheel).
+ *
+ * @typedef {NativeWheelEvent}
+ */
 type NativeWheelEvent = WheelEvent;
+
 /**
  * Used to represent DOM API's where users can either pass
  * true or false as a boolean or as its equivalent strings.
@@ -105,6 +856,11 @@ type Booleanish = boolean | 'true' | 'false';
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/crossorigin MDN}
  */
 type CrossOrigin = 'anonymous' | 'use-credentials' | '' | undefined;
+/**
+ * Description placeholder
+ *
+ * @type {unique symbol}
+ */
 declare const UNDEFINED_VOID_ONLY: unique symbol;
 /**
  * The function returned from an effect passed to {@link ReblendTyping.useEffect useEffect},
@@ -115,16 +871,72 @@ declare const UNDEFINED_VOID_ONLY: unique symbol;
 type Destructor = () => void | {
   [UNDEFINED_VOID_ONLY]: never;
 };
+/**
+ * Description placeholder
+ *
+ * @typedef {VoidOrUndefinedOnly}
+ */
 type VoidOrUndefinedOnly = void | {
   [UNDEFINED_VOID_ONLY]: never;
 };
 
 export declare namespace ReblendTyping {
-  type Ref<T> = { current?: T | HTMLElement };
-  type StateFunction<T> = (value: StateFunctionValue<T>) => void;
+  /**
+   * Represents a mutable reference object whose `current` property can hold a value of type `T` or an `HTMLElement`.
+   *
+   * @template T
+   * @typedef {Object} Ref
+   * @property {T | HTMLElement} [current] - The current value held by the reference, which can be of type `T` or an `HTMLElement`.
+   */
+  type Ref<T> = { readonly current?: T | HTMLElement };
+
+  /**
+   * A function that updates the state based on the provided value. It accepts a value or a function that returns a new value based on the previous state.
+   *
+   * @template T
+   * @callback StateFunction
+   * @param {StateFunctionValue<T>} value - The value or function used to update the state.
+   * @param {boolean} [force=false] - Optional flag to force the update.
+   */
+  type StateFunction<T> = (
+    value: StateFunctionValue<T>,
+    force?: boolean
+  ) => void;
+
+  /**
+   * The value used to update the state, which can be either a new value directly or a function that computes the new value based on the previous state.
+   *
+   * @template T
+   * @typedef {(previous: T) => T | T} StateFunctionValue
+   */
   type StateFunctionValue<T> = ((previous: T) => T) | T;
+
+  /**
+   * A function that returns a memoized value, which is recalculated only when dependencies change.
+   *
+   * @template T
+   * @callback StateEffectiveMemoFunction
+   * @returns {T} - The memoized value.
+   */
   type StateEffectiveMemoFunction<T> = () => T;
+
+  /**
+   * A function that can return a cleanup function or nothing, commonly used in effect hooks.
+   *
+   * @callback StateEffectiveFunction
+   * @returns {(() => any) | void} - A cleanup function or void if no cleanup is necessary.
+   */
   type StateEffectiveFunction = () => (() => any) | void;
+
+  /**
+   * A reducer function that takes a previous value and an incoming value, and returns a new value. This is often used in state management patterns like `useReducer`.
+   *
+   * @template ValueType, IncomingType
+   * @callback StateReducerFunction
+   * @param {ValueType} previous - The previous state or value.
+   * @param {IncomingType} current - The incoming value or action that affects the state.
+   * @returns {ValueType} - The new value after applying the reducer logic.
+   */
   type StateReducerFunction<ValueType, IncomingType> = (
     previous: ValueType,
     current: IncomingType
@@ -172,6 +984,7 @@ export declare namespace ReblendTyping {
         [K in Tag]: P extends JSX.IntrinsicElements[K] ? K : never;
       }[Tag]
     | ComponentType<P>;
+
   /**
    * Represents any user-defined component, either as a function or a class.
    *
@@ -185,6 +998,7 @@ export declare namespace ReblendTyping {
    * @see {@link FunctionComponent}
    */
   type ComponentType<P = {}> = ComponentClass<P> | FunctionComponent<P>;
+
   /**
    * Represents any user-defined component, either as a function or a class.
    *
@@ -196,27 +1010,7 @@ export declare namespace ReblendTyping {
    */
   type JSXElementConstructor<P> = (props: P) => ReblendNode | ReblendNode[];
   /* | (new (props: P) => Component<any, any>); */
-  /**
-   * A readonly ref container where {@link current} cannot be mutated.
-   *
-   * Created by {@link createRef}, or {@link useRef} when passed `null`.
-   *
-   * @template T The type of the ref's value.
-   *
-   * @example
-   *
-   * ```tsx
-   * const ref = createRef<HTMLDivElement>();
-   *
-   * ref.current = document.createElement('div'); // Error
-   * ```
-   */
-  interface RefObject<T> {
-    /**
-     * The current value of the ref.
-     */
-    readonly current: T | null;
-  }
+
   interface DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES {}
   /**
    * A callback fired whenever the ref's value changes.
@@ -238,11 +1032,12 @@ export declare namespace ReblendTyping {
       | void
       | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES];
   }['bivarianceHack'];
+
   /**
    * A union type of all possible shapes for Reblend refs.
    *
    * @see {@link RefCallback}
-   * @see {@link RefObject}
+   * @see {@link Ref}
    */
   //type Ref<T> = RefCallback<T> | RefObject<T> | null;
   /**
@@ -424,7 +1219,23 @@ export declare namespace ReblendTyping {
     | HTMLVideoElement
     | HTMLWebViewElement
     | SVGElement;
+
+  /**
+   * Represents a JSX element that is both a native `HTMLElement` and a `React` element, including support for portals.
+   *
+   * Where {@link ReblendNode} represents everything that can be rendered, `ReblendElement`
+   * specifically represents JSX elements that are rendered via Reblend, including native HTML elements and React portals.
+   *
+   * @template P The type of the props object for the React element
+   * @template T The type of the HTML component or tag name
+   *
+   * @example
+   * ```tsx
+   * const element: ReblendElement = <div />;
+   * ```
+   */
   type ReblendElement = HTMLElement & React.ReactElement & React.ReactPortal;
+
   /**
    * @deprecated
    */
@@ -1610,7 +2421,7 @@ export declare namespace ReblendTyping {
     render(): ReblendNode;
     [propertyName: string]: any;
   }
-  function createRef<T>(): RefObject<T>;
+  function createRef<T>(): Ref<T>;
   /**
    * The type of the component returned from {@link forwardRef}.
    *
@@ -2016,7 +2827,7 @@ export declare namespace ReblendTyping {
    * @version 16.8.0
    * @see {@link https://reblend.dev/reference/reblend/useRef}
    */
-  function useRef<T>(initialValue: T | null): RefObject<T>;
+  function useRef<T>(initialValue: T | null): Ref<T>;
   /**
    * `useRef` returns a mutable ref object whose `.current` property is initialized to the passed argument
    * (`initialValue`). The returned object will persist for the full lifetime of the component.
@@ -5752,13 +6563,38 @@ export declare namespace ReblendTyping {
     digest?: string | null;
   }
 }
+/**
+ * Description placeholder
+ *
+ * @typedef {IsExactlyAny}
+ * @template T
+ */
 type IsExactlyAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
+/**
+ * Description placeholder
+ *
+ * @typedef {ExactlyAnyPropertyKeys}
+ * @template T
+ */
 type ExactlyAnyPropertyKeys<T> = {
   [K in keyof T]: IsExactlyAny<T[K]> extends true ? K : never;
 }[keyof T];
+/**
+ * Description placeholder
+ *
+ * @typedef {NotExactlyAnyPropertyKeys}
+ * @template T
+ */
 type NotExactlyAnyPropertyKeys<T> = Exclude<keyof T, ExactlyAnyPropertyKeys<T>>;
+/**
+ * Description placeholder
+ *
+ * @typedef {MergePropTypes}
+ * @template P
+ * @template T
+ */
 type MergePropTypes<P, T> = P extends any
   ? IsExactlyAny<P> extends true
     ? T
@@ -5768,9 +6604,22 @@ type MergePropTypes<P, T> = P extends any
         Pick<T, Exclude<keyof T, NotExactlyAnyPropertyKeys<P>>> &
         Pick<P, Exclude<keyof P, keyof T>>
   : never;
+/**
+ * Description placeholder
+ *
+ * @typedef {InexactPartial}
+ * @template T
+ */
 type InexactPartial<T> = {
   [K in keyof T]?: T[K] | undefined;
 };
+/**
+ * Description placeholder
+ *
+ * @typedef {Defaultize}
+ * @template P
+ * @template D
+ */
 type Defaultize<P, D> = P extends any
   ? string extends keyof P
     ? P
@@ -5778,6 +6627,14 @@ type Defaultize<P, D> = P extends any
         InexactPartial<Pick<P, Extract<keyof P, keyof D>>> &
         InexactPartial<Pick<D, Exclude<keyof D, keyof P>>>
   : never;
+/**
+ * Description placeholder
+ *
+ * @export
+ * @typedef {ReblendManagedAttributes}
+ * @template C
+ * @template P
+ */
 export type ReblendManagedAttributes<C, P> = C extends {
   propTypes: infer T;
   defaultProps: infer D;
