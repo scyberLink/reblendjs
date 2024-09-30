@@ -1,7 +1,7 @@
 import { useContext } from 'reblendjs';
 import { Hash } from '../contexts/hash';
 
-//@reblendcustomhook
+//@ReblendHook
 export function useHash() {
   const [hashContext] = useContext(Hash);
   return hashContext;

@@ -888,7 +888,7 @@ export declare namespace ReblendTyping {
    * @typedef {Object} Ref
    * @property {T | HTMLElement} [current] - The current value held by the reference, which can be of type `T` or an `HTMLElement`.
    */
-  type Ref<T> = { readonly current?: T | HTMLElement };
+  type Ref<T> = { readonly current?: T };
 
   /**
    * A function that updates the state based on the provided value. It accepts a value or a function that returns a new value based on the previous state.
