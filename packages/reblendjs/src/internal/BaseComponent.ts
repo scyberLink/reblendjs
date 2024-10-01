@@ -107,33 +107,77 @@ export interface ReblendPrimitive extends BaseComponent {
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 class BaseComponent {
+  /**
+   * Used to identify the component, similar to `displayName`.
+   * This can also be used to track components that have changed.
+   *
+   * @static
+   * @type {string}
+   */
   static ELEMENT_NAME = 'BaseComponent'
+
+  /**
+   * Holds the props (properties) of the component.
+   * Can be any type of object containing the default component's configuration.
+   *
+   * @static
+   * @type {IAny}
+   */
   static props: IAny
 
+  /**
+   * A static class that extends the functionality of `BaseComponent`
+   * to provide integration with React and Reblend.
+   */
   private static ReblendReactClass = class extends BaseComponent {
     reactDomCreateRoot_root?: Root
 
+    /**
+     * Constructor for `ReblendReactClass`.
+     */
     constructor() {
       super()
     }
 
+    /**
+     * Returns the virtual node (VNode) or children VNodes of the component, used in React's render function.
+     *
+     * @protected
+     * @returns {VNode | VNodeChildren} The virtual node representing the component's HTML structure.
+     */
     protected html(): VNode | VNodeChildren {
       return this.props.children
     }
 
-    protected setReblendReactStandardContainer(node: HTMLElement) {
+    /**
+     * Sets the container for rendering standard Reblend nodes and initializes the root React DOM.
+     *
+     * @param {HTMLElement} node - The HTML element to be set as the Reblend React standard container.
+     * @protected
+     */
+    protected setReblendReactStandardContainer(node: HTMLElement): void {
       this.reblendReactStandardContainer = node
       this.initRoot()
     }
 
-    initRoot() {
+    /**
+     * Initializes the root for React DOM rendering if it has not been created already.
+     */
+    initRoot(): void {
       if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
         this.reactDomCreateRoot_root = ReactDOM.createRoot(this)
       }
     }
 
-    //Should only be use on React Reblend node
-    async checkPropsChange() {
+    /**
+     * Checks for any changes in the props and updates the component accordingly.
+     * React Reblend nodes can trigger different updates based on the type of children or non-children changes.
+     *
+     * @async
+     * @returns {Promise<void>}
+     * @throws {Error} Throws an error if an invalid props update type is provided.
+     */
+    async checkPropsChange(): Promise<void> {
       for (const type of Array.from(this.childrenPropsUpdate || []).sort()) {
         this.childrenPropsUpdate?.delete(type)
 
@@ -152,7 +196,13 @@ class BaseComponent {
       }
     }
 
-    getChildrenWrapperForReact() {
+    /**
+     * Returns a React element that wraps the children of the current component for rendering in React.
+     * It ensures that child elements are properly attached to the standard parent container.
+     *
+     * @returns {React.ReactElement} The React element representing the children wrapper for React.
+     */
+    getChildrenWrapperForReact(): React.ReactElement {
       const children = this.htmlElements || []
       const displayName = this.displayName || ''
       return React.createElement(
@@ -181,9 +231,6 @@ class BaseComponent {
                 resolve()
               }).then(() => {
                 standardParent.removeChild = (node) => {
-                  /* if (!(<any>node == this.containerRef.current)) {
-                    ;(<any>standardParent).rm(node)
-                  } */
                   return node
                 }
               })
@@ -204,7 +251,13 @@ class BaseComponent {
       )
     }
 
-    protected reactReblendMount() {
+    /**
+     * Mounts the React Reblend component by rendering it using the React DOM root and creating a portal
+     * to the standard Reblend React container.
+     *
+     * @protected
+     */
+    protected reactReblendMount(): void {
       this.catchErrorFrom(() => {
         this.initRoot()
         const childrenWrapper = this.getChildrenWrapperForReact()
@@ -239,12 +292,23 @@ class BaseComponent {
       })
     }
 
+    /**
+     * Cleans up the component by resetting the React DOM root and calling the parent class's cleanup method.
+     *
+     * @protected
+     */
     protected cleanUp(): void {
       this.reactDomCreateRoot_root = null as any
       super.cleanUp()
     }
   }
 
+  /**
+   * Retrieves the first standard element from a node, traversing its children if necessary.
+   *
+   * @param {BaseComponent} node - The starting node to search from.
+   * @returns {HTMLElement | undefined} The first standard HTML element found, or `undefined` if none is found.
+   */
   static getFirstStandardElementFrom(node: BaseComponent): HTMLElement | undefined {
     if (!node) {
       return
@@ -267,7 +331,13 @@ class BaseComponent {
     }
   }
 
-  static extendPrototype(target, prototype) {
+  /**
+   * Extends the prototype of the target object with the provided prototype, skipping constructors and existing functions.
+   *
+   * @param {any} target - The target object to extend.
+   * @param {any} prototype - The prototype object to copy properties and methods from.
+   */
+  static extendPrototype(target: any, prototype: any): void {
     const descriptors = Object.getOwnPropertyDescriptors(prototype)
 
     for (const key in descriptors) {
@@ -291,31 +361,35 @@ class BaseComponent {
     }
   }
 
-  static hasName(element: typeof BaseComponent) {
-    return element.ELEMENT_NAME && element.ELEMENT_NAME !== 'BaseComponent'
+  /**
+   * Checks if the given element has a name other than 'BaseComponent'.
+   *
+   * @param {typeof BaseComponent} element - The element to check.
+   * @returns {boolean} `true` if the element has a name and it is not 'BaseComponent', otherwise `false`.
+   */
+  static hasName(element: typeof BaseComponent): boolean {
+    return !!(element?.ELEMENT_NAME && element.ELEMENT_NAME !== 'BaseComponent')
   }
 
-  static fn(eventCallback: (e: Event) => any = () => {}) {
+  /**
+   * Wraps an event callback function, ensuring that the event callback is always called.
+   *
+   * @param {(e: Event) => any} [eventCallback=() => {}] - The event callback to be wrapped.
+   * @returns {(e: Event) => void} A function that invokes the event callback.
+   */
+  static fn(eventCallback: (e: Event) => any = () => {}): (e: Event) => void {
     return (e) => eventCallback && eventCallback(e)
   }
 
-  static setAttributesWithNamespace(element: HTMLElement | SVGElement, attributes: Record<string, string>) {
+  /**
+   * Sets attributes on the given element, handling namespaces for XML, SVG, MathML, and XLink attributes.
+   *
+   * @param {HTMLElement | SVGElement} element - The element on which to set attributes.
+   * @param {Record<string, string>} attributes - A record of attribute names and values to set.
+   */
+  static setAttributesWithNamespace(element: HTMLElement | SVGElement, attributes: Record<string, string>): void {
     const svgAttributes = [
-      /* 'x',
-      'y', */
-      /* 'width',
-      'height', */
-      /* 'fill',
-      'stroke',
-      'viewBox',
-      'preserveAspectRatio',
-      'cx',
-      'cy',
-      'r',
-      'd',
-      'pathLength',
-      'transform',
-      'href', */
+      /* SVG attributes */
     ]
     const mathMLAttributes = ['displaystyle', 'scriptlevel', 'mathvariant', 'mathsize', 'lspace', 'rspace']
 
@@ -342,7 +416,13 @@ class BaseComponent {
     }
   }
 
-  static createElementWithNamespace(tag: string) {
+  /**
+   * Creates an HTML, SVG, MathML, or XML element based on the provided tag name.
+   *
+   * @param {string} tag - The tag name of the element to create.
+   * @returns {HTMLElement | SVGElement | Element} The created element.
+   */
+  static createElementWithNamespace(tag: string): HTMLElement | SVGElement | Element {
     const svgTags = [
       'svg',
       'path',
@@ -373,7 +453,14 @@ class BaseComponent {
     }
   }
 
-  static setProps(props: IAny, to: BaseComponent, init: boolean) {
+  /**
+   * Sets properties on the target component, updating attributes and handling special cases like events and style.
+   *
+   * @param {IAny} props - The properties to set.
+   * @param {BaseComponent} to - The target component to apply the properties to.
+   * @param {boolean} init - Whether this is an initial setting of properties.
+   */
+  static setProps(props: IAny, to: BaseComponent, init: boolean): void {
     if (props && to) {
       if (init && to.initProps) {
         to.initProps(props)
@@ -416,7 +503,14 @@ class BaseComponent {
     }
   }
 
-  static removeProps(props: IAny, to: BaseComponent) {
+  /**
+   * Removes specified properties from the `to` component and removes the corresponding attributes.
+   * If a property is to be removed using `setAttribute`, it will also be removed from `props`.
+   *
+   * @param {IAny} props - The properties to remove from the component.
+   * @param {BaseComponent} to - The target component from which to remove the properties.
+   */
+  static removeProps(props: IAny, to: BaseComponent): void {
     if (props && to) {
       to.props = { ...to.props, ...props }
 
@@ -439,44 +533,103 @@ class BaseComponent {
     }
   }
 
+  /**
+   * Checks if the provided node is a rendered Reblend node.
+   *
+   * @param {any} node - The node to check.
+   * @returns {boolean} `true` if the node is a rendered Reblend node, otherwise `false`.
+   */
   static isReblendRenderedNode(node: any): boolean {
     return typeof node !== 'string' && node![ReblendNode]
   }
 
+  /**
+   * Checks if the provided node is a virtual Reblend node.
+   *
+   * @param {any} node - The node to check.
+   * @returns {boolean} `true` if the node is a virtual Reblend node, otherwise `false`.
+   */
   static isReblendVirtualNode(node: any): boolean {
     return typeof node !== 'string' && node![ReblendVNode]
   }
 
+  /**
+   * Checks if the provided node is a standard rendered Reblend node.
+   *
+   * @param {any} node - The node to check.
+   * @returns {boolean} `true` if the node is a standard rendered Reblend node, otherwise `false`.
+   */
   static isReblendRenderedNodeStandard(node: any): boolean {
     return typeof node !== 'string' && node![ReblendNodeStandard]
   }
 
+  /**
+   * Checks if the provided node is a standard virtual Reblend node.
+   *
+   * @param {any} node - The node to check.
+   * @returns {boolean} `true` if the node is a standard virtual Reblend node, otherwise `false`.
+   */
   static isReblendVirtualNodeStandard(node: any): boolean {
     return typeof node !== 'string' && node![ReblendVNodeStandard]
   }
 
+  /**
+   * Checks if the provided node is a React to Reblend rendered node.
+   *
+   * @param {any} node - The node to check.
+   * @returns {boolean} `true` if the node is a React to Reblend rendered node, otherwise `false`.
+   */
   static isReactToReblendRenderedNode(node: any): boolean {
     return typeof node !== 'string' && node![ReactToReblendNode]
   }
 
+  /**
+   * Checks if the provided node is a React to Reblend virtual node.
+   *
+   * @param {any} node - The node to check.
+   * @returns {boolean} `true` if the node is a React to Reblend virtual node, otherwise `false`.
+   */
   static isReactToReblendVirtualNode(node: any): boolean {
     return typeof node !== 'string' && node![ReactToReblendVNode]
   }
 
+  /**
+   * Checks if the provided node is a standard virtual node.
+   *
+   * @param {any} node - The node to check.
+   * @returns {boolean} `true` if the node is a standard virtual node, otherwise `false`.
+   */
   static isStandardVirtualNode(node: any): boolean {
     return typeof node !== 'string' && node![ReblendVNodeStandard]
   }
 
-  static isReblendPrimitiveElement(element: any) {
+  /**
+   * Checks if the provided element is a Reblend primitive element.
+   *
+   * @param {any} element - The element to check.
+   * @returns {boolean} `true` if the element is a Reblend primitive element, otherwise `false`.
+   */
+  static isReblendPrimitiveElement(element: any): boolean {
     return !BaseComponent.isPrimitive(element) && element.displayName === REBLEND_PRIMITIVE_ELEMENT_NAME
   }
 
-  static newReblendPrimitive() {
+  /**
+   * Creates a new Reblend primitive element.
+   *
+   * @returns {ReblendPrimitive} The newly created Reblend primitive element.
+   */
+  static newReblendPrimitive(): ReblendPrimitive {
     const text: ReblendPrimitive = document.createTextNode('') as any as ReblendPrimitive
     BaseComponent.extendPrototype(text, Reblend.prototype)
     text.displayName = REBLEND_PRIMITIVE_ELEMENT_NAME
 
-    text.setData = function (data: Primitive) {
+    /**
+     * Sets the data of the Reblend primitive.
+     *
+     * @param {Primitive} data - The data to set.
+     * @returns {ReblendPrimitive} The updated Reblend primitive.
+     */
+    text.setData = function (data: Primitive): ReblendPrimitive {
       this.reblendPrimitiveData = data
       if (this.reblendPrimitiveData !== undefined && this.reblendPrimitiveData !== null) {
         const textContent = `${this.reblendPrimitiveData}`
@@ -487,13 +640,24 @@ class BaseComponent {
       return this
     }
 
-    text.getData = function () {
+    /**
+     * Gets the data of the Reblend primitive.
+     *
+     * @returns {Primitive} The data of the Reblend primitive.
+     */
+    text.getData = function (): Primitive {
       return this.reblendPrimitiveData
     }
 
     return text
   }
 
+  /**
+   * Checks if the provided display name represents a React node.
+   *
+   * @param {IAny} displayName - The display name to check.
+   * @returns {boolean} `true` if the display name represents a React node, otherwise `false`.
+   */
   static isReactNode(displayName: IAny): boolean {
     return (
       displayName &&
@@ -504,6 +668,13 @@ class BaseComponent {
     )
   }
 
+  /**
+   * Deeply flattens an array or set of elements.
+   *
+   * @template T
+   * @param {T[] | Set<T>} data - The data to flatten.
+   * @returns {T[]} A flattened array of elements.
+   */
   static deepFlat<T>(data: T[] | Set<T>): T[] {
     if (!data) {
       return []
@@ -522,11 +693,25 @@ class BaseComponent {
     return ts
   }
 
-  static isArray(obj: unknown) {
+  /**
+   * Checks if the given object is an array-like structure by verifying that it contains array-specific methods and properties.
+   *
+   * @param {unknown} obj - The object to check.
+   * @returns {boolean} `true` if the object is an array-like structure, otherwise `false`.
+   */
+  static isArray(obj: unknown): boolean {
     const arrayProperties = ['pop', 'push', 'length', 'shift', 'unshift', 'splice', 'slice', 'find', 'includes']
     return typeof obj === 'object' && arrayProperties.every((property) => property in obj!)
   }
 
+  /**
+   * Flattens a nested array or set of virtual nodes (VNode) and adds the result to the `containerArr`.
+   *
+   * @template T
+   * @param {(T | T[])[] | Set<T | T[]>} arr - The array or set of VNode children to flatten.
+   * @param {T[]} [containerArr=[]] - The container array to store flattened nodes.
+   * @returns {T[]} The flattened array of VNode children.
+   */
   static flattenVNodeChildren<T>(arr: (T | T[])[] | Set<T | T[]>, containerArr: T[] = []): T[] {
     if (!arr) {
       return []
@@ -551,6 +736,16 @@ class BaseComponent {
     return containerArr
   }
 
+  /**
+   * Constructs a VNode from the provided display name, props, and children.
+   * If the display name is an array, it will return that array.
+   * Otherwise, it constructs a new VNode using the provided properties.
+   *
+   * @param {typeof Reblend | string | VNode[]} displayName - The display name or class for the VNode.
+   * @param {IAny} props - The props to pass to the VNode.
+   * @param {...VNodeChildren} children - The children to include in the VNode.
+   * @returns {VNode | VNodeChildren} The constructed VNode or VNode children.
+   */
   static construct(
     displayName: typeof Reblend | string | VNode[],
     props: IAny,
@@ -588,13 +783,31 @@ class BaseComponent {
     return velement
   }
 
-  static isPrimitive(data: any) {
+  /**
+   * Checks if the provided data is a primitive type.
+   * Primitive types include string, number, boolean, bigint, null, undefined, and symbol.
+   *
+   * @param {any} data - The data to check.
+   * @returns {boolean} `true` if the data is a primitive, otherwise `false`.
+   */
+  static isPrimitive(data: any): boolean {
     const primitves = ['string', 'number', 'boolean', 'bigint', 'null', 'undefined', 'symbol']
     const dataType = typeof data
     return primitves.some((primitve) => primitve === (data === null ? 'null' : dataType))
   }
 
-  protected static createChildren(children: VNodeChildren, containerArr: (BaseComponent | HTMLElement)[] = []) {
+  /**
+   * Creates child nodes from the given VNode children and appends them to the container array.
+   * Supports nested arrays, Sets, and various node types such as Reblend, DOM Nodes, React Nodes, and primitive values.
+   *
+   * @param {VNodeChildren} children - The children to process.
+   * @param {(BaseComponent | HTMLElement)[]} [containerArr=[]] - The array to store the created child nodes.
+   * @returns {(BaseComponent | HTMLElement)[]} The array containing the created child nodes.
+   */
+  protected static createChildren(
+    children: VNodeChildren,
+    containerArr: (BaseComponent | HTMLElement)[] = [],
+  ): (BaseComponent | HTMLElement)[] {
     if (!children) {
       return containerArr
     }
@@ -617,13 +830,27 @@ class BaseComponent {
         const domChild = BaseComponent.deepFlat(BaseComponent.createElement(child as any))
         domChild && containerArr.push(...domChild)
       } else {
-        throw new TypeError('Invalid child node  in children')
+        throw new TypeError('Invalid child node in children')
       }
     }
     return containerArr
   }
 
-  static async mountOn(elementId: string, app: typeof Reblend | ReblendTyping.FunctionComponent, props?: IAny) {
+  /**
+   * Mounts the given component or function component to the DOM at the specified element ID.
+   * The component is constructed and its elements are attached to the DOM root.
+   *
+   * @param {string} elementId - The ID of the DOM element where the component should be mounted.
+   * @param {typeof Reblend | ReblendTyping.FunctionComponent} app - The component or function component to mount.
+   * @param {IAny} [props] - Optional props to pass to the component.
+   * @returns {Promise<void>} A promise that resolves when the component is mounted.
+   * @throws {Error} If the specified element ID is invalid.
+   */
+  static async mountOn(
+    elementId: string,
+    app: typeof Reblend | ReblendTyping.FunctionComponent,
+    props?: IAny,
+  ): Promise<void> {
     const root = document.getElementById(elementId)
     if (!root) {
       throw new Error('Invalid root id')
@@ -635,17 +862,21 @@ class BaseComponent {
     for (const node of nodes) {
       if (BaseComponent.isStandard(node)) {
         root.appendChild(node)
-        //Promise.resolve().then(() => {
         BaseComponent.attachElementsAt(node, node)
-        //})
       } else {
-        //Promise.resolve().then(() => {
         BaseComponent.attachElementsAt(root, node)
-        //})
       }
     }
   }
 
+  /**
+   * Detaches the given node from the DOM.
+   * If the node is a primitive, the function returns immediately.
+   * If the node has a `disconnectedCallback`, it will be invoked.
+   * Otherwise, it will be removed from the DOM.
+   *
+   * @param {BaseComponent | HTMLElement} node - The node to detach.
+   */
   private static detach(node: BaseComponent | HTMLElement) {
     if (BaseComponent.isPrimitive(node)) return
     if ('disconnectedCallback' in node) {
@@ -659,15 +890,15 @@ class BaseComponent {
       }
     }
   }
+
+  /**
+   * Detaches all child nodes and HTML elements from the given `BaseComponent`.
+   * If the node is a primitive, the function returns immediately.
+   *
+   * @param {BaseComponent} node - The parent node from which children will be detached.
+   */
   private static detachChildren(node: BaseComponent) {
     if (BaseComponent.isPrimitive(node)) return
-    /* if (node.props) {
-      for (const child of node.props?.children || []) {
-        this.detach(child)
-        child.standardContainer?.remove()
-      }
-      node.props.children = []
-    } */
     for (const child of node.childNodes || []) {
       this.detach(child as any)
     }
@@ -676,16 +907,26 @@ class BaseComponent {
     }
   }
 
+  /**
+   * Calls `connectedCallback` on the node if it exists, signaling that the node has been connected to the DOM.
+   *
+   * @template T
+   * @param {T | undefined} node - The node to connect.
+   */
   static connected<T extends BaseComponent | HTMLElement>(node: T | undefined) {
     if (!node) return
     if ((node as BaseComponent).connectedCallback) {
       ;(node as BaseComponent).connectedCallback()
     }
-    /* if ((node as BaseComponent).attach) {
-      ;(node as BaseComponent).attach()
-    } */
   }
 
+  /**
+   * Creates an element based on the provided virtual node (VNode) or primitive value.
+   * The created element is returned as a `BaseComponent`.
+   *
+   * @param {VNode | VNode[] | ReactNode | Primitive} vNode - The virtual node or primitive to create an element from.
+   * @returns {BaseComponent[]} The created `BaseComponent` instances.
+   */
   static createElement(vNode: VNode | VNode[] | ReactNode | Primitive): BaseComponent[] {
     if (vNode instanceof Reblend || vNode instanceof Node) {
       if (!(vNode as any).displayName) {
@@ -726,7 +967,6 @@ class BaseComponent {
 
     element[isReactNode ? ReactToReblendNode : isTagStandard ? ReblendNodeStandard : ReblendNode] = true
     element.displayName = tagName
-    //element.parentComponent = parentComponent
     if (isReactNode) {
       element.ReactClass = displayName
     }
@@ -740,11 +980,7 @@ class BaseComponent {
       if (isReactNode) {
         element.setAttribute(REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME, process?.env?.REBLEND_DEVELEOPMENT ? tagName : '')
       } else {
-        element.setAttribute(
-          REBLEND_COMPONENT_ATTRIBUTE_NAME,
-          //Don't forget to uncomment this
-          process?.env?.REBLEND_DEVELEOPMENT ? tagName : '',
-        )
+        element.setAttribute(REBLEND_COMPONENT_ATTRIBUTE_NAME, process?.env?.REBLEND_DEVELEOPMENT ? tagName : '')
       }
     }
 
@@ -771,13 +1007,17 @@ class BaseComponent {
     BaseComponent.setProps((vNode as VNode).props, element, true)
 
     element.populateHtmlElements()
-    /* if (isReactNode) {
-    } else {
-      element.attach()
-    } */
     return [element]
   }
 
+  /**
+   * Attaches the reblendElement to the standardElement.
+   * If the reblendElement is React-based, it sets the container and mounts it.
+   * Otherwise, it iterates over the HTML elements of the reblendElement and recursively attaches them.
+   *
+   * @param {HTMLElement} standardElement - The standard HTML element to which the reblendElement is attached.
+   * @param {BaseComponent} reblendElement - The reblend element (ReblendNode or ReactNode) to be attached.
+   */
   static attachElementsAt(standardElement: HTMLElement, reblendElement: BaseComponent) {
     if (!reblendElement?.htmlElements || !standardElement) {
       return
@@ -806,6 +1046,15 @@ class BaseComponent {
     reblendElement.nearestStandardParent = standardElement
     BaseComponent.connected(reblendElement)
   }
+
+  /**
+   * Replaces the old node with a new node or nodes.
+   * Handles scenarios where old and new nodes may be React-based or standard HTML.
+   *
+   * @param {BaseComponent | BaseComponent[]} newNode - The new node(s) to replace the old node.
+   * @param {BaseComponent} oldNode - The old node to be replaced.
+   * @returns {BaseComponent | null} - The last inserted node after replacement, or null if none.
+   */
   private static replaceOldNode(
     newNode: BaseComponent | BaseComponent[],
     oldNode: BaseComponent,
@@ -826,15 +1075,12 @@ class BaseComponent {
         if (BaseComponent.isReactToReblendRenderedNode(n)) {
           const div: HTMLDivElement & { delegatedChildren?: HTMLElement[] } = document.createElement('div')
           div.delegatedChildren = []
-          //This delegate the node and insert it after oldNode or lastInsertedNode
           div.appendChild = (node: any) => {
             ;(lastInsertedNode || oldNode).after(node)
             if (!firstStandardElement) {
               firstStandardElement = node as any
             }
-
             div.delegatedChildren?.push(node)
-
             return node
           }
           div.remove = () => {
@@ -858,18 +1104,33 @@ class BaseComponent {
           firstStandardElement = n
         }
         BaseComponent.attachElementsAt(n, n)
-        //BaseComponent.connected(n)
       }
     }
     newNode.forEach((nn) => (nn.firstStandardElement = firstStandardElement))
     return lastInsertedNode
   }
+
+  /**
+   * Checks if a node is a standard HTML element or a Reblend primitive element.
+   *
+   * @param {BaseComponent | HTMLElement} node - The node to check.
+   * @returns {boolean} - True if the node is standard or a Reblend primitive element, false otherwise.
+   */
   static isStandard(node: BaseComponent | HTMLElement) {
     if (!node) {
       return false
     }
     return BaseComponent.isReblendRenderedNodeStandard(node) || BaseComponent.isReblendPrimitiveElement(node)
   }
+
+  /**
+   * Creates patches to create or remove nodes by comparing oldNode and newNode.
+   *
+   * @param {BaseComponent} parent - The parent node.
+   * @param {DomNodeChild} oldNode - The old node.
+   * @param {VNodeChild} newNode - The new node.
+   * @returns {Patch[]} - The array of patches.
+   */
   static diffCreateOrRemove(parent: BaseComponent, oldNode: DomNodeChild, newNode: VNodeChild) {
     const patches: Patch[] = []
     if (
@@ -884,9 +1145,17 @@ class BaseComponent {
     } else if (!newNode) {
       patches.push({ type: PatchTypeAndOrder.REMOVE, parent, oldNode })
     }
-
     return patches
   }
+
+  /**
+   * Diffs oldNode and newNode to generate patches that represent the changes between them.
+   *
+   * @param {BaseComponent} parent - The parent node.
+   * @param {DomNodeChild} oldNode - The old node.
+   * @param {VNodeChild} newNode - The new node.
+   * @returns {Patch[]} - The array of patches.
+   */
   static diff(parent: BaseComponent, oldNode: DomNodeChild, newNode: VNodeChild): Patch[] {
     const patches: Patch[] = []
     if (isCallable(oldNode) || isCallable(newNode)) {
@@ -917,7 +1186,6 @@ class BaseComponent {
       patches.push({ type: PatchTypeAndOrder.REMOVE, parent, oldNode })
     } else if ('displayName' in oldNode && 'displayName' in (newNode as any)) {
       const oldNodeTag = ((oldNode as BaseComponent).displayName as string).toLowerCase()
-
       const newNodeTag = (
         (BaseComponent.isPrimitive((newNode as VNode).displayName)
           ? (newNode as VNode).displayName
@@ -942,6 +1210,14 @@ class BaseComponent {
 
     return patches
   }
+
+  /**
+   * Diffs the props of the newNode and oldNode to generate a list of prop changes.
+   *
+   * @param {VNode} newNode - The new virtual node.
+   * @param {BaseComponent} oldNode - The old base component node.
+   * @returns {any[]} - The array of property differences.
+   */
   static diffProps(newNode: VNode, oldNode: BaseComponent) {
     const patches: PropPatch[] = []
     const oldProps: IAny = oldNode?.props || []
@@ -976,6 +1252,15 @@ class BaseComponent {
 
     return patches
   }
+
+  /**
+   * Diffs the children of the old and new virtual nodes and returns the patches required to update them.
+   *
+   * @param {BaseComponent} parent - The parent component containing the children.
+   * @param {BaseComponent} oldNode - The old component node.
+   * @param {VNode} newNode - The new virtual node.
+   * @returns {Patch[]} - An array of patches representing the differences between the old and new children.
+   */
   static diffChildren(parent: BaseComponent, oldNode: BaseComponent, newNode: VNode) {
     if (!BaseComponent.isStandard(oldNode) && !BaseComponent.isReactToReblendRenderedNode(oldNode)) {
       return []
@@ -1002,12 +1287,34 @@ class BaseComponent {
 
     return patches
   }
+
+  /**
+   * Determines if a given node is a text node.
+   *
+   * @param {Node} node - The node to check.
+   * @returns {boolean} - True if the node is a text node, otherwise false.
+   */
   static isTextNode(node: Node): node is Text {
     return node?.nodeType === Node.TEXT_NODE
   }
+
+  /**
+   * Checks whether the given data is empty (undefined or null).
+   *
+   * @param {*} data - The data to check.
+   * @returns {boolean} - True if the data is empty, otherwise false.
+   */
   static isEmpty(data: any) {
     return data === undefined || data === null
   }
+
+  /**
+   * Performs a deep comparison between two objects, including functions.
+   *
+   * @param {*} firstObject - The first object or function to compare.
+   * @param {*} secondObject - The second object or function to compare.
+   * @returns {boolean} - True if the objects are deeply equal, otherwise false.
+   */
   static deepCompare(firstObject, secondObject) {
     if (typeof firstObject !== 'function' && secondObject !== 'function') {
       return isEqual(firstObject, secondObject)
@@ -1045,6 +1352,12 @@ class BaseComponent {
 
     return true
   }
+
+  /**
+   * Applies an array of patches to the component.
+   *
+   * @param {Patch[]} patches - The array of patches to apply.
+   */
   private static applyPatches(patches: Patch[]) {
     for (const { type, newNode, oldNode, parent, patches: patchess } of (patches || []).sort(
       (a, b) => a.type - b.type,
@@ -1116,9 +1429,13 @@ class BaseComponent {
       }
     }
   }
+
+  /**
+   * Asynchronously applies property patches to nodes.
+   *
+   * @param {PropPatch[]} [patches] - The property patches to apply.
+   */
   static async applyProps(patches?: PropPatch[]) {
-    //requestAnimationFrame(() => {
-    //This helps reduce onStateChange call for updates of the same node
     let nodes = new Set<BaseComponent>()
     patches?.forEach(({ type, node, key, propValue }) => {
       if (type === 'UPDATE') {
@@ -1137,52 +1454,138 @@ class BaseComponent {
       }
     })
     nodes.forEach((node) => {
-      //if (!BaseComponent.isReblendRenderedNodeStandard(node)) {
       if (BaseComponent.isReactToReblendRenderedNode(node)) {
-        //Promise.resolve().then(() => {
         ;(node as any)?.checkPropsChange()
-        //})
       } else {
-        //Promise.resolve().then(() => {
         node.onStateChange()
-        //})
       }
-      //}
     })
     nodes = null as any
-    //})
   }
+
+  /**
+   * Performs a replacement operation on an old node.
+   *
+   * @param {BaseComponent} oldNode - The old node to replace.
+   * @param {() => void} operation - The operation to execute for the replacement.
+   */
   static replaceOperation(oldNode: BaseComponent, operation: () => void) {
     operation()
     BaseComponent.detachChildren(oldNode)
     BaseComponent.detach(oldNode)
   }
+
+  // Properties
+
   private nearestStandardParent?: HTMLElement
+
+  /**
+   * The standard container for React and Reblend integration.
+   */
   private reblendReactStandardContainer!: HTMLElement
+
+  /**
+   * The selector string for querying elements by data ID.
+   */
   dataIdQuerySelector!: string
+
+  /**
+   * The component properties.
+   */
   props!: IAny
+
+  /**
+   * The rendering error, if any occurred during rendering.
+   */
   renderingError?: ReblendRenderingException
+
+  /**
+   * The error handler for rendering exceptions.
+   */
   renderingErrorHandler?: (e: ReblendRenderingException) => void
+
+  /**
+   * Indicates whether the component is attached.
+   */
   attached!: boolean
+
+  /**
+   * The React class associated with this component.
+   */
   ReactClass: any
+
+  /**
+   * A reference for the component's DOM node.
+   */
   ref!: ReblendTyping.Ref<HTMLElement> | ((node: HTMLElement) => any)
+
+  /**
+   * The direct parent of this component.
+   */
   directParent: this | undefined
+
+  /**
+   * The effects to apply when the component is mounted.
+   */
   private onMountEffects?: ReblendTyping.StateEffectiveFunction[]
+
+  /**
+   * The effects functions defined for the component.
+   */
   private effectsFn?: ReblendTyping.StateEffectiveFunction[]
+
+  /**
+   * The disconnect effects to apply when the component is disconnected.
+   */
   private disconnectEffects?: ReblendTyping.StateEffectiveFunction[]
+
+  /**
+   * Error thrown when a state identifier/key is not specified.
+   */
   stateIdNotIncluded = new Error('State Identifier/Key not specified')
+
+  /**
+   * Indicates whether state effects are currently running.
+   */
   stateEffectRunning = false
+
+  /**
+   * The HTML elements managed by this component.
+   */
   private htmlElements?: BaseComponent[]
+
+  /**
+   * Set of update types for children properties.
+   */
   childrenPropsUpdate?: Set<ChildrenPropsUpdateType>
+
+  /**
+   * The first standard element, if available.
+   */
   private _firstStandardElement?: HTMLElement | undefined
+
+  /**
+   * The component's state.
+   */
   private _state!: IAny
 
+  /**
+   * Sets the React standard container for Reblend integration.
+   *
+   * @param {HTMLElement} node - The DOM node to set as the React standard container.
+   */
   protected setReblendReactStandardContainer(node: HTMLElement) {
     this.reblendReactStandardContainer = node
   }
 
+  /**
+   * Lifecycle method for mounting the component in React.
+   */
   protected reactReblendMount() {}
 
+  /**
+   * Populates the HTML elements for this component.
+   */
   populateHtmlElements() {
     this.catchErrorFrom(() => {
       let htmlVNodes = this.html()
@@ -1196,17 +1599,31 @@ class BaseComponent {
     })
   }
 
-  public get firstStandardElement(): HTMLElement | undefined /* eslint-disable @typescript-eslint/no-explicit-any */ {
+  /**
+   * Gets the first standard element if available, otherwise retrieves it from the component tree.
+   *
+   * @returns {HTMLElement | undefined} The first standard element or undefined.
+   */
+  public get firstStandardElement(): HTMLElement | undefined {
     return this._firstStandardElement && this._firstStandardElement.parentNode
       ? this._firstStandardElement
       : BaseComponent.getFirstStandardElementFrom(this)
   }
-  public set firstStandardElement(
-    value: HTMLElement | undefined /* eslint-disable @typescript-eslint/no-explicit-any */,
-  ) {
+
+  /**
+   * Sets the first standard element.
+   *
+   * @param {HTMLElement | undefined} value - The new first standard element.
+   */
+  public set firstStandardElement(value: HTMLElement | undefined) {
     this._firstStandardElement = value
   }
 
+  /**
+   * Retrieves attachable elements from the component.
+   *
+   * @returns {BaseComponent[]} The attachable elements.
+   */
   private getAttachableElements() {
     const elements: BaseComponent[] = []
     if (BaseComponent.isReblendRenderedNodeStandard(this) || BaseComponent.isReblendPrimitiveElement(this)) {
@@ -1226,6 +1643,9 @@ class BaseComponent {
     return elements
   }
 
+  /**
+   * Callback invoked when the component is connected to the DOM.
+   */
   connectedCallback() {
     if (!this.attached) {
       this.attached = true
@@ -1234,28 +1654,45 @@ class BaseComponent {
     }
   }
 
+  /**
+   * Appends multiple child elements to the component.
+   *
+   * @param {...(HTMLElement | BaseComponent)[]} children - The child elements to append.
+   */
   appendChildren(...children: (HTMLElement | BaseComponent)[]) {
     for (const child of children) {
       this._appendChild(child)
     }
   }
 
+  /**
+   * Appends one or more nodes to the component.
+   *
+   * @param {...(Node | string)[]} nodes - The nodes or string content to append.
+   */
   append(...nodes: Array<Node | string>): void {
     for (const node of nodes) {
       this._appendChild(node as any)
     }
   }
 
+  /**
+   * Adds a disconnect effect function to be executed when the component is disconnected.
+   *
+   * @param {() => void} effect - The effect function to add.
+   */
   addDisconnectedEffect(effect: () => void) {
     this.disconnectEffects?.push(effect)
   }
 
-  addStyle(styles: string[]): void
-
-  addStyle(style: IAny): void
-
-  addStyle(style: string): void
-
+  /**
+   * Adds styles to the component.
+   *
+   * @param {string[]} styles - An array of style strings to apply.
+   * @param {IAny} style - An object representing styles as key-value pairs.
+   * @param {string} style - A single style string to apply.
+   * @param {string[] | IAny | string} style - The styles to apply.
+   */
   addStyle(style: string[] | IAny | string): void {
     if (!style) {
       return
@@ -1272,53 +1709,110 @@ class BaseComponent {
     }
   }
 
+  /**
+   * Adds an inline style to the component.
+   *
+   * @param {IPair} param - The style name and value pair.
+   * @param {string} param.name - The name of the style property.
+   * @param {any} param.value - The value of the style property.
+   */
   addInlineStyle({ name, value }: IPair) {
     this.style[name as any] = value
   }
 
+  /**
+   * Adds one or more class names to the component.
+   *
+   * @param {...string[]} classNames - The class names to add.
+   */
   addClassNames(...classNames: string[]) {
     this.classList.add(...classNames)
   }
 
+  /**
+   * Removes one or more class names from the component.
+   *
+   * @param {...string[]} classNames - The class names to remove.
+   */
   removeClassNames(...classNames: string[]) {
     this.classList.remove(...classNames)
   }
 
+  /**
+   * Replaces an existing class name with a new one.
+   *
+   * @param {string} oldClassName - The class name to be replaced.
+   * @param {string} newClassName - The new class name to set.
+   * @returns {boolean} True if the class name was replaced, false otherwise.
+   */
   replaceClassName(oldClassName: string, newClassName: string) {
     return this.classList.replace(oldClassName, newClassName)
   }
 
+  /**
+   * Initializes the component's state.
+   */
   initState() {}
+
+  /**
+   * Initializes the component's properties.
+   *
+   * @param {IAny} props - The properties to set on the component.
+   */
   initProps(props: IAny) {
     this.props = props || {}
   }
 
+  /**
+   * Lifecycle method called after the component is mounted.
+   */
   componentDidMount() {}
 
+  /**
+   * Gets the current state of the component.
+   *
+   * @returns {IAny} The current state object.
+   */
   get state(): IAny {
     return this._state || {}
   }
 
+  /**
+   * Sets the state of the component.
+   *
+   * @param {ReblendTyping.StateFunctionValue<IAny>} value - The new state value.
+   */
   set state(value: ReblendTyping.StateFunctionValue<IAny>) {
     this._state = {
       ...this._state,
       ...(typeof value == 'function' ? value(this._state) : value),
     }
-    //Promise.resolve().then(() => {
     this.onStateChange()
-    //})
   }
 
+  /**
+   * Sets the state of the component using the setter.
+   *
+   * @param {ReblendTyping.StateFunctionValue<IAny>} value - The new state value.
+   */
   setState(value: ReblendTyping.StateFunctionValue<IAny>) {
     this.state = value
   }
 
+  /**
+   * Applies effects defined in the component, executing them in order.
+   */
   applyEffects() {
     this.stateEffectRunning = true
     this.effectsFn?.forEach((effectFn) => effectFn())
     this.stateEffectRunning = false
   }
 
+  /**
+   * Handles an error that occurs during rendering or lifecycle methods.
+   *
+   * @param {Error} error - The error to handle.
+   */
   private handleError(error: Error) {
     if (this.renderingErrorHandler) {
       this.renderingErrorHandler((((error as any).component = this), error) as ReblendRenderingException)
@@ -1328,6 +1822,12 @@ class BaseComponent {
       throw error
     }
   }
+
+  /**
+   * Catches errors thrown by a given function and handles them.
+   *
+   * @param {() => void} fn - The function to execute and catch errors from.
+   */
   private catchErrorFrom(fn: () => void) {
     try {
       fn.bind(this)()
@@ -1335,6 +1835,11 @@ class BaseComponent {
       this.handleError.bind(this)(error as Error)
     }
   }
+
+  /**
+   * Handles state changes, applying effects and updating virtual DOM nodes.
+   * @async
+   */
   async onStateChange() {
     this.catchErrorFrom.bind(this)(() => {
       this.applyEffects()
@@ -1353,20 +1858,34 @@ class BaseComponent {
         patches.push(...BaseComponent.diff(this, currentVNode as any, newVNode))
       }
       newVNodes = null as any
-      //Promise.resolve().then(() => {
       BaseComponent.applyPatches(patches)
-      //})
     })
   }
+
+  /**
+   * Returns the virtual DOM structure. Must be implemented by subclasses.
+   * @protected
+   * @returns {VNode | VNodeChildren} The virtual DOM nodes.
+   */
   protected html(): VNode | VNodeChildren {
     return null as any
   }
+
+  /**
+   * Mounts effects defined in the component, executing them and storing disconnect functions.
+   * @private
+   */
   private mountEffects() {
     this.onMountEffects?.forEach((fn) => {
       const disconnectEffect = fn()
       disconnectEffect && this.disconnectEffects?.push(disconnectEffect)
     })
   }
+
+  /**
+   * Lifecycle method called when the component is disconnected from the DOM.
+   * Cleans up resources and removes the component from its parent.
+   */
   disconnectedCallback() {
     this.cleanUp()
     this.componentWillUnmount()
@@ -1374,6 +1893,7 @@ class BaseComponent {
       if (typeof this.ref === 'function') {
         this.ref(null as any)
       } else {
+        // @ts-ignore
         this.ref.current = null as any
       }
     }
@@ -1396,9 +1916,27 @@ class BaseComponent {
     this.ref = null as any
     this.directParent = null as any
   }
+
+  /**
+   * Cleans up resources before the component unmounts.
+   * @protected
+   */
   protected cleanUp() {}
+
+  /**
+   * Lifecycle method for component unmount actions.
+   * @protected
+   */
   protected componentWillUnmount() {}
 
+  /**
+   * State management hook for functional components.
+   *
+   * @template T - The type of the state.
+   * @param {ReblendTyping.StateFunctionValue<T>} initial - The initial state value.
+   * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
+   * @returns {[T, ReblendTyping.StateFunction<T>]} The current state and a function to update it.
+   */
   useState<T>(
     initial: ReblendTyping.StateFunctionValue<T>,
     ...dependencyStringAndOrStateKey: string[]
@@ -1411,18 +1949,19 @@ class BaseComponent {
 
     if (typeof initial === 'function') initial = (initial as () => T)()
     this[stateID] = initial
-    const variableSetter: ReblendTyping.StateFunction<T> = (value: ReblendTyping.StateFunctionValue<T>) => {
+    const variableSetter: ReblendTyping.StateFunction<T> = (
+      value: ReblendTyping.StateFunctionValue<T>,
+      force = false,
+    ) => {
       if (typeof value === 'function') {
         this.stateEffectRunning = true
         value = (value as (v: T) => T)(this[stateID])
         this.stateEffectRunning = false
       }
-      if (!isEqual(this[stateID], value)) {
+      if (force || !isEqual(this[stateID], value)) {
         this[stateID] = value as T
         if (!this.stateEffectRunning && this.attached) {
-          //Promise.resolve().then(() => {
           this.onStateChange()
-          //})
         } else {
           this.applyEffects()
         }
@@ -1431,6 +1970,14 @@ class BaseComponent {
 
     return [initial as T, variableSetter]
   }
+
+  /**
+   * Effect hook for performing side effects in functional components.
+   *
+   * @param {ReblendTyping.StateEffectiveFunction} fn - The effect function to execute.
+   * @param {any[]} dependencies - Array of dependencies for the effect.
+   * @param {...string[]} _dependencyStringAndOrStateKey - Optional dependencies or state key.
+   */
   useEffect(
     fn: ReblendTyping.StateEffectiveFunction,
     dependencies: any[],
@@ -1450,6 +1997,17 @@ class BaseComponent {
     this.effectsFn?.push(internalFn)
     this.onMountEffects?.push(fn)
   }
+
+  /**
+   * Reducer hook for managing state with a reducer function.
+   *
+   * @template T - The type of the state.
+   * @template I - The type of the action.
+   * @param {ReblendTyping.StateReducerFunction<T, I>} reducer - The reducer function.
+   * @param {ReblendTyping.StateFunctionValue<T>} initial - The initial state value.
+   * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
+   * @returns {[T, ReblendTyping.StateFunction<I>]} The current state and a dispatch function.
+   */
   useReducer<T, I>(
     reducer: ReblendTyping.StateReducerFunction<T, I>,
     initial: ReblendTyping.StateFunctionValue<T>,
@@ -1478,6 +2036,16 @@ class BaseComponent {
 
     return [this[stateID], fn]
   }
+
+  /**
+   * Memoization hook for caching values in functional components.
+   *
+   * @template T - The type of the memoized value.
+   * @param {ReblendTyping.StateEffectiveMemoFunction<T>} fn - The function to compute the value.
+   * @param {any[]} [dependencies] - Array of dependencies for the memoization.
+   * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
+   * @returns {T} The memoized value.
+   */
   useMemo<T>(
     fn: ReblendTyping.StateEffectiveMemoFunction<T>,
     dependencies?: any[],
@@ -1505,23 +2073,32 @@ class BaseComponent {
     this.effectsFn?.push(internalFn)
     return this[stateID]
   }
+
   /**
-   * Keeps variable out of state management
+   * Creates a ref object to hold mutable values that do not trigger re-renders.
    *
-   * Changes to current does not cause effect
-   * @param initial Initial value of current
-   * @returns Ref<T>
+   * @template T - The type of the referenced value.
+   * @param {T} [initial] - The initial value of the ref.
+   * @returns {ReblendTyping.Ref<T>} The ref object.
    */
   useRef<T>(initial?: T) {
     const ref: ReblendTyping.Ref<T> = { current: initial }
     return ref
   }
+
+  /**
+   * Binds a function to the current context.
+   *
+   * @param {() => any} fn - The function to bind.
+   * @returns {Function} The bound function.
+   */
   useCallback(fn: () => any) {
     return fn.bind(this)
   }
 
   /**
-   * For compatibility incase standard element inherits this prototype; we can manually exec this constructor
+   * Initializes the component, preparing effect management.
+   * For compatibility in case a standard element inherits this prototype; can manually execute this constructor.
    */
   _constructor() {
     this.effectsFn = []
@@ -1530,6 +2107,13 @@ class BaseComponent {
     this.childrenPropsUpdate = new Set()
   }
 
+  /**
+   * Appends a child node to the component, ensuring it is connected properly.
+   *
+   * @template T - The type of the node being appended.
+   * @param {T} node - The node to append.
+   * @returns {T} The appended node.
+   */
   _appendChild<T extends Node>(node: T): T {
     const appended = this.appendChild(node)
     BaseComponent.connected(node as any)

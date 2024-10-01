@@ -6,10 +6,10 @@ import { Params } from './params';
 import { Location } from './location';
 import { Hash } from './hash';
 
-type RoutePath = { [path: string]: Reblend };
+type RoutePath = { [path: string]: Reblend.JSX.Element };
 
 export const Routes = createContext(new ReblendRouting());
-export const MatchedRoute = createContext(null as any as Reblend);
+export const MatchedRoute = createContext(null as any as Reblend.JSX.Element);
 export const PageNotfound = createContext(true);
 
 const createRoute = (route: RoutePath) => {

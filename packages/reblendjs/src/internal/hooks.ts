@@ -10,21 +10,47 @@ import { rand } from '../common/utils'
 const contextValue = Symbol('Reblend.contextValue')
 const contextInnerValue = Symbol('Reblend.contextInnerValue')
 const contextValueInitial = Symbol('Reblend.contextValueInitial')
-const contextSubscribers = Symbol('Reblend.contextSubscrbers')
+const contextSubscribers = Symbol('Reblend.contextSubscribers')
 const contextSubscribe = Symbol('Reblend.contextSubscribe')
 const contextSubscriberModificationTracker = Symbol('Reblend.contextSubscriberModificationTracker')
 
+/**
+ * Enum representing different cache storage types.
+ */
 export enum CacheType {
   MEMORY,
   SESSION,
   LOCAL,
 }
 
+/**
+ * Options for configuring caching behavior for a context.
+ *
+ * @typedef {object} CacheOption
+ * @property {CacheType} type - The type of cache storage (e.g., MEMORY, SESSION, LOCAL).
+ * @property {string} key - The key used to store/retrieve the cached data.
+ */
 type CacheOption = {
   type: CacheType
   key: string
 }
 
+/**
+ * Represents a context object in Reblend, tracking state and subscribers.
+ *
+ * @template T - The type of the context value.
+ * @typedef {object} Context<T>
+ * @property {Map<BaseComponent, string>} [contextSubscribers] - Map of components subscribed to this context and their state keys.
+ * @property {T} [contextValue] - The current value of the context.
+ * @property {T} [contextValueInitial] - The initial value of the context.
+ * @property {T} [contextInnerValue] - The actual stored value, potentially synced with cache.
+ * @property {number[]} [contextSubscriberModificationTracker] - Tracker for subscriber modifications.
+ * @property {Function} reset - Resets the context value to the initial value.
+ * @property {Function} getValue - Retrieves the current context value.
+ * @property {Function} isEqual - Checks if a given value is equal to the current context value.
+ * @property {Function} update - Updates the context value and notifies subscribers.
+ * @property {Function} [contextSubscribe] - Subscribes a component to this context with a given state key.
+ */
 export type Context<T> = {
   [contextSubscribers]: Map<BaseComponent, string>
   [contextValue]: T
@@ -34,12 +60,20 @@ export type Context<T> = {
   reset: () => void
   getValue: () => T
   isEqual: (value: T) => boolean
-  update(updateValue: ReblendTyping.StateFunctionValue<T>): Promise<boolean>
+  update(updateValue: ReblendTyping.StateFunctionValue<T>, force?: boolean): Promise<boolean>
   [contextSubscribe](component: BaseComponent, stateKey: string): void
 }
 
 const invalidContext = new Error('Invalid context')
 
+/**
+ * Hook to manage state within a Reblend component.
+ *
+ * @template T - The type of the state value.
+ * @param {T} _initial - The initial state value.
+ * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @returns {[T, ReblendTyping.StateFunction<T>]} - Returns the current state and a function to update it.
+ */
 export function useState<T>(
   _initial: T,
   ..._dependencyStringAndOrStateKey: string[]
@@ -48,6 +82,13 @@ export function useState<T>(
   return this.useState(...arguments)
 }
 
+/**
+ * Hook to perform side effects within a Reblend component.
+ *
+ * @param {ReblendTyping.StateEffectiveFunction} _fn - The effect function to run.
+ * @param {any[]} [_dependencies] - Optional array of dependencies to control when the effect runs.
+ * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ */
 export function useEffect(
   _fn: ReblendTyping.StateEffectiveFunction,
   _dependencies?: any[],
@@ -57,6 +98,16 @@ export function useEffect(
   return this.useEffect(...arguments)
 }
 
+/**
+ * Hook to manage reducer-based state within a Reblend component.
+ *
+ * @template T - The type of the state value.
+ * @template I - The type of the action passed to the reducer.
+ * @param {ReblendTyping.StateReducerFunction<T, I>} _reducer - The reducer function to apply actions to state.
+ * @param {T} _initial - The initial state value.
+ * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @returns {[T, ReblendTyping.StateFunction<T>]} - Returns the current state and a function to dispatch actions.
+ */
 export function useReducer<T, I>(
   _reducer: ReblendTyping.StateReducerFunction<T, I>,
   _initial: T,
@@ -66,6 +117,15 @@ export function useReducer<T, I>(
   return this.useReducer(...arguments)
 }
 
+/**
+ * Hook to create memoized values within a Reblend component.
+ *
+ * @template T - The type of the memoized value.
+ * @param {ReblendTyping.StateEffectiveMemoFunction<T>} _fn - The function to compute the memoized value.
+ * @param {any[]} [_dependencies] - Optional array of dependencies to control memoization.
+ * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @returns {T} - The memoized value.
+ */
 export function useMemo<T>(
   _fn: ReblendTyping.StateEffectiveMemoFunction<T>,
   _dependencies?: any[],
@@ -75,16 +135,40 @@ export function useMemo<T>(
   return this.useMemo(...arguments)
 }
 
+/**
+ * Hook to create a mutable reference object within a Reblend component.
+ *
+ * @template T - The type of the ref value.
+ * @param {T} [_initial] - The initial ref value.
+ * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @returns {ReblendTyping.Ref<T>} - Returns a reference object with the current value.
+ */
 export function useRef<T>(_initial?: T, ..._dependencyStringAndOrStateKey: string[]): ReblendTyping.Ref<T> {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useRef(...arguments)
 }
 
+/**
+ * Hook to memoize a callback function within a Reblend component.
+ *
+ * @param {Function} _fn - The callback function to memoize.
+ * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @returns {Function} - The memoized callback function.
+ */
 export function useCallback(_fn: () => any, ..._dependencyStringAndOrStateKey: string[]): () => any {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useCallback(...arguments)
 }
 
+/**
+ * Hook to subscribe to a context and get its current value.
+ *
+ * @template T - The type of the context value.
+ * @param {Context<T>} context - The context to subscribe to.
+ * @param {string[]} dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @returns {[T, ReblendTyping.StateFunction<T>]} - Returns the current context value and a function to update it.
+ * @throws Will throw an error if the context is invalid or if a state key is not provided.
+ */
 export function useContext<T>(
   context: Context<T>,
   ...dependencyStringAndOrStateKey: string[]
@@ -116,6 +200,15 @@ export function useContext<T>(
   return [context[contextValue], context.update]
 }
 
+/**
+ * Function to create a new context with an initial value.
+ * Optionally, you can specify cache options for storing the context value in session or local storage.
+ *
+ * @template T - The type of the context value.
+ * @param {T} initial - The initial value of the context.
+ * @param {CacheOption} [cacheOption] - Optional caching options.
+ * @returns {Context<T>} - The created context object.
+ */
 export function createContext<T>(initial: T, cacheOption?: CacheOption): Context<T> {
   const context: Context<T> = {
     [contextSubscribers]: new Map<BaseComponent, string>(),
@@ -161,10 +254,10 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
     get [contextValue]() {
       return context[contextInnerValue]
     },
-    async update(updateValue: ReblendTyping.StateFunctionValue<T>) {
+    async update(updateValue: ReblendTyping.StateFunctionValue<T>, force = false) {
       const newValue =
         typeof updateValue === 'function' ? (updateValue as (v: T) => T)(context[contextValue]) : updateValue
-      if (!isEqual(newValue, context[contextValue])) {
+      if (force || !isEqual(newValue, context[contextValue])) {
         context[contextValue] = newValue
         const updateId = rand(123456789, 987654321)
         context[contextSubscriberModificationTracker].unshift(updateId)
@@ -173,9 +266,7 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
           if (context[contextSubscriberModificationTracker][0] === updateId) {
             component[stateKey] = context[contextValue]
             if (!component.stateEffectRunning && component.attached) {
-              //Promise.resolve().then(() => {
               await component.onStateChange()
-              //})
             } else {
               component.applyEffects()
             }
