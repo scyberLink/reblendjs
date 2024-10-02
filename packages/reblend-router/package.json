@@ -13,11 +13,11 @@
     "dist"
   ],
   "dependencies": {
-    "reblend-routing": "^4.19.12",
+    "reblend-routing": "latest",
     "reblendjs": "latest"
   },
   "scripts": {
-    "build": "tsc && babel dist --out-dir lib",
+    "build": "rm -rf dist; rm -rf lib; tsc && babel dist --out-dir lib",
     "prepublish": "npm run build"
   },
   "browserslist": {

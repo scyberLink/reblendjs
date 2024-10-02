@@ -10,13 +10,7 @@
 
 import Router from './router/Router';
 import debugLib from 'debug';
-import {
-  compileQueryParser,
-  methods,
-  MethodsType,
-  REQUEST_EVENT,
-  REQUEST_NOTFOUND,
-} from './utils';
+import { compileQueryParser, methods, MethodsType } from './utils';
 //@ts-ignore
 import flatten from 'array-flatten';
 //@ts-ignore
@@ -44,13 +38,6 @@ class ReblendRouting implements ReblendRoutingWithMethods {
   constructor() {
     this.init();
 
-    addEventListener(REQUEST_EVENT, e => {
-      const req = (e as CustomEvent).detail;
-      req.app = this;
-      this.request = req;
-      this.handle(req);
-    });
-
     (methods as (keyof MethodsType)[]).forEach(method => {
       this[method] = function (path: string) {
         if (method === 'get' && arguments.length === 1) {
@@ -66,6 +53,8 @@ class ReblendRouting implements ReblendRoutingWithMethods {
       };
     });
   }
+  //@ts-ignore
+  get!: (path: string, handler: (req: Request, next: Function) => any) => any;
   put!: (path: string, handler: (req: Request, next: Function) => any) => any;
   post!: (path: string, handler: (req: Request, next: Function) => any) => any;
   update!: (
@@ -92,13 +81,6 @@ class ReblendRouting implements ReblendRoutingWithMethods {
 
     debug('booting in %s mode', 'default');
 
-    addEventListener('mount', ({ detail }: any) => {
-      const parent: ReblendRouting = detail;
-      // inherit protos
-      setPrototypeOf(this.request, parent.request);
-      setPrototypeOf(this.settings, parent.settings);
-    });
-
     // setup locals
     this.locals = Object.create(null);
 
@@ -107,6 +89,12 @@ class ReblendRouting implements ReblendRoutingWithMethods {
 
     // default locals
     this.locals.settings = this.settings;
+  }
+
+  mount(parent: ReblendRouting) {
+    // inherit protos
+    setPrototypeOf(this.request, parent.request);
+    setPrototypeOf(this.settings, parent.settings);
   }
 
   lazyrouter() {
@@ -118,22 +106,20 @@ class ReblendRouting implements ReblendRoutingWithMethods {
     }
   }
 
-  handle(req: Request, callback?: Function) {
+  handle(url: string, callback: Function = () => {}) {
+    const req: Request = new Request(url);
+    (req as any).app = this;
+    this.request = req;
     const router = this._router;
-    const notfoundFn = () => {
-      dispatchEvent(
-        new CustomEvent(REQUEST_NOTFOUND, { detail: { ...arguments } })
-      );
-    };
 
     // no routes
     if (!router) {
       debug('no routes defined on app');
-      notfoundFn();
+      callback();
       return;
     }
 
-    router.handle(req, notfoundFn);
+    router.handle(req, callback);
   }
 
   use(...args: any[]) {
@@ -184,7 +170,7 @@ class ReblendRouting implements ReblendRoutingWithMethods {
       });
 
       // mounted an app
-      dispatchEvent(new CustomEvent('mount', { detail: this }));
+      this.mount(this);
     }, this);
 
     return this;
@@ -231,6 +217,8 @@ class ReblendRouting implements ReblendRoutingWithMethods {
 
     return this;
   }
+
+  //@ts-ignore
   get(setting: string) {
     return this.settings[setting];
   }
@@ -281,6 +269,7 @@ class ReblendRouting implements ReblendRoutingWithMethods {
 
   logerror(this: ReblendRouting, err: Error) {
     /* istanbul ignore next */
+    //@ts-ignore
     if (this.get('env') !== 'test') console.error(err.stack || err.toString());
   }
 

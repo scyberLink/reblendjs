@@ -1,9 +1,7 @@
 import Reblend, { useEffect } from 'reblendjs';
 import { useContext } from 'reblendjs';
 import { History } from '../contexts/history';
-import { Requester } from 'reblend-routing';
-import { MatchedRoute, PageNotfound } from '../contexts/routes';
-import { REQUEST_NOTFOUND } from 'reblend-routing/lib/utils';
+import { Routes } from '../contexts/routes';
 
 function Router({ children }: { children?: any }) {
   const [history, setHistory] = useContext(History);
@@ -14,20 +12,12 @@ function Router({ children }: { children?: any }) {
     }
   };
 
-  const handleNotfound = () => {
-    PageNotfound.update(true);
-    MatchedRoute.update(null as any);
-  };
-
   addEventListener('popstate', handleHistoryChange);
-  addEventListener(REQUEST_NOTFOUND, handleNotfound);
 
   useEffect(() => {
-    Requester.for(history, 'post');
-
+    Routes.handle(history);
     return () => {
       removeEventListener('popstate', handleHistoryChange);
-      removeEventListener(REQUEST_NOTFOUND, handleNotfound);
     };
   }, [history]);
 

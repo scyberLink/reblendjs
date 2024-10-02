@@ -1550,6 +1550,11 @@ class BaseComponent {
   stateEffectRunning = false
 
   /**
+   * Indicates whether this component disconnected callback was called.
+   */
+  hasDisconnected = false
+
+  /**
    * The HTML elements managed by this component.
    */
   private htmlElements?: BaseComponent[]
@@ -1915,6 +1920,7 @@ class BaseComponent {
     this.ReactClass = null as any
     this.ref = null as any
     this.directParent = null as any
+    this.hasDisconnected = true
   }
 
   /**
@@ -1960,11 +1966,12 @@ class BaseComponent {
       }
       if (force || !isEqual(this[stateID], value)) {
         this[stateID] = value as T
-        if (!this.stateEffectRunning && this.attached) {
-          this.onStateChange()
-        } else {
-          this.applyEffects()
-        }
+        if (!this.hasDisconnected)
+          if (!this.stateEffectRunning && this.attached) {
+            this.onStateChange()
+          } else {
+            this.applyEffects()
+          }
       }
     }
 
