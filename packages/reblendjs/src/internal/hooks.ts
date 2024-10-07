@@ -272,9 +272,9 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
             component[stateKey] = context[contextValue]
             if (!component.hasDisconnected) {
               if (!component.stateEffectRunning && component.attached) {
-                await component.onStateChange()
+                component.onStateChange && (await component.onStateChange())
               } else {
-                component.applyEffects()
+                component.applyEffects && component.applyEffects()
               }
             } else {
               alreadyDisconnected.push(component)

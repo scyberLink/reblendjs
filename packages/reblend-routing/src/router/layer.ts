@@ -69,14 +69,15 @@ export default class Layer {
 
     if (fn.length !== 4) {
       // not a standard error handler
-      return next(error);
+      Promise.resolve().then(() => next(error));
+      return;
     }
 
-    try {
-      fn(error, req, next);
-    } catch (err) {
-      next(err);
-    }
+    Promise.resolve()
+      .then(() => fn(error, req, next))
+      .catch(err => {
+        Promise.resolve().then(() => next(err));
+      });
   }
 
   /**
@@ -91,14 +92,15 @@ export default class Layer {
 
     if (fn.length > 3) {
       // not a standard request handler
-      return next();
+      Promise.resolve().then(() => next());
+      return;
     }
 
-    try {
-      fn(req, next);
-    } catch (err) {
-      next(err);
-    }
+    Promise.resolve()
+      .then(() => fn(req, next))
+      .catch(err => {
+        Promise.resolve().then(() => next(err));
+      });
   }
 
   /**

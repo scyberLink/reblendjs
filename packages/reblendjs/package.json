@@ -24,6 +24,7 @@
     "directory": "packages/reblendjs"
   },
   "scripts": {
+    "dev": "tsc && babel dist --out-dir lib",
     "build": "rm -rf dist; rm -rf lib; tsc && babel dist --out-dir lib",
     "prepublish": "npm run build",
     "format": "prettier --write ./src",

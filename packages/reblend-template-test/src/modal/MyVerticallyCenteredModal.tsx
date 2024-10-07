@@ -9,6 +9,7 @@ export function MyVerticallyCenteredModal(props: any) {
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
+      closeButton
     >
       <Modal.Header>
         <Modal.Title id="contained-modal-title-vcenter">

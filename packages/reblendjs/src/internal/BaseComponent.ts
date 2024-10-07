@@ -225,15 +225,11 @@ class BaseComponent {
                   BaseComponent.attachElementsAt(standardParent!, child as BaseComponent)
                 }
               })
-              ;(<any>standardParent)._removeChild = standardParent.removeChild
-              new Promise<void>((resolve) => {
-                standardParent?.removeChild(this.containerRef.current!)
-                resolve()
-              }).then(() => {
-                standardParent.removeChild = (node) => {
-                  return node
-                }
-              })
+              standardParent?.removeChild(this.containerRef.current!)
+              delete (standardParent as any).removeChild
+              ;(standardParent as any).removeChild = () => {}
+              ;(<any>standardParent)._removeChild = (node) =>
+                HTMLElement.prototype.removeChild.call(standardParent, node)
             }
           }
 
@@ -318,6 +314,10 @@ class BaseComponent {
       return node
     }
 
+    if (node._firstStandardElement && node._firstStandardElement.parentNode) {
+      return node._firstStandardElement
+    }
+
     for (const child of node.htmlElements || []) {
       if (BaseComponent.isStandard(child)) {
         return child
@@ -338,6 +338,12 @@ class BaseComponent {
    * @param {any} prototype - The prototype object to copy properties and methods from.
    */
   static extendPrototype(target: any, prototype: any): void {
+    // If there's a prototype chain, continue copying from the prototype chain
+    const proto = Object.getPrototypeOf(prototype)
+    if (proto && proto !== Object.prototype) {
+      BaseComponent.extendPrototype(target, proto)
+    }
+
     const descriptors = Object.getOwnPropertyDescriptors(prototype)
 
     for (const key in descriptors) {
@@ -348,16 +354,10 @@ class BaseComponent {
         const descriptor = descriptors[key]
 
         // Avoid replacing existing functions on the target
-        if (!(key in target) || (typeof descriptor.value !== 'function' && !(key in target))) {
-          Object.defineProperty(target, key, descriptor)
-        }
+        //if (!(key in target) || (typeof descriptor.value !== 'function' && !(key in target))) {
+        Object.defineProperty(target, key, descriptor)
+        //}
       }
-    }
-
-    // If there's a prototype chain, continue copying from the prototype chain
-    const proto = Object.getPrototypeOf(prototype)
-    if (proto && proto !== Object.prototype) {
-      BaseComponent.extendPrototype(target, proto)
     }
   }
 
@@ -879,15 +879,17 @@ class BaseComponent {
    */
   private static detach(node: BaseComponent | HTMLElement) {
     if (BaseComponent.isPrimitive(node)) return
-    if ('disconnectedCallback' in node) {
+    if (BaseComponent.isNonStandard(node)) {
       ;(node as any as BaseComponent).disconnectedCallback()
     } else {
       if (node.parentNode) {
         node.parentNode?.removeChild(node)
+        ;(node.parentNode as any)?._removeChild && (node.parentNode as any)?._removeChild(node)
       }
       if (node?.remove) {
         node?.remove()
       }
+      //BaseComponent.detachChildren(node as any)
     }
   }
 
@@ -985,23 +987,22 @@ class BaseComponent {
     }
 
     if (isTagStandard && 'ref' in (vNode as VNode).props) {
-      if (!(vNode as VNode).props.ref) {
-        throw new Error('Invalid ref object')
-      }
-      const ref = (vNode as VNode).props.ref
-      delete (vNode as VNode).props.ref
-      const descriptor = Object.getOwnPropertyDescriptor(ref, 'current')
+      if ((vNode as VNode).props.ref) {
+        const ref = (vNode as VNode).props.ref
+        delete (vNode as VNode).props.ref
+        const descriptor = Object.getOwnPropertyDescriptor(ref, 'current')
 
-      if (typeof ref === 'function') {
-        ref(element)
-      } else if (!descriptor || descriptor.configurable) {
-        Object.defineProperty(ref, 'current', {
-          value: element,
-          configurable: false,
-          writable: false,
-        })
+        if (typeof ref === 'function') {
+          ref(element)
+        } else if (!descriptor || descriptor.configurable) {
+          Object.defineProperty(ref, 'current', {
+            value: element,
+            configurable: false,
+            writable: false,
+          })
+        }
+        element.ref = ref
       }
-      element.ref = ref
     }
 
     BaseComponent.setProps((vNode as VNode).props, element, true)
@@ -1059,7 +1060,7 @@ class BaseComponent {
     newNode: BaseComponent | BaseComponent[],
     oldNode: BaseComponent,
   ): BaseComponent | null {
-    if (!BaseComponent.isReblendRenderedNodeStandard(oldNode) && !BaseComponent.isReblendPrimitiveElement(oldNode)) {
+    if (BaseComponent.isNonStandard(oldNode)) {
       oldNode = oldNode.firstStandardElement as BaseComponent
     }
     if (!newNode || !oldNode) {
@@ -1088,6 +1089,21 @@ class BaseComponent {
               delegatedChild.remove()
             }
           }
+
+          div.removeChild = <T extends Node>(node: T) => {
+            try {
+              ;(node as any)?.remove && (node as any)?.remove()
+              node?.parentNode?.removeChild(node)
+              ;(node?.parentNode as any)?._removeChild && (node?.parentNode as any)?._removeChild(node)
+            } catch (error) {
+              const indexDelegatedNode = div.delegatedChildren?.indexOf(node as any) || -1
+              if (indexDelegatedNode > -1) {
+                ;(lastInsertedNode || oldNode)?.removeChild(node)
+              }
+            }
+            return node
+          }
+
           n.setReblendReactStandardContainer(div)
           n.reactReblendMount()
         } else {
@@ -1121,6 +1137,19 @@ class BaseComponent {
       return false
     }
     return BaseComponent.isReblendRenderedNodeStandard(node) || BaseComponent.isReblendPrimitiveElement(node)
+  }
+
+  /**
+   * Checks if a node is a Reblend HTML element or a Reblend React HTML element.
+   *
+   * @param {BaseComponent | HTMLElement} node - The node to check.
+   * @returns {boolean} - True if the node is Reblend or a Reblend React element, false otherwise.
+   */
+  static isNonStandard(node: BaseComponent | HTMLElement) {
+    if (!node) {
+      return false
+    }
+    return BaseComponent.isReblendRenderedNode(node) || BaseComponent.isReactToReblendRenderedNode(node)
   }
 
   /**
@@ -1189,7 +1218,8 @@ class BaseComponent {
       const newNodeTag = (
         (BaseComponent.isPrimitive((newNode as VNode).displayName)
           ? (newNode as VNode).displayName
-          : ((newNode as VNode).displayName as typeof Reblend).ELEMENT_NAME) as string
+          : ((newNode as VNode).displayName as typeof Reblend).ELEMENT_NAME ||
+            ((newNode as VNode).displayName as any).displayName) as string
       ).toLowerCase()
 
       if (oldNodeTag !== newNodeTag) {
@@ -1223,7 +1253,7 @@ class BaseComponent {
     const oldProps: IAny = oldNode?.props || []
     const newProps: IAny = newNode?.props || []
     for (const key in newProps) {
-      if (key !== 'children' || BaseComponent.isReblendRenderedNode(oldNode)) {
+      if ((key !== 'children' && key !== 'ref') || BaseComponent.isReblendRenderedNode(oldNode)) {
         let oldProp = oldProps[key]
         let newProp = newProps[key]
         if (!this.deepCompare(oldProp, newProp)) {
@@ -1610,9 +1640,7 @@ class BaseComponent {
    * @returns {HTMLElement | undefined} The first standard element or undefined.
    */
   public get firstStandardElement(): HTMLElement | undefined {
-    return this._firstStandardElement && this._firstStandardElement.parentNode
-      ? this._firstStandardElement
-      : BaseComponent.getFirstStandardElementFrom(this)
+    return BaseComponent.getFirstStandardElementFrom(this)
   }
 
   /**
@@ -1792,7 +1820,7 @@ class BaseComponent {
       ...this._state,
       ...(typeof value == 'function' ? value(this._state) : value),
     }
-    this.onStateChange()
+    this.attached && !this.stateEffectRunning && this.onStateChange()
   }
 
   /**
