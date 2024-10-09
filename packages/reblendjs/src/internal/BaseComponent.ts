@@ -255,6 +255,9 @@ class BaseComponent {
      */
     protected reactReblendMount(): void {
       this.catchErrorFrom(() => {
+        if (!this.reblendReactStandardContainer) {
+          return
+        }
         this.initRoot()
         const childrenWrapper = this.getChildrenWrapperForReact()
 
@@ -268,16 +271,12 @@ class BaseComponent {
 
         flushSync(() => {
           this.reactDomCreateRoot_root?.render(
-            React.createElement(
-              'div',
-              null,
-              createPortal(
-                React.createElement(this.ReactClass, {
-                  ...this.props,
-                  children: !this.props?.children?.length ? undefined : childrenWrapper,
-                }),
-                this.reblendReactStandardContainer,
-              ),
+            createPortal(
+              React.createElement(this.ReactClass, {
+                ...this.props,
+                children: !this.props?.children?.length ? undefined : childrenWrapper,
+              }),
+              this.reblendReactStandardContainer,
             ),
           )
         })
@@ -1213,6 +1212,8 @@ class BaseComponent {
       patches.push({ type: PatchTypeAndOrder.CREATE, parent, newNode })
     } else if (!BaseComponent.isEmpty(oldNode) && BaseComponent.isEmpty(newNode)) {
       patches.push({ type: PatchTypeAndOrder.REMOVE, parent, oldNode })
+    } else if (oldNode?.props?.key !== (newNode as any)?.props?.key) {
+      patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
     } else if ('displayName' in oldNode && 'displayName' in (newNode as any)) {
       const oldNodeTag = ((oldNode as BaseComponent).displayName as string).toLowerCase()
       const newNodeTag = (
@@ -1249,11 +1250,13 @@ class BaseComponent {
    * @returns {any[]} - The array of property differences.
    */
   static diffProps(newNode: VNode, oldNode: BaseComponent) {
+    const ignoredProps = ['key', 'children', 'ref']
+
     const patches: PropPatch[] = []
     const oldProps: IAny = oldNode?.props || []
     const newProps: IAny = newNode?.props || []
     for (const key in newProps) {
-      if ((key !== 'children' && key !== 'ref') || BaseComponent.isReblendRenderedNode(oldNode)) {
+      if (!ignoredProps.includes(key) || BaseComponent.isReblendRenderedNode(oldNode)) {
         let oldProp = oldProps[key]
         let newProp = newProps[key]
         if (!this.deepCompare(oldProp, newProp)) {
