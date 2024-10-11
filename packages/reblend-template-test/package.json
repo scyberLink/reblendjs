@@ -9,10 +9,10 @@
     "directory": "packages/reblend-template-test"
   },
   "dependencies": {
-    "@types/node": "^16.18.105",
+    "@types/node": "^16.18.113",
     "bootstrap": "^5.3.3",
     "react": "^18.3.1",
-    "react-bootstrap": "^2.10.4",
+    "react-bootstrap": "^2.10.5",
     "react-dom": "^18.3.1",
     "reblend-router": "latest",
     "reblend-scripts": "latest",
