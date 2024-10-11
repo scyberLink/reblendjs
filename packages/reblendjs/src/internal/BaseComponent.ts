@@ -767,7 +767,7 @@ class BaseComponent {
     }
 
     const mergedProp = {
-      ...(isTagStandard && clazz.props ? clazz.props : {}),
+      ...(!isTagStandard && clazz ? { ...(clazz.props || {}), ...((clazz as any).defaultProps || {}) } : {}),
       ...props,
       children: [...(clazz?.props?.children || []), ...(props?.children || []), ...(children || [])],
     }
