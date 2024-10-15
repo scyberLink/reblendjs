@@ -220,7 +220,10 @@ class BaseComponent {
               children?.forEach((child) => {
                 if (BaseComponent.isStandard(child)) {
                   standardParent?.appendChild(child)
-                  BaseComponent.attachElementsAt(child, child as BaseComponent)
+                  new Promise<void>((resolve) => {
+                    BaseComponent.attachElementsAt(child, child as BaseComponent)
+                    resolve()
+                  })
                 } else {
                   BaseComponent.attachElementsAt(standardParent!, child as BaseComponent)
                 }
@@ -274,6 +277,14 @@ class BaseComponent {
             createPortal(
               React.createElement(this.ReactClass, {
                 ...this.props,
+                ...{
+                  ref: (node) => {
+                    if ('ref' in (this.props || {})) {
+                      ;(this.props?.ref || { current: null }).current = node
+                    }
+                    this.reactElement = node
+                  },
+                },
                 children: !this.props?.children?.length ? undefined : childrenWrapper,
               }),
               this.reblendReactStandardContainer,
@@ -319,6 +330,9 @@ class BaseComponent {
 
     for (const child of node.htmlElements || []) {
       if (BaseComponent.isStandard(child)) {
+        if (BaseComponent.isReactToReblendRenderedNode(child.directParent)) {
+          return child.parentElement!
+        }
         return child
       }
 
@@ -861,7 +875,10 @@ class BaseComponent {
     for (const node of nodes) {
       if (BaseComponent.isStandard(node)) {
         root.appendChild(node)
-        BaseComponent.attachElementsAt(node, node)
+        new Promise<void>((resolve) => {
+          BaseComponent.attachElementsAt(node, node)
+          resolve()
+        })
       } else {
         BaseComponent.attachElementsAt(root, node)
       }
@@ -1032,7 +1049,10 @@ class BaseComponent {
     for (const htmlElement of reblendElement.htmlElements || []) {
       if (BaseComponent.isStandard(htmlElement)) {
         standardElement.appendChild(htmlElement)
-        BaseComponent.attachElementsAt(htmlElement, htmlElement)
+        new Promise<void>((resolve) => {
+          BaseComponent.attachElementsAt(htmlElement, htmlElement)
+          resolve()
+        })
       } else if (BaseComponent.isReactToReblendRenderedNode(htmlElement)) {
         BaseComponent.attachElementsAt(standardElement, htmlElement)
       } else {
@@ -1118,7 +1138,10 @@ class BaseComponent {
         if (!firstStandardElement) {
           firstStandardElement = n
         }
-        BaseComponent.attachElementsAt(n, n)
+        new Promise<void>((resolve) => {
+          BaseComponent.attachElementsAt(n, n)
+          resolve()
+        })
       }
     }
     newNode.forEach((nn) => (nn.firstStandardElement = firstStandardElement))
@@ -1401,12 +1424,19 @@ class BaseComponent {
             const elements = BaseComponent.createElement(newNode as VNode)
             parent?.htmlElements || (parent!.htmlElements = [])
             parent?.htmlElements.push(...elements)
-            const standardParent = BaseComponent.isStandard(parent!) ? parent! : parent!.nearestStandardParent!
+            const standardParent = BaseComponent.isStandard(parent!)
+              ? parent!
+              : BaseComponent.isReactToReblendRenderedNode(parent)
+              ? parent!.reactElement! || parent!.nearestStandardParent!
+              : parent!.nearestStandardParent!
             if (standardParent) {
               for (const element of elements || []) {
                 if (BaseComponent.isStandard(element)) {
                   standardParent.appendChild(element)
-                  BaseComponent.attachElementsAt(element, element)
+                  new Promise<void>((resolve) => {
+                    BaseComponent.attachElementsAt(element, element)
+                    resolve()
+                  })
                   element.nearestStandardParent = standardParent
                   BaseComponent.connected(element)
                 } else {
@@ -1469,31 +1499,33 @@ class BaseComponent {
    * @param {PropPatch[]} [patches] - The property patches to apply.
    */
   static async applyProps(patches?: PropPatch[]) {
-    let nodes = new Set<BaseComponent>()
-    patches?.forEach(({ type, node, key, propValue }) => {
-      if (type === 'UPDATE') {
-        BaseComponent.setProps({ [key]: propValue }, node, false)
-        nodes.add(node)
-      } else if (type === 'REMOVE') {
-        BaseComponent.removeProps({ [key]: undefined }, node)
-        nodes.add(node)
-      }
-      if (BaseComponent.isReactToReblendRenderedNode(node)) {
-        if (key === 'children') {
-          node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.CHILDREN)
-        } else {
-          node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.NON_CHILDREN)
+    requestAnimationFrame(() => {
+      let nodes = new Set<BaseComponent>()
+      patches?.forEach(({ type, node, key, propValue }) => {
+        if (type === 'UPDATE') {
+          BaseComponent.setProps({ [key]: propValue }, node, false)
+          nodes.add(node)
+        } else if (type === 'REMOVE') {
+          BaseComponent.removeProps({ [key]: undefined }, node)
+          nodes.add(node)
         }
-      }
+        if (BaseComponent.isReactToReblendRenderedNode(node)) {
+          if (key === 'children') {
+            node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.CHILDREN)
+          } else {
+            node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.NON_CHILDREN)
+          }
+        }
+      })
+      nodes.forEach((node) => {
+        if (BaseComponent.isReactToReblendRenderedNode(node)) {
+          ;(node as any)?.checkPropsChange()
+        } else {
+          node.onStateChange()
+        }
+      })
+      nodes = null as any
     })
-    nodes.forEach((node) => {
-      if (BaseComponent.isReactToReblendRenderedNode(node)) {
-        ;(node as any)?.checkPropsChange()
-      } else {
-        node.onStateChange()
-      }
-    })
-    nodes = null as any
   }
 
   /**
@@ -1516,6 +1548,11 @@ class BaseComponent {
    * The standard container for React and Reblend integration.
    */
   private reblendReactStandardContainer!: HTMLElement
+
+  /**
+   * The element for React and Reblend integration.
+   */
+  private reactElement!: HTMLElement | null
 
   /**
    * The selector string for querying elements by data ID.
@@ -1937,7 +1974,7 @@ class BaseComponent {
     this.parentElement?.removeChild(this)
     ;(this.parentElement as any)?._removeChild && (this.parentElement as any)?._removeChild(this)
     BaseComponent.detachChildren(this)
-    BaseComponent.detach(this.reblendReactStandardContainer)
+    BaseComponent.detach(this.reactElement!)
     this.props = null as any
     this.htmlElements = null as any
     this._state = null as any
