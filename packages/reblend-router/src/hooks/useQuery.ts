@@ -3,6 +3,6 @@ import { Query } from '../contexts/query';
 
 //@ReblendHook
 export function useQuery() {
-  const [queryContext] = useContext(Query);
-  return queryContext;
+  const [query] = useContext(Query);
+  return query;
 }

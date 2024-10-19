@@ -35,12 +35,17 @@ type CacheOption = {
   key: string
 }
 
+type ContextSubriber = {
+  component: BaseComponent
+  stateKey: string
+}
+
 /**
  * Represents a context object in Reblend, tracking state and subscribers.
  *
  * @template T - The type of the context value.
  * @typedef {object} Context<T>
- * @property {Map<BaseComponent, string>} [contextSubscribers] - Map of components subscribed to this context and their state keys.
+ * @property {Array<ContextSubriber>} [contextSubscribers] - Array of components subscribed to this context and their state keys.
  * @property {T} [contextValue] - The current value of the context.
  * @property {T} [contextValueInitial] - The initial value of the context.
  * @property {T} [contextInnerValue] - The actual stored value, potentially synced with cache.
@@ -52,7 +57,7 @@ type CacheOption = {
  * @property {Function} [contextSubscribe] - Subscribes a component to this context with a given state key.
  */
 export type Context<T> = {
-  [contextSubscribers]: Map<BaseComponent, string>
+  [contextSubscribers]: ContextSubriber[]
   [contextValue]: T
   [contextValueInitial]: T
   [contextInnerValue]: T
@@ -61,7 +66,7 @@ export type Context<T> = {
   getValue: () => T
   isEqual: (value: T) => boolean
   update(updateValue: ReblendTyping.StateFunctionValue<T>, force?: boolean): Promise<boolean>
-  [contextSubscribe](component: BaseComponent, stateKey: string): void
+  [contextSubscribe](subscriber: ContextSubriber): void
 }
 
 const invalidContext = new Error('Invalid context')
@@ -196,7 +201,7 @@ export function useContext<T>(
     throw new Error('Invalid state key. Make sure you are calling useContext correctly')
   }
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
-  context[contextSubscribe](this, stateID)
+  context[contextSubscribe]({ component: this, stateKey: stateID })
   return [context[contextValue], context.update]
 }
 
@@ -211,7 +216,7 @@ export function useContext<T>(
  */
 export function createContext<T>(initial: T, cacheOption?: CacheOption): Context<T> {
   const context: Context<T> = {
-    [contextSubscribers]: new Map<BaseComponent, string>(),
+    [contextSubscribers]: [],
     [contextSubscriberModificationTracker]: [],
     [contextInnerValue]: (() => {
       if (!(cacheOption && cacheOption.type && cacheOption.key)) {
@@ -261,14 +266,18 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
         context[contextValue] = newValue
         const updateId = rand(123456789, 987654321)
         context[contextSubscriberModificationTracker].unshift(updateId)
-
-        for (const [component, stateKey] of context[contextSubscribers]) {
+        const alreadyDisconnected: BaseComponent[] = []
+        for (const { component, stateKey } of context[contextSubscribers]) {
           if (context[contextSubscriberModificationTracker][0] === updateId) {
             component[stateKey] = context[contextValue]
-            if (!component.stateEffectRunning && component.attached) {
-              await component.onStateChange()
+            if (!component.hasDisconnected) {
+              if (!component.stateEffectRunning && component.attached) {
+                component.onStateChange && (await component.onStateChange())
+              } else {
+                component.applyEffects && component.applyEffects()
+              }
             } else {
-              component.applyEffects()
+              alreadyDisconnected.push(component)
             }
           } else {
             context[contextSubscriberModificationTracker] = []
@@ -276,22 +285,28 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
           }
         }
 
+        for (const disco of alreadyDisconnected) {
+          context[contextSubscribers] = context[contextSubscribers].filter((sub) => sub.component !== disco)
+        }
+
         return true
       }
       return false
     },
-    [contextSubscribe](component: BaseComponent, stateKey: string) {
-      if (!component) {
+    [contextSubscribe](subscriber) {
+      if (!subscriber.component) {
         throw new Error('Invalid component')
       }
-      if (!stateKey) {
+      if (!subscriber.stateKey) {
         throw new Error('Invalid state key')
       }
       const destructor = () => {
-        context[contextSubscribers].delete(component)
+        context[contextSubscribers] = context[contextSubscribers].filter(
+          (subs) => subs.component !== subscriber.component,
+        )
       }
-      context[contextSubscribers].set(component, stateKey)
-      component.addDisconnectedEffect(destructor)
+      context[contextSubscribers].push(subscriber)
+      subscriber.component.addDisconnectedEffect && subscriber.component.addDisconnectedEffect(destructor)
     },
     [contextValueInitial]: initial,
     reset() {

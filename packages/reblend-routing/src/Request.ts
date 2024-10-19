@@ -25,8 +25,10 @@ class Request {
   originalUrl?: string;
   route?: Route;
   urlObject: URL;
+  method: string;
 
-  constructor(public url: string, public method: keyof MethodsType) {
+  constructor(public url: string) {
+    this.method = 'get';
     this.urlObject = new URL(decodeURI(this.url));
     this.urlObject.searchParams.forEach(
       (value, key) => (this.query[key] = value)

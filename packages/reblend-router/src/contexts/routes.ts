@@ -1,30 +1,47 @@
-import type Reblend from 'reblendjs';
 import { createContext } from 'reblendjs';
-import ReblendRouting from 'reblend-routing';
+import ReblendRouting, { type Request } from 'reblend-routing';
 import { Query } from './query';
 import { Params } from './params';
 import { Location } from './location';
 import { Hash } from './hash';
 
-type RoutePath = { [path: string]: Reblend.JSX.Element };
+interface RoutePath {
+  [path: string]: (res?: Request | null) => void;
+}
 
-export const Routes = createContext(new ReblendRouting());
-export const MatchedRoute = createContext(null as any as Reblend.JSX.Element);
 export const PageNotfound = createContext(true);
 
-const createRoute = (route: RoutePath) => {
-  Routes.update(previousState => {
+type R = [ReblendRouting, (res?: Request | null) => void];
+
+interface IRoutes {
+  routes: R[];
+  handle(url: string): void;
+  register(route: RoutePath): void;
+}
+
+export const Routes: IRoutes = {
+  routes: [],
+  handle: function (url: string) {
+    let notFounds = 0;
+    for (const [routing, handler] of this.routes) {
+      routing.handle(url, () => (notFounds++, handler(null)));
+    }
+    if (this.routes.length <= notFounds) {
+      PageNotfound.update(true);
+    } else {
+      PageNotfound.update(false);
+    }
+  },
+  register: function (route: RoutePath) {
     const [key, value] = Object.entries(route)[0];
-    previousState.post(key, res => {
+    const routing = new ReblendRouting();
+    routing.get(key, res => {
       Query.update(res.query);
       Params.update(res.params);
       Location.update(res.urlObject);
       Hash.update(res.urlObject.hash);
-      MatchedRoute.update(value);
-      PageNotfound.update(false);
+      value && value(res);
     });
-    return previousState;
-  });
+    this.routes.push([routing, value]);
+  },
 };
-
-export { createRoute };

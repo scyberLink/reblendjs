@@ -82,13 +82,11 @@ function parseExtendedQueryString(str: string): Record<string, any> {
 }
 
 export type MethodsType = {
-  get: (path: string, handler: (req: Request, next: Function) => any) => any;
-  put: (path: string, handler: (req: Request, next: Function) => any) => any;
-  post: (path: string, handler: (req: Request, next: Function) => any) => any;
-  update: (path: string, handler: (req: Request, next: Function) => any) => any;
-  option: (path: string, handler: (req: Request, next: Function) => any) => any;
-  patch: (path: string, handler: (req: Request, next: Function) => any) => any;
+  get: (path: string, handler: (req: Request) => any) => any;
+  put: (path: string, handler: (req: Request) => any) => any;
+  post: (path: string, handler: (req: Request) => any) => any;
+  update: (path: string, handler: (req: Request) => any) => any;
+  option: (path: string, handler: (req: Request) => any) => any;
+  patch: (path: string, handler: (req: Request) => any) => any;
 };
 export const methods = ['get', 'put', 'post', 'update', 'option', 'patch'];
-export const REQUEST_EVENT = 'routing-request';
-export const REQUEST_NOTFOUND = 'routing-request-notfound';

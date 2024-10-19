@@ -1,15 +1,15 @@
 {
   "name": "reblend-routing",
-  "description": "Fast, unopinionated, minimalist web framework",
-  "version": "4.19.12",
+  "description": "Reblend route pattern matcher",
+  "version": "4.19.14",
   "author": "Emmanuel Paul Elom <scansioquielom@gmail.com>",
   "license": "MIT",
-  "repository": "expressjs/express",
-  "homepage": "http://expressjs.com/",
+  "repository": "reblendjs/reblend-routing",
+  "homepage": "http://reblendjs.com/",
   "keywords": [
-    "express",
-    "framework",
-    "sinatra",
+    "reblend-routing",
+    "reblendjs",
+    "reblend-router",
     "web",
     "http",
     "rest",
@@ -30,13 +30,13 @@
   "devDependencies": {
     "@types/debug": "^4.1.12",
     "@types/merge-descriptors": "^1.0.3",
-    "@types/qs": "^6.9.15",
+    "@types/qs": "^6.9.16",
     "@types/utils-merge": "0.0.31",
     "eslint": "8.47.0",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
     "supertest": "6.3.0",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.3"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -48,7 +48,7 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "build": "tsc",
+    "build": "rm -rf dist; rm -rf lib; tsc",
     "prepublish": "npm run build",
     "test": "mocha --require test/support/env --reporter spec --bail --check-leaks test/ test/acceptance/",
     "test-ci": "nyc --reporter=lcovonly --reporter=text npm test",

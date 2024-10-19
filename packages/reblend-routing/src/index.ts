@@ -10,8 +10,7 @@ import Route from './router/Route';
 import Router from './router/Router';
 import Request from './Request';
 import ReblendRouting from './ReblendRouting';
-import Requester from './Requester';
 
-export { Route, Router, Request, Requester };
+export { Route, Router, Request };
 
 export default ReblendRouting;

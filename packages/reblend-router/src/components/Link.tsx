@@ -1,34 +1,34 @@
 import Reblend from 'reblendjs';
-import { History } from '../contexts/history';
+import { setHistory } from '../contexts/history';
+import { ReblendTyping } from '../../../reblend-typing/lib';
 
 function Link({
   to,
   href,
   children,
-  memory = true,
+  memory = false,
   className,
+  ref,
 }: {
   to?: string;
   href?: string;
   children: any;
   memory?: boolean;
   className?: string;
+  ref?: ReblendTyping.Ref<HTMLAnchorElement | null>;
 }) {
   async function onclick(e: any) {
     e.preventDefault();
-    const url = new URL(to || href || '#', location.origin);
-    if (await History.update(url.href)) {
-      try {
-        !memory &&
-          window.history.pushState({ ...window.history.state }, '', url);
-      } catch (error) {
-        console.error('Error changing browser Location bar');
-      }
-    }
+    setHistory(to || href || '#', memory);
   }
 
   return (
-    <a href={to || href || '#'} onClick={onclick} class={className || ''}>
+    <a
+      href={to || href || '#'}
+      onClick={onclick}
+      class={className || ''}
+      ref={ref as any}
+    >
       {children}
     </a>
   );

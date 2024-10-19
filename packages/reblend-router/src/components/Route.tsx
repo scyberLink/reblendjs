@@ -1,6 +1,7 @@
-import Reblend, { useContext } from 'reblendjs';
-import { createRoute, MatchedRoute } from '../contexts/routes';
+import Reblend, { useContext, useReducer } from 'reblendjs';
 import { ReblendTyping } from '../../../reblend-typing/lib';
+import { Routes } from '../contexts/routes';
+import { Request } from 'reblend-routing';
 
 export function Route<T>({
   Component,
@@ -8,19 +9,28 @@ export function Route<T>({
   path,
 }: {
   Component?: ReblendTyping.JSXElementConstructor<T>;
-  element?: Reblend.JSX.Element;
+  element?: Reblend.JSX.Element | HTMLElement;
   path: string;
 }) {
-  //@ts-ignore
-  const thisRoute = element || <Component {...({} as any)} />;
-
-  if (!thisRoute) {
+  if (!(element || Component)) {
     throw new Error('Route should have element or Component prop');
   }
 
-  createRoute({ [path]: thisRoute });
+  const [matched, setMatched] = useReducer<boolean, Request | null>(
+    (_prev, current) => {
+      return !!(current || false);
+    },
+    false
+  );
 
-  const [matchedRoute] = useContext(MatchedRoute);
+  Routes.register({ [path]: setMatched as any });
 
-  return <>{matchedRoute == thisRoute ? matchedRoute : null}</>;
+  return (
+    <>
+      {matched
+        ? //@ts-ignore
+          element || (Component && <Component {...({} as any)} />)
+        : null}
+    </>
+  );
 }

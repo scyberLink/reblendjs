@@ -187,7 +187,7 @@ class BaseComponent {
             break
 
           case ChildrenPropsUpdateType.NON_CHILDREN:
-            await this.reactReblendMount()
+            /* await */ this.reactReblendMount()
             break
 
           default:
@@ -204,6 +204,8 @@ class BaseComponent {
      */
     getChildrenWrapperForReact(): React.ReactElement {
       const children = this.htmlElements || []
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const thiz = this
       const displayName = this.displayName || ''
       return React.createElement(
         class extends React.Component {
@@ -217,23 +219,26 @@ class BaseComponent {
           componentDidMount(): void {
             if (this.containerRef.current) {
               const standardParent: HTMLElement = this.containerRef.current.parentElement!
-              children?.forEach((child) => {
+              thiz.reactElementChildrenParent = standardParent
+              let _afterNode: HTMLElement = this.containerRef.current
+              for (const child of children || []) {
                 if (BaseComponent.isStandard(child)) {
-                  standardParent?.appendChild(child)
-                  BaseComponent.attachElementsAt(child, child as BaseComponent)
+                  _afterNode.after(child)
+                  _afterNode = child
+                  new Promise<void>((resolve) => {
+                    BaseComponent.attachElementsAt(child, child as BaseComponent, null)
+                    resolve()
+                  })
                 } else {
-                  BaseComponent.attachElementsAt(standardParent!, child as BaseComponent)
+                  _afterNode =
+                    BaseComponent.attachElementsAt(standardParent!, child as BaseComponent, _afterNode) || _afterNode
                 }
-              })
-              ;(<any>standardParent)._removeChild = standardParent.removeChild
-              new Promise<void>((resolve) => {
-                standardParent?.removeChild(this.containerRef.current!)
-                resolve()
-              }).then(() => {
-                standardParent.removeChild = (node) => {
-                  return node
-                }
-              })
+              }
+              standardParent?.removeChild(this.containerRef.current!)
+              delete (standardParent as any).removeChild
+              ;(standardParent as any).removeChild = () => {}
+              ;(<any>standardParent)._removeChild = (node) =>
+                HTMLElement.prototype.removeChild.call(standardParent, node)
             }
           }
 
@@ -257,10 +262,12 @@ class BaseComponent {
      *
      * @protected
      */
-    protected reactReblendMount(): void {
+    protected reactReblendMount(replacementAfterNode?: HTMLElement): void {
       this.catchErrorFrom(() => {
+        if (!this.reblendReactStandardContainer || !this.ReactClass) {
+          return
+        }
         this.initRoot()
-        const childrenWrapper = this.getChildrenWrapperForReact()
 
         const warn = window.console.warn
         const error = window.console.error
@@ -272,16 +279,71 @@ class BaseComponent {
 
         flushSync(() => {
           this.reactDomCreateRoot_root?.render(
-            React.createElement(
-              'div',
-              null,
-              createPortal(
-                React.createElement(this.ReactClass, {
+            createPortal(
+              React.createElement('div', {
+                ref: (node) => {
+                  if ((node as any)?.refRunned) {
+                    return
+                  }
+                  let childNodes = Array.from(node?.childNodes || [])
+                  if (node) {
+                    if (replacementAfterNode) {
+                      replacementAfterNode.after(node)
+                    }
+                    this.reactElement = []
+                    let afterNode = node
+                    const parent = node.parentElement
+                    for (const child of childNodes) {
+                      afterNode?.after(child)
+                      afterNode = child as any
+                      this.reactElement.push(child as any)
+                    }
+                    node.appendChild = (n: any) => {
+                      const _afterNode = [...(this.reactElement || [])]
+                        .reverse()
+                        .find((reverseNode) => !!reverseNode.parentElement)
+                      if (_afterNode) {
+                        _afterNode?.after(n)
+                      } else {
+                        parent?.appendChild(n)
+                      }
+                      this.reactElement?.push(n)
+                      return n
+                    }
+                    node.removeChild = (n: any) => {
+                      n.remove()
+                      const indexOfNInReactElement = this.reactElement?.indexOf(n!)
+
+                      if (indexOfNInReactElement! > -1) {
+                        // Remove the old node
+                        this.reactElement?.splice(indexOfNInReactElement!, 1)
+                      }
+                      return n
+                    }
+                    node?.remove()
+                    if (replacementAfterNode) {
+                      replacementAfterNode.remove()
+                    }
+                    ;(node as any).refRunned = true
+                  } else {
+                    childNodes.forEach((child) => {
+                      const indexOfNInReactElement = this.reactElement?.indexOf(child as any)
+
+                      if (indexOfNInReactElement! > -1) {
+                        // Remove the old node
+                        this.reactElement?.splice(indexOfNInReactElement!, 1)
+                      }
+                    })
+                    childNodes = null as any
+                  }
+                },
+                style: { display: 'none' },
+                children: React.createElement(this.ReactClass, {
                   ...this.props,
-                  children: !this.props?.children?.length ? undefined : childrenWrapper,
+                  children: !this.props?.children?.length ? undefined : this.getChildrenWrapperForReact(),
                 }),
-                this.reblendReactStandardContainer,
-              ),
+              }),
+              this.reblendReactStandardContainer,
             ),
           )
         })
@@ -298,6 +360,7 @@ class BaseComponent {
      * @protected
      */
     protected cleanUp(): void {
+      this.reactDomCreateRoot_root?.unmount()
       this.reactDomCreateRoot_root = null as any
       super.cleanUp()
     }
@@ -318,8 +381,19 @@ class BaseComponent {
       return node
     }
 
+    if (BaseComponent.isReactToReblendRenderedNode(node)) {
+      return (node.reactElement && node?.reactElement[0])!
+    }
+
+    if (node._firstStandardElement && node._firstStandardElement.parentNode) {
+      return node._firstStandardElement
+    }
+
     for (const child of node.htmlElements || []) {
       if (BaseComponent.isStandard(child)) {
+        if (BaseComponent.isReactToReblendRenderedNode(child.directParent)) {
+          return child.parentElement!
+        }
         return child
       }
 
@@ -338,6 +412,12 @@ class BaseComponent {
    * @param {any} prototype - The prototype object to copy properties and methods from.
    */
   static extendPrototype(target: any, prototype: any): void {
+    // If there's a prototype chain, continue copying from the prototype chain
+    const proto = Object.getPrototypeOf(prototype)
+    if (proto && proto !== Object.prototype) {
+      BaseComponent.extendPrototype(target, proto)
+    }
+
     const descriptors = Object.getOwnPropertyDescriptors(prototype)
 
     for (const key in descriptors) {
@@ -348,16 +428,10 @@ class BaseComponent {
         const descriptor = descriptors[key]
 
         // Avoid replacing existing functions on the target
-        if (!(key in target) || (typeof descriptor.value !== 'function' && !(key in target))) {
-          Object.defineProperty(target, key, descriptor)
-        }
+        //if (!(key in target) || (typeof descriptor.value !== 'function' && !(key in target))) {
+        Object.defineProperty(target, key, descriptor)
+        //}
       }
-    }
-
-    // If there's a prototype chain, continue copying from the prototype chain
-    const proto = Object.getPrototypeOf(prototype)
-    if (proto && proto !== Object.prototype) {
-      BaseComponent.extendPrototype(target, proto)
     }
   }
 
@@ -463,7 +537,7 @@ class BaseComponent {
   static setProps(props: IAny, to: BaseComponent, init: boolean): void {
     if (props && to) {
       if (init && to.initProps) {
-        to.initProps(props)
+        to.initProps(props, to)
       } else {
         to.props = { ...(to.props || {}), ...(props || {}) }
       }
@@ -768,7 +842,7 @@ class BaseComponent {
     }
 
     const mergedProp = {
-      ...(isTagStandard && clazz.props ? clazz.props : {}),
+      ...(!isTagStandard && clazz.props ? clazz.props : {}),
       ...props,
       children: [...(clazz?.props?.children || []), ...(props?.children || []), ...(children || [])],
     }
@@ -862,9 +936,12 @@ class BaseComponent {
     for (const node of nodes) {
       if (BaseComponent.isStandard(node)) {
         root.appendChild(node)
-        BaseComponent.attachElementsAt(node, node)
+        new Promise<void>((resolve) => {
+          BaseComponent.attachElementsAt(node, node, null)
+          resolve()
+        })
       } else {
-        BaseComponent.attachElementsAt(root, node)
+        BaseComponent.attachElementsAt(root, node, null)
       }
     }
   }
@@ -879,15 +956,17 @@ class BaseComponent {
    */
   private static detach(node: BaseComponent | HTMLElement) {
     if (BaseComponent.isPrimitive(node)) return
-    if ('disconnectedCallback' in node) {
+    if (BaseComponent.isNonStandard(node)) {
       ;(node as any as BaseComponent).disconnectedCallback()
     } else {
       if (node.parentNode) {
         node.parentNode?.removeChild(node)
+        ;(node.parentNode as any)?._removeChild && (node.parentNode as any)?._removeChild(node)
       }
       if (node?.remove) {
         node?.remove()
       }
+      //BaseComponent.detachChildren(node as any)
     }
   }
 
@@ -985,23 +1064,22 @@ class BaseComponent {
     }
 
     if (isTagStandard && 'ref' in (vNode as VNode).props) {
-      if (!(vNode as VNode).props.ref) {
-        throw new Error('Invalid ref object')
-      }
-      const ref = (vNode as VNode).props.ref
-      delete (vNode as VNode).props.ref
-      const descriptor = Object.getOwnPropertyDescriptor(ref, 'current')
+      if ((vNode as VNode).props.ref) {
+        const ref = (vNode as VNode).props.ref
+        delete (vNode as VNode).props.ref
+        const descriptor = Object.getOwnPropertyDescriptor(ref, 'current')
 
-      if (typeof ref === 'function') {
-        ref(element)
-      } else if (!descriptor || descriptor.configurable) {
-        Object.defineProperty(ref, 'current', {
-          value: element,
-          configurable: false,
-          writable: false,
-        })
+        if (typeof ref === 'function') {
+          ref(element)
+        } else if (!descriptor || descriptor.configurable) {
+          Object.defineProperty(ref, 'current', {
+            value: element,
+            configurable: false,
+            writable: false,
+          })
+        }
+        element.ref = ref
       }
-      element.ref = ref
     }
 
     BaseComponent.setProps((vNode as VNode).props, element, true)
@@ -1018,12 +1096,20 @@ class BaseComponent {
    * @param {HTMLElement} standardElement - The standard HTML element to which the reblendElement is attached.
    * @param {BaseComponent} reblendElement - The reblend element (ReblendNode or ReactNode) to be attached.
    */
-  static attachElementsAt(standardElement: HTMLElement, reblendElement: BaseComponent) {
+  static attachElementsAt(
+    standardElement: HTMLElement,
+    reblendElement: BaseComponent,
+    insertAfter: HTMLElement | null,
+  ) {
     if (!reblendElement?.htmlElements || !standardElement) {
       return
     }
 
     if (BaseComponent.isReactToReblendRenderedNode(reblendElement)) {
+      standardElement.removeChild = (node: any) => {
+        node.remove()
+        return node
+      }
       reblendElement.setReblendReactStandardContainer(standardElement)
       reblendElement.reactReblendMount()
       return
@@ -1031,20 +1117,29 @@ class BaseComponent {
 
     for (const htmlElement of reblendElement.htmlElements || []) {
       if (BaseComponent.isStandard(htmlElement)) {
-        standardElement.appendChild(htmlElement)
-        BaseComponent.attachElementsAt(htmlElement, htmlElement)
+        if (insertAfter) {
+          insertAfter?.after(htmlElement)
+          insertAfter = htmlElement
+        } else {
+          standardElement?.appendChild(htmlElement)
+        }
+        new Promise<void>((resolve) => {
+          BaseComponent.attachElementsAt(htmlElement, htmlElement, null)
+          resolve()
+        })
       } else if (BaseComponent.isReactToReblendRenderedNode(htmlElement)) {
-        BaseComponent.attachElementsAt(standardElement, htmlElement)
+        insertAfter = BaseComponent.attachElementsAt(standardElement, htmlElement, insertAfter) || insertAfter
       } else {
         const standardElementsFromCustomElement = htmlElement.getAttachableElements()
         htmlElement.firstStandardElement = standardElementsFromCustomElement[0]
-        BaseComponent.attachElementsAt(standardElement, htmlElement)
+        insertAfter = BaseComponent.attachElementsAt(standardElement, htmlElement, insertAfter) || insertAfter
         htmlElement.nearestStandardParent = standardElement
         BaseComponent.connected(htmlElement)
       }
     }
     reblendElement.nearestStandardParent = standardElement
     BaseComponent.connected(reblendElement)
+    return insertAfter
   }
 
   /**
@@ -1059,7 +1154,7 @@ class BaseComponent {
     newNode: BaseComponent | BaseComponent[],
     oldNode: BaseComponent,
   ): BaseComponent | null {
-    if (!BaseComponent.isReblendRenderedNodeStandard(oldNode) && !BaseComponent.isReblendPrimitiveElement(oldNode)) {
+    if (BaseComponent.isNonStandard(oldNode)) {
       oldNode = oldNode.firstStandardElement as BaseComponent
     }
     if (!newNode || !oldNode) {
@@ -1073,23 +1168,15 @@ class BaseComponent {
       if (!BaseComponent.isReblendRenderedNodeStandard(n) && !BaseComponent.isReblendPrimitiveElement(n)) {
         n.nearestStandardParent = (lastInsertedNode || oldNode).parentElement as any
         if (BaseComponent.isReactToReblendRenderedNode(n)) {
-          const div: HTMLDivElement & { delegatedChildren?: HTMLElement[] } = document.createElement('div')
-          div.delegatedChildren = []
-          div.appendChild = (node: any) => {
-            ;(lastInsertedNode || oldNode).after(node)
-            if (!firstStandardElement) {
-              firstStandardElement = node as any
-            }
-            div.delegatedChildren?.push(node)
-            return node
-          }
-          div.remove = () => {
-            for (const delegatedChild of div.delegatedChildren || []) {
-              delegatedChild.remove()
-            }
-          }
-          n.setReblendReactStandardContainer(div)
-          n.reactReblendMount()
+          const textNode = document.createTextNode('')
+          ;(lastInsertedNode || oldNode).after(textNode)
+          ;(lastInsertedNode || oldNode).parentElement &&
+            ((lastInsertedNode || oldNode).parentElement!.removeChild = (node: any) => {
+              node.remove()
+              return node
+            })
+          n.setReblendReactStandardContainer((lastInsertedNode || oldNode).parentElement!)
+          n.reactReblendMount(textNode as any)
         } else {
           lastInsertedNode = this.replaceOldNode(n.htmlElements!, lastInsertedNode || oldNode)
           if (!firstStandardElement) {
@@ -1103,7 +1190,10 @@ class BaseComponent {
         if (!firstStandardElement) {
           firstStandardElement = n
         }
-        BaseComponent.attachElementsAt(n, n)
+        new Promise<void>((resolve) => {
+          BaseComponent.attachElementsAt(n, n, null)
+          resolve()
+        })
       }
     }
     newNode.forEach((nn) => (nn.firstStandardElement = firstStandardElement))
@@ -1121,6 +1211,19 @@ class BaseComponent {
       return false
     }
     return BaseComponent.isReblendRenderedNodeStandard(node) || BaseComponent.isReblendPrimitiveElement(node)
+  }
+
+  /**
+   * Checks if a node is a Reblend HTML element or a Reblend React HTML element.
+   *
+   * @param {BaseComponent | HTMLElement} node - The node to check.
+   * @returns {boolean} - True if the node is Reblend or a Reblend React element, false otherwise.
+   */
+  static isNonStandard(node: BaseComponent | HTMLElement) {
+    if (!node) {
+      return false
+    }
+    return BaseComponent.isReblendRenderedNode(node) || BaseComponent.isReactToReblendRenderedNode(node)
   }
 
   /**
@@ -1184,12 +1287,15 @@ class BaseComponent {
       patches.push({ type: PatchTypeAndOrder.CREATE, parent, newNode })
     } else if (!BaseComponent.isEmpty(oldNode) && BaseComponent.isEmpty(newNode)) {
       patches.push({ type: PatchTypeAndOrder.REMOVE, parent, oldNode })
+    } else if (oldNode?.props?.key !== (newNode as any)?.props?.key) {
+      patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
     } else if ('displayName' in oldNode && 'displayName' in (newNode as any)) {
       const oldNodeTag = ((oldNode as BaseComponent).displayName as string).toLowerCase()
       const newNodeTag = (
         (BaseComponent.isPrimitive((newNode as VNode).displayName)
           ? (newNode as VNode).displayName
-          : ((newNode as VNode).displayName as typeof Reblend).ELEMENT_NAME) as string
+          : ((newNode as VNode).displayName as typeof Reblend).ELEMENT_NAME ||
+            ((newNode as VNode).displayName as any).displayName) as string
       ).toLowerCase()
 
       if (oldNodeTag !== newNodeTag) {
@@ -1219,11 +1325,14 @@ class BaseComponent {
    * @returns {any[]} - The array of property differences.
    */
   static diffProps(newNode: VNode, oldNode: BaseComponent) {
+    const ignoredProps = ['key', 'children', 'ref']
+
     const patches: PropPatch[] = []
     const oldProps: IAny = oldNode?.props || []
     const newProps: IAny = newNode?.props || []
+    const isReblendNode = BaseComponent.isReblendRenderedNode(oldNode)
     for (const key in newProps) {
-      if (key !== 'children' || BaseComponent.isReblendRenderedNode(oldNode)) {
+      if (!ignoredProps.includes(key) || (key === 'children' && isReblendNode)) {
         let oldProp = oldProps[key]
         let newProp = newProps[key]
         if (!this.deepCompare(oldProp, newProp)) {
@@ -1240,13 +1349,15 @@ class BaseComponent {
     }
 
     for (const key in oldProps) {
-      if (/* key !== 'children' &&  */ !(key in newProps)) {
-        patches.push({
-          type: 'REMOVE',
-          node: oldNode,
-          key,
-          propValue: undefined,
-        })
+      if (!ignoredProps.includes(key) || (key === 'children' && isReblendNode)) {
+        if (/* key !== 'children' &&  */ !(key in newProps)) {
+          patches.push({
+            type: 'REMOVE',
+            node: oldNode,
+            key,
+            propValue: undefined,
+          })
+        }
       }
     }
 
@@ -1368,16 +1479,23 @@ class BaseComponent {
             const elements = BaseComponent.createElement(newNode as VNode)
             parent?.htmlElements || (parent!.htmlElements = [])
             parent?.htmlElements.push(...elements)
-            const standardParent = BaseComponent.isStandard(parent!) ? parent! : parent!.nearestStandardParent!
+            const standardParent = BaseComponent.isStandard(parent!)
+              ? parent!
+              : BaseComponent.isReactToReblendRenderedNode(parent)
+              ? parent!.reactElementChildrenParent! || parent!.nearestStandardParent!
+              : parent!.nearestStandardParent!
             if (standardParent) {
               for (const element of elements || []) {
                 if (BaseComponent.isStandard(element)) {
                   standardParent.appendChild(element)
-                  BaseComponent.attachElementsAt(element, element)
+                  new Promise<void>((resolve) => {
+                    BaseComponent.attachElementsAt(element, element, null)
+                    resolve()
+                  })
                   element.nearestStandardParent = standardParent
                   BaseComponent.connected(element)
                 } else {
-                  BaseComponent.attachElementsAt(standardParent, element)
+                  BaseComponent.attachElementsAt(standardParent, element, null)
                 }
               }
             }
@@ -1436,31 +1554,33 @@ class BaseComponent {
    * @param {PropPatch[]} [patches] - The property patches to apply.
    */
   static async applyProps(patches?: PropPatch[]) {
-    let nodes = new Set<BaseComponent>()
-    patches?.forEach(({ type, node, key, propValue }) => {
-      if (type === 'UPDATE') {
-        BaseComponent.setProps({ [key]: propValue }, node, false)
-        nodes.add(node)
-      } else if (type === 'REMOVE') {
-        BaseComponent.removeProps({ [key]: undefined }, node)
-        nodes.add(node)
-      }
-      if (BaseComponent.isReactToReblendRenderedNode(node)) {
-        if (key === 'children') {
-          node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.CHILDREN)
-        } else {
-          node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.NON_CHILDREN)
+    requestAnimationFrame(() => {
+      let nodes = new Set<BaseComponent>()
+      patches?.forEach(({ type, node, key, propValue }) => {
+        if (type === 'UPDATE') {
+          BaseComponent.setProps({ [key]: propValue }, node, false)
+          nodes.add(node)
+        } else if (type === 'REMOVE') {
+          BaseComponent.removeProps({ [key]: undefined }, node)
+          nodes.add(node)
         }
-      }
+        if (BaseComponent.isReactToReblendRenderedNode(node)) {
+          if (key === 'children') {
+            node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.CHILDREN)
+          } else {
+            node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.NON_CHILDREN)
+          }
+        }
+      })
+      nodes.forEach((node) => {
+        if (BaseComponent.isReactToReblendRenderedNode(node)) {
+          ;(node as any)?.checkPropsChange()
+        } else {
+          node.onStateChange()
+        }
+      })
+      nodes = null as any
     })
-    nodes.forEach((node) => {
-      if (BaseComponent.isReactToReblendRenderedNode(node)) {
-        ;(node as any)?.checkPropsChange()
-      } else {
-        node.onStateChange()
-      }
-    })
-    nodes = null as any
   }
 
   /**
@@ -1483,6 +1603,16 @@ class BaseComponent {
    * The standard container for React and Reblend integration.
    */
   private reblendReactStandardContainer!: HTMLElement
+
+  /**
+   * The element for React and Reblend integration.
+   */
+  private reactElement!: HTMLElement[] | null
+
+  /**
+   * The element for React and Reblend integration.
+   */
+  private reactElementChildrenParent!: HTMLElement | null
 
   /**
    * The selector string for querying elements by data ID.
@@ -1550,6 +1680,11 @@ class BaseComponent {
   stateEffectRunning = false
 
   /**
+   * Indicates whether this component disconnected callback was called.
+   */
+  hasDisconnected = false
+
+  /**
    * The HTML elements managed by this component.
    */
   private htmlElements?: BaseComponent[]
@@ -1573,6 +1708,7 @@ class BaseComponent {
    * Sets the React standard container for Reblend integration.
    *
    * @param {HTMLElement} node - The DOM node to set as the React standard container.
+   * @param {HTMLElement} afterNode - The DOM node to set as the Reblend React After Node.
    */
   protected setReblendReactStandardContainer(node: HTMLElement) {
     this.reblendReactStandardContainer = node
@@ -1581,7 +1717,8 @@ class BaseComponent {
   /**
    * Lifecycle method for mounting the component in React.
    */
-  protected reactReblendMount() {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected reactReblendMount(afterNode?: HTMLElement) {}
 
   /**
    * Populates the HTML elements for this component.
@@ -1605,9 +1742,7 @@ class BaseComponent {
    * @returns {HTMLElement | undefined} The first standard element or undefined.
    */
   public get firstStandardElement(): HTMLElement | undefined {
-    return this._firstStandardElement && this._firstStandardElement.parentNode
-      ? this._firstStandardElement
-      : BaseComponent.getFirstStandardElementFrom(this)
+    return BaseComponent.getFirstStandardElementFrom(this)
   }
 
   /**
@@ -1759,8 +1894,9 @@ class BaseComponent {
    *
    * @param {IAny} props - The properties to set on the component.
    */
-  initProps(props: IAny) {
+  initProps(props: IAny, thisComponent: BaseComponent) {
     this.props = props || {}
+    ;(this as any).thisComponent = thisComponent
   }
 
   /**
@@ -1787,7 +1923,7 @@ class BaseComponent {
       ...this._state,
       ...(typeof value == 'function' ? value(this._state) : value),
     }
-    this.onStateChange()
+    this.attached && !this.stateEffectRunning && this.onStateChange()
   }
 
   /**
@@ -1901,7 +2037,8 @@ class BaseComponent {
     this.parentElement?.removeChild(this)
     ;(this.parentElement as any)?._removeChild && (this.parentElement as any)?._removeChild(this)
     BaseComponent.detachChildren(this)
-    BaseComponent.detach(this.reblendReactStandardContainer)
+    this.reactElement?.forEach((node) => BaseComponent.detach(node))
+    BaseComponent.detach(this.reactElementChildrenParent!)
     this.props = null as any
     this.htmlElements = null as any
     this._state = null as any
@@ -1915,6 +2052,7 @@ class BaseComponent {
     this.ReactClass = null as any
     this.ref = null as any
     this.directParent = null as any
+    this.hasDisconnected = true
   }
 
   /**
@@ -1960,11 +2098,12 @@ class BaseComponent {
       }
       if (force || !isEqual(this[stateID], value)) {
         this[stateID] = value as T
-        if (!this.stateEffectRunning && this.attached) {
-          this.onStateChange()
-        } else {
-          this.applyEffects()
-        }
+        if (!this.hasDisconnected)
+          if (!this.stateEffectRunning && this.attached) {
+            this.onStateChange()
+          } else {
+            this.applyEffects()
+          }
       }
     }
 
