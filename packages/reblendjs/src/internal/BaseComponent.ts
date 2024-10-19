@@ -537,7 +537,7 @@ class BaseComponent {
   static setProps(props: IAny, to: BaseComponent, init: boolean): void {
     if (props && to) {
       if (init && to.initProps) {
-        to.initProps(props)
+        to.initProps(props, to)
       } else {
         to.props = { ...(to.props || {}), ...(props || {}) }
       }
@@ -1894,8 +1894,9 @@ class BaseComponent {
    *
    * @param {IAny} props - The properties to set on the component.
    */
-  initProps(props: IAny) {
+  initProps(props: IAny, thisComponent: BaseComponent) {
     this.props = props || {}
+    ;(this as any).thisComponent = thisComponent
   }
 
   /**
