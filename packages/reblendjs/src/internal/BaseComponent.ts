@@ -2087,7 +2087,7 @@ class BaseComponent {
 
     if (typeof initial === 'function') initial = (initial as () => T)()
     this[stateID] = initial
-    const variableSetter: ReblendTyping.StateFunction<T> = (
+    const variableSetter: ReblendTyping.StateFunction<T> = ((
       value: ReblendTyping.StateFunctionValue<T>,
       force = false,
     ) => {
@@ -2105,7 +2105,7 @@ class BaseComponent {
             this.applyEffects()
           }
       }
-    }
+    }).bind(this)
 
     return [initial as T, variableSetter]
   }
@@ -2127,12 +2127,12 @@ class BaseComponent {
     const dep = new Function(`return (${dependencies})`).bind(this)
     const cacher = () => cloneDeep(dep())
     let caches = cacher()
-    const internalFn = () => {
+    const internalFn = (() => {
       if (!dependencies || !isEqual(dep(), caches)) {
         caches = cacher()
         fn()
       }
-    }
+    }).bind(this)
     this.effectsFn?.push(internalFn)
     this.onMountEffects?.push(fn)
   }
@@ -2161,7 +2161,7 @@ class BaseComponent {
 
     const [state, setState] = this.useState<T>(initial, stateID)
     this[stateID] = state
-    const fn: ReblendTyping.StateFunction<I> = (newValue: ReblendTyping.StateFunctionValue<I>) => {
+    const fn: ReblendTyping.StateFunction<I> = ((newValue: ReblendTyping.StateFunctionValue<I>) => {
       let reducedVal: ReblendTyping.StateFunctionValue<T>
       this.stateEffectRunning = true
       if (typeof newValue === 'function') {
@@ -2171,7 +2171,7 @@ class BaseComponent {
       }
       this.stateEffectRunning = false
       setState(reducedVal)
-    }
+    }).bind(this)
 
     return [this[stateID], fn]
   }
