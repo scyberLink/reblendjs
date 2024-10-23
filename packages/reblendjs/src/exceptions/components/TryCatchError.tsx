@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { ReblendRenderingException } from 'reblend-typing'
 import { isCallable } from '../../common/utils'
-import { BaseComponent, ReblendRenderingException } from '../../internal/BaseComponent'
+import type { BaseComponent } from '../../internal/BaseComponent'
 import { Reblend } from '../../internal/Reblend'
 
 //@ReblendComponent
 function TryCatchError(
-  this: BaseComponent,
   {
     children = ((_error) => <>{''}</>) as any,
   }: {
@@ -16,15 +16,17 @@ function TryCatchError(
       | Reblend.JSX.Element
       | Reblend.JSX.Element[]
   },
+  thisComponent?: BaseComponent,
 ) {
-  this.renderingErrorHandler = (e: ReblendRenderingException) => {
-    this.renderingError = e
-    //if (!this.stateEffectRunning && this.attached) {
-    //Promise.resolve().then(() => {
-    this.onStateChange()
-    //})
-    //}
-  }
+  thisComponent &&
+    (thisComponent.renderingErrorHandler = (e: ReblendRenderingException) => {
+      thisComponent.renderingError = e
+      //if (!this.stateEffectRunning && this.attached) {
+      //Promise.resolve().then(() => {
+      thisComponent?.onStateChange()
+      //})
+      //}
+    })
 
   function view() {
     const arr: any[] = []

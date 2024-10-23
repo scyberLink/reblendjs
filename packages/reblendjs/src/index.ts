@@ -6,8 +6,8 @@ export { IStyle } from './interface/IStyle'
 export { md5 } from './common/md5'
 export * as utils from './common/utils'
 export { SharedConfig } from './common/SharedConfig'
-export { ERROR_EVENTNAME } from './internal/BaseComponent'
-export type { ReblendRenderingException } from './internal/BaseComponent'
+export { ERROR_EVENTNAME } from 'reblend-typing'
+export type { ReblendRenderingException } from 'reblend-typing'
 export { TryCatchError } from './exceptions/components/TryCatchError'
 
 export {

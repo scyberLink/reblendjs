@@ -1,3 +1,5 @@
+/// /* <reference path="lib.dom.d.ts" /> */
+
 /**
  * Represents a generic event in the DOM.
  *
@@ -5,7 +7,6 @@
  * @typedef {Event}
  */
 interface Event {}
-
 /**
  * Represents an event triggered by CSS animations.
  *
@@ -14,7 +15,6 @@ interface Event {}
  * @extends {Event}
  */
 interface AnimationEvent extends Event {}
-
 /**
  * Represents an event triggered by interactions with the clipboard (e.g., cut, copy, paste).
  *
@@ -23,7 +23,6 @@ interface AnimationEvent extends Event {}
  * @extends {Event}
  */
 interface ClipboardEvent extends Event {}
-
 /**
  * Represents an event triggered by input composition (e.g., for non-Latin text).
  *
@@ -32,7 +31,6 @@ interface ClipboardEvent extends Event {}
  * @extends {Event}
  */
 interface CompositionEvent extends Event {}
-
 /**
  * Represents an event related to drag-and-drop operations.
  *
@@ -41,7 +39,6 @@ interface CompositionEvent extends Event {}
  * @extends {Event}
  */
 interface DragEvent extends Event {}
-
 /**
  * Represents an event triggered when an element gains or loses focus.
  *
@@ -50,7 +47,6 @@ interface DragEvent extends Event {}
  * @extends {Event}
  */
 interface FocusEvent extends Event {}
-
 /**
  * Represents an event triggered by keyboard input.
  *
@@ -59,7 +55,6 @@ interface FocusEvent extends Event {}
  * @extends {Event}
  */
 interface KeyboardEvent extends Event {}
-
 /**
  * Represents an event triggered by mouse interactions.
  *
@@ -68,7 +63,6 @@ interface KeyboardEvent extends Event {}
  * @extends {Event}
  */
 interface MouseEvent extends Event {}
-
 /**
  * Represents an event triggered by touch interactions on touch devices.
  *
@@ -77,7 +71,6 @@ interface MouseEvent extends Event {}
  * @extends {Event}
  */
 interface TouchEvent extends Event {}
-
 /**
  * Represents an event triggered by pointer device interactions (e.g., mouse, pen, touch).
  *
@@ -86,7 +79,6 @@ interface TouchEvent extends Event {}
  * @extends {Event}
  */
 interface PointerEvent extends Event {}
-
 /**
  * Represents an event triggered by CSS transitions.
  *
@@ -95,7 +87,6 @@ interface PointerEvent extends Event {}
  * @extends {Event}
  */
 interface TransitionEvent extends Event {}
-
 /**
  * Represents a user interface event in the DOM.
  *
@@ -104,7 +95,6 @@ interface TransitionEvent extends Event {}
  * @extends {Event}
  */
 interface UIEvent extends Event {}
-
 /**
  * Represents an event triggered by the scrolling of a mouse wheel or similar device.
  *
@@ -113,7 +103,6 @@ interface UIEvent extends Event {}
  * @extends {Event}
  */
 interface WheelEvent extends Event {}
-
 /**
  * Represents a DOM object that can receive events.
  *
@@ -121,7 +110,6 @@ interface WheelEvent extends Event {}
  * @typedef {EventTarget}
  */
 interface EventTarget {}
-
 /**
  * Represents the HTML document in the DOM.
  *
@@ -129,7 +117,6 @@ interface EventTarget {}
  * @typedef {Document}
  */
 interface Document {}
-
 /**
  * Represents the data transferred during a drag-and-drop operation.
  *
@@ -137,7 +124,6 @@ interface Document {}
  * @typedef {DataTransfer}
  */
 interface DataTransfer {}
-
 /**
  * Represents the media queries associated with the current document.
  *
@@ -147,23 +133,6 @@ interface DataTransfer {}
 interface StyleMedia {}
 
 /**
- * Represents a generic element in the DOM.
- *
- * @interface Element
- * @typedef {Element}
- */
-interface Element {}
-
-/**
- * Represents an HTML element in the DOM.
- *
- * @interface HTMLElement
- * @typedef {HTMLElement}
- * @extends {Element}
- */
-interface HTMLElement extends Element {}
-
-/**
  * Represents an HTML anchor element (`<a>`).
  *
  * @interface HTMLAnchorElement
@@ -171,7 +140,6 @@ interface HTMLElement extends Element {}
  * @extends {HTMLElement}
  */
 interface HTMLAnchorElement extends HTMLElement {}
-
 /**
  * Represents an HTML area element (`<area>`).
  *
@@ -180,7 +148,6 @@ interface HTMLAnchorElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLAreaElement extends HTMLElement {}
-
 /**
  * Represents an HTML audio element (`<audio>`).
  *
@@ -189,7 +156,6 @@ interface HTMLAreaElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLAudioElement extends HTMLElement {}
-
 /**
  * Represents an HTML base element (`<base>`).
  *
@@ -198,7 +164,6 @@ interface HTMLAudioElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLBaseElement extends HTMLElement {}
-
 /**
  * Represents an HTML body element (`<body>`).
  *
@@ -207,7 +172,6 @@ interface HTMLBaseElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLBodyElement extends HTMLElement {}
-
 /**
  * Represents an HTML break element (`<br>`).
  *
@@ -216,7 +180,6 @@ interface HTMLBodyElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLBRElement extends HTMLElement {}
-
 /**
  * Represents an HTML button element (`<button>`).
  *
@@ -225,7 +188,6 @@ interface HTMLBRElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLButtonElement extends HTMLElement {}
-
 /**
  * Represents an HTML canvas element (`<canvas>`).
  *
@@ -234,7 +196,6 @@ interface HTMLButtonElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLCanvasElement extends HTMLElement {}
-
 /**
  * Represents an HTML data element (`<data>`).
  *
@@ -243,7 +204,6 @@ interface HTMLCanvasElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLDataElement extends HTMLElement {}
-
 /**
  * Represents an HTML data list element (`<datalist>`).
  *
@@ -252,7 +212,6 @@ interface HTMLDataElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLDataListElement extends HTMLElement {}
-
 /**
  * Represents an HTML details element (`<details>`).
  *
@@ -261,7 +220,6 @@ interface HTMLDataListElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLDetailsElement extends HTMLElement {}
-
 /**
  * Represents an HTML dialog element (`<dialog>`).
  *
@@ -270,7 +228,6 @@ interface HTMLDetailsElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLDialogElement extends HTMLElement {}
-
 /**
  * Represents an HTML div element (`<div>`).
  *
@@ -279,7 +236,6 @@ interface HTMLDialogElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLDivElement extends HTMLElement {}
-
 /**
  * Represents an HTML description list element (`<dl>`).
  *
@@ -288,7 +244,6 @@ interface HTMLDivElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLDListElement extends HTMLElement {}
-
 /**
  * Represents an HTML embed element (`<embed>`).
  *
@@ -297,7 +252,6 @@ interface HTMLDListElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLEmbedElement extends HTMLElement {}
-
 /**
  * Represents an HTML field set element (`<fieldset>`).
  *
@@ -306,7 +260,6 @@ interface HTMLEmbedElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLFieldSetElement extends HTMLElement {}
-
 /**
  * Represents an HTML form element (`<form>`).
  *
@@ -315,7 +268,6 @@ interface HTMLFieldSetElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLFormElement extends HTMLElement {}
-
 /**
  * Represents an HTML heading element (`<h1>`-`<h6>`).
  *
@@ -324,7 +276,6 @@ interface HTMLFormElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLHeadingElement extends HTMLElement {}
-
 /**
  * Represents an HTML head element (`<head>`).
  *
@@ -333,7 +284,6 @@ interface HTMLHeadingElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLHeadElement extends HTMLElement {}
-
 /**
  * Represents an HTML horizontal rule element (`<hr>`).
  *
@@ -342,7 +292,6 @@ interface HTMLHeadElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLHRElement extends HTMLElement {}
-
 /**
  * Represents an HTML root element (`<html>`).
  *
@@ -351,7 +300,6 @@ interface HTMLHRElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLHtmlElement extends HTMLElement {}
-
 /**
  * Represents an HTML iframe element (`<iframe>`).
  *
@@ -360,7 +308,6 @@ interface HTMLHtmlElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLIFrameElement extends HTMLElement {}
-
 /**
  * Represents an HTML image element (`<img>`).
  *
@@ -369,7 +316,6 @@ interface HTMLIFrameElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLImageElement extends HTMLElement {}
-
 /**
  * Represents an HTML input element (`<input>`).
  *
@@ -378,7 +324,6 @@ interface HTMLImageElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLInputElement extends HTMLElement {}
-
 /**
  * Represents an HTML modification element (`<del>` and `<ins>`).
  *
@@ -387,7 +332,6 @@ interface HTMLInputElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLModElement extends HTMLElement {}
-
 /**
  * Represents an HTML label element (`<label>`).
  *
@@ -396,7 +340,6 @@ interface HTMLModElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLLabelElement extends HTMLElement {}
-
 /**
  * Represents an HTML legend element (`<legend>`).
  *
@@ -405,7 +348,6 @@ interface HTMLLabelElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLLegendElement extends HTMLElement {}
-
 /**
  * Represents an HTML list item element (`<li>`).
  *
@@ -414,7 +356,6 @@ interface HTMLLegendElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLLIElement extends HTMLElement {}
-
 /**
  * Represents an HTML link element (`<link>`).
  *
@@ -423,7 +364,6 @@ interface HTMLLIElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLLinkElement extends HTMLElement {}
-
 /**
  * Represents an HTML map element (`<map>`).
  *
@@ -432,16 +372,6 @@ interface HTMLLinkElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLMapElement extends HTMLElement {}
-
-/**
- * Represents an HTML menu element (`<menu>`).
- *
- * @interface HTMLMenuElement
- * @typedef {HTMLMenuElement}
- * @extends {HTMLElement}
- */
-interface HTMLMenuElement extends HTMLElement {}
-
 /**
  * Represents an HTML meta element (`<meta>`).
  *
@@ -450,7 +380,6 @@ interface HTMLMenuElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLMetaElement extends HTMLElement {}
-
 /**
  * Represents an HTML meter element (`<meter>`).
  *
@@ -459,7 +388,6 @@ interface HTMLMetaElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLMeterElement extends HTMLElement {}
-
 /**
  * Represents an HTML object element (`<object>`).
  *
@@ -468,7 +396,6 @@ interface HTMLMeterElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLObjectElement extends HTMLElement {}
-
 /**
  * Represents an HTML option element (`<option>`).
  *
@@ -477,7 +404,6 @@ interface HTMLObjectElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLOptionElement extends HTMLElement {}
-
 /**
  * Represents an HTML paragraph element (`<p>`).
  *
@@ -486,7 +412,6 @@ interface HTMLOptionElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLParagraphElement extends HTMLElement {}
-
 /**
  * Represents an HTML progress element (`<progress>`).
  *
@@ -495,7 +420,6 @@ interface HTMLParagraphElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLProgressElement extends HTMLElement {}
-
 /**
  * Represents an HTML script element (`<script>`).
  *
@@ -504,7 +428,6 @@ interface HTMLProgressElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLScriptElement extends HTMLElement {}
-
 /**
  * Represents an HTML select element (`<select>`).
  *
@@ -513,7 +436,6 @@ interface HTMLScriptElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLSelectElement extends HTMLElement {}
-
 /**
  * Represents an HTML source element (`<source>`).
  *
@@ -522,7 +444,6 @@ interface HTMLSelectElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLSourceElement extends HTMLElement {}
-
 /**
  * Represents an HTML span element (`<span>`).
  *
@@ -531,7 +452,6 @@ interface HTMLSourceElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLSpanElement extends HTMLElement {}
-
 /**
  * Represents an HTML style element (`<style>`).
  *
@@ -540,7 +460,6 @@ interface HTMLSpanElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLStyleElement extends HTMLElement {}
-
 /**
  * Represents an HTML table element (`<table>`).
  *
@@ -549,25 +468,6 @@ interface HTMLStyleElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLTableElement extends HTMLElement {}
-
-/**
- * Represents an HTML table caption element (`<caption>`).
- *
- * @interface HTMLTableCaptionElement
- * @typedef {HTMLTableCaptionElement}
- * @extends {HTMLElement}
- */
-interface HTMLTableCaptionElement extends HTMLElement {}
-
-/**
- * Represents an HTML table cell element (`<td>` and `<th>`).
- *
- * @interface HTMLTableCellElement
- * @typedef {HTMLTableCellElement}
- * @extends {HTMLElement}
- */
-interface HTMLTableCellElement extends HTMLElement {}
-
 /**
  * Represents an HTML table column element (`<col>`).
  *
@@ -576,7 +476,6 @@ interface HTMLTableCellElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLTableColElement extends HTMLElement {}
-
 /**
  * Represents an HTML table row element (`<tr>`).
  *
@@ -585,7 +484,6 @@ interface HTMLTableColElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLTableRowElement extends HTMLElement {}
-
 /**
  * Represents an HTML table section element (`<thead>`, `<tbody>`, and `<tfoot>`).
  *
@@ -594,7 +492,6 @@ interface HTMLTableRowElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLTableSectionElement extends HTMLElement {}
-
 /**
  * Represents an HTML template element (`<template>`).
  *
@@ -603,7 +500,6 @@ interface HTMLTableSectionElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLTemplateElement extends HTMLElement {}
-
 /**
  * Represents an HTML text area element (`<textarea>`).
  *
@@ -612,7 +508,6 @@ interface HTMLTemplateElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLTextAreaElement extends HTMLElement {}
-
 /**
  * Represents an HTML time element (`<time>`).
  *
@@ -621,7 +516,6 @@ interface HTMLTextAreaElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLTimeElement extends HTMLElement {}
-
 /**
  * Represents an HTML title element (`<title>`).
  *
@@ -630,7 +524,6 @@ interface HTMLTimeElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLTitleElement extends HTMLElement {}
-
 /**
  * Represents an HTML track element (`<track>`).
  *
@@ -639,7 +532,6 @@ interface HTMLTitleElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLTrackElement extends HTMLElement {}
-
 /**
  * Represents an HTML video element (`<video>`).
  *
@@ -648,118 +540,6 @@ interface HTMLTrackElement extends HTMLElement {}
  * @extends {HTMLElement}
  */
 interface HTMLVideoElement extends HTMLElement {}
-
-/**
- * Represents a fragment of HTML or XML that can be used to update the DOM.
- *
- * @interface DocumentFragment
- * @typedef {DocumentFragment}
- * @extends {Node}
- */
-interface DocumentFragment extends Node {}
-
-/**
- * Represents a node in the document tree.
- *
- * @interface Node
- * @typedef {Node}
- */
-interface Node {}
-
-/**
- * Represents a named node map, used primarily for attributes.
- *
- * @interface NamedNodeMap
- * @typedef {NamedNodeMap}
- */
-interface NamedNodeMap {}
-
-/**
- * Represents a DOM token list, commonly used for the `classList` property.
- *
- * @interface DOMTokenList
- * @typedef {DOMTokenList}
- */
-interface DOMTokenList {}
-
-/**
- * Represents a DOM implementation object, providing methods for operations not specific to a particular document.
- *
- * @interface DOMImplementation
- * @typedef {DOMImplementation}
- */
-interface DOMImplementation {}
-
-/**
- * Represents a rectangular area in the DOM (e.g., bounding box of an element).
- *
- * @interface DOMRect
- * @typedef {DOMRect}
- */
-interface DOMRect {}
-
-/**
- * Represents a selection of text in a document.
- *
- * @interface Selection
- * @typedef {Selection}
- */
-interface Selection {}
-
-/**
- * Represents an event that involves text input.
- *
- * @interface InputEvent
- * @typedef {InputEvent}
- * @extends {UIEvent}
- */
-interface InputEvent extends UIEvent {}
-
-/**
- * Represents an event triggered when a form is submitted.
- *
- * @interface SubmitEvent
- * @typedef {SubmitEvent}
- * @extends {Event}
- */
-interface SubmitEvent extends Event {}
-
-/**
- * Represents an event triggered when the user scrolls an element.
- *
- * @interface ScrollEvent
- * @typedef {ScrollEvent}
- * @extends {UIEvent}
- */
-interface ScrollEvent extends UIEvent {}
-
-/**
- * Represents an event triggered by storage-related changes (e.g., `localStorage` or `sessionStorage`).
- *
- * @interface StorageEvent
- * @typedef {StorageEvent}
- * @extends {Event}
- */
-interface StorageEvent extends Event {}
-
-/**
- * Represents an event triggered by fullscreen changes.
- *
- * @interface FullscreenChangeEvent
- * @typedef {FullscreenChangeEvent}
- * @extends {Event}
- */
-interface FullscreenChangeEvent extends Event {}
-
-/**
- * Represents an event triggered when the state of a media element is updated.
- *
- * @interface MediaEvent
- * @typedef {MediaEvent}
- * @extends {Event}
- */
-interface MediaEvent extends Event {}
-
 import * as CSS from 'csstype';
 import * as PropTypes from 'prop-types';
 import React from 'react';
@@ -769,84 +549,72 @@ import React from 'react';
  * @typedef {NativeAnimationEvent}
  */
 type NativeAnimationEvent = AnimationEvent;
-
 /**
  * Represents a native clipboard event, used when performing clipboard actions such as copy, paste, and cut.
  *
  * @typedef {NativeClipboardEvent}
  */
 type NativeClipboardEvent = ClipboardEvent;
-
 /**
  * Represents a native composition event, which occurs when the user is composing text via an input method editor (IME).
  *
  * @typedef {NativeCompositionEvent}
  */
 type NativeCompositionEvent = CompositionEvent;
-
 /**
  * Represents a native drag event, triggered when an element or text selection is being dragged.
  *
  * @typedef {NativeDragEvent}
  */
 type NativeDragEvent = DragEvent;
-
 /**
  * Represents a native focus event, which occurs when an element gains or loses focus.
  *
  * @typedef {NativeFocusEvent}
  */
 type NativeFocusEvent = FocusEvent;
-
 /**
  * Represents a native keyboard event, fired when the user presses or releases a key on the keyboard.
  *
  * @typedef {NativeKeyboardEvent}
  */
 type NativeKeyboardEvent = KeyboardEvent;
-
 /**
  * Represents a native mouse event, typically triggered by mouse actions such as clicks or movements.
  *
  * @typedef {NativeMouseEvent}
  */
 type NativeMouseEvent = MouseEvent;
-
 /**
  * Represents a native touch event, used when the user interacts with a touch screen.
  *
  * @typedef {NativeTouchEvent}
  */
 type NativeTouchEvent = TouchEvent;
-
 /**
  * Represents a native pointer event, which encompasses mouse, touch, and pen/stylus input.
  *
  * @typedef {NativePointerEvent}
  */
 type NativePointerEvent = PointerEvent;
-
 /**
  * Represents a native transition event, fired when a CSS transition ends.
  *
  * @typedef {NativeTransitionEvent}
  */
 type NativeTransitionEvent = TransitionEvent;
-
 /**
  * Represents a native UI event, which provides basic information about user interface events like focus or blur.
  *
  * @typedef {NativeUIEvent}
  */
 type NativeUIEvent = UIEvent;
-
 /**
  * Represents a native wheel event, typically triggered when the user rotates a wheel device (e.g., a mouse wheel).
  *
  * @typedef {NativeWheelEvent}
  */
 type NativeWheelEvent = WheelEvent;
-
 /**
  * Used to represent DOM API's where users can either pass
  * true or false as a boolean or as its equivalent strings.
@@ -880,6 +648,71 @@ type VoidOrUndefinedOnly = void | {
   [UNDEFINED_VOID_ONLY]: never;
 };
 
+export type ChildWithProps = {
+  child: ReblendTyping.Component;
+  propsKey: string[];
+};
+
+export const ERROR_EVENTNAME = 'reblend-render-error';
+export type ReblendRenderingException = Error & {
+  component: ReblendTyping.Component;
+};
+
+export interface PropPatch {
+  type: 'REMOVE' | 'UPDATE';
+  node: ReblendTyping.Component;
+  key: string;
+  propValue?: string;
+}
+
+export type Primitive = boolean | null | number | string | undefined;
+export const REBLEND_PRIMITIVE_ELEMENT_NAME = 'ReblendPrimitive';
+
+export interface ReblendPrimitive extends ReblendTyping.Component {
+  reblendPrimitiveData: any;
+  setData(data: Primitive): this;
+  getData(): Primitive;
+}
+export type IAny = { [key: string]: any };
+export type VNodeChild = Primitive | VNode;
+export type VNodeChildren = VNodeChild[];
+export type DomNodeChild = ReblendTyping.Component | ReblendPrimitive;
+export type DomNodeChildren = DomNodeChild[];
+
+export interface ReactNode {
+  $$typeof: symbol;
+  displayName: string;
+  render: (props: any) => any;
+}
+
+export interface VNode {
+  [reblendVComponent: symbol]: boolean;
+  props: IAny & { children: VNodeChildren };
+  displayName: string | typeof ReblendTyping.Component | ReactNode;
+}
+
+export enum PatchTypeAndOrder {
+  NONE,
+  REMOVE,
+  TEXT,
+  CREATE,
+  REPLACE,
+  UPDATE,
+}
+
+export interface Patch {
+  type: PatchTypeAndOrder;
+  newNode?: VNodeChild;
+  oldNode?: DomNodeChild;
+  parent?: ReblendTyping.Component;
+  patches?: PropPatch[];
+}
+
+export enum ChildrenPropsUpdateType {
+  NON_CHILDREN,
+  CHILDREN,
+}
+
 export declare namespace ReblendTyping {
   /**
    * Represents a mutable reference object whose `current` property can hold a value of type `T` or an `HTMLElement`.
@@ -888,8 +721,9 @@ export declare namespace ReblendTyping {
    * @typedef {Object} Ref
    * @property {T | HTMLElement} [current] - The current value held by the reference, which can be of type `T` or an `HTMLElement`.
    */
-  type Ref<T> = { readonly current?: T };
-
+  type Ref<T> = {
+    readonly current?: T;
+  };
   /**
    * A function that updates the state based on the provided value. It accepts a value or a function that returns a new value based on the previous state.
    *
@@ -902,7 +736,6 @@ export declare namespace ReblendTyping {
     value: StateFunctionValue<T>,
     force?: boolean
   ) => void;
-
   /**
    * The value used to update the state, which can be either a new value directly or a function that computes the new value based on the previous state.
    *
@@ -910,7 +743,6 @@ export declare namespace ReblendTyping {
    * @typedef {(previous: T) => T | T} StateFunctionValue
    */
   type StateFunctionValue<T> = ((previous: T) => T) | T;
-
   /**
    * A function that returns a memoized value, which is recalculated only when dependencies change.
    *
@@ -919,7 +751,6 @@ export declare namespace ReblendTyping {
    * @returns {T} - The memoized value.
    */
   type StateEffectiveMemoFunction<T> = () => T;
-
   /**
    * A function that can return a cleanup function or nothing, commonly used in effect hooks.
    *
@@ -927,7 +758,6 @@ export declare namespace ReblendTyping {
    * @returns {(() => any) | void} - A cleanup function or void if no cleanup is necessary.
    */
   type StateEffectiveFunction = () => (() => any) | void;
-
   /**
    * A reducer function that takes a previous value and an incoming value, and returns a new value. This is often used in state management patterns like `useReducer`.
    *
@@ -941,7 +771,6 @@ export declare namespace ReblendTyping {
     previous: ValueType,
     current: IncomingType
   ) => ValueType;
-
   /**
    * Used to retrieve the possible components which accept a given set of props.
    *
@@ -984,7 +813,6 @@ export declare namespace ReblendTyping {
         [K in Tag]: P extends JSX.IntrinsicElements[K] ? K : never;
       }[Tag]
     | ComponentType<P>;
-
   /**
    * Represents any user-defined component, either as a function or a class.
    *
@@ -998,7 +826,6 @@ export declare namespace ReblendTyping {
    * @see {@link FunctionComponent}
    */
   type ComponentType<P = {}> = ComponentClass<P> | FunctionComponent<P>;
-
   /**
    * Represents any user-defined component, either as a function or a class.
    *
@@ -1008,9 +835,10 @@ export declare namespace ReblendTyping {
    *
    * @template P The props the component accepts.
    */
-  type JSXElementConstructor<P> = (props: P) => ReblendNode | ReblendNode[];
-  /* | (new (props: P) => Component<any, any>); */
-
+  type JSXElementConstructor<P> = (
+    props: P,
+    thisComponent?: Component<P>
+  ) => ReblendNode | ReblendNode[];
   interface DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES {}
   /**
    * A callback fired whenever the ref's value changes.
@@ -1032,14 +860,12 @@ export declare namespace ReblendTyping {
       | void
       | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES];
   }['bivarianceHack'];
-
   /**
    * A union type of all possible shapes for Reblend refs.
    *
    * @see {@link RefCallback}
    * @see {@link Ref}
    */
-  //type Ref<T> = RefCallback<T> | RefObject<T> | null;
   /**
    * A legacy implementation of refs where you can pass a string to a ref prop.
    *
@@ -1069,7 +895,6 @@ export declare namespace ReblendTyping {
    * type DivRef = Reblend.ElementRef<'div'>;
    * ```
    */
-
   type ComponentState = any;
   /**
    * A value which uniquely identifies a node among items in an array.
@@ -1219,7 +1044,6 @@ export declare namespace ReblendTyping {
     | HTMLVideoElement
     | HTMLWebViewElement
     | SVGElement;
-
   /**
    * Represents a JSX element that is both a native `HTMLElement` and a `React` element, including support for portals.
    *
@@ -1235,7 +1059,6 @@ export declare namespace ReblendTyping {
    * ```
    */
   type ReblendElement = HTMLElement & React.ReactElement & React.ReactPortal;
-
   /**
    * @deprecated
    */
@@ -1384,7 +1207,6 @@ export declare namespace ReblendTyping {
     | React.ReactNode
     | Iterable<ReblendNode>
     | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_REBLEND_NODES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_REBLEND_NODES];
-
   /** @deprecated */
   function createFactory<T extends HTMLElement>(
     type: keyof ReblendHTML
@@ -1517,7 +1339,7 @@ export declare namespace ReblendTyping {
    * @template P The props the component accepts.
    */
   interface ExoticComponent<P = {}> {
-    (props: P): ReblendNode;
+    (props: P, thisComponent?: Component<P>): ReblendNode;
     readonly $$typeof: symbol;
   }
   /**
@@ -1832,52 +1654,9 @@ export declare namespace ReblendTyping {
   type ReblendInstance = Component<any> | Element;
   interface Component<P = {}, S = {}, SS = any>
     extends ComponentLifecycle<P, S, SS> {}
-  class Component<P, S> {
-    /**
-     * If set, `this.context` will be set at runtime to the current value of the given Context.
-     *
-     * @example
-     *
-     * ```ts
-     * type MyContext = number
-     * const Ctx = Reblend.createContext<MyContext>(0)
-     *
-     * class Foo extends Reblend.Component {
-     *   static contextType = Ctx
-     *   context!: Reblend.ContextType<typeof Ctx>
-     *   render () {
-     *     return <>My context's value: {this.context}</>;
-     *   }
-     * }
-     * ```
-     *
-     * @see {@link https://reblend.dev/reference/reblend/Component#static-contexttype}
-     */
-    static contextType?: Context<any> | undefined;
-    /**
-     * If using the new style context, re-declare this in your class to be the
-     * `Reblend.ContextType` of your `static contextType`.
-     * Should be used with type annotation or static contextType.
-     *
-     * @example
-     * ```ts
-     * static contextType = MyContext
-     * // For TS pre-3.7:
-     * context!: Reblend.ContextType<typeof MyContext>
-     * // For TS 3.7 and above:
-     * declare context: Reblend.ContextType<typeof MyContext>
-     * ```
-     *
-     * @see {@link https://reblend.dev/reference/reblend/Component#context Reblend Docs}
-     */
-    context: unknown;
-    constructor(props: P);
-    /**
-     * @deprecated
-     * @see {@link https://legacy.reblendjs.org/docs/legacy-context.html Reblend Docs}
-     */
-    constructor(props: P, context: any);
-    setState<K extends keyof S>(
+  class Component<P, S> extends HTMLElement {
+    constructor();
+    /* setState<K extends keyof S>(
       state:
         | ((
             prevState: Readonly<S>,
@@ -1885,19 +1664,844 @@ export declare namespace ReblendTyping {
           ) => Pick<S, K> | S | null)
         | (Pick<S, K> | S | null),
       callback?: () => void
-    ): void;
-    forceUpdate(callback?: () => void): void;
-    render(): ReblendNode;
+    ): void; */
+    html(): ReblendNode;
     readonly props: Readonly<P>;
-    state: Readonly<S>;
+
     /**
-     * @deprecated
+     * Used to identify the component, similar to `displayName`.
+     * This can also be used to track components that have changed.
      *
-     * @see {@link https://legacy.reblendjs.org/docs/refs-and-the-dom.html#legacy-api-string-refs Legacy Reblend Docs}
+     * @static
+     * @type {string}
      */
-    refs: {
-      [key: string]: ReblendInstance;
-    };
+    static ELEMENT_NAME;
+
+    /**
+     * Holds the props (properties) of the component.
+     * Can be any type of object containing the default component's configuration.
+     *
+     * @static
+     * @type {IAny}
+     */
+    static props: any;
+
+    /**
+     * A static class that extends the functionality of `Component`
+     * to provide integration with React and Reblend.
+     */
+    static ReblendReactClass: typeof Component;
+
+    /**
+     * Retrieves the first standard element from a node, traversing its children if necessary.
+     *
+     * @param {Component} node - The starting node to search from.
+     * @returns {HTMLElement | undefined} The first standard HTML element found, or `undefined` if none is found.
+     */
+    static getFirstStandardElementFrom(
+      node: Component<any, any>
+    ): HTMLElement | undefined;
+
+    /**
+     * Extends the prototype of the target object with the provided prototype, skipping constructors and existing functions.
+     *
+     * @param {any} target - The target object to extend.
+     * @param {any} prototype - The prototype object to copy properties and methods from.
+     */
+    static extendPrototype(target: any, prototype: any): void;
+
+    /**
+     * Checks if the given element has a name other than 'Component'.
+     *
+     * @param {typeof Component} element - The element to check.
+     * @returns {boolean} `true` if the element has a name and it is not 'Component', otherwise `false`.
+     */
+    static hasName(element: typeof Component): boolean;
+
+    /**
+     * Wraps an event callback function, ensuring that the event callback is always called.
+     *
+     * @param {(e: Event) => any} [eventCallback=() => {}] - The event callback to be wrapped.
+     * @returns {(e: Event) => void} A function that invokes the event callback.
+     */
+    static fn(eventCallback: (e: Event) => any): (e: Event) => void;
+
+    /**
+     * Sets attributes on the given element, handling namespaces for XML, SVG, MathML, and XLink attributes.
+     *
+     * @param {HTMLElement | SVGElement} element - The element on which to set attributes.
+     * @param {Record<string, string>} attributes - A record of attribute names and values to set.
+     */
+    static setAttributesWithNamespace(
+      element: HTMLElement | SVGElement,
+      attributes: Record<string, string>
+    ): void;
+
+    /**
+     * Creates an HTML, SVG, MathML, or XML element based on the provided tag name.
+     *
+     * @param {string} tag - The tag name of the element to create.
+     * @returns {HTMLElement | SVGElement | Element} The created element.
+     */
+    static createElementWithNamespace(
+      tag: string
+    ): HTMLElement | SVGElement | Element;
+
+    /**
+     * Sets properties on the target component, updating attributes and handling special cases like events and style.
+     *
+     * @param {IAny} props - The properties to set.
+     * @param {Component} to - The target component to apply the properties to.
+     * @param {boolean} init - Whether this is an initial setting of properties.
+     */
+    static setProps(props: any, to: Component, init: boolean): void;
+
+    /**
+     * Removes specified properties from the `to` component and removes the corresponding attributes.
+     * If a property is to be removed using `setAttribute`, it will also be removed from `props`.
+     *
+     * @param {IAny} props - The properties to remove from the component.
+     * @param {Component} to - The target component from which to remove the properties.
+     */
+    static removeProps(props: any, to: Component): void;
+
+    /**
+     * Checks if the provided node is a rendered Reblend node.
+     *
+     * @param {any} node - The node to check.
+     * @returns {boolean} `true` if the node is a rendered Reblend node, otherwise `false`.
+     */
+    static isReblendRenderedNode(node: any): boolean;
+
+    /**
+     * Checks if the provided node is a virtual Reblend node.
+     *
+     * @param {any} node - The node to check.
+     * @returns {boolean} `true` if the node is a virtual Reblend node, otherwise `false`.
+     */
+    static isReblendVirtualNode(node: any): boolean;
+
+    /**
+     * Checks if the provided node is a standard rendered Reblend node.
+     *
+     * @param {any} node - The node to check.
+     * @returns {boolean} `true` if the node is a standard rendered Reblend node, otherwise `false`.
+     */
+    static isReblendRenderedNodeStandard(node: any): boolean;
+
+    /**
+     * Checks if the provided node is a standard virtual Reblend node.
+     *
+     * @param {any} node - The node to check.
+     * @returns {boolean} `true` if the node is a standard virtual Reblend node, otherwise `false`.
+     */
+    static isReblendVirtualNodeStandard(node: any): boolean;
+
+    /**
+     * Checks if the provided node is a React to Reblend rendered node.
+     *
+     * @param {any} node - The node to check.
+     * @returns {boolean} `true` if the node is a React to Reblend rendered node, otherwise `false`.
+     */
+    static isReactToReblendRenderedNode(node: any): boolean;
+
+    /**
+     * Checks if the provided node is a React to Reblend virtual node.
+     *
+     * @param {any} node - The node to check.
+     * @returns {boolean} `true` if the node is a React to Reblend virtual node, otherwise `false`.
+     */
+    static isReactToReblendVirtualNode(node: any): boolean;
+
+    /**
+     * Checks if the provided node is a standard virtual node.
+     *
+     * @param {any} node - The node to check.
+     * @returns {boolean} `true` if the node is a standard virtual node, otherwise `false`.
+     */
+    static isStandardVirtualNode(node: any): boolean;
+
+    /**
+     * Checks if the provided element is a Reblend primitive element.
+     *
+     * @param {any} element - The element to check.
+     * @returns {boolean} `true` if the element is a Reblend primitive element, otherwise `false`.
+     */
+    static isReblendPrimitiveElement(element: any): boolean;
+
+    /**
+     * Creates a new Reblend primitive element.
+     *
+     * @returns {ReblendPrimitive} The newly created Reblend primitive element.
+     */
+    static newReblendPrimitive(): ReblendPrimitive;
+
+    /**
+     * Checks if the provided display name represents a React node.
+     *
+     * @param {IAny} displayName - The display name to check.
+     * @returns {boolean} `true` if the display name represents a React node, otherwise `false`.
+     */
+    static isReactNode(displayName: any): boolean;
+
+    /**
+     * Deeply flattens an array or set of elements.
+     *
+     * @template T
+     * @param {T[] | Set<T>} data - The data to flatten.
+     * @returns {T[]} A flattened array of elements.
+     */
+    static deepFlat<T>(data: T[] | Set<T>): T[];
+
+    /**
+     * Checks if the given object is an array-like structure by verifying that it contains array-specific methods and properties.
+     *
+     * @param {unknown} obj - The object to check.
+     * @returns {boolean} `true` if the object is an array-like structure, otherwise `false`.
+     */
+    static isArray(obj: unknown): boolean;
+
+    /**
+     * Flattens a nested array or set of virtual nodes (VNode) and adds the result to the `containerArr`.
+     *
+     * @template T
+     * @param {(T | T[])[] | Set<T | T[]>} arr - The array or set of VNode children to flatten.
+     * @param {T[]} [containerArr=[]] - The container array to store flattened nodes.
+     * @returns {T[]} The flattened array of VNode children.
+     */
+    static flattenVNodeChildren<T>(
+      arr: (T | T[])[] | Set<T | T[]>,
+      containerArr: T[]
+    ): T[];
+
+    /**
+     * Constructs a VNode from the provided display name, props, and children.
+     * If the display name is an array, it will return that array.
+     * Otherwise, it constructs a new VNode using the provided properties.
+     *
+     * @param {typeof Reblend | string | VNode[]} displayName - The display name or class for the VNode.
+     * @param {IAny} props - The props to pass to the VNode.
+     * @param {...VNodeChildren} children - The children to include in the VNode.
+     * @returns {VNode | VNodeChildren} The constructed VNode or VNode children.
+     */
+    static construct(
+      displayName: typeof Component | string | VNode[],
+      props: IAny,
+      ...children: VNodeChildren
+    ): VNode | VNodeChildren;
+
+    /**
+     * Checks if the provided data is a primitive type.
+     * Primitive types include string, number, boolean, bigint, null, undefined, and symbol.
+     *
+     * @param {any} data - The data to check.
+     * @returns {boolean} `true` if the data is a primitive, otherwise `false`.
+     */
+    static isPrimitive(data: any): boolean;
+
+    /**
+     * Creates child nodes from the given VNode children and appends them to the container array.
+     * Supports nested arrays, Sets, and various node types such as Reblend, DOM Nodes, React Nodes, and primitive values.
+     *
+     * @param {VNodeChildren} children - The children to process.
+     * @param {(Component | HTMLElement)[]} [containerArr=[]] - The array to store the created child nodes.
+     * @returns {(Component | HTMLElement)[]} The array containing the created child nodes.
+     */
+    static createChildren(
+      children: VNodeChildren,
+      containerArr: (Component | HTMLElement)[]
+    ): (Component | HTMLElement)[];
+
+    /**
+     * Mounts the given component or function component to the DOM at the specified element ID.
+     * The component is constructed and its elements are attached to the DOM root.
+     *
+     * @param {string} elementId - The ID of the DOM element where the component should be mounted.
+     * @param {typeof Reblend | FunctionComponent} app - The component or function component to mount.
+     * @param {IAny} [props] - Optional props to pass to the component.
+     * @returns {Promise<void>} A promise that resolves when the component is mounted.
+     * @throws {Error} If the specified element ID is invalid.
+     */
+    static mountOn(
+      elementId: string,
+      app: typeof Component | FunctionComponent,
+      props?: IAny
+    ): Promise<void>;
+
+    /**
+     * Detaches the given node from the DOM.
+     * If the node is a primitive, the function returns immediately.
+     * If the node has a `disconnectedCallback`, it will be invoked.
+     * Otherwise, it will be removed from the DOM.
+     *
+     * @param {Component | HTMLElement} node - The node to detach.
+     */
+    static detach(node: Component | HTMLElement);
+
+    /**
+     * Detaches all child nodes and HTML elements from the given `Component`.
+     * If the node is a primitive, the function returns immediately.
+     *
+     * @param {Component} node - The parent node from which children will be detached.
+     */
+    static detachChildren(node: Component);
+
+    /**
+     * Calls `connectedCallback` on the node if it exists, signaling that the node has been connected to the DOM.
+     *
+     * @template T
+     * @param {T | undefined} node - The node to connect.
+     */
+    static connected<T extends Component | HTMLElement>(node: T | undefined);
+
+    /**
+     * Creates an element based on the provided virtual node (VNode) or primitive value.
+     * The created element is returned as a `Component`.
+     *
+     * @param {VNode | VNode[] | ReactNode | Primitive} vNode - The virtual node or primitive to create an element from.
+     * @returns {Component[]} The created `Component` instances.
+     */
+    static createElement(
+      vNode: VNode | VNode[] | ReactNode | Primitive
+    ): Component[];
+
+    /**
+     * Attaches the reblendElement to the standardElement.
+     * If the reblendElement is React-based, it sets the container and mounts it.
+     * Otherwise, it iterates over the HTML elements of the reblendElement and recursively attaches them.
+     *
+     * @param {HTMLElement} standardElement - The standard HTML element to which the reblendElement is attached.
+     * @param {Component} reblendElement - The reblend element (ReblendNode or ReactNode) to be attached.
+     */
+    static attachElementsAt(
+      standardElement: HTMLElement,
+      reblendElement: Component,
+      insertAfter: HTMLElement | null
+    );
+
+    /**
+     * Replaces the old node with a new node or nodes.
+     * Handles scenarios where old and new nodes may be React-based or standard HTML.
+     *
+     * @param {Component | Component[]} newNode - The new node(s) to replace the old node.
+     * @param {Component} oldNode - The old node to be replaced.
+     * @returns {Component | null} - The last inserted node after replacement, or null if none.
+     */
+    static replaceOldNode(
+      newNode: Component | Component[],
+      oldNode: Component
+    ): Component | null;
+
+    /**
+     * Checks if a node is a standard HTML element or a Reblend primitive element.
+     *
+     * @param {Component | HTMLElement} node - The node to check.
+     * @returns {boolean} - True if the node is standard or a Reblend primitive element, false otherwise.
+     */
+    static isStandard(node: Component | HTMLElement);
+
+    /**
+     * Checks if a node is a Reblend HTML element or a Reblend React HTML element.
+     *
+     * @param {Component | HTMLElement} node - The node to check.
+     * @returns {boolean} - True if the node is Reblend or a Reblend React element, false otherwise.
+     */
+    static isNonStandard(node: Component | HTMLElement);
+
+    /**
+     * Creates patches to create or remove nodes by comparing oldNode and newNode.
+     *
+     * @param {Component} parent - The parent node.
+     * @param {DomNodeChild} oldNode - The old node.
+     * @param {VNodeChild} newNode - The new node.
+     * @returns {Patch[]} - The array of patches.
+     */
+    static diffCreateOrRemove(
+      parent: Component,
+      oldNode: DomNodeChild,
+      newNode: VNodeChild
+    );
+
+    /**
+     * Diffs oldNode and newNode to generate patches that represent the changes between them.
+     *
+     * @param {Component} parent - The parent node.
+     * @param {DomNodeChild} oldNode - The old node.
+     * @param {VNodeChild} newNode - The new node.
+     * @returns {Patch[]} - The array of patches.
+     */
+    static diff(
+      parent: Component,
+      oldNode: DomNodeChild,
+      newNode: VNodeChild
+    ): Patch[];
+
+    /**
+     * Diffs the props of the newNode and oldNode to generate a list of prop changes.
+     *
+     * @param {VNode} newNode - The new virtual node.
+     * @param {Component} oldNode - The old base component node.
+     * @returns {any[]} - The array of property differences.
+     */
+    static diffProps(newNode: VNode, oldNode: Component);
+
+    /**
+     * Diffs the children of the old and new virtual nodes and returns the patches required to update them.
+     *
+     * @param {Component} parent - The parent component containing the children.
+     * @param {Component} oldNode - The old component node.
+     * @param {VNode} newNode - The new virtual node.
+     * @returns {Patch[]} - An array of patches representing the differences between the old and new children.
+     */
+    static diffChildren(parent: Component, oldNode: Component, newNode: VNode);
+
+    /**
+     * Determines if a given node is a text node.
+     *
+     * @param {Node} node - The node to check.
+     * @returns {boolean} - True if the node is a text node, otherwise false.
+     */
+    static isTextNode(node: Node): node is Text;
+
+    /**
+     * Checks whether the given data is empty (undefined or null).
+     *
+     * @param {*} data - The data to check.
+     * @returns {boolean} - True if the data is empty, otherwise false.
+     */
+    static isEmpty(data: any);
+
+    /**
+     * Performs a deep comparison between two objects, including functions.
+     *
+     * @param {*} firstObject - The first object or function to compare.
+     * @param {*} secondObject - The second object or function to compare.
+     * @returns {boolean} - True if the objects are deeply equal, otherwise false.
+     */
+    static deepCompare(firstObject, secondObject);
+
+    /**
+     * Applies an array of patches to the component.
+     *
+     * @param {Patch[]} patches - The array of patches to apply.
+     */
+    static applyPatches(patches: Patch[]);
+
+    /**
+     * Asynchronously applies property patches to nodes.
+     *
+     * @param {PropPatch[]} [patches] - The property patches to apply.
+     */
+    static applyProps(patches?: PropPatch[]);
+
+    /**
+     * Performs a replacement operation on an old node.
+     *
+     * @param {Component} oldNode - The old node to replace.
+     * @param {() => void} operation - The operation to execute for the replacement.
+     */
+    static replaceOperation(oldNode: Component, operation: () => void);
+
+    // Properties
+
+    nearestStandardParent?: HTMLElement;
+
+    /**
+     * The standard container for React and Reblend integration.
+     */
+    reblendReactStandardContainer: HTMLElement;
+
+    /**
+     * The name of this component.
+     * Use for debugging and to identify when an this component should be replaced with another.
+     */
+    displayName: string;
+
+    /**
+     * Symbol representing type of reblend component.
+     */
+    [reblendComponent: symbol]: boolean;
+
+    /**
+     * The element for React and Reblend integration.
+     */
+    reactElement: HTMLElement[] | null;
+
+    /**
+     * The element for React and Reblend integration.
+     */
+    reactElementChildrenParent: HTMLElement | null;
+
+    /**
+     * The selector string for querying elements by data ID.
+     */
+    dataIdQuerySelector: string;
+
+    /**
+     * The rendering error, if any occurred during rendering.
+     */
+    renderingError?: ReblendRenderingException;
+
+    /**
+     * The error handler for rendering exceptions.
+     */
+    renderingErrorHandler?: (e: ReblendRenderingException) => void;
+
+    /**
+     * Indicates whether the component is attached.
+     */
+    attached: boolean;
+
+    /**
+     * The React class associated with this component.
+     */
+    ReactClass: any;
+
+    /**
+     * A reference for the component's DOM node.
+     */
+    ref: ReblendTyping.Ref<HTMLElement> | ((node: HTMLElement) => any);
+
+    /**
+     * The direct parent of this component.
+     */
+    directParent: this | undefined;
+
+    /**
+     * The effects to apply when the component is mounted.
+     */
+    onMountEffects?: ReblendTyping.StateEffectiveFunction[];
+
+    /**
+     * The effects functions defined for the component.
+     */
+    effectsFn?: ReblendTyping.StateEffectiveFunction[];
+
+    /**
+     * The disconnect effects to apply when the component is disconnected.
+     */
+    disconnectEffects?: ReblendTyping.StateEffectiveFunction[];
+
+    /**
+     * Error thrown when a state identifier/key is not specified.
+     */
+    stateIdNotIncluded: Error;
+
+    /**
+     * Indicates whether state effects are currently running.
+     */
+    stateEffectRunning: boolean;
+
+    /**
+     * Indicates whether this component disconnected callback was called.
+     */
+    hasDisconnected: boolean;
+
+    /**
+     * The HTML elements managed by this component.
+     */
+    htmlElements?: Component[];
+
+    /**
+     * Set of update types for children properties.
+     */
+    childrenPropsUpdate?: Set<ChildrenPropsUpdateType>;
+
+    /**
+     * The first standard element, if available.
+     */
+    _firstStandardElement?: HTMLElement | undefined;
+
+    /**
+     * The component's state.
+     */
+    _state: Readonly<S>;
+
+    /**
+     * Sets the React standard container for Reblend integration.
+     *
+     * @param {HTMLElement} node - The DOM node to set as the React standard container.
+     * @param {HTMLElement} afterNode - The DOM node to set as the Reblend React After Node.
+     */
+    setReblendReactStandardContainer(node: HTMLElement);
+
+    /**
+     * Lifecycle method for mounting the component in React.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    reactReblendMount(afterNode?: HTMLElement);
+
+    /**
+     * Populates the HTML elements for this component.
+     */
+    populateHtmlElements();
+
+    /**
+     * Gets the first standard element if available, otherwise retrieves it from the component tree.
+     *
+     * @returns {HTMLElement | undefined} The first standard element or undefined.
+     */
+    public get firstStandardElement(): HTMLElement | undefined;
+    /**
+     * Sets the first standard element.
+     *
+     * @param {HTMLElement | undefined} value - The new first standard element.
+     */
+    public set firstStandardElement(value: HTMLElement | undefined);
+    /**
+     * Retrieves attachable elements from the component.
+     *
+     * @returns {Component[]} The attachable elements.
+     */
+    getAttachableElements();
+
+    /**
+     * Callback invoked when the component is connected to the DOM.
+     */
+    connectedCallback();
+
+    /**
+     * Appends multiple child elements to the component.
+     *
+     * @param {...(HTMLElement | Component)[]} children - The child elements to append.
+     */
+    appendChildren(...children: (HTMLElement | Component)[]);
+
+    /**
+     * Appends one or more nodes to the component.
+     *
+     * @param {...(Node | string)[]} nodes - The nodes or string content to append.
+     */
+    append(...nodes: Array<Node | string>): void;
+
+    /**
+     * Adds a disconnect effect function to be executed when the component is disconnected.
+     *
+     * @param {() => void} effect - The effect function to add.
+     */
+    addDisconnectedEffect(effect: () => void);
+
+    /**
+     * Adds styles to the component.
+     *
+     * @param {string[]} styles - An array of style strings to apply.
+     * @param {IAny} style - An object representing styles as key-value pairs.
+     * @param {string} style - A single style string to apply.
+     * @param {string[] | IAny | string} style - The styles to apply.
+     */
+    addStyle(style: string[] | IAny | string): void;
+
+    /**
+     * Adds an inline style to the component.
+     *
+     * @param {IPair} param - The style name and value pair.
+     * @param {string} param.name - The name of the style property.
+     * @param {any} param.value - The value of the style property.
+     */
+    addInlineStyle({ name, value }: { name: string; value: string });
+
+    /**
+     * Adds one or more class names to the component.
+     *
+     * @param {...string[]} classNames - The class names to add.
+     */
+    addClassNames(...classNames: string[]);
+
+    /**
+     * Removes one or more class names from the component.
+     *
+     * @param {...string[]} classNames - The class names to remove.
+     */
+    removeClassNames(...classNames: string[]);
+
+    /**
+     * Replaces an existing class name with a new one.
+     *
+     * @param {string} oldClassName - The class name to be replaced.
+     * @param {string} newClassName - The new class name to set.
+     * @returns {boolean} True if the class name was replaced, false otherwise.
+     */
+    replaceClassName(oldClassName: string, newClassName: string);
+
+    /**
+     * Initializes the component's state.
+     */
+    initState();
+
+    /**
+     * Initializes the component's properties.
+     *
+     * @param {P} props - The properties to set on the component.
+     */
+    initProps(props: P, thisComponent: Component<P, S>): void;
+
+    /**
+     * Lifecycle method called after the component is mounted.
+     */
+    componentDidMount();
+
+    /**
+     * Gets the current state of the component.
+     *
+     * @returns {Readonly<S>} The current state object.
+     */
+    get state(): Readonly<S>;
+
+    /**
+     * Sets the state of the component.
+     *
+     * @param {ReblendTyping.StateFunctionValue<S>} value - The new state value.
+     */
+    set state(value: ReblendTyping.StateFunctionValue<S>);
+
+    /**
+     * Sets the state of the component using the setter.
+     *
+     * @param {ReblendTyping.StateFunctionValue<S>} value - The new state value.
+     */
+    setState(value: ReblendTyping.StateFunctionValue<S>);
+
+    /**
+     * Applies effects defined in the component, executing them in order.
+     */
+    applyEffects();
+
+    /**
+     * Handles an error that occurs during rendering or lifecycle methods.
+     *
+     * @param {Error} error - The error to handle.
+     */
+    handleError(error: Error);
+
+    /**
+     * Catches errors thrown by a given function and handles them.
+     *
+     * @param {() => void} fn - The function to execute and catch errors from.
+     */
+    catchErrorFrom(fn: () => void);
+
+    /**
+     * Handles state changes, applying effects and updating virtual DOM nodes.
+     * @async
+     */
+    onStateChange();
+
+    /**
+     * Returns the virtual DOM structure. Must be implemented by subclasses.
+     * @returns {VNode | VNodeChildren} The virtual DOM nodes.
+     */
+    html(): ReblendTyping.ReblendNode;
+
+    /**
+     * Mounts effects defined in the component, executing them and storing disconnect functions.
+     * @
+     */
+    mountEffects();
+
+    /**
+     * Lifecycle method called when the component is disconnected from the DOM.
+     * Cleans up resources and removes the component from its parent.
+     */
+    disconnectedCallback();
+
+    /**
+     * Cleans up resources before the component unmounts.
+     */
+    cleanUp();
+
+    /**
+     * Lifecycle method for component unmount actions.
+     */
+    componentWillUnmount();
+
+    /**
+     * State management hook for functional components.
+     *
+     * @template T - The type of the state.
+     * @param {ReblendTyping.StateFunctionValue<T>} initial - The initial state value.
+     * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
+     * @returns {[T, ReblendTyping.StateFunction<T>]} The current state and a function to update it.
+     */
+    useState<T>(
+      initial: ReblendTyping.StateFunctionValue<T>,
+      ...dependencyStringAndOrStateKey: string[]
+    ): [T, ReblendTyping.StateFunction<T>];
+
+    /**
+     * Effect hook for performing side effects in functional components.
+     *
+     * @param {ReblendTyping.StateEffectiveFunction} fn - The effect function to execute.
+     * @param {any[]} dependencies - Array of dependencies for the effect.
+     * @param {...string[]} _dependencyStringAndOrStateKey - Optional dependencies or state key.
+     */
+    useEffect(
+      fn: ReblendTyping.StateEffectiveFunction,
+      dependencies: any[],
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ..._dependencyStringAndOrStateKey: string[]
+    );
+
+    /**
+     * Reducer hook for managing state with a reducer function.
+     *
+     * @template T - The type of the state.
+     * @template I - The type of the action.
+     * @param {ReblendTyping.StateReducerFunction<T, I>} reducer - The reducer function.
+     * @param {ReblendTyping.StateFunctionValue<T>} initial - The initial state value.
+     * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
+     * @returns {[T, ReblendTyping.StateFunction<I>]} The current state and a dispatch function.
+     */
+    useReducer<T, I>(
+      reducer: ReblendTyping.StateReducerFunction<T, I>,
+      initial: ReblendTyping.StateFunctionValue<T>,
+      ...dependencyStringAndOrStateKey: string[]
+    ): [T, ReblendTyping.StateFunction<I>];
+
+    /**
+     * Memoization hook for caching values in functional components.
+     *
+     * @template T - The type of the memoized value.
+     * @param {ReblendTyping.StateEffectiveMemoFunction<T>} fn - The function to compute the value.
+     * @param {any[]} [dependencies] - Array of dependencies for the memoization.
+     * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
+     * @returns {T} The memoized value.
+     */
+    useMemo<T>(
+      fn: ReblendTyping.StateEffectiveMemoFunction<T>,
+      dependencies?: any[],
+      ...dependencyStringAndOrStateKey: string[]
+    );
+
+    /**
+     * Creates a ref object to hold mutable values that do not trigger re-renders.
+     *
+     * @template T - The type of the referenced value.
+     * @param {T} [initial] - The initial value of the ref.
+     * @returns {ReblendTyping.Ref<T>} The ref object.
+     */
+    useRef<T>(initial?: T);
+
+    /**
+     * Binds a function to the current context.
+     *
+     * @param {() => any} fn - The function to bind.
+     * @returns {Function} The bound function.
+     */
+    useCallback(fn: () => any);
+    /**
+     * Initializes the component, preparing effect management.
+     * For compatibility in case a standard element inherits this prototype; can manually execute this constructor.
+     */
+    _constructor();
+
+    /**
+     * Appends a child node to the component, ensuring it is connected properly.
+     *
+     * @template T - The type of the node being appended.
+     * @param {T} node - The node to append.
+     * @returns {T} The appended node.
+     */
+    _appendChild<T extends Node>(node: T): T;
   }
   class PureComponent<P = {}, S = {}, SS = any> extends Component<P, S, SS> {}
   /**
@@ -1973,15 +2577,7 @@ export declare namespace ReblendTyping {
    * ```
    */
   interface FunctionComponent<P = {}> {
-    (
-      props: P,
-      /**
-       * @deprecated
-       *
-       * @see {@link https://legacy.reblendjs.org/docs/legacy-context.html#referencing-context-in-lifecycle-methods Reblend Docs}
-       */
-      deprecatedLegacyContext?: any
-    ): ReblendNode;
+    (props: P, thisComponent?: Component<P>): ReblendNode;
     /**
      * Used to declare the types of the props accepted by the
      * component. These types will be checked during rendering
@@ -2025,6 +2621,7 @@ export declare namespace ReblendTyping {
      * @deprecated Use {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#default_value|default values for destructuring assignments instead}.
      */
     defaultProps?: Partial<P> | undefined;
+    props?: Partial<P> | undefined;
     /**
      * Used in debugging messages. You might want to set it
      * explicitly if you want to display a different name for
@@ -2058,21 +2655,14 @@ export declare namespace ReblendTyping {
    * @see {@link ReblendTyping.FunctionComponent}
    */
   interface VoidFunctionComponent<P = {}> {
-    (
-      props: P,
-      /**
-       * @deprecated
-       *
-       * @see {@link https://legacy.reblendjs.org/docs/legacy-context.html#referencing-context-in-lifecycle-methods Reblend Docs}
-       */
-      deprecatedLegacyContext?: any
-    ): ReblendNode;
+    (props: P, thisComponent?: Component<P>): ReblendNode;
     propTypes?: WeakValidationMap<P> | undefined;
     contextTypes?: ValidationMap<any> | undefined;
     /**
      * @deprecated Use {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#default_value|default values for destructuring assignments instead}.
      */
     defaultProps?: Partial<P> | undefined;
+    props?: Partial<P> | undefined;
     displayName?: string | undefined;
   }
   /**
@@ -2098,7 +2688,7 @@ export declare namespace ReblendTyping {
    * @see {@link forwardRef}
    */
   interface ForwardRefRenderFunction<T, P = {}> {
-    (props: P, ref: ForwardedRef<T>): ReblendNode;
+    (props: P, thisComponent?: Component<P>): ReblendNode;
     /**
      * Used in debugging messages. You might want to set it
      * explicitly if you want to display a different name for
@@ -2117,6 +2707,7 @@ export declare namespace ReblendTyping {
      * @see {@link https://reblend.dev/reference/reblend/Component#static-defaultprops Reblend Docs}
      */
     defaultProps?: never | undefined;
+    props?: never | undefined;
     /**
      * propTypes are not supported on render functions passed to forwardRef.
      *
@@ -2133,15 +2724,7 @@ export declare namespace ReblendTyping {
    */
   interface ComponentClass<P = {}, S = ComponentState>
     extends StaticLifecycle<P, S> {
-    new (
-      props: P,
-      /**
-       * @deprecated
-       *
-       * @see {@link https://legacy.reblendjs.org/docs/legacy-context.html#referencing-context-in-lifecycle-methods Reblend Docs}
-       */
-      deprecatedLegacyContext?: any
-    ): Component<P, S>;
+    new (props: P, thisComponent?: Component<P>): Component<P, S>;
     /**
      * Used to declare the types of the props accepted by the
      * component. These types will be checked during rendering
@@ -2176,6 +2759,7 @@ export declare namespace ReblendTyping {
      * @see {@link https://reblend.dev/reference/reblend/Component#static-defaultprops Reblend Docs}
      */
     defaultProps?: Partial<P> | undefined;
+    props?: Partial<P> | undefined;
     /**
      * Used in debugging messages. You might want to set it
      * explicitly if you want to display a different name for
@@ -2192,7 +2776,7 @@ export declare namespace ReblendTyping {
    * @see {@link https://www.npmjs.com/package/create-reblend-class `create-reblend-class` on npm}
    */
   interface ClassicComponentClass<P = {}> extends ComponentClass<P> {
-    new (props: P, deprecatedLegacyContext?: any): ClassicComponent<
+    new (props: P, thisComponent?: Component<P>): ClassicComponent<
       P,
       ComponentState
     >;
@@ -2211,7 +2795,7 @@ export declare namespace ReblendTyping {
     P,
     T extends Component<P, ComponentState>,
     C extends ComponentClass<P>
-  > = C & (new (props: P, deprecatedLegacyContext?: any) => T);
+  > = C & (new (props: P, thisComponent?: Component<P>) => T);
   interface ComponentLifecycle<P, S, SS = any>
     extends NewLifecycle<P, S, SS>,
       DeprecatedLifecycle<P, S> {
@@ -2220,30 +2804,10 @@ export declare namespace ReblendTyping {
      */
     componentDidMount?(): void;
     /**
-     * Called to determine whether the change in props and state should trigger a re-render.
-     *
-     * `Component` always returns true.
-     * `PureComponent` implements a shallow comparison on props and state and returns true if any
-     * props or states have changed.
-     *
-     * If false is returned, {@link Component.render}, `componentWillUpdate`
-     * and `componentDidUpdate` will not be called.
-     */
-    shouldComponentUpdate?(
-      nextProps: Readonly<P>,
-      nextState: Readonly<S>,
-      nextContext: any
-    ): boolean;
-    /**
      * Called immediately before a component is destroyed. Perform any necessary cleanup in this method, such as
      * cancelled network requests, or cleaning up any DOM elements created in `componentDidMount`.
      */
     componentWillUnmount?(): void;
-    /**
-     * Catches exceptions generated in descendant components. Unhandled exceptions will cause
-     * the entire component tree to unmount.
-     */
-    componentDidCatch?(error: Error, errorInfo: ErrorInfo): void;
   }
   interface StaticLifecycle<P, S> {
     getDerivedStateFromProps?: GetDerivedStateFromProps<P, S> | undefined;
@@ -2264,135 +2828,8 @@ export declare namespace ReblendTyping {
      * Note: its presence prevents any of the deprecated lifecycle methods from being invoked
      */
     (error: any) => Partial<S> | null;
-  interface NewLifecycle<P, S, SS> {
-    /**
-     * Runs before Reblend applies the result of {@link Component.render render} to the document, and
-     * returns an object to be given to {@link componentDidUpdate}. Useful for saving
-     * things such as scroll position before {@link Component.render render} causes changes to it.
-     *
-     * Note: the presence of this method prevents any of the deprecated
-     * lifecycle events from running.
-     */
-    getSnapshotBeforeUpdate?(
-      prevProps: Readonly<P>,
-      prevState: Readonly<S>
-    ): SS | null;
-    /**
-     * Called immediately after updating occurs. Not called for the initial render.
-     *
-     * The snapshot is only present if {@link getSnapshotBeforeUpdate} is present and returns non-null.
-     */
-    componentDidUpdate?(
-      prevProps: Readonly<P>,
-      prevState: Readonly<S>,
-      snapshot?: SS
-    ): void;
-  }
-  interface DeprecatedLifecycle<P, S> {
-    /**
-     * Called immediately before mounting occurs, and before {@link Component.render}.
-     * Avoid introducing any side-effects or subscriptions in this method.
-     *
-     * Note: the presence of {@link NewLifecycle.getSnapshotBeforeUpdate getSnapshotBeforeUpdate}
-     * or {@link StaticLifecycle.getDerivedStateFromProps getDerivedStateFromProps} prevents
-     * this from being invoked.
-     *
-     * @deprecated 16.3, use {@link ComponentLifecycle.componentDidMount componentDidMount} or the constructor instead; will stop working in Reblend 17
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#initializing-state}
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#gradual-migration-path}
-     */
-    componentWillMount?(): void;
-    /**
-     * Called immediately before mounting occurs, and before {@link Component.render}.
-     * Avoid introducing any side-effects or subscriptions in this method.
-     *
-     * This method will not stop working in Reblend 17.
-     *
-     * Note: the presence of {@link NewLifecycle.getSnapshotBeforeUpdate getSnapshotBeforeUpdate}
-     * or {@link StaticLifecycle.getDerivedStateFromProps getDerivedStateFromProps} prevents
-     * this from being invoked.
-     *
-     * @deprecated 16.3, use {@link ComponentLifecycle.componentDidMount componentDidMount} or the constructor instead
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#initializing-state}
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#gradual-migration-path}
-     */
-    UNSAFE_componentWillMount?(): void;
-    /**
-     * Called when the component may be receiving new props.
-     * Reblend may call this even if props have not changed, so be sure to compare new and existing
-     * props if you only want to handle changes.
-     *
-     * Calling {@link Component.setState} generally does not trigger this method.
-     *
-     * Note: the presence of {@link NewLifecycle.getSnapshotBeforeUpdate getSnapshotBeforeUpdate}
-     * or {@link StaticLifecycle.getDerivedStateFromProps getDerivedStateFromProps} prevents
-     * this from being invoked.
-     *
-     * @deprecated 16.3, use static {@link StaticLifecycle.getDerivedStateFromProps getDerivedStateFromProps} instead; will stop working in Reblend 17
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#updating-state-based-on-props}
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#gradual-migration-path}
-     */
-    componentWillReceiveProps?(nextProps: Readonly<P>, nextContext: any): void;
-    /**
-     * Called when the component may be receiving new props.
-     * Reblend may call this even if props have not changed, so be sure to compare new and existing
-     * props if you only want to handle changes.
-     *
-     * Calling {@link Component.setState} generally does not trigger this method.
-     *
-     * This method will not stop working in Reblend 17.
-     *
-     * Note: the presence of {@link NewLifecycle.getSnapshotBeforeUpdate getSnapshotBeforeUpdate}
-     * or {@link StaticLifecycle.getDerivedStateFromProps getDerivedStateFromProps} prevents
-     * this from being invoked.
-     *
-     * @deprecated 16.3, use static {@link StaticLifecycle.getDerivedStateFromProps getDerivedStateFromProps} instead
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#updating-state-based-on-props}
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#gradual-migration-path}
-     */
-    UNSAFE_componentWillReceiveProps?(
-      nextProps: Readonly<P>,
-      nextContext: any
-    ): void;
-    /**
-     * Called immediately before rendering when new props or state is received. Not called for the initial render.
-     *
-     * Note: You cannot call {@link Component.setState} here.
-     *
-     * Note: the presence of {@link NewLifecycle.getSnapshotBeforeUpdate getSnapshotBeforeUpdate}
-     * or {@link StaticLifecycle.getDerivedStateFromProps getDerivedStateFromProps} prevents
-     * this from being invoked.
-     *
-     * @deprecated 16.3, use getSnapshotBeforeUpdate instead; will stop working in Reblend 17
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#reading-dom-properties-before-an-update}
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#gradual-migration-path}
-     */
-    componentWillUpdate?(
-      nextProps: Readonly<P>,
-      nextState: Readonly<S>,
-      nextContext: any
-    ): void;
-    /**
-     * Called immediately before rendering when new props or state is received. Not called for the initial render.
-     *
-     * Note: You cannot call {@link Component.setState} here.
-     *
-     * This method will not stop working in Reblend 17.
-     *
-     * Note: the presence of {@link NewLifecycle.getSnapshotBeforeUpdate getSnapshotBeforeUpdate}
-     * or {@link StaticLifecycle.getDerivedStateFromProps getDerivedStateFromProps} prevents
-     * this from being invoked.
-     *
-     * @deprecated 16.3, use getSnapshotBeforeUpdate instead
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#reading-dom-properties-before-an-update}
-     * @see {@link https://legacy.reblendjs.org/blog/2018/03/27/update-on-async-rendering.html#gradual-migration-path}
-     */
-    UNSAFE_componentWillUpdate?(
-      nextProps: Readonly<P>,
-      nextState: Readonly<S>,
-      nextContext: any
-    ): void;
-  }
+  interface NewLifecycle<P, S, SS> {}
+  interface DeprecatedLifecycle<P, S> {}
   /**
    * @deprecated
    *
@@ -2434,6 +2871,7 @@ export declare namespace ReblendTyping {
      * @deprecated Use {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#default_value|default values for destructuring assignments instead}.
      */
     defaultProps?: Partial<P> | undefined;
+    props?: Partial<P> | undefined;
     propTypes?: WeakValidationMap<P> | undefined;
   }
   /**
@@ -2565,10 +3003,14 @@ export declare namespace ReblendTyping {
    * ```
    */
   type CustomComponentPropsWithRef<T extends ComponentType> = T extends new (
-    props: infer P
+    props: infer P,
+    thisComponent?: Component<infer P>
   ) => Component<any, any>
     ? PropsWithoutRef<P> & RefAttributes<InstanceType<T>>
-    : T extends (props: infer P, legacyContext?: any) => ReblendNode
+    : T extends (
+        props: infer P,
+        thisComponent?: Component<infer P>
+      ) => ReblendNode
     ? PropsWithRef<P>
     : never;
   /**
@@ -6599,7 +7041,7 @@ type MergePropTypes<P, T> = P extends any
   ? IsExactlyAny<P> extends true
     ? T
     : string extends keyof P
-    ? P // Prefer declared types which are not exactly any
+    ? P
     : Pick<P, NotExactlyAnyPropertyKeys<P>> &
         Pick<T, Exclude<keyof T, NotExactlyAnyPropertyKeys<P>>> &
         Pick<P, Exclude<keyof P, keyof T>>
@@ -6638,6 +7080,7 @@ type Defaultize<P, D> = P extends any
 export type ReblendManagedAttributes<C, P> = C extends {
   propTypes: infer T;
   defaultProps: infer D;
+  props: infer D;
 }
   ? Defaultize<MergePropTypes<P, PropTypes.InferProps<T>>, D>
   : C extends {
@@ -6646,6 +7089,7 @@ export type ReblendManagedAttributes<C, P> = C extends {
   ? MergePropTypes<P, PropTypes.InferProps<T>>
   : C extends {
       defaultProps: infer D;
+      props: infer D;
     }
   ? Defaultize<P, D>
   : P;
