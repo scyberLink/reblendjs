@@ -570,7 +570,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @returns {boolean} `true` if the node is a rendered Reblend node, otherwise `false`.
    */
   static isReblendRenderedNode(node: any): boolean {
-    return typeof node !== 'string' && node![ReblendNode]
+    return node && typeof node === 'object' && node![ReblendNode]
   }
 
   /**
@@ -580,7 +580,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @returns {boolean} `true` if the node is a virtual Reblend node, otherwise `false`.
    */
   static isReblendVirtualNode(node: any): boolean {
-    return typeof node !== 'string' && node![ReblendVNode]
+    return node && typeof node === 'object' && node![ReblendVNode]
   }
 
   /**
@@ -590,7 +590,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @returns {boolean} `true` if the node is a standard rendered Reblend node, otherwise `false`.
    */
   static isReblendRenderedNodeStandard(node: any): boolean {
-    return typeof node !== 'string' && node![ReblendNodeStandard]
+    return node && typeof node === 'object' && node![ReblendNodeStandard]
   }
 
   /**
@@ -600,7 +600,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @returns {boolean} `true` if the node is a standard virtual Reblend node, otherwise `false`.
    */
   static isReblendVirtualNodeStandard(node: any): boolean {
-    return typeof node !== 'string' && node![ReblendVNodeStandard]
+    return node && typeof node === 'object' && node![ReblendVNodeStandard]
   }
 
   /**
@@ -610,7 +610,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @returns {boolean} `true` if the node is a React to Reblend rendered node, otherwise `false`.
    */
   static isReactToReblendRenderedNode(node: any): boolean {
-    return typeof node !== 'string' && node![ReactToReblendNode]
+    return node && typeof node === 'object' && node![ReactToReblendNode]
   }
 
   /**
@@ -620,7 +620,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @returns {boolean} `true` if the node is a React to Reblend virtual node, otherwise `false`.
    */
   static isReactToReblendVirtualNode(node: any): boolean {
-    return typeof node !== 'string' && node![ReactToReblendVNode]
+    return node && typeof node === 'object' && node![ReactToReblendVNode]
   }
 
   /**
@@ -630,7 +630,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @returns {boolean} `true` if the node is a standard virtual node, otherwise `false`.
    */
   static isStandardVirtualNode(node: any): boolean {
-    return typeof node !== 'string' && node![ReblendVNodeStandard]
+    return node && typeof node === 'object' && node![ReblendVNodeStandard]
   }
 
   /**
