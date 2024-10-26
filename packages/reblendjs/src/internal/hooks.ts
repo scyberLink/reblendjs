@@ -271,10 +271,20 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
           if (context[contextSubscriberModificationTracker][0] === updateId) {
             component[stateKey] = context[contextValue]
             if (!component.hasDisconnected) {
-              if (!component.stateEffectRunning && component.attached) {
-                component.onStateChange && (await component.onStateChange())
+              if (component.attached) {
+                if (!component.stateEffectRunning) {
+                  component.onStateChange && (await component.onStateChange())
+                } else {
+                  component.applyEffects && component.applyEffects()
+                }
               } else {
-                component.applyEffects && component.applyEffects()
+                component.onMountEffects?.push(() => {
+                  if (!component.stateEffectRunning) {
+                    component.onStateChange && component.onStateChange()
+                  } else {
+                    component.applyEffects && component.applyEffects()
+                  }
+                })
               }
             } else {
               alreadyDisconnected.push(component)

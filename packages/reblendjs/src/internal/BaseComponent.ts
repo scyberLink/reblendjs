@@ -1878,7 +1878,11 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
       ...this._state,
       ...(typeof value == 'function' ? (value as any)(this._state) : value),
     }
-    this.attached && !this.stateEffectRunning && this.onStateChange()
+    if (this.attached) {
+      !this.stateEffectRunning && this.onStateChange()
+    } else {
+      this.onMountEffects?.push(() => (!this.stateEffectRunning && this.onStateChange(), undefined))
+    }
   }
 
   /**
@@ -2051,12 +2055,23 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
       }
       if (force || !isEqual(this[stateID], value)) {
         this[stateID] = value as T
-        if (!this.hasDisconnected)
-          if (!this.stateEffectRunning && this.attached) {
-            this.onStateChange()
+        if (!this.hasDisconnected) {
+          if (this.attached) {
+            if (!this.stateEffectRunning) {
+              this.onStateChange()
+            } else {
+              this.applyEffects()
+            }
           } else {
-            this.applyEffects()
+            this.onMountEffects?.push(() => {
+              if (!this.stateEffectRunning) {
+                this.onStateChange()
+              } else {
+                this.applyEffects()
+              }
+            })
           }
+        }
       }
     }).bind(this)
 
