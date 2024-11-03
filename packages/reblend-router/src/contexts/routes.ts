@@ -9,7 +9,7 @@ interface RoutePath {
   [path: string]: (res?: Request | null) => void;
 }
 
-export const PageNotfound = createContext(true);
+export const PageNotfound = createContext(false);
 
 type R = [ReblendRouting, (res?: Request | null) => void];
 

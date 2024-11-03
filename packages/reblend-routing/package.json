@@ -1,7 +1,7 @@
 {
   "name": "reblend-routing",
   "description": "Reblend route pattern matcher",
-  "version": "4.19.14",
+  "version": "4.19.18",
   "author": "Emmanuel Paul Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "repository": "reblendjs/reblend-routing",
@@ -55,5 +55,5 @@
     "test-cov": "nyc --reporter=html --reporter=text npm test",
     "test-tap": "mocha --require test/support/env --reporter tap --check-leaks test/ test/acceptance/"
   },
-  "gitHead": "c0cf77febb3ceced8a3b07a86ed07a3e58744e0e"
+  "gitHead": "85dfd12b2cebdc65e8159598aa1604b415db4352"
 }

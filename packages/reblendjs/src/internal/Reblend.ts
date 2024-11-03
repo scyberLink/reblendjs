@@ -8,9 +8,11 @@ import { ReblendTyping, ReblendManagedAttributes, HTMLWebViewElement } from 'reb
 
 declare global {
   export namespace Reblend.JSX {
-    type ElementType = string | ReblendTyping.JSXElementConstructor<any>
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    type ElementType = string | ReblendTyping.JSXElementConstructor<any> | typeof BaseComponent<any, any>
     interface Element extends ReblendTyping.ReblendElement {}
-    interface ElementClass extends ReblendTyping.Component<any> {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    interface ElementClass<P = {}, S = {}> extends ReblendTyping.Component<P, S> {
       html?: () => ReblendTyping.ReblendNode
     }
     interface ElementAttributesProperty {
@@ -250,7 +252,8 @@ declare global {
   }
 }
 
-class Reblend extends BaseComponent {
+// eslint-disable-next-line @typescript-eslint/ban-types
+class Reblend<P = {}, S = {}> extends BaseComponent<P, S> {
   static ELEMENT_NAME = 'Fragment'
 
   constructor() {
