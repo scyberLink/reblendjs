@@ -6271,7 +6271,7 @@ export declare namespace ReblendTyping {
     method?: string | undefined;
     min?: number | string | undefined;
     name?: string | undefined;
-    style?: CSSProperties | undefined;
+    style?: CSSProperties | string | undefined;
     target?: string | undefined;
     type?: string | undefined;
     width?: number | string | undefined;
