@@ -1435,8 +1435,8 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
             const standardParent = BaseComponent.isStandard(parent!)
               ? parent!
               : BaseComponent.isReactToReblendRenderedNode(parent)
-              ? parent!.reactElementChildrenParent! || parent!.nearestStandardParent!
-              : parent!.nearestStandardParent!
+                ? parent!.reactElementChildrenParent! || parent!.nearestStandardParent!
+                : parent!.nearestStandardParent!
             if (standardParent) {
               for (const element of elements || []) {
                 if (BaseComponent.isStandard(element)) {
@@ -1507,33 +1507,33 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @param {PropPatch[]} [patches] - The property patches to apply.
    */
   static async applyProps(patches?: PropPatch[]) {
-    requestAnimationFrame(() => {
-      let nodes = new Set<ReblendTyping.Component>()
-      patches?.forEach(({ type, node, key, propValue }) => {
-        if (type === 'UPDATE') {
-          BaseComponent.setProps({ [key]: propValue }, node, false)
-          nodes.add(node)
-        } else if (type === 'REMOVE') {
-          BaseComponent.removeProps({ [key]: undefined }, node)
-          nodes.add(node)
-        }
-        if (BaseComponent.isReactToReblendRenderedNode(node)) {
-          if (key === 'children') {
-            node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.CHILDREN)
-          } else {
-            node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.NON_CHILDREN)
-          }
-        }
-      })
-      nodes.forEach((node) => {
-        if (BaseComponent.isReactToReblendRenderedNode(node)) {
-          ;(node as any)?.checkPropsChange()
+    //requestAnimationFrame(() => {
+    let nodes = new Set<ReblendTyping.Component>()
+    patches?.forEach(({ type, node, key, propValue }) => {
+      if (type === 'UPDATE') {
+        BaseComponent.setProps({ [key]: propValue }, node, false)
+        nodes.add(node)
+      } else if (type === 'REMOVE') {
+        BaseComponent.removeProps({ [key]: undefined }, node)
+        nodes.add(node)
+      }
+      if (BaseComponent.isReactToReblendRenderedNode(node)) {
+        if (key === 'children') {
+          node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.CHILDREN)
         } else {
-          node.onStateChange()
+          node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.NON_CHILDREN)
         }
-      })
-      nodes = null as any
+      }
     })
+    nodes.forEach((node) => {
+      if (BaseComponent.isReactToReblendRenderedNode(node)) {
+        ;(node as any)?.checkPropsChange()
+      } else {
+        node.onStateChange()
+      }
+    })
+    nodes = null as any
+    //})
   }
 
   /**
