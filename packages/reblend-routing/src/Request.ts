@@ -30,6 +30,9 @@ class Request {
 
   constructor(public url: string) {
     this.method = 'get';
+    if (!this.url.includes('://')) {
+      this.url = "http://127.0.0.1:8081" + this.url
+    }
     this.urlObject = new URL(decodeURI(this.url));
     this.urlObject.searchParams.forEach(
       (value, key) => (this.query[key] = value)
