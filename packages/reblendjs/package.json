@@ -1,6 +1,6 @@
 {
   "name": "reblendjs",
-  "version": "5.7.1",
+  "version": "5.7.2",
   "codename": "infant",
   "description": "This is build using react way of handling dom but with web components",
   "keywords": [
@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "reblend-typing": "^3.1.0"
+    "reblend-typing": "^3.1.1"
   },
   "optionalPeerDependencies": {
     "react": ">=18.3.1",
