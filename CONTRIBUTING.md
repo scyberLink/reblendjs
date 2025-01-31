@@ -48,7 +48,7 @@ Please also provide a **test plan**, i.e. specify how you verified that your add
 ## Folder Structure of Reblendjs
 
 `create-reblend-app` is a monorepo, meaning it is divided into independent sub-packages.<br>
-These packages can be found in the [`packages/`](https://github.com/scyberLink/create-reblend-app/tree/main/packages) directory.
+These packages can be found in the [`packages/`](https://github.com/scyberLink/create-reblend-app/tree/master/packages) directory.
 
 ### Overview of directory structure
 
@@ -62,27 +62,22 @@ packages/
 
 ### Package Descriptions
 
-#### [babel-preset-reblend-app](https://github.com/scyberLink/create-reblend-app/tree/main/packages/babel-preset-reblend-app)
+#### [babel-preset-reblend](https://github.com/scyberLink/reblend-babel-plugins/tree/main/packages/babel-preset-reblend)
 
 This package is a babel preset intended to be used with `reblend-scripts`.<br>
 It targets platforms that Reblend is designed to support (IE 11+) and enables experimental features used heavily at Facebook.<br>
 This package is enabled by default for all `create-reblend-app` scaffolded applications.
 
-#### [create-reblend-app](https://github.com/scyberLink/create-reblend-app/tree/main/packages/create-reblend-app)
+#### [create-reblend-app](https://github.com/scyberLink/create-reblend-app/tree/master/packages/create-reblend-app)
 
 The global CLI command code can be found in this directory, and shouldn't often be changed. It should run on Node 0.10+.
 
-#### [eslint-config-reblend-app](https://github.com/scyberLink/create-reblend-app/tree/main/packages/eslint-config-reblend-app)
+#### [eslint-config-reblend-app](https://github.com/scyberLink/create-reblend-app/tree/master/packages/eslint-config-reblend-app)
 
 This package contains a conservative set of rules focused on making errors apparent and enforces no style rules.<br>
 This package is enabled by default for all `create-reblend-app` scaffolded applications.
 
-#### [react-dev-utils](https://github.com/scyberLink/create-reblend-app/tree/main/packages/react-dev-utils)
-
-This package contains utilities used for `reblend-scripts` and sibling packages.<br>
-Its main purpose is to conceal code which the user shouldn't be burdened with upon ejecting.
-
-#### [reblend-scripts](https://github.com/scyberLink/create-reblend-app/tree/main/packages/reblend-scripts)
+#### [reblend-scripts](https://github.com/scyberLink/create-reblend-app/tree/master/packages/reblend-scripts)
 
 This package is the heart of the project, which contains the scripts for setting up the development server, building production builds, configuring all software used, etc.<br>
 All functionality must be retained (and configuration given to the user) if they choose to eject.

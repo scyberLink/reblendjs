@@ -1,25 +1,202 @@
-# ReblendJs
+# ReblendJS
 
-## A library built using react way of handling dom but with web components
+ReblendJS is a lightweight frontend library that seamlessly integrates the flexibility of React with the efficiency of Web Components. It offers a modular approach to state management and component rendering, ensuring fast and predictable UI updates.
 
-This project is a frontend library that provides a robust and modular approach to state management and component rendering, inspired by React's architecture but built using web components. The library aims to combine the benefits of React's efficient state handling with the native browser support and interoperability of web components.
+## 🚀 Features
 
-At its core, the library introduces a custom element base class that encapsulates the state management logic and lifecycle methods, similar to React's class components. Developers can extend this base class to create their own custom elements, defining their state, props, and event handlers.
+- ✅ **Supports Standard HTML & React Attributes** – Write components using familiar syntax.
+- ✅ **JSX Support** – Use `for`, `style` (as a string), `class` (as `classNames`), and standard attributes.
+- ✅ **React Component Compatibility** – Use React components within ReblendJS.
+- ✅ **Uses React's Build Tools** – No need to change your existing setup.
+- ✅ **Functional Components Compile to Classes** – Optimized for performance.
+- ✅ **Single Execution for Functional Components** – No unnecessary re-renders.
+- ✅ **Web Component Native Support** – Directly renders existing `HTMLElement` instances without wrappers.
+- ✅ **Simple API & Easy to Learn** – Minimal boilerplate, quick to get started.
+- ✅ **Built-in Hooks Support** – Manage state and side effects seamlessly.
+- ✅ **Component-Level State Management** – Each element holds its own state.
+- ✅ **No Mixed or Async State Rendering** – Eliminates issues with pre/post rendering.
+- ✅ **Faster Rendering** – State is localized within each element, reducing unnecessary updates.
 
-The library employs a reactive rendering system that automatically updates the component's DOM whenever the component's state changes, ensuring optimal performance and minimizing unnecessary re-renders. This reactive rendering approach is achieved through the use of Shadow DOM, allowing components to maintain their own isolated DOM tree and styles.
+---
 
-By leveraging web components, the library ensures seamless integration with existing web applications, regardless of the underlying framework or technology stack. Components created with this library can be easily imported and used in any web project, fostering reusability and maintainability.
+## 📦 Installation
 
-Key features of the library include:
+To quickly set up a new ReblendJS project with TypeScript, use:
 
-1. **State Management**: Efficient state handling inspired by React's state management approach, allowing components to maintain their own internal state and triggering updates when necessary.
+```sh
+npx create-reblend-app --template typescript ./my-app
+```
 
-2. **Reactive Rendering**: Automatic DOM updates in response to state changes, optimized for performance through efficient diffing algorithms and batched updates.
+Alternatively, install ReblendJS manually:
 
-3. **Component Lifecycle**: Customizable lifecycle methods for components, enabling developers to hook into various stages of the component's lifecycle, such as component creation, update, and destruction.
+```sh
+npm install reblendjs
+```
 
-4. **Prop Passing**: Seamless prop passing between parent and child components, facilitating communication and data sharing across the component tree.
+or
 
-5. **Web Component Integration**: Seamless integration with existing web applications, leveraging the native browser support for web components and ensuring interoperability across different frameworks and libraries.
+```sh
+yarn add reblendjs
+```
 
-The library aims to provide developers with a familiar and intuitive API for building reusable and maintainable web components while taking advantage of the performance and interoperability benefits of web components.
+---
+
+## 🛠️ Usage
+
+### Mounting Components to the DOM
+
+ReblendJS uses `mountOn` to attach components to the DOM:
+
+```js
+import Reblend from 'reblendjs'
+import App from './App'
+
+Reblend.mountOn('root', App)
+```
+
+### Functional Component Example
+
+ReblendJS **recommends using functional components** for better performance, as they are efficiently compiled into class components:
+
+```js
+import Reblend, { useState } from 'reblendjs'
+
+const Counter = () => {
+  const [count, setCount] = useState(0)
+
+  return (
+    <div>
+      <h1>Counter: {count}</h1>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  )
+}
+
+Reblend.mountOn('root', Counter)
+```
+
+### JSX Support (`for`, `style`, `class`, and Attributes)
+
+ReblendJS **fully supports JSX attributes**, including:
+
+- ✅ `for` (instead of `htmlFor` in React)
+- ✅ `style` (as a **string**, unlike React's object-based approach)
+- ✅ `class` (as `classNames`)
+- ✅ Standard attributes (`id`, `name`, `placeholder`, etc.)
+
+Example:
+
+```js
+const FormExample = () => {
+  return (
+    <form>
+      <label for="name">Name:</label>
+      <input id="name" type="text" placeholder="Enter your name" />
+
+      <button class="btn btn-primary" style="background-color: blue; padding: 10px;">
+        Submit
+      </button>
+    </form>
+  )
+}
+
+Reblend.mountOn('root', FormExample)
+```
+
+---
+
+## 🎯 Use Cases
+
+ReblendJS is ideal for:
+
+- **Building Web Components** – Create reusable elements without React wrappers.
+- **Optimizing Performance** – When React’s Virtual DOM is too heavy.
+- **Progressive Enhancement** – Use ReblendJS alongside native HTML.
+- **Embedding in Non-React Projects** – Works well in vanilla JS applications.
+
+---
+
+## ⚖️ ReblendJS vs React
+
+| Feature                     | ReblendJS                              | ReactJS                                         |
+| --------------------------- | -------------------------------------- | ----------------------------------------------- |
+| Standard HTML Attributes    | ✅ Supports all                        | ✅ Supports all                                 |
+| JSX `for`, `style`, `class` | ✅ Fully supported                     | ❌ `htmlFor`, `style` as an object, `className` |
+| React Component Support     | ✅ Fully Compatible                    | ✅ Native                                       |
+| Functional Components       | ✅ Compiled to Classes                 | ✅ Functional with Hooks                        |
+| Hooks                       | ✅ Supported                           | ✅ Supported                                    |
+| Web Component Support       | ✅ Native (renders without wrapper)    | ❌ Requires wrappers like `React.createElement` |
+| State Management            | ✅ Localized in elements               | ✅ Centralized (React Context, Redux)           |
+| Rendering Performance       | ✅ Faster (isolated state per element) | ⚠️ Slower when dealing with large states        |
+| Build Tool                  | ✅ Uses React's toolchain              | ✅ Uses its own build tools                     |
+| Learning Curve              | ✅ Simpler syntax, minimal setup       | ⚠️ More concepts (Virtual DOM, Reconciliation)  |
+
+---
+
+## 🎨 Example: Modal with Button Interaction Using Bootstrap Components with ReblendJS
+
+Here’s an example of creating a button that toggles a modal:
+
+```js
+import { Button } from 'react-bootstrap'
+import Reblend, { useState } from 'reblendjs'
+import Modal from 'react-bootstrap/Modal'
+
+export function MyVerticallyCenteredModal(props: any) {
+  return (
+    <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered closeButton>
+      <Modal.Header>
+        <Modal.Title id="contained-modal-title-vcenter">Modal heading</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <h4>Centered Modal</h4>
+        <p>
+          Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+          Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+        </p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={props.onHide}>Close</Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
+
+const App = () => {
+  const [modalShow, setModalShow] = useState(false)
+
+  const toggleModal = () => {
+    setModalShow(!modalShow)
+  }
+
+  return (
+    <div>
+      <Button variant="primary" onClick={toggleModal}>
+        Toggle Modal
+      </Button>
+      <MyVerticallyCenteredModal show={modalShow} onHide={toggleModal} />
+    </div>
+  )
+}
+
+Reblend.mountOn('root', App)
+```
+
+---
+
+## 🏗️ Contributing
+
+We welcome contributions! Feel free to submit issues or pull requests.
+
+### Steps to Contribute:
+
+1. Fork the repository.
+2. Create a new branch.
+3. Commit your changes.
+4. Open a pull request.
+
+---
+
+## 📜 License
+
+[MIT License.](LICENSE)
