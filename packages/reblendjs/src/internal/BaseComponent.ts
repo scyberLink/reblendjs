@@ -1,35 +1,16 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  attributeName,
-  ChildrenPropsUpdateType,
-  DomNodeChild,
-  DomNodeChildren,
-  Patch,
-  PatchTypeAndOrder,
-  Primitive,
-  PropPatch,
-  ReactNode,
-  REBLEND_PRIMITIVE_ELEMENT_NAME,
-  ReblendPrimitive,
-  ReblendRenderingException,
-  ReblendTyping,
-  shouldUseSetAttribute,
-  VNode,
-  VNodeChild,
-  VNodeChildren,
-} from 'reblend-typing'
-import {
   capitalize,
   isCallable,
+  rand,
   REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME,
   REBLEND_COMPONENT_ATTRIBUTE_NAME,
   REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME,
 } from '../common/utils'
 import { IAny } from '../interface/IAny'
 import { IPair } from '../interface/IPair'
-import { Reblend } from './Reblend'
-import { cloneDeep, isEqual } from 'lodash'
+import { isEqual } from 'lodash'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import { type Root } from 'react-dom/client'
@@ -41,6 +22,14 @@ import ReactDOM from 'react-dom/client'
 import React from 'react'
 //@ts-ignore
 import { createPortal, flushSync } from 'react-dom'
+import {
+  attributeName,
+  ChildrenPropsUpdateType,
+  PatchTypeAndOrder,
+  REBLEND_PRIMITIVE_ELEMENT_NAME,
+  shouldUseSetAttribute,
+} from 'reblend-typing'
+import { Reblend } from './Reblend'
 
 StyleUtil
 
@@ -406,7 +395,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @returns {(e: Event) => void} A function that invokes the event callback.
    */
   static fn(eventCallback: (e: Event) => any = () => {}): (e: Event) => void {
-    return (e) => eventCallback && eventCallback(e)
+    return (e) => Promise.resolve().then(() => eventCallback && eventCallback(e))
   }
 
   /**
@@ -527,7 +516,9 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
       }
 
       if (init && to.initState) {
+        to.initStateRunning = true
         to.initState()
+        to.initStateRunning = false
       }
     }
   }
@@ -800,7 +791,9 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     const mergedProp = {
       ...(!isTagStandard && clazz.props ? clazz.props : {}),
       ...props,
-      children: [...(clazz?.props?.children || []), ...(props?.children || []), ...(children || [])],
+    }
+    if (clazz?.props?.children || props?.children || children.length) {
+      mergedProp.children = [...(clazz?.props?.children || []), ...(props?.children || []), ...(children || [])]
     }
 
     const velement = {
@@ -865,7 +858,6 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     }
     return containerArr
   }
-
   /**
    * Mounts the given component or function component to the DOM at the specified element ID.
    * The component is constructed and its elements are attached to the DOM root.
@@ -881,25 +873,67 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     app: typeof Reblend | ReblendTyping.FunctionComponent,
     props?: IAny,
   ): Promise<void> {
-    const root = document.getElementById(elementId)
-    if (!root) {
+    const appRoot = document.getElementById(elementId)
+    if (!appRoot) {
       throw new Error('Invalid root id')
     }
+    const root = document.createElement('div')
+    const initialDisplay = root.style.display || 'initial'
+
+    const body = document.body
+    const preloaderParent = document.createElement('div')
+    body.appendChild(preloaderParent)
+
+    const openPreloader = () => {
+      root.style.display = 'none'
+      preloaderParent.style.display = 'initial'
+    }
+
+    const closePreloader = () => {
+      root.style.display = initialDisplay
+      preloaderParent.style.display = 'none'
+      appRoot.appendChild(root)
+    }
+
+    // A new mount function that processes nodes one by one,
+    // yielding after each node so the browser can update the UI.
+    const mountChunked = async (parent: HTMLElement, nodes: BaseComponent[]) => {
+      for (const node of nodes) {
+        if (BaseComponent.isStandard(node)) {
+          parent.appendChild(node)
+          // Synchronously attach the elements.
+          BaseComponent.attachElementsAt(node, node, null)
+        } else {
+          BaseComponent.attachElementsAt(parent, node, null)
+        }
+        // Yield to the browser to allow UI updates (e.g., the preloader animation).
+        await new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+      }
+    }
+
+    // Load and mount the preloader.
+    const { Preloader } = await import('./components/Preloader')
+    const preloaderVNodes = BaseComponent.construct(Preloader as any, {}, ...[])
+    const preloaderNodes: BaseComponent[] = BaseComponent.createChildren(
+      Array.isArray(preloaderVNodes) ? preloaderVNodes : [preloaderVNodes],
+    ) as any
+    openPreloader()
+    await mountChunked(preloaderParent, preloaderNodes)
+
+    // Construct the main app nodes.
     const vNodes = BaseComponent.construct(app as any, props || {}, ...[])
     const nodes: BaseComponent[] = BaseComponent.createChildren(
       Array.isArray(vNodes) ? (vNodes as any) : [vNodes],
     ) as any
-    for (const node of nodes) {
-      if (BaseComponent.isStandard(node)) {
-        root.appendChild(node)
-        new Promise<void>((resolve) => {
-          BaseComponent.attachElementsAt(node, node, null)
-          resolve()
-        })
-      } else {
-        BaseComponent.attachElementsAt(root, node, null)
-      }
-    }
+
+    // Optionally, wait a short time (500ms) before mounting the main app.
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    // Mount the main app using the chunked method.
+    await mountChunked(root, nodes)
+    // Final yield to ensure all rendering tasks are complete.
+    await new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+    closePreloader()
   }
 
   /**
@@ -1281,13 +1315,20 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     const ignoredProps = ['key', 'children', 'ref']
 
     const patches: PropPatch[] = []
-    const oldProps: IAny = oldNode?.props || []
-    const newProps: IAny = newNode?.props || []
+    const oldProps: IAny = oldNode?.props || {}
+    const newProps: IAny = { ...oldProps, ...(newNode?.props || {}) }
     const isReblendNode = BaseComponent.isReblendRenderedNode(oldNode)
     for (const key in newProps) {
       if (!ignoredProps.includes(key) || (key === 'children' && isReblendNode)) {
         let oldProp = oldProps[key]
         let newProp = newProps[key]
+
+        // Normalize children before deep comparison
+        if (key === 'children') {
+          oldProp = JSON.stringify(oldProp)
+          newProp = JSON.stringify(newProp)
+        }
+
         if (!this.deepCompare(oldProp, newProp)) {
           oldProp = null
           newProp = null
@@ -1347,7 +1388,9 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
       }
     }
 
-    oldNode?.props && ((oldNode.props as any).children = newChildren)
+    if (oldNode?.props) {
+      ;(oldNode.props as any).children = newChildren
+    }
 
     return patches
   }
@@ -1381,7 +1424,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    */
   static deepCompare(firstObject, secondObject) {
     if (typeof firstObject !== 'function' && secondObject !== 'function') {
-      return isEqual(firstObject, secondObject)
+      return firstObject === secondObject
     }
 
     // 1. Check if they are the same reference
@@ -1435,8 +1478,8 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
             const standardParent = BaseComponent.isStandard(parent!)
               ? parent!
               : BaseComponent.isReactToReblendRenderedNode(parent)
-                ? parent!.reactElementChildrenParent! || parent!.nearestStandardParent!
-                : parent!.nearestStandardParent!
+              ? parent!.reactElementChildrenParent! || parent!.nearestStandardParent!
+              : parent!.nearestStandardParent!
             if (standardParent) {
               for (const element of elements || []) {
                 if (BaseComponent.isStandard(element)) {
@@ -1527,9 +1570,13 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     })
     nodes.forEach((node) => {
       if (BaseComponent.isReactToReblendRenderedNode(node)) {
+        //if (node.attached) {
         ;(node as any)?.checkPropsChange()
+        //}
       } else {
-        node.onStateChange()
+        if (node.attached) {
+          Promise.resolve().then(() => node.onStateChange())
+        }
       }
     })
     nodes = null as any
@@ -1556,6 +1603,11 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * The standard container for React and Reblend integration.
    */
   reblendReactStandardContainer!: HTMLElement
+
+  /**
+   * Use to limit rendering
+   */
+  onStateChangeRunning: boolean | undefined
 
   /**
    * The element for React and Reblend integration.
@@ -1610,29 +1662,19 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
   directParent: this | undefined
 
   /**
-   * The effects to apply when the component is mounted.
-   */
-  onMountEffects?: ReblendTyping.StateEffectiveFunction[]
-
-  /**
    * The effects functions defined for the component.
    */
-  effectsFn?: ReblendTyping.StateEffectiveFunction[]
+  effectsFn?: Set<ReblendTyping.StateEffectiveFunction>
 
   /**
    * The disconnect effects to apply when the component is disconnected.
    */
-  disconnectEffects?: ReblendTyping.StateEffectiveFunction[]
+  disconnectEffects?: Set<ReblendTyping.StateEffectiveFunction>
 
   /**
    * Error thrown when a state identifier/key is not specified.
    */
   stateIdNotIncluded = new Error('State Identifier/Key not specified')
-
-  /**
-   * Indicates whether state effects are currently running.
-   */
-  stateEffectRunning = false
 
   /**
    * Indicates whether this component disconnected callback was called.
@@ -1648,6 +1690,26 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * Set of update types for children properties.
    */
   childrenPropsUpdate?: Set<ChildrenPropsUpdateType>
+
+  /**
+   * Indicates number of awaiting updates.
+   */
+  numAwaitingUpdates!: number
+
+  /**
+   * Indicates whether state effects are currently running.
+   */
+  stateEffectRunning!: boolean
+
+  /**
+   * Indicates when first time effects are being called.
+   */
+  mountingEffects!: boolean
+
+  /**
+   * Indicate state initialization
+   */
+  initStateRunning!: boolean
 
   /**
    * The first standard element, if available.
@@ -1772,7 +1834,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @param {() => void} effect - The effect function to add.
    */
   addDisconnectedEffect(effect: () => void) {
-    this.disconnectEffects?.push(effect)
+    this.disconnectEffects?.add(effect)
   }
 
   /**
@@ -1879,9 +1941,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
       ...(typeof value == 'function' ? (value as any)(this._state) : value),
     }
     if (this.attached) {
-      !this.stateEffectRunning && this.onStateChange()
-    } else {
-      this.onMountEffects?.push(() => (!this.stateEffectRunning && this.onStateChange(), undefined))
+      Promise.resolve().then(() => this.onStateChange())
     }
   }
 
@@ -1898,9 +1958,9 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * Applies effects defined in the component, executing them in order.
    */
   applyEffects() {
-    this.stateEffectRunning = true
-    this.effectsFn?.forEach((effectFn) => effectFn())
-    this.stateEffectRunning = false
+    this.effectsFn?.forEach((effectFn) => {
+      effectFn()
+    })
   }
 
   /**
@@ -1936,10 +1996,21 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @async
    */
   async onStateChange() {
-    this.catchErrorFrom.bind(this)(() => {
+    if (this.stateEffectRunning) {
+      return
+    }
+    if (this.onStateChangeRunning || this.initStateRunning) {
+      this.numAwaitingUpdates++
+      return
+    }
+    const patches: Patch[] = []
+    let newVNodes: ReblendTyping.ReblendNode
+    try {
+      this.stateEffectRunning = true
       this.applyEffects()
-      let newVNodes = this.html()
-      const patches: Patch[] = []
+      this.stateEffectRunning = false
+      this.onStateChangeRunning = true
+      newVNodes = this.html()
       if (!Array.isArray(newVNodes)) {
         newVNodes = [newVNodes as any]
       }
@@ -1952,9 +2023,20 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
         const currentVNode = oldNodes[i]
         patches.push(...BaseComponent.diff(this as any, currentVNode as any, newVNode))
       }
+    } catch (error) {
+      this.handleError(error as Error)
+    } finally {
+      this.onStateChangeRunning = false
+      if (this.numAwaitingUpdates) {
+        this.numAwaitingUpdates = 0
+
+        Promise.resolve().then(() => {
+          this.onStateChange()
+        })
+      }
       newVNodes = null as any
       BaseComponent.applyPatches(patches)
-    })
+    }
   }
 
   /**
@@ -1971,10 +2053,19 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @private
    */
   mountEffects() {
-    this.onMountEffects?.forEach((fn) => {
+    this.mountingEffects = true
+    this.stateEffectRunning = true
+    this.effectsFn?.forEach((fn) => {
       const disconnectEffect = fn()
-      disconnectEffect && this.disconnectEffects?.push(disconnectEffect)
+      disconnectEffect && this.disconnectEffects?.add(disconnectEffect)
     })
+    this.mountingEffects = false
+    this.stateEffectRunning = false
+    if (BaseComponent.isReblendRenderedNode(this)) {
+      requestAnimationFrame(() => {
+        this.onStateChange()
+      })
+    }
   }
 
   /**
@@ -2003,7 +2094,6 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     this._state = null as any
     this.effectsFn = null as any
     this.disconnectEffects = null as any
-    this.onMountEffects = null as any
     this.renderingError = null as any
     this.renderingErrorHandler = null as any
     this.nearestStandardParent = null as any
@@ -2023,6 +2113,16 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * Lifecycle method for component unmount actions.
    */
   componentWillUnmount() {}
+
+  dependenciesChanged(currentDependencies: any, previousDependencies: any) {
+    if (!previousDependencies || previousDependencies.length !== currentDependencies.length) {
+      return false
+    }
+
+    return currentDependencies.some((dep, index) => {
+      return !Object.is(dep, previousDependencies[index])
+    })
+  }
 
   /**
    * State management hook for functional components.
@@ -2049,27 +2149,13 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
       force = false,
     ) => {
       if (typeof value === 'function') {
-        this.stateEffectRunning = true
         value = (value as (v: T) => T)(this[stateID])
-        this.stateEffectRunning = false
       }
-      if (force || !isEqual(this[stateID], value)) {
+      if (force || this[stateID] !== value) {
         this[stateID] = value as T
         if (!this.hasDisconnected) {
           if (this.attached) {
-            if (!this.stateEffectRunning) {
-              this.onStateChange()
-            } else {
-              this.applyEffects()
-            }
-          } else {
-            this.onMountEffects?.push(() => {
-              if (!this.stateEffectRunning) {
-                this.onStateChange()
-              } else {
-                this.applyEffects()
-              }
-            })
+            Promise.resolve().then(() => this.onStateChange())
           }
         }
       }
@@ -2093,16 +2179,27 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
   ) {
     fn = fn.bind(this)
     const dep = new Function(`return (${dependencies})`).bind(this)
-    const cacher = () => cloneDeep(dep())
-    let caches = cacher()
+    const generateId = () => {
+      const id = rand(10000, 999999) + '_effectId'
+      if (this[id]) {
+        return generateId()
+      }
+      return id
+    }
+    const effectKey = generateId()
+
+    const cacher = () => dep()
+
+    this[effectKey] = cacher()
+
     const internalFn = (() => {
-      if (!dependencies || !isEqual(dep(), caches)) {
-        caches = cacher()
+      const current = cacher()
+      if (!dependencies || this.mountingEffects || this.dependenciesChanged(current, this[effectKey])) {
+        this[effectKey] = current
         fn()
       }
     }).bind(this)
-    this.effectsFn?.push(internalFn)
-    this.onMountEffects?.push(fn)
+    this.effectsFn?.add(internalFn)
   }
 
   /**
@@ -2131,13 +2228,11 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     this[stateID] = state
     const fn: ReblendTyping.StateFunction<I> = ((newValue: ReblendTyping.StateFunctionValue<I>) => {
       let reducedVal: ReblendTyping.StateFunctionValue<T>
-      this.stateEffectRunning = true
       if (typeof newValue === 'function') {
         reducedVal = reducer(this[stateID], (newValue as (v: T) => I)(this[stateID]))
       } else {
         reducedVal = reducer(this[stateID], newValue as any)
       }
-      this.stateEffectRunning = false
       setState(reducedVal)
     }).bind(this)
 
@@ -2167,17 +2262,29 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
 
     const [state, setState] = this.useState<T>(fn(), stateID)
     this[stateID] = state
+
     const dep = new Function(`return (${dependencies})`).bind(this)
-    const cacher = () => cloneDeep(dep())
-    let caches = cacher()
+    const generateId = () => {
+      const id = rand(10000, 999999) + '_effectId'
+      if (this[id]) {
+        return generateId()
+      }
+      return id
+    }
+    const effectKey = generateId()
+
+    const cacher = () => dep()
+
+    this[effectKey] = cacher()
+
     const internalFn = () => {
-      const depData = dep()
-      if (!dependencies || !isEqual(depData, caches)) {
-        caches = cacher()
+      const current = cacher()
+      if (!dependencies || this.mountingEffects || this.dependenciesChanged(current, this[effectKey])) {
+        this[effectKey] = current
         setState(fn())
       }
     }
-    this.effectsFn?.push(internalFn)
+    this.effectsFn?.add(internalFn)
     return this[stateID]
   }
 
@@ -2208,10 +2315,10 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * For compatibility in case a standard element inherits this prototype; can manually execute this constructor.
    */
   _constructor() {
-    this.effectsFn = []
-    this.onMountEffects = []
-    this.disconnectEffects = []
+    this.effectsFn = new Set()
+    this.disconnectEffects = new Set()
     this.childrenPropsUpdate = new Set()
+    this.numAwaitingUpdates = 0
   }
 
   /**

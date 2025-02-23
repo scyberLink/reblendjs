@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { isEqual } from 'lodash'
 import { BaseComponent } from './BaseComponent'
-import { ReblendTyping } from 'reblend-typing'
 import { SharedConfig } from '../common/SharedConfig'
 import { rand } from '../common/utils'
 
@@ -272,19 +271,7 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
             component[stateKey] = context[contextValue]
             if (!component.hasDisconnected) {
               if (component.attached) {
-                if (!component.stateEffectRunning) {
-                  component.onStateChange && (await component.onStateChange())
-                } else {
-                  component.applyEffects && component.applyEffects()
-                }
-              } else {
-                component.onMountEffects?.push(() => {
-                  if (!component.stateEffectRunning) {
-                    component.onStateChange && component.onStateChange()
-                  } else {
-                    component.applyEffects && component.applyEffects()
-                  }
-                })
+                component.onStateChange && (await component.onStateChange())
               }
             } else {
               alreadyDisconnected.push(component)

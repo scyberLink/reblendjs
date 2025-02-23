@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ReblendRenderingException } from 'reblend-typing'
 import { isCallable } from '../../common/utils'
 import type { BaseComponent } from '../../internal/BaseComponent'
 import { Reblend } from '../../internal/Reblend'
