@@ -395,7 +395,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @returns {(e: Event) => void} A function that invokes the event callback.
    */
   static fn(eventCallback: (e: Event) => any = () => {}): (e: Event) => void {
-    return (e) => Promise.resolve().then(() => eventCallback && eventCallback(e))
+    return async (e) => requestAnimationFrame(() => eventCallback && eventCallback(e))
   }
 
   /**
@@ -926,14 +926,18 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
       Array.isArray(vNodes) ? (vNodes as any) : [vNodes],
     ) as any
 
+    // Mount the main app using the chunked method.
+    requestIdleCallback(() => mountChunked(root, nodes))
+
     // Optionally, wait a short time (500ms) before mounting the main app.
     await new Promise((resolve) => setTimeout(resolve, 500))
 
-    // Mount the main app using the chunked method.
-    await mountChunked(root, nodes)
     // Final yield to ensure all rendering tasks are complete.
     await new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
-    closePreloader()
+
+    setTimeout(() => {
+      requestAnimationFrame(closePreloader)
+    }, 100)
   }
 
   /**
@@ -1093,10 +1097,11 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     if (!reblendElement?.htmlElements || !standardElement) {
       return
     }
+    new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
 
     if (BaseComponent.isReactToReblendRenderedNode(reblendElement)) {
       standardElement.removeChild = (node: any) => {
-        node.remove()
+        node?.remove()
         return node
       }
       reblendElement.setReblendReactStandardContainer(standardElement)
@@ -1112,15 +1117,19 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
         } else {
           standardElement?.appendChild(htmlElement)
         }
-        new Promise<void>((resolve) => {
+        new Promise<void>((_resolve) => {
+          //new Promise<void>((resolve) => requestAnimationFrame(<any>resolve)).then(() => {
           BaseComponent.attachElementsAt(htmlElement, htmlElement, null)
-          resolve()
+          _resolve()
+          //})
         })
       } else if (BaseComponent.isReactToReblendRenderedNode(htmlElement)) {
+        //new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
         insertAfter = BaseComponent.attachElementsAt(standardElement, htmlElement, insertAfter) || insertAfter
       } else {
         const standardElementsFromCustomElement = htmlElement.getAttachableElements()
         htmlElement.firstStandardElement = standardElementsFromCustomElement[0]
+        //new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
         insertAfter = BaseComponent.attachElementsAt(standardElement, htmlElement, insertAfter) || insertAfter
         htmlElement.nearestStandardParent = standardElement
         BaseComponent.connected(htmlElement)
@@ -1154,6 +1163,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     let firstStandardElement: HTMLElement | undefined
 
     for (const n of newNode) {
+      new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
       if (!BaseComponent.isReblendRenderedNodeStandard(n) && !BaseComponent.isReblendPrimitiveElement(n)) {
         n.nearestStandardParent = (lastInsertedNode || oldNode).parentElement as any
         if (BaseComponent.isReactToReblendRenderedNode(n)) {
@@ -1166,6 +1176,7 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
             })
           n.setReblendReactStandardContainer((lastInsertedNode || oldNode).parentElement!)
           n.reactReblendMount(textNode as any)
+          //new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
         } else {
           lastInsertedNode = this.replaceOldNode(n.htmlElements!, lastInsertedNode || oldNode)
           if (!firstStandardElement) {
@@ -1180,10 +1191,12 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
           firstStandardElement = n
         }
         new Promise<void>((resolve) => {
+          //new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
           BaseComponent.attachElementsAt(n, n, null)
           resolve()
         })
       }
+      new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
     }
     newNode.forEach((nn) => (nn.firstStandardElement = firstStandardElement))
     return lastInsertedNode
@@ -1529,6 +1542,9 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
 
               newNodeElements.unshift(firstNewNode as any)
               BaseComponent.replaceOldNode(newNodeElements, oldNode!)
+              requestIdleCallback(() => {
+                oldNode?.disconnectedCallback && oldNode?.disconnectedCallback()
+              })
             })
           }
           break
@@ -2062,9 +2078,9 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     this.mountingEffects = false
     this.stateEffectRunning = false
     if (BaseComponent.isReblendRenderedNode(this)) {
-      requestAnimationFrame(() => {
+      setTimeout(() => {
         this.onStateChange()
-      })
+      }, 0)
     }
   }
 
