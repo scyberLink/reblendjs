@@ -9,7 +9,7 @@ export function Preloader() {
       }
 
       .App-logo {
-        height: 40vmin;
+        height: calc(30px + 20vmin);;
         pointer-events: none;
       }
 
@@ -26,7 +26,7 @@ export function Preloader() {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: calc(10px + 2vmin);
+        font-size: calc(8px + 2vmin);
       }
 
       @keyframes App-logo-spin {
