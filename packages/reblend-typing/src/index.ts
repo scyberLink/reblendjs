@@ -1657,11 +1657,6 @@ declare global {
        */
       static props: any;
       /**
-       * A static class that extends the functionality of `Component`
-       * to provide integration with React and Reblend.
-       */
-      static ReblendReactClass: typeof Component;
-      /**
        * Retrieves the first standard element from a node, traversing its children if necessary.
        *
        * @param {Component} node - The starting node to search from.
