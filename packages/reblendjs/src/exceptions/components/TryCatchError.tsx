@@ -6,23 +6,24 @@ import type { BaseComponent } from '../../internal/BaseComponent'
 import { Reblend } from '../../internal/Reblend'
 
 //@ReblendComponent
-function TryCatchError(
-  {
-    children = ((_error) => <>{''}</>) as any,
-  }: {
-    children?:
-      | ((error?: ReblendRenderingException) => Reblend.JSX.Element | Reblend.JSX.Element[])
-      | Reblend.JSX.Element
-      | Reblend.JSX.Element[]
-  },
-  thisComponent?: BaseComponent,
-) {
-  thisComponent &&
-    (thisComponent.renderingErrorHandler = (e: ReblendRenderingException) => {
-      thisComponent.renderingError = e
+function TryCatchError({
+  children = ((_error) => <>{''}</>) as any,
+}: {
+  children?:
+    | ((error?: ReblendRenderingException) => Reblend.JSX.Element | Reblend.JSX.Element[])
+    | Reblend.JSX.Element
+    | Reblend.JSX.Element[]
+}) {
+  //@ts-ignore
+  this &&
+    //@ts-ignore
+    (this.renderingErrorHandler = (e: ReblendRenderingException) => {
+      //@ts-ignore
+      this.renderingError = e
       //if (!this.stateEffectRunning && this.attached) {
       //Promise.resolve().then(() => {
-      thisComponent?.onStateChange()
+      //@ts-ignore
+      this?.onStateChange()
       //})
       //}
     })

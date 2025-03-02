@@ -42,16 +42,6 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
   static props: IAny
 
   /**
-   * Checks if the given element has a name other than 'BaseComponent'.
-   *
-   * @param {typeof BaseComponent} element - The element to check.
-   * @returns {boolean} `true` if the element has a name and it is not 'BaseComponent', otherwise `false`.
-   */
-  static hasName(element: typeof BaseComponent): boolean {
-    return !!(element?.ELEMENT_NAME && element.ELEMENT_NAME !== 'BaseComponent')
-  }
-
-  /**
    * Constructs a VNode from the provided display name, props, and children.
    * If the display name is an array, it will return that array.
    * Otherwise, it constructs a new VNode using the provided properties.
@@ -118,26 +108,20 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     app: typeof Reblend | ReblendTyping.FunctionComponent,
     props?: IAny,
   ): Promise<void> {
-    const appRoot = document.getElementById(elementId)
+    let appRoot = document.getElementById(elementId)
     if (!appRoot) {
       throw new Error('Invalid root id')
     }
-    const root = document.createElement('div')
-    const initialDisplay = root.style.display || 'initial'
+    let root = document.createElement('div')
+    let initialDisplay = root.style.display || 'initial'
 
-    const body = document.body
-    const preloaderParent = document.createElement('div')
+    let body = document.body
+    let preloaderParent = document.createElement('div')
     body.appendChild(preloaderParent)
 
     const openPreloader = () => {
       root.style.display = 'none'
       preloaderParent.style.display = 'initial'
-    }
-
-    const closePreloader = () => {
-      root.style.display = initialDisplay
-      preloaderParent.style.display = 'none'
-      appRoot.appendChild(root)
     }
 
     // A new mount function that processes nodes one by one,
@@ -157,17 +141,17 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
     }
 
     // Load and mount the preloader.
-    const { Preloader } = await import('./components/Preloader')
-    const preloaderVNodes = BaseComponent.construct(Preloader as any, {}, ...[])
-    const preloaderNodes: BaseComponent[] = ElementUtil.createChildren(
+    let { Preloader } = await import('./components/Preloader')
+    let preloaderVNodes = BaseComponent.construct(Preloader as any, {}, ...[])
+    let preloaderNodes: BaseComponent[] = ElementUtil.createChildren(
       Array.isArray(preloaderVNodes) ? preloaderVNodes : [preloaderVNodes],
     ) as any
     openPreloader()
     await mountChunked(preloaderParent, preloaderNodes)
 
     // Construct the main app nodes.
-    const vNodes = BaseComponent.construct(app as any, props || {}, ...[])
-    const nodes: BaseComponent[] = ElementUtil.createChildren(Array.isArray(vNodes) ? (vNodes as any) : [vNodes]) as any
+    let vNodes = BaseComponent.construct(app as any, props || {}, ...[])
+    let nodes: BaseComponent[] = ElementUtil.createChildren(Array.isArray(vNodes) ? (vNodes as any) : [vNodes]) as any
 
     // Mount the main app using the chunked method.
     requestIdleCallback(() => mountChunked(root, nodes))
@@ -177,6 +161,30 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
 
     // Final yield to ensure all rendering tasks are complete.
     await new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+
+    const closePreloader = () => {
+      root.style.display = initialDisplay
+      preloaderParent.style.display = 'none'
+      appRoot?.appendChild(root)
+      preloaderParent.remove()
+      preloaderNodes.forEach((n) => {
+        if (n.disconnectedCallback) {
+          n.disconnectedCallback()
+        } else {
+          n.remove()
+        }
+      })
+      appRoot = undefined as any
+      preloaderParent = undefined as any
+      root = undefined as any
+      initialDisplay = undefined as any
+      body = undefined as any
+      vNodes = undefined as any
+      nodes = undefined as any
+      Preloader = undefined as any
+      preloaderVNodes = undefined as any
+      preloaderNodes = undefined as any
+    }
 
     setTimeout(() => {
       requestAnimationFrame(closePreloader)
@@ -188,11 +196,6 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
   nearestStandardParent?: HTMLElement
 
   /**
-   * The standard container for React and Reblend integration.
-   */
-  reblendReactStandardContainer!: HTMLElement
-
-  /**
    * Use to limit rendering
    */
   onStateChangeRunning: boolean | undefined
@@ -201,11 +204,6 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * The element for React and Reblend integration.
    */
   reactElement!: HTMLElement[] | null
-
-  /**
-   * The element for React and Reblend integration.
-   */
-  reactElementChildrenParent!: HTMLElement | null
 
   /**
    * The selector string for querying elements by data ID.
@@ -308,22 +306,6 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * The component's state.
    */
   _state!: Readonly<S>
-
-  /**
-   * Sets the React standard container for Reblend integration.
-   *
-   * @param {HTMLElement} node - The DOM node to set as the React standard container.
-   * @param {HTMLElement} afterNode - The DOM node to set as the Reblend React After Node.
-   */
-  setReblendReactStandardContainer(node: HTMLElement) {
-    this.reblendReactStandardContainer = node
-  }
-
-  /**
-   * Lifecycle method for mounting the component in React.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  reactReblendMount(afterNode?: HTMLElement) {}
 
   /**
    * Populates the HTML elements for this component.
@@ -492,9 +474,8 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    *
    * @param {P} props - The properties to set on the component.
    */
-  initProps(props: P, thisComponent: ReblendTyping.Component<P, S>) {
+  initProps(props: P) {
     this.props = props || ({} as any)
-    ;(this as any).thisComponent = thisComponent
   }
 
   /**
@@ -577,6 +558,9 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * @async
    */
   async onStateChange() {
+    if (!this.attached) {
+      return
+    }
     if (this.stateEffectRunning) {
       return
     }
@@ -653,8 +637,8 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    * Lifecycle method called when the component is disconnected from the DOM.
    * Cleans up resources and removes the component from its parent.
    */
-  disconnectedCallback() {
-    NodeOperationUtil.disconnectedCallback<P, S>(this)
+  disconnectedCallback(fromCleanUp = false) {
+    NodeOperationUtil.disconnectedCallback<P, S>(this, fromCleanUp)
   }
 
   /**
@@ -861,6 +845,26 @@ class BaseComponent<P = {}, S = {}> implements ReblendTyping.Component<P, S> {
    */
   useCallback(fn: () => any) {
     return fn.bind(this)
+  }
+
+  /**
+   * Removes the current component from its direct parent's HTML elements array.
+   * If the component has a direct parent and the parent's HTML elements array contains the component,
+   * it will be removed from the array.
+   */
+  removeFromParent() {
+    if (this.remove) {
+      this.remove()
+    }
+    if (this.directParent) {
+      const htmlElements = this.directParent.htmlElements
+      if (htmlElements) {
+        const indexOfOldNodeInHtmlElements = htmlElements.indexOf(this as any)
+        if (indexOfOldNodeInHtmlElements > -1) {
+          htmlElements.splice(indexOfOldNodeInHtmlElements, 1)
+        }
+      }
+    }
   }
 
   /**

@@ -812,10 +812,7 @@ declare global {
      *
      * @template P The props the component accepts.
      */
-    type JSXElementConstructor<P> = (
-      props: P,
-      thisComponent?: Component<P>
-    ) => ReblendNode | ReblendNode[];
+    type JSXElementConstructor<P> = (props: P) => ReblendNode | ReblendNode[];
     interface DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES {}
     /**
      * A callback fired whenever the ref's value changes.
@@ -1321,7 +1318,7 @@ declare global {
      * @template P The props the component accepts.
      */
     interface ExoticComponent<P = {}> {
-      (props: P, thisComponent?: Component<P>): ReblendNode;
+      (props: P): ReblendNode;
       readonly $$typeof: symbol;
     }
     /**
@@ -1657,167 +1654,6 @@ declare global {
        */
       static props: any;
       /**
-       * Retrieves the first standard element from a node, traversing its children if necessary.
-       *
-       * @param {Component} node - The starting node to search from.
-       * @returns {HTMLElement | undefined} The first standard HTML element found, or `undefined` if none is found.
-       */
-      static getFirstStandardElementFrom(
-        node: Component<any, any>
-      ): HTMLElement | undefined;
-      /**
-       * Extends the prototype of the target object with the provided prototype, skipping constructors and existing functions.
-       *
-       * @param {any} target - The target object to extend.
-       * @param {any} prototype - The prototype object to copy properties and methods from.
-       */
-      static extendPrototype(target: any, prototype: any): void;
-      /**
-       * Checks if the given element has a name other than 'Component'.
-       *
-       * @param {typeof Component} element - The element to check.
-       * @returns {boolean} `true` if the element has a name and it is not 'Component', otherwise `false`.
-       */
-      static hasName(element: typeof Component): boolean;
-      /**
-       * Wraps an event callback function, ensuring that the event callback is always called.
-       *
-       * @param {(e: Event) => any} [eventCallback=() => {}] - The event callback to be wrapped.
-       * @returns {(e: Event) => void} A function that invokes the event callback.
-       */
-      static fn(eventCallback: (e: Event) => any): (e: Event) => void;
-      /**
-       * Sets attributes on the given element, handling namespaces for XML, SVG, MathML, and XLink attributes.
-       *
-       * @param {HTMLElement | SVGElement} element - The element on which to set attributes.
-       * @param {Record<string, string>} attributes - A record of attribute names and values to set.
-       */
-      static setAttributesWithNamespace(
-        element: HTMLElement | SVGElement,
-        attributes: Record<string, string>
-      ): void;
-      /**
-       * Creates an HTML, SVG, MathML, or XML element based on the provided tag name.
-       *
-       * @param {string} tag - The tag name of the element to create.
-       * @returns {HTMLElement | SVGElement | Element} The created element.
-       */
-      static createElementWithNamespace(
-        tag: string
-      ): HTMLElement | SVGElement | Element;
-      /**
-       * Sets properties on the target component, updating attributes and handling special cases like events and style.
-       *
-       * @param {IAny} props - The properties to set.
-       * @param {Component} to - The target component to apply the properties to.
-       * @param {boolean} init - Whether this is an initial setting of properties.
-       */
-      static setProps(props: any, to: Component, init: boolean): void;
-      /**
-       * Removes specified properties from the `to` component and removes the corresponding attributes.
-       * If a property is to be removed using `setAttribute`, it will also be removed from `props`.
-       *
-       * @param {IAny} props - The properties to remove from the component.
-       * @param {Component} to - The target component from which to remove the properties.
-       */
-      static removeProps(props: any, to: Component): void;
-      /**
-       * Checks if the provided node is a rendered Reblend node.
-       *
-       * @param {any} node - The node to check.
-       * @returns {boolean} `true` if the node is a rendered Reblend node, otherwise `false`.
-       */
-      static isReblendRenderedNode(node: any): boolean;
-      /**
-       * Checks if the provided node is a virtual Reblend node.
-       *
-       * @param {any} node - The node to check.
-       * @returns {boolean} `true` if the node is a virtual Reblend node, otherwise `false`.
-       */
-      static isReblendVirtualNode(node: any): boolean;
-      /**
-       * Checks if the provided node is a standard rendered Reblend node.
-       *
-       * @param {any} node - The node to check.
-       * @returns {boolean} `true` if the node is a standard rendered Reblend node, otherwise `false`.
-       */
-      static isReblendRenderedNodeStandard(node: any): boolean;
-      /**
-       * Checks if the provided node is a standard virtual Reblend node.
-       *
-       * @param {any} node - The node to check.
-       * @returns {boolean} `true` if the node is a standard virtual Reblend node, otherwise `false`.
-       */
-      static isReblendVirtualNodeStandard(node: any): boolean;
-      /**
-       * Checks if the provided node is a React to Reblend rendered node.
-       *
-       * @param {any} node - The node to check.
-       * @returns {boolean} `true` if the node is a React to Reblend rendered node, otherwise `false`.
-       */
-      static isReactToReblendRenderedNode(node: any): boolean;
-      /**
-       * Checks if the provided node is a React to Reblend virtual node.
-       *
-       * @param {any} node - The node to check.
-       * @returns {boolean} `true` if the node is a React to Reblend virtual node, otherwise `false`.
-       */
-      static isReactToReblendVirtualNode(node: any): boolean;
-      /**
-       * Checks if the provided node is a standard virtual node.
-       *
-       * @param {any} node - The node to check.
-       * @returns {boolean} `true` if the node is a standard virtual node, otherwise `false`.
-       */
-      static isStandardVirtualNode(node: any): boolean;
-      /**
-       * Checks if the provided element is a Reblend primitive element.
-       *
-       * @param {any} element - The element to check.
-       * @returns {boolean} `true` if the element is a Reblend primitive element, otherwise `false`.
-       */
-      static isReblendPrimitiveElement(element: any): boolean;
-      /**
-       * Creates a new Reblend primitive element.
-       *
-       * @returns {ReblendPrimitive} The newly created Reblend primitive element.
-       */
-      static newReblendPrimitive(): ReblendPrimitive;
-      /**
-       * Checks if the provided display name represents a React node.
-       *
-       * @param {IAny} displayName - The display name to check.
-       * @returns {boolean} `true` if the display name represents a React node, otherwise `false`.
-       */
-      static isReactNode(displayName: any): boolean;
-      /**
-       * Deeply flattens an array or set of elements.
-       *
-       * @template T
-       * @param {T[] | Set<T>} data - The data to flatten.
-       * @returns {T[]} A flattened array of elements.
-       */
-      static deepFlat<T>(data: T[] | Set<T>): T[];
-      /**
-       * Checks if the given object is an array-like structure by verifying that it contains array-specific methods and properties.
-       *
-       * @param {unknown} obj - The object to check.
-       * @returns {boolean} `true` if the object is an array-like structure, otherwise `false`.
-       */
-      static isArray(obj: unknown): boolean;
-      /**
-       * Flattens a nested array or set of virtual nodes (VNode) and adds the result to the `containerArr`.
-       *
-       * @template T
-       * @param {(T | T[])[] | Set<T | T[]>} arr - The array or set of VNode children to flatten.
-       * @param {T[]} [containerArr=[]] - The container array to store flattened nodes.
-       * @returns {T[]} The flattened array of VNode children.
-       */
-      static flattenVNodeChildren<T>(
-        arr: (T | T[])[] | Set<T | T[]>,
-        containerArr: T[]
-      ): T[];
-      /**
        * Constructs a VNode from the provided display name, props, and children.
        * If the display name is an array, it will return that array.
        * Otherwise, it constructs a new VNode using the provided properties.
@@ -1833,26 +1669,6 @@ declare global {
         ...children: VNodeChildren
       ): VNode | VNodeChildren;
       /**
-       * Checks if the provided data is a primitive type.
-       * Primitive types include string, number, boolean, bigint, null, undefined, and symbol.
-       *
-       * @param {any} data - The data to check.
-       * @returns {boolean} `true` if the data is a primitive, otherwise `false`.
-       */
-      static isPrimitive(data: any): boolean;
-      /**
-       * Creates child nodes from the given VNode children and appends them to the container array.
-       * Supports nested arrays, Sets, and various node types such as Reblend, DOM Nodes, React Nodes, and primitive values.
-       *
-       * @param {VNodeChildren} children - The children to process.
-       * @param {(Component | HTMLElement)[]} [containerArr=[]] - The array to store the created child nodes.
-       * @returns {(Component | HTMLElement)[]} The array containing the created child nodes.
-       */
-      static createChildren(
-        children: VNodeChildren,
-        containerArr: (Component | HTMLElement)[]
-      ): (Component | HTMLElement)[];
-      /**
        * Mounts the given component or function component to the DOM at the specified element ID.
        * The component is constructed and its elements are attached to the DOM root.
        *
@@ -1867,173 +1683,7 @@ declare global {
         app: typeof Component | FunctionComponent,
         props?: IAny
       ): Promise<void>;
-      /**
-       * Detaches the given node from the DOM.
-       * If the node is a primitive, the function returns immediately.
-       * If the node has a `disconnectedCallback`, it will be invoked.
-       * Otherwise, it will be removed from the DOM.
-       *
-       * @param {Component | HTMLElement} node - The node to detach.
-       */
-      static detach(node: Component | HTMLElement): any;
-      /**
-       * Detaches all child nodes and HTML elements from the given `Component`.
-       * If the node is a primitive, the function returns immediately.
-       *
-       * @param {Component} node - The parent node from which children will be detached.
-       */
-      static detachChildren(node: Component): any;
-      /**
-       * Calls `connectedCallback` on the node if it exists, signaling that the node has been connected to the DOM.
-       *
-       * @template T
-       * @param {T | undefined} node - The node to connect.
-       */
-      static connected<T extends Component | HTMLElement>(
-        node: T | undefined
-      ): any;
-      /**
-       * Creates an element based on the provided virtual node (VNode) or primitive value.
-       * The created element is returned as a `Component`.
-       *
-       * @param {VNode | VNode[] | ReactNode | Primitive} vNode - The virtual node or primitive to create an element from.
-       * @returns {Component[]} The created `Component` instances.
-       */
-      static createElement(
-        vNode: VNode | VNode[] | ReactNode | Primitive
-      ): Component[];
-      /**
-       * Attaches the reblendElement to the standardElement.
-       * If the reblendElement is React-based, it sets the container and mounts it.
-       * Otherwise, it iterates over the HTML elements of the reblendElement and recursively attaches them.
-       *
-       * @param {HTMLElement} standardElement - The standard HTML element to which the reblendElement is attached.
-       * @param {Component} reblendElement - The reblend element (ReblendNode or ReactNode) to be attached.
-       */
-      static attachElementsAt(
-        standardElement: HTMLElement,
-        reblendElement: Component,
-        insertAfter: HTMLElement | null
-      ): any;
-      /**
-       * Replaces the old node with a new node or nodes.
-       * Handles scenarios where old and new nodes may be React-based or standard HTML.
-       *
-       * @param {Component | Component[]} newNode - The new node(s) to replace the old node.
-       * @param {Component} oldNode - The old node to be replaced.
-       * @returns {Component | null} - The last inserted node after replacement, or null if none.
-       */
-      static replaceOldNode(
-        newNode: Component | Component[],
-        oldNode: Component
-      ): Component | null;
-      /**
-       * Checks if a node is a standard HTML element or a Reblend primitive element.
-       *
-       * @param {Component | HTMLElement} node - The node to check.
-       * @returns {boolean} - True if the node is standard or a Reblend primitive element, false otherwise.
-       */
-      static isStandard(node: Component | HTMLElement): any;
-      /**
-       * Checks if a node is a Reblend HTML element or a Reblend React HTML element.
-       *
-       * @param {Component | HTMLElement} node - The node to check.
-       * @returns {boolean} - True if the node is Reblend or a Reblend React element, false otherwise.
-       */
-      static isNonStandard(node: Component | HTMLElement): any;
-      /**
-       * Creates patches to create or remove nodes by comparing oldNode and newNode.
-       *
-       * @param {Component} parent - The parent node.
-       * @param {DomNodeChild} oldNode - The old node.
-       * @param {VNodeChild} newNode - The new node.
-       * @returns {Patch[]} - The array of patches.
-       */
-      static diffCreateOrRemove(
-        parent: Component,
-        oldNode: DomNodeChild,
-        newNode: VNodeChild
-      ): any;
-      /**
-       * Diffs oldNode and newNode to generate patches that represent the changes between them.
-       *
-       * @param {Component} parent - The parent node.
-       * @param {DomNodeChild} oldNode - The old node.
-       * @param {VNodeChild} newNode - The new node.
-       * @returns {Patch[]} - The array of patches.
-       */
-      static diff(
-        parent: Component,
-        oldNode: DomNodeChild,
-        newNode: VNodeChild
-      ): Patch[];
-      /**
-       * Diffs the props of the newNode and oldNode to generate a list of prop changes.
-       *
-       * @param {VNode} newNode - The new virtual node.
-       * @param {Component} oldNode - The old base component node.
-       * @returns {any[]} - The array of property differences.
-       */
-      static diffProps(newNode: VNode, oldNode: Component): any;
-      /**
-       * Diffs the children of the old and new virtual nodes and returns the patches required to update them.
-       *
-       * @param {Component} parent - The parent component containing the children.
-       * @param {Component} oldNode - The old component node.
-       * @param {VNode} newNode - The new virtual node.
-       * @returns {Patch[]} - An array of patches representing the differences between the old and new children.
-       */
-      static diffChildren(
-        parent: Component,
-        oldNode: Component,
-        newNode: VNode
-      ): any;
-      /**
-       * Determines if a given node is a text node.
-       *
-       * @param {Node} node - The node to check.
-       * @returns {boolean} - True if the node is a text node, otherwise false.
-       */
-      static isTextNode(node: Node): node is Text;
-      /**
-       * Checks whether the given data is empty (undefined or null).
-       *
-       * @param {*} data - The data to check.
-       * @returns {boolean} - True if the data is empty, otherwise false.
-       */
-      static isEmpty(data: any): any;
-      /**
-       * Performs a deep comparison between two objects, including functions.
-       *
-       * @param {*} firstObject - The first object or function to compare.
-       * @param {*} secondObject - The second object or function to compare.
-       * @returns {boolean} - True if the objects are deeply equal, otherwise false.
-       */
-      static deepCompare(firstObject: any, secondObject: any): any;
-      /**
-       * Applies an array of patches to the component.
-       *
-       * @param {Patch[]} patches - The array of patches to apply.
-       */
-      static applyPatches(patches: Patch[]): any;
-      /**
-       * Asynchronously applies property patches to nodes.
-       *
-       * @param {PropPatch[]} [patches] - The property patches to apply.
-       */
-      static applyProps(patches?: PropPatch[]): any;
-      /**
-       * Performs a replacement operation on an old node.
-       *
-       * @param {Component} oldNode - The old node to replace.
-       * @param {() => void} operation - The operation to execute for the replacement.
-       */
-      static replaceOperation(oldNode: Component, operation: () => void): any;
       nearestStandardParent?: HTMLElement;
-      /**
-       * The standard container for React and Reblend integration.
-       */
-      reblendReactStandardContainer: HTMLElement;
       /**
        * The name of this component.
        * Use for debugging and to identify when an this component should be replaced with another.
@@ -2047,10 +1697,6 @@ declare global {
        * The element for React and Reblend integration.
        */
       reactElement: HTMLElement[] | null;
-      /**
-       * The element for React and Reblend integration.
-       */
-      reactElementChildrenParent: HTMLElement | null;
       /**
        * The selector string for querying elements by data ID.
        */
@@ -2132,16 +1778,9 @@ declare global {
        */
       _state: Readonly<S>;
       /**
-       * Sets the React standard container for Reblend integration.
-       *
-       * @param {HTMLElement} node - The DOM node to set as the React standard container.
-       * @param {HTMLElement} afterNode - The DOM node to set as the Reblend React After Node.
-       */
-      setReblendReactStandardContainer(node: HTMLElement): any;
-      /**
        * Lifecycle method for mounting the component in React.
        */
-      reactReblendMount(afterNode?: HTMLElement): any;
+      reactReblendMount?: undefined | ((afterNode?: HTMLElement) => any);
       /**
        * Populates the HTML elements for this component.
        */
@@ -2232,7 +1871,7 @@ declare global {
        *
        * @param {P} props - The properties to set on the component.
        */
-      initProps(props: P, thisComponent: Component<P, S>): void;
+      initProps(props: P): void;
       /**
        * Lifecycle method called after the component is mounted.
        */
@@ -2368,6 +2007,12 @@ declare global {
        */
       useCallback(fn: () => any): any;
       /**
+       * Removes the current component from its direct parent's HTML elements array.
+       * If the component has a direct parent and the parent's HTML elements array contains the component,
+       * it will be removed from the array.
+       */
+      removeFromParent(): void;
+      /**
        * Initializes the component, preparing effect management.
        * For compatibility in case a standard element inherits this prototype; can manually execute this constructor.
        */
@@ -2455,7 +2100,7 @@ declare global {
      * ```
      */
     interface FunctionComponent<P = {}> {
-      (props: P, thisComponent?: Component<P>): ReblendNode;
+      (props: P): ReblendNode;
       /**
        * Used to declare the types of the props accepted by the
        * component. These types will be checked during rendering
@@ -2533,7 +2178,7 @@ declare global {
      * @see {@link ReblendTyping.FunctionComponent}
      */
     interface VoidFunctionComponent<P = {}> {
-      (props: P, thisComponent?: Component<P>): ReblendNode;
+      (props: P): ReblendNode;
       propTypes?: WeakValidationMap<P> | undefined;
       contextTypes?: ValidationMap<any> | undefined;
       /**
@@ -2566,7 +2211,7 @@ declare global {
      * @see {@link forwardRef}
      */
     interface ForwardRefRenderFunction<T, P = {}> {
-      (props: P, thisComponent?: Component<P>): ReblendNode;
+      (props: P): ReblendNode;
       /**
        * Used in debugging messages. You might want to set it
        * explicitly if you want to display a different name for
@@ -2602,7 +2247,7 @@ declare global {
      */
     interface ComponentClass<P = {}, S = ComponentState>
       extends StaticLifecycle<P, S> {
-      new (props: P, thisComponent?: Component<P>): Component<P, S>;
+      new (props: P): Component<P, S>;
       /**
        * Used to declare the types of the props accepted by the
        * component. These types will be checked during rendering
@@ -2654,10 +2299,7 @@ declare global {
      * @see {@link https://www.npmjs.com/package/create-reblend-class `create-reblend-class` on npm}
      */
     interface ClassicComponentClass<P = {}> extends ComponentClass<P> {
-      new (props: P, thisComponent?: Component<P>): ClassicComponent<
-        P,
-        ComponentState
-      >;
+      new (props: P): ClassicComponent<P, ComponentState>;
       getDefaultProps?(): P;
     }
     /**
@@ -2673,7 +2315,7 @@ declare global {
       P,
       T extends Component<P, ComponentState>,
       C extends ComponentClass<P>
-    > = C & (new (props: P, thisComponent?: Component<P>) => T);
+    > = C & (new (props: P) => T);
     interface ComponentLifecycle<P, S, SS = any>
       extends NewLifecycle<P, S, SS>,
         DeprecatedLifecycle<P, S> {
@@ -2881,14 +2523,10 @@ declare global {
      * ```
      */
     type CustomComponentPropsWithRef<T extends ComponentType> = T extends new (
-      props: infer P,
-      thisComponent?: Component<infer P>
+      props: infer P
     ) => Component<any, any>
       ? PropsWithoutRef<P> & RefAttributes<InstanceType<T>>
-      : T extends (
-          props: infer P,
-          thisComponent?: Component<infer P>
-        ) => ReblendNode
+      : T extends (props: infer P) => ReblendNode
       ? PropsWithRef<P>
       : never;
     /**

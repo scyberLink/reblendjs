@@ -15,7 +15,7 @@ export class PropertyUtil {
   static setProps(props: IAny, to: ReblendTyping.Component, init: boolean): void {
     if (props && to) {
       if (init && to.initProps) {
-        to.initProps(props, to)
+        to.initProps(props)
       } else {
         //@ts-expect-error I know its readonly
         to.props = { ...(to.props || {}), ...(props || {}) }

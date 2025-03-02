@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { REBLEND_PRIMITIVE_ELEMENT_NAME } from 'reblend-typing'
-import {
-  capitalize,
-  isCallable,
-  REBLEND_COMPONENT_ATTRIBUTE_NAME,
-  REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME,
-} from '../common/utils'
+import { capitalize, isCallable, REBLEND_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
 import { DiffUtil } from './DiffUtil'
 import { NodeUtil } from './NodeUtil'
 import { PropertyUtil } from './PropertyUtil'
@@ -96,12 +91,8 @@ export const ElementUtil = class {
       return
     }
 
-    if (NodeUtil.isStandard(node)) {
+    if (NodeUtil.isStandard(node) || NodeUtil.isReactToReblendRenderedNode(node)) {
       return node
-    }
-
-    if (NodeUtil.isReactToReblendRenderedNode(node)) {
-      return (node.reactElement && node?.reactElement[0])!
     }
 
     if (node._firstStandardElement && node._firstStandardElement.parentNode) {
@@ -204,9 +195,10 @@ export const ElementUtil = class {
       clazz.ELEMENT_NAME = capitalize(`${(displayName as unknown as ReactNode).displayName}`)
     }
 
-    const element: ReblendTyping.Component = ElementUtil.createElementWithNamespace(
-      isTagStandard ? (displayName as string) : 'div',
-    ) as ReblendTyping.Component
+    const element: ReblendTyping.Component =
+      isTagStandard || isReactNode
+        ? (ElementUtil.createElementWithNamespace(isTagStandard ? displayName : 'div') as ReblendTyping.Component)
+        : new clazz()
 
     NodeUtil.addSymbol(
       isReactNode ? 'ReactToReblendNode' : isTagStandard ? 'ReblendNodeStandard' : 'ReblendNode',
@@ -216,21 +208,21 @@ export const ElementUtil = class {
     element.displayName = tagName
     if (isReactNode) {
       element.ReactClass = displayName
+      NodeUtil.extendPrototype(element, Reblend.prototype)
+      NodeUtil.extendPrototype(element, ReblendReactClass.prototype)
+      element.setAttribute(REBLEND_WRAPPER_FOR_REACT_COMPONENT, '')
     }
     if (isTagStandard) {
       NodeUtil.extendPrototype(element, Reblend.prototype)
-    } else {
-      NodeUtil.extendPrototype(element, Reblend.prototype)
-      NodeUtil.extendPrototype(element, clazz.prototype)
     }
     element._constructor()
-    if (!isTagStandard) {
+    /* if (!isTagStandard) {
       if (isReactNode) {
         element.setAttribute(REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME, process?.env?.REBLEND_DEVELEOPMENT ? tagName : '')
       } else {
         element.setAttribute(REBLEND_COMPONENT_ATTRIBUTE_NAME, process?.env?.REBLEND_DEVELEOPMENT ? tagName : '')
       }
-    }
+    } */
 
     if (isTagStandard && 'ref' in (vNode as VNode).props) {
       if ((vNode as VNode).props.ref && !(vNode as VNode).props.ref.current) {

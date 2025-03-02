@@ -2,6 +2,7 @@
 import { REBLEND_PRIMITIVE_ELEMENT_NAME } from 'reblend-typing'
 import { isCallable } from '../common/utils'
 import { Reblend } from './Reblend'
+import { type BaseComponent } from './BaseComponent'
 
 type SymbolsType = {
   ReblendNode: symbol
@@ -31,6 +32,16 @@ export class NodeUtil {
 
     obj[symb] = true
     return obj[symb]
+  }
+
+  /**
+   * Checks if the given element has a name other than 'BaseComponent'.
+   *
+   * @param {typeof BaseComponent} element - The element to check.
+   * @returns {boolean} `true` if the element has a name and it is not 'BaseComponent', otherwise `false`.
+   */
+  static hasName(element: typeof BaseComponent): boolean {
+    return !!(element?.ELEMENT_NAME && element.ELEMENT_NAME !== 'BaseComponent')
   }
 
   /**

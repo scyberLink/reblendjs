@@ -77,15 +77,11 @@ export class NodeOperationUtil {
     if (!reblendElement?.htmlElements || !standardElement) {
       return
     }
-    new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+    //new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
 
     if (NodeUtil.isReactToReblendRenderedNode(reblendElement)) {
-      standardElement.removeChild = (node: any) => {
-        node?.remove()
-        return node
-      }
-      reblendElement.setReblendReactStandardContainer(standardElement)
-      reblendElement.reactReblendMount()
+      standardElement.appendChild(reblendElement)
+      reblendElement.reactReblendMount && reblendElement.reactReblendMount()
       return
     }
 
@@ -140,22 +136,15 @@ export class NodeOperationUtil {
     }
     !Array.isArray(newNode) && (newNode = [newNode])
     let lastInsertedNode: ReblendTyping.Component | null = null
-    let firstStandardElement: HTMLElement | undefined
+    let firstStandardElement: HTMLElement | null = null
 
     for (const n of newNode) {
-      new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+      //new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
       if (!NodeUtil.isReblendRenderedNodeStandard(n) && !NodeUtil.isReblendPrimitiveElement(n)) {
         n.nearestStandardParent = (lastInsertedNode || oldNode).parentElement as any
         if (NodeUtil.isReactToReblendRenderedNode(n)) {
-          const textNode = document.createTextNode('')
-          ;(lastInsertedNode || oldNode).after(textNode)
-          ;(lastInsertedNode || oldNode).parentElement &&
-            ((lastInsertedNode || oldNode).parentElement!.removeChild = (node: any) => {
-              node.remove()
-              return node
-            })
-          n.setReblendReactStandardContainer((lastInsertedNode || oldNode).parentElement!)
-          n.reactReblendMount(textNode as any)
+          ;(lastInsertedNode || oldNode)?.after(n)
+          n.reactReblendMount && n.reactReblendMount()
           //new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
         } else {
           lastInsertedNode = NodeOperationUtil.replaceOldNode(n.htmlElements!, lastInsertedNode || oldNode)
@@ -176,9 +165,9 @@ export class NodeOperationUtil {
           resolve()
         })
       }
-      new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+      //new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
     }
-    newNode.forEach((nn) => (nn.firstStandardElement = firstStandardElement))
+    newNode.forEach((nn) => (nn.firstStandardElement = firstStandardElement as any))
     return lastInsertedNode
   }
 
@@ -425,7 +414,7 @@ export class NodeOperationUtil {
             const standardParent = NodeUtil.isStandard(parent!)
               ? parent!
               : NodeUtil.isReactToReblendRenderedNode(parent)
-              ? parent!.reactElementChildrenParent! || parent!.nearestStandardParent!
+              ? parent!.childNodes[0]!
               : parent!.nearestStandardParent!
             if (standardParent) {
               for (const element of elements || []) {
@@ -435,10 +424,10 @@ export class NodeOperationUtil {
                     NodeOperationUtil.attachElementsAt(element, element, null)
                     resolve()
                   })
-                  element.nearestStandardParent = standardParent
+                  element.nearestStandardParent = standardParent as any
                   NodeOperationUtil.connected(element)
                 } else {
-                  NodeOperationUtil.attachElementsAt(standardParent, element, null)
+                  NodeOperationUtil.attachElementsAt(standardParent as any, element, null)
                 }
               }
             }
@@ -476,9 +465,6 @@ export class NodeOperationUtil {
 
               newNodeElements.unshift(firstNewNode as any)
               NodeOperationUtil.replaceOldNode(newNodeElements, oldNode!)
-              requestIdleCallback(() => {
-                oldNode?.disconnectedCallback && oldNode?.disconnectedCallback()
-              })
             })
           }
           break
@@ -541,8 +527,10 @@ export class NodeOperationUtil {
    */
   static replaceOperation(oldNode: ReblendTyping.Component, operation: () => void) {
     operation()
-    NodeOperationUtil.detachChildren(oldNode)
-    NodeOperationUtil.detach(oldNode)
+    requestIdleCallback(() => {
+      NodeOperationUtil.detach(oldNode)
+    })
+    //NodeOperationUtil.detachChildren(oldNode)
   }
 
   /**
@@ -560,8 +548,9 @@ export class NodeOperationUtil {
    * Lifecycle method called when the component is disconnected from the DOM.
    * Cleans up resources and removes the component from its parent.
    */
-  static disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P, S>) {
-    thiz.cleanUp()
+  static disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P, S>, fromCleanUp = false) {
+    !fromCleanUp && thiz.cleanUp()
+    thiz.removeFromParent && thiz.removeFromParent()
     thiz.componentWillUnmount()
     if (thiz.ref) {
       if (typeof thiz.ref === 'function') {
@@ -574,9 +563,10 @@ export class NodeOperationUtil {
     thiz.disconnectEffects?.forEach((fn) => fn())
     thiz.parentElement?.removeChild(thiz)
     ;(thiz.parentElement as any)?._removeChild && (thiz.parentElement as any)?._removeChild(thiz)
-    NodeOperationUtil.detachChildren(thiz as any)
-    thiz.reactElement?.forEach((node) => NodeOperationUtil.detach(node))
-    NodeOperationUtil.detach(thiz.reactElementChildrenParent!)
+    if (NodeUtil.isReblendRenderedNode(thiz)) {
+      NodeOperationUtil.detachChildren(thiz as any)
+    }
+    //thiz.reactElement?.forEach((node) => NodeOperationUtil.detach(node))
     //@ts-expect-error no worry
     thiz.props = null as any
     thiz.htmlElements = null as any

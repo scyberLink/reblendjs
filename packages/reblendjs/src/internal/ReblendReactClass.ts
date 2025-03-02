@@ -1,32 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-//@ts-expect-error might be missing
-import { type Root } from 'react-dom/client'
-//@ts-expect-error might be missing
-import ReactDOM from 'react-dom/client'
-import React from 'react'
-//@ts-expect-error might be missing
-import { createPortal, flushSync } from 'react-dom'
 import { ChildrenPropsUpdateType } from 'reblend-typing'
 import { NodeUtil } from './NodeUtil'
 import { NodeOperationUtil } from './NodeOperationUtil'
-import { REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME } from '../common/utils'
+import { REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
 
 /**
  * A static class that extends the functionality of `BaseComponent`
  * to provide integration with React and Reblend.
  */
 export class ReblendReactClass {
-  reactDomCreateRoot_root?: Root
-  props: any
-  reblendReactStandardContainer!: HTMLElement
-  childrenPropsUpdate!: any
-  htmlElements!: any
-  displayName!: string
-  reactElementChildrenParent!: HTMLElement
-  ReactClass: any
-  reactElement!: any
+  [x: string]: any
 
   /**
    * Returns the virtual node (VNode) or children VNodes of the component, used in React's render function.
@@ -35,25 +19,6 @@ export class ReblendReactClass {
    */
   html(): ReblendTyping.ReblendNode {
     return (this.props as any).children
-  }
-
-  /**
-   * Sets the container for rendering standard Reblend nodes and initializes the root React DOM.
-   *
-   * @param {HTMLElement} node - The HTML element to be set as the Reblend React standard container.
-   */
-  setReblendReactStandardContainer(node: HTMLElement): void {
-    this.reblendReactStandardContainer = node
-    this.initRoot()
-  }
-
-  /**
-   * Initializes the root for React DOM rendering if it has not been created already.
-   */
-  initRoot(): void {
-    if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
-      this.reactDomCreateRoot_root = ReactDOM.createRoot(this)
-    }
   }
 
   /**
@@ -89,56 +54,58 @@ export class ReblendReactClass {
    *
    * @returns {React.ReactElement} The React element representing the children wrapper for React.
    */
-  getChildrenWrapperForReact(): React.ReactElement {
-    const children = this.htmlElements || []
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const thiz = this
-    const displayName = this.displayName || ''
+  async getChildrenWrapperForReact(): Promise<React.ReactElement> {
+    let { default: React } = await import('react')
+
+    let children = this.htmlElements || []
+    let displayName = this.displayName || ''
+
     return React.createElement(
-      class extends React.Component {
-        containerRef: React.RefObject<HTMLDivElement>
-
-        constructor(props) {
-          super(props)
-          this.containerRef = React.createRef()
-        }
-
-        componentDidMount(): void {
-          if (this.containerRef.current) {
-            const standardParent: HTMLElement = this.containerRef.current.parentElement!
-            thiz.reactElementChildrenParent = standardParent
-            let _afterNode: HTMLElement = this.containerRef.current
+      'div',
+      {
+        [REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT]: displayName,
+        ref: (node) => {
+          if (node) {
+            if (node.refAttached) {
+              return
+            }
             for (const child of children || []) {
               if (NodeUtil.isStandard(child)) {
-                _afterNode.after(child)
-                _afterNode = child
-                new Promise<void>((resolve) => {
-                  NodeOperationUtil.attachElementsAt(child, child, null)
-                  resolve()
-                })
+                node.appendChild(child)
+                Promise.resolve().then(() => NodeOperationUtil.attachElementsAt(child, child, null))
               } else {
-                _afterNode = NodeOperationUtil.attachElementsAt(standardParent!, child, _afterNode) || _afterNode
+                NodeOperationUtil.attachElementsAt(node!, child, null)
               }
             }
-            standardParent?.removeChild(this.containerRef.current!)
-            delete (standardParent as any).removeChild
-            ;(standardParent as any).removeChild = () => {}
-            ;(<any>standardParent)._removeChild = (node) => HTMLElement.prototype.removeChild.call(standardParent, node)
-          }
-        }
-
-        render() {
-          return React.createElement(
-            'div',
-            {
-              [REBLEND_CHILDREN_WRAPPER_FOR__ATTRIBUTE_NAME]: displayName,
-              ref: this.containerRef,
-            },
-            null,
-          )
-        }
+            node.refAttached = true
+          } /* else {
+            if (child.disconnectedCallback) {
+              child.disconnectedCallback()
+            } else if (child.remove) {
+              child.remove()
+            }
+          } */
+          /* if (!node) {
+            children = undefined as any
+            displayName = undefined as any
+            React = undefined as any
+          } */
+        },
       },
+      null,
     )
+  }
+
+  /**
+   * Initializes the root for React DOM rendering if it has not been created already.
+   */
+  async initRoot() {
+    //@ts-expect-error might be missing
+    const { default: ReactDOM } = await import('react-dom/client')
+
+    if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
+      this.reactDomCreateRoot_root = ReactDOM.createRoot(this)
+    }
   }
 
   /**
@@ -147,99 +114,39 @@ export class ReblendReactClass {
    *
    * @protected
    */
-  reactReblendMount(replacementAfterNode?: HTMLElement): void {
-    this.catchErrorFrom(() => {
-      if (!this.reblendReactStandardContainer || !this.ReactClass) {
-        return
-      }
-      this.initRoot()
+  async reactReblendMount() {
+    //@ts-expect-error might be missing
+    const { flushSync } = await import('react-dom')
+    const { default: React } = await import('react')
 
-      const warn = window.console.warn
-      const error = window.console.error
-      const log = window.console.log
+    if (!this.ReactClass) {
+      return
+    }
 
-      window.console.warn = () => {}
-      window.console.error = () => {}
-      window.console.log = () => {}
+    const children = await this.getChildrenWrapperForReact()
 
-      flushSync(() => {
-        this.reactDomCreateRoot_root?.render(
-          createPortal(
-            React.createElement('div', {
-              ref: (node) => {
-                if ((node as any)?.refRunned) {
-                  return
-                }
-                let childNodes = Array.from(node?.childNodes || [])
-                if (node) {
-                  if (replacementAfterNode) {
-                    replacementAfterNode.after(node)
-                  }
-                  this.reactElement = []
-                  let afterNode = node
-                  const parent = node.parentElement
-                  for (const child of childNodes) {
-                    afterNode?.after(child)
-                    afterNode = child as any
-                    this.reactElement.push(child as any)
-                  }
-                  node.appendChild = (n: any) => {
-                    const _afterNode = [...(this.reactElement || [])]
-                      .reverse()
-                      .find((reverseNode) => !!reverseNode.parentElement)
-                    if (_afterNode) {
-                      _afterNode?.after(n)
-                    } else {
-                      parent?.appendChild(n)
-                    }
-                    this.reactElement?.push(n)
-                    return n
-                  }
-                  node.removeChild = (n: any) => {
-                    n.remove()
-                    const indexOfNInReactElement = this.reactElement?.indexOf(n!)
+    await this.initRoot()
 
-                    if (indexOfNInReactElement! > -1) {
-                      // Remove the old node
-                      this.reactElement?.splice(indexOfNInReactElement!, 1)
-                    }
-                    return n
-                  }
-                  node?.remove()
-                  if (replacementAfterNode) {
-                    replacementAfterNode.remove()
-                  }
-                  ;(node as any).refRunned = true
-                } else {
-                  childNodes.forEach((child) => {
-                    const indexOfNInReactElement = this.reactElement?.indexOf(child as any)
+    //const warn = window.console.warn
+    //const error = window.console.error
+    //const log = window.console.log
 
-                    if (indexOfNInReactElement! > -1) {
-                      // Remove the old node
-                      this.reactElement?.splice(indexOfNInReactElement!, 1)
-                    }
-                  })
-                  childNodes = null as any
-                }
-              },
-              style: { display: 'none' },
-              children: React.createElement(this.ReactClass, {
-                ...this.props,
-                children: !(this.props as any)?.children?.length ? undefined : this.getChildrenWrapperForReact(),
-              }),
-            }),
-            this.reblendReactStandardContainer,
-          ),
-        )
-      })
+    //window.console.warn = () => {}
+    //window.console.error = () => {}
+    //window.console.log = () => {}
 
-      window.console.warn = warn
-      window.console.error = error
-      window.console.log = log
+    flushSync(() => {
+      this.reactDomCreateRoot_root?.render(
+        React.createElement(this.ReactClass, {
+          ...this.props,
+          children: !(this.props as any)?.children?.length ? undefined : children,
+        }),
+      )
     })
-  }
-  catchErrorFrom(_arg0: () => void) {
-    throw new Error('Method not implemented.')
+
+    //window.console.warn = warn
+    //window.console.error = error
+    //window.console.log = log
   }
 
   /**
@@ -249,7 +156,8 @@ export class ReblendReactClass {
   cleanUp(): void {
     this.reactDomCreateRoot_root?.unmount()
     this.reactDomCreateRoot_root = null as any
-    //@ts-expect-error nothing
-    super.cleanUp()
+    this.disconnectedCallback && this.disconnectedCallback(true)
+    /* //@ts-expect-error nothing
+    super.cleanUp() */
   }
 }
