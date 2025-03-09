@@ -199,3 +199,4 @@ export const isCallable = (obj: any) => {
 export const REBLEND_COMPONENT = 'reblendcomponent'
 export const REBLEND_WRAPPER_FOR_REACT_COMPONENT = 'reblendwrapperforreactcomponent'
 export const REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT = 'reblendchildrenwrapperforreactcomponent'
+export const CUSTOM_TAGNAME = 'customTagName'

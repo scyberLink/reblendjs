@@ -3,7 +3,9 @@
 import { ChildrenPropsUpdateType } from 'reblend-typing'
 import { NodeUtil } from './NodeUtil'
 import { NodeOperationUtil } from './NodeOperationUtil'
-import { REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
+import { REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT, REBLEND_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
+import { ElementUtil } from './ElementUtil'
+import { Reblend } from './Reblend'
 
 /**
  * A static class that extends the functionality of `BaseComponent`
@@ -55,41 +57,34 @@ export class ReblendReactClass {
    * @returns {React.ReactElement} The React element representing the children wrapper for React.
    */
   async getChildrenWrapperForReact(): Promise<React.ReactElement> {
-    let { default: React } = await import('react')
-
-    let children = this.htmlElements || []
-    let displayName = this.displayName || ''
-
-    return React.createElement(
+    return (await import('react')).default.createElement(
       'div',
       {
-        [REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT]: displayName,
-        ref: (node) => {
+        [REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT]: this.displayName || '',
+        ref: async (node: HTMLElement & { childrenAttached?: boolean }) => {
           if (node) {
-            if (node.refAttached) {
-              return
+            if (!node.childrenAttached) {
+              NodeUtil.extendPrototype(node, Reblend.prototype)
+              node.childrenAttached = true
             }
+
+            const children = this.reactElementChildren || []
+
             for (const child of children || []) {
-              if (NodeUtil.isStandard(child)) {
+              if (!node.contains(child)) {
                 node.appendChild(child)
-                Promise.resolve().then(() => NodeOperationUtil.attachElementsAt(child, child, null))
-              } else {
-                NodeOperationUtil.attachElementsAt(node!, child, null)
+                setTimeout(() => NodeOperationUtil.connected(child), 0)
               }
             }
-            node.refAttached = true
-          } /* else {
-            if (child.disconnectedCallback) {
-              child.disconnectedCallback()
-            } else if (child.remove) {
+            this.reactElementChildrenWrapper = node
+          } else {
+            const children = this.reactElementChildren || []
+            for (const child of children || []) {
               child.remove()
             }
-          } */
-          /* if (!node) {
-            children = undefined as any
-            displayName = undefined as any
-            React = undefined as any
-          } */
+            //NodeOperationUtil.detach(thiz.reactElementChildrenWrapper)
+            this.reactElementChildrenWrapper = null
+          }
         },
       },
       null,
@@ -100,11 +95,10 @@ export class ReblendReactClass {
    * Initializes the root for React DOM rendering if it has not been created already.
    */
   async initRoot() {
-    //@ts-expect-error might be missing
     const { default: ReactDOM } = await import('react-dom/client')
 
     if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
-      this.reactDomCreateRoot_root = ReactDOM.createRoot(this)
+      this.reactDomCreateRoot_root = ReactDOM.createRoot(this as any)
     }
   }
 
@@ -115,15 +109,14 @@ export class ReblendReactClass {
    * @protected
    */
   async reactReblendMount() {
-    //@ts-expect-error might be missing
-    const { flushSync } = await import('react-dom')
     const { default: React } = await import('react')
 
     if (!this.ReactClass) {
       return
     }
 
-    const children = await this.getChildrenWrapperForReact()
+    const children =
+      !this.props?.children || !this.props?.children?.length ? undefined : await this.getChildrenWrapperForReact()
 
     await this.initRoot()
 
@@ -135,14 +128,15 @@ export class ReblendReactClass {
     //window.console.error = () => {}
     //window.console.log = () => {}
 
-    flushSync(() => {
-      this.reactDomCreateRoot_root?.render(
-        React.createElement(this.ReactClass, {
+    this.reactDomCreateRoot_root?.render(
+      React.createElement(
+        this.ReactClass,
+        {
           ...this.props,
-          children: !(this.props as any)?.children?.length ? undefined : children,
-        }),
-      )
-    })
+        },
+        children,
+      ),
+    )
 
     //window.console.warn = warn
     //window.console.error = error
@@ -156,7 +150,6 @@ export class ReblendReactClass {
   cleanUp(): void {
     this.reactDomCreateRoot_root?.unmount()
     this.reactDomCreateRoot_root = null as any
-    this.disconnectedCallback && this.disconnectedCallback(true)
     /* //@ts-expect-error nothing
     super.cleanUp() */
   }

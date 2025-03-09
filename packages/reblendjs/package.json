@@ -39,6 +39,8 @@
     "@babel/cli": "^7.25.7",
     "@babel/core": "^7.25.8",
     "@types/lodash": "^4.17.10",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
     "babel-preset-reblend": "latest",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
@@ -56,7 +58,7 @@
     "lodash": "^4.17.21",
     "reblend-typing": "^3.1.1"
   },
-  "optionalPeerDependencies": {
+  "peerDependencies": {
     "react": ">=18.3.1",
     "react-dom": ">=18.3.1"
   },

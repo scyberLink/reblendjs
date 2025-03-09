@@ -1,6 +1,5 @@
 import Reblend from 'reblendjs';
 import { setHistory } from '../contexts/history';
-import { ReblendTyping } from '../../../reblend-typing/lib';
 
 function Link({
   to,

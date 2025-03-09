@@ -13,7 +13,8 @@
     "dist"
   ],
   "dependencies": {
-    "reblend-routing": "latest"
+    "reblend-routing": "latest",
+    "reblendjs": "latest"
   },
   "scripts": {
     "build": "rm -rf dist; rm -rf lib; tsc && babel dist --out-dir lib",
@@ -36,9 +37,6 @@
     "@babel/core": "^7.25.8",
     "babel-preset-reblend": "latest",
     "typescript": "^4.9.5"
-  },
-  "optionalPeerDependencies": {
-    "reblendjs": "latest"
   },
   "gitHead": "85dfd12b2cebdc65e8159598aa1604b415db4352"
 }

@@ -717,9 +717,11 @@ declare global {
      * The value used to update the state, which can be either a new value directly or a function that computes the new value based on the previous state.
      *
      * @template T
-     * @typedef {(previous: T) => T | T} StateFunctionValue
      */
-    type StateFunctionValue<T> = ((previous: T) => T) | T;
+    type StateFunctionValue<T> =
+      | ((previous: T) => T | Promise<T>)
+      | T
+      | Promise<T>;
     /**
      * A function that returns a memoized value, which is recalculated only when dependencies change.
      *
@@ -727,14 +729,14 @@ declare global {
      * @callback StateEffectiveMemoFunction
      * @returns {T} - The memoized value.
      */
-    type StateEffectiveMemoFunction<T> = () => T;
+    type StateEffectiveMemoFunction<T> = () => T | Promise<T>;
     /**
      * A function that can return a cleanup function or nothing, commonly used in effect hooks.
      *
      * @callback StateEffectiveFunction
      * @returns {(() => any) | void} - A cleanup function or void if no cleanup is necessary.
      */
-    type StateEffectiveFunction = () => (() => any) | void;
+    type StateEffectiveFunction = () => (() => void) | void;
     /**
      * A reducer function that takes a previous value and an incoming value, and returns a new value. This is often used in state management patterns like `useReducer`.
      *
@@ -1635,7 +1637,7 @@ declare global {
       extends ComponentLifecycle<P, S, SS> {}
     class Component<P, S> extends HTMLElement {
       constructor();
-      html(): ReblendNode;
+      html(): Promise<ReblendNode>;
       readonly props: Readonly<P>;
       /**
        * Used to identify the component, similar to `displayName`.
@@ -1694,9 +1696,17 @@ declare global {
        */
       [reblendComponent: symbol]: boolean;
       /**
-       * The element for React and Reblend integration.
+       * This holds HTMLElements that suppose to be react children
        */
-      reactElement: HTMLElement[] | null;
+      reactElementChildren: Set<HTMLElement> | null;
+      /**
+       * This is a wrapper for the react element children
+       */
+      reactElementChildrenWrapper: Component<any, any> | null;
+      /**
+       * This denote when current component children has been initialized
+       */
+      childrenInitialize: boolean;
       /**
        * The selector string for querying elements by data ID.
        */
@@ -1722,9 +1732,9 @@ declare global {
        */
       ref: ReblendTyping.Ref<HTMLElement> | ((node: HTMLElement) => any);
       /**
-       * The direct parent of this component.
+       * This hold effects functions
        */
-      directParent: this | undefined;
+      effectState: { [key: string]: (state?: any) => any };
       /**
        * The effects to apply when the component is mounted.
        */
@@ -1750,6 +1760,10 @@ declare global {
        */
       stateEffectRunning: boolean;
       /**
+       * The parent of this component
+       */
+      directParent: Component<any, any>;
+      /**
        * Indicates when first time effects are being called.
        */
       mountingEffects: boolean;
@@ -1762,21 +1776,13 @@ declare global {
        */
       hasDisconnected: boolean;
       /**
-       * The HTML elements managed by this component.
-       */
-      htmlElements?: Component[];
-      /**
        * Set of update types for children properties.
        */
       childrenPropsUpdate?: Set<ChildrenPropsUpdateType>;
       /**
-       * The first standard element, if available.
-       */
-      _firstStandardElement?: HTMLElement | undefined;
-      /**
        * The component's state.
        */
-      _state: Readonly<S>;
+      state: S;
       /**
        * Lifecycle method for mounting the component in React.
        */
@@ -1786,39 +1792,9 @@ declare global {
        */
       populateHtmlElements(): any;
       /**
-       * Gets the first standard element if available, otherwise retrieves it from the component tree.
-       *
-       * @returns {HTMLElement | undefined} The first standard element or undefined.
-       */
-      get firstStandardElement(): HTMLElement | undefined;
-      /**
-       * Sets the first standard element.
-       *
-       * @param {HTMLElement | undefined} value - The new first standard element.
-       */
-      set firstStandardElement(value: HTMLElement | undefined);
-      /**
-       * Retrieves attachable elements from the component.
-       *
-       * @returns {Component[]} The attachable elements.
-       */
-      getAttachableElements(): any;
-      /**
        * Callback invoked when the component is connected to the DOM.
        */
       connectedCallback(): any;
-      /**
-       * Appends multiple child elements to the component.
-       *
-       * @param {...(HTMLElement | Component)[]} children - The child elements to append.
-       */
-      appendChildren(...children: (HTMLElement | Component)[]): any;
-      /**
-       * Appends one or more nodes to the component.
-       *
-       * @param {...(Node | string)[]} nodes - The nodes or string content to append.
-       */
-      append(...nodes: Array<Node | string>): void;
       /**
        * Adds a disconnect effect function to be executed when the component is disconnected.
        *
@@ -1865,35 +1841,23 @@ declare global {
       /**
        * Initializes the component's state.
        */
-      initState(): any;
+      initState(): Promise<any>;
       /**
        * Initializes the component's properties.
        *
        * @param {P} props - The properties to set on the component.
        */
-      initProps(props: P): void;
+      initProps(props: P): Promise<void>;
       /**
        * Lifecycle method called after the component is mounted.
        */
       componentDidMount(): any;
       /**
-       * Gets the current state of the component.
-       *
-       * @returns {Readonly<S>} The current state object.
-       */
-      get state(): Readonly<S>;
-      /**
-       * Sets the state of the component.
-       *
-       * @param {ReblendTyping.StateFunctionValue<S>} value - The new state value.
-       */
-      set state(value: ReblendTyping.StateFunctionValue<S>);
-      /**
        * Sets the state of the component using the setter.
        *
-       * @param {ReblendTyping.StateFunctionValue<S>} value - The new state value.
+       * @param {S} value - The new state value.
        */
-      setState(value: ReblendTyping.StateFunctionValue<S>): any;
+      setState(value: S): any;
       /**
        * Applies effects defined in the component, executing them in order.
        */
@@ -1919,7 +1883,7 @@ declare global {
        * Returns the virtual DOM structure. Must be implemented by subclasses.
        * @returns {VNode | VNodeChildren} The virtual DOM nodes.
        */
-      html(): ReblendTyping.ReblendNode;
+      html(): Promise<ReblendTyping.ReblendNode>;
       /**
        * Mounts effects defined in the component, executing them and storing disconnect functions.
        * @
@@ -2007,24 +1971,10 @@ declare global {
        */
       useCallback(fn: () => any): any;
       /**
-       * Removes the current component from its direct parent's HTML elements array.
-       * If the component has a direct parent and the parent's HTML elements array contains the component,
-       * it will be removed from the array.
-       */
-      removeFromParent(): void;
-      /**
        * Initializes the component, preparing effect management.
        * For compatibility in case a standard element inherits this prototype; can manually execute this constructor.
        */
       _constructor(): any;
-      /**
-       * Appends a child node to the component, ensuring it is connected properly.
-       *
-       * @template T - The type of the node being appended.
-       * @param {T} node - The node to append.
-       * @returns {T} The appended node.
-       */
-      _appendChild<T extends Node>(node: T): T;
     }
     class PureComponent<P = {}, S = {}, SS = any> extends Component<P, S, SS> {}
     /**

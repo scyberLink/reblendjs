@@ -260,7 +260,7 @@ class Reblend<P = {}, S = {}> extends BaseComponent<P, S> {
     super()
   }
 
-  html() {
+  async html() {
     return this?.props?.children
   }
 }

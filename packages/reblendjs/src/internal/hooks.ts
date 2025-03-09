@@ -5,6 +5,7 @@ import { isEqual } from 'lodash'
 import { BaseComponent } from './BaseComponent'
 import { SharedConfig } from '../common/SharedConfig'
 import { rand } from '../common/utils'
+import { NodeUtil } from './NodeUtil'
 
 const contextValue = Symbol('Reblend.contextValue')
 const contextInnerValue = Symbol('Reblend.contextInnerValue')
@@ -44,7 +45,7 @@ type ContextSubriber = {
  *
  * @template T - The type of the context value.
  * @typedef {object} Context<T>
- * @property {Array<ContextSubriber>} [contextSubscribers] - Array of components subscribed to this context and their state keys.
+ * @property {Set<ContextSubriber>} [contextSubscribers] - Array of components subscribed to this context and their state keys.
  * @property {T} [contextValue] - The current value of the context.
  * @property {T} [contextValueInitial] - The initial value of the context.
  * @property {T} [contextInnerValue] - The actual stored value, potentially synced with cache.
@@ -56,7 +57,7 @@ type ContextSubriber = {
  * @property {Function} [contextSubscribe] - Subscribes a component to this context with a given state key.
  */
 export type Context<T> = {
-  [contextSubscribers]: ContextSubriber[]
+  [contextSubscribers]: Set<ContextSubriber>
   [contextValue]: T
   [contextValueInitial]: T
   [contextInnerValue]: T
@@ -215,7 +216,7 @@ export function useContext<T>(
  */
 export function createContext<T>(initial: T, cacheOption?: CacheOption): Context<T> {
   const context: Context<T> = {
-    [contextSubscribers]: [],
+    [contextSubscribers]: new Set(),
     [contextSubscriberModificationTracker]: [],
     [contextInnerValue]: (() => {
       if (!(cacheOption && cacheOption.type && cacheOption.key)) {
@@ -259,51 +260,47 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
       return context[contextInnerValue]
     },
     async update(updateValue: ReblendTyping.StateFunctionValue<T>, force = false) {
-      const newValue =
-        typeof updateValue === 'function' ? (updateValue as (v: T) => T)(context[contextValue]) : updateValue
-      if (force || !isEqual(newValue, context[contextValue])) {
+      let newValue: T = updateValue as T
+      if (typeof updateValue === 'function') {
+        newValue = await (updateValue as (v: T) => T)(context[contextValue])
+      } else if (updateValue instanceof Promise) {
+        newValue = await updateValue
+      }
+      if (force || newValue !== context[contextValue]) {
         context[contextValue] = newValue
         const updateId = rand(123456789, 987654321)
         context[contextSubscriberModificationTracker].unshift(updateId)
-        const alreadyDisconnected: BaseComponent[] = []
         for (const { component, stateKey } of context[contextSubscribers]) {
           if (context[contextSubscriberModificationTracker][0] === updateId) {
-            component[stateKey] = context[contextValue]
-            if (!component.hasDisconnected) {
-              if (component.attached) {
-                component.onStateChange && (await component.onStateChange())
-              }
-            } else {
-              alreadyDisconnected.push(component)
+            component.state[stateKey] = context[contextValue]
+            if (component.attached) {
+              await component.onStateChange()
             }
           } else {
             context[contextSubscriberModificationTracker] = []
             break
           }
         }
-
-        for (const disco of alreadyDisconnected) {
-          context[contextSubscribers] = context[contextSubscribers].filter((sub) => sub.component !== disco)
-        }
-
         return true
       }
       return false
     },
     [contextSubscribe](subscriber) {
-      if (!subscriber.component) {
-        throw new Error('Invalid component')
+      if (!subscriber.component || NodeUtil.isPrimitive(subscriber.component)) {
+        throw new Error('Invalid component or object')
       }
       if (!subscriber.stateKey) {
         throw new Error('Invalid state key')
       }
       const destructor = () => {
-        context[contextSubscribers] = context[contextSubscribers].filter(
-          (subs) => subs.component !== subscriber.component,
-        )
+        context[contextSubscribers].delete(subscriber)
       }
-      context[contextSubscribers].push(subscriber)
-      subscriber.component.addDisconnectedEffect && subscriber.component.addDisconnectedEffect(destructor)
+      context[contextSubscribers].add(subscriber)
+      if (subscriber.component instanceof Node) {
+        subscriber.component.addDisconnectedEffect(destructor)
+      } else if ((subscriber.component as any).addDisconnectedEffect) {
+        ;(subscriber.component as any).addDisconnectedEffect(destructor)
+      }
     },
     [contextValueInitial]: initial,
     reset() {

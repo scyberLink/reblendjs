@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { REBLEND_PRIMITIVE_ELEMENT_NAME } from 'reblend-typing'
-import { capitalize, isCallable, REBLEND_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
+import { capitalize, isCallable, REBLEND_COMPONENT, REBLEND_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
 import { DiffUtil } from './DiffUtil'
 import { NodeUtil } from './NodeUtil'
 import { PropertyUtil } from './PropertyUtil'
@@ -81,41 +81,6 @@ export const ElementUtil = class {
   }
 
   /**
-   * Retrieves the first standard element from a node, traversing its children if necessary.
-   *
-   * @param {ReblendTyping.Component} node - The starting node to search from.
-   * @returns {HTMLElement | undefined} The first standard HTML element found, or `undefined` if none is found.
-   */
-  static getFirstStandardElementFrom(node: ReblendTyping.Component): HTMLElement | undefined {
-    if (!node) {
-      return
-    }
-
-    if (NodeUtil.isStandard(node) || NodeUtil.isReactToReblendRenderedNode(node)) {
-      return node
-    }
-
-    if (node._firstStandardElement && node._firstStandardElement.parentNode) {
-      return node._firstStandardElement
-    }
-
-    for (const child of node.htmlElements || []) {
-      if (NodeUtil.isStandard(child)) {
-        if (NodeUtil.isReactToReblendRenderedNode(child.directParent)) {
-          return child.parentElement!
-        }
-        return child
-      }
-
-      const found = ElementUtil.getFirstStandardElementFrom(child)
-
-      if (found) {
-        return found
-      }
-    }
-  }
-
-  /**
    * Creates child nodes from the given VNode children and appends them to the container array.
    * Supports nested arrays, Sets, and various node types such as Reblend, DOM Nodes, React Nodes, and primitive values.
    *
@@ -123,10 +88,10 @@ export const ElementUtil = class {
    * @param {(ReblendTyping.Component | HTMLElement)[]} [containerArr=[]] - The array to store the created child nodes.
    * @returns {(ReblendTyping.Component | HTMLElement)[]} The array containing the created child nodes.
    */
-  static createChildren(
+  static async createChildren(
     children: VNodeChildren,
     containerArr: (ReblendTyping.Component | HTMLElement)[] = [],
-  ): (ReblendTyping.Component | HTMLElement)[] {
+  ): Promise<(ReblendTyping.Component | HTMLElement)[]> {
     if (!children) {
       return containerArr
     }
@@ -146,7 +111,7 @@ export const ElementUtil = class {
         NodeUtil.isReblendVirtualNode(child) ||
         NodeUtil.isStandardVirtualNode(child)
       ) {
-        const domChild = DiffUtil.deepFlat(ElementUtil.createElement(child as any))
+        const domChild = DiffUtil.deepFlat(await ElementUtil.createElement(child as any))
         domChild && containerArr.push(...domChild)
       } else {
         throw new TypeError('Invalid child node in children')
@@ -162,7 +127,7 @@ export const ElementUtil = class {
    * @param {VNode | VNode[] | ReactNode | Primitive} vNode - The virtual node or primitive to create an element from.
    * @returns {ReblendTyping.Component[]} The created `BaseComponent` instances.
    */
-  static createElement(vNode: VNode | VNode[] | ReactNode | Primitive): ReblendTyping.Component[] {
+  static async createElement(vNode: VNode | VNode[] | ReactNode | Primitive): Promise<ReblendTyping.Component[]> {
     if (vNode instanceof Reblend || vNode instanceof Node) {
       if (!(vNode as any).displayName) {
         ;(vNode as any).displayName = capitalize((vNode as any as HTMLElement).tagName)
@@ -173,7 +138,7 @@ export const ElementUtil = class {
       return [vNode as any]
     }
     if (Array.isArray(vNode)) {
-      return ElementUtil.createChildren(vNode) as any
+      return (await ElementUtil.createChildren(vNode)) as any
     }
     if (NodeUtil.isPrimitive(vNode)) {
       return [ElementUtil.newReblendPrimitive().setData(vNode as Primitive)]
@@ -195,34 +160,33 @@ export const ElementUtil = class {
       clazz.ELEMENT_NAME = capitalize(`${(displayName as unknown as ReactNode).displayName}`)
     }
 
-    const element: ReblendTyping.Component =
-      isTagStandard || isReactNode
-        ? (ElementUtil.createElementWithNamespace(isTagStandard ? displayName : 'div') as ReblendTyping.Component)
-        : new clazz()
+    const element: ReblendTyping.Component = ElementUtil.createElementWithNamespace(
+      isTagStandard ? displayName : 'div',
+    ) as ReblendTyping.Component
 
     NodeUtil.addSymbol(
       isReactNode ? 'ReactToReblendNode' : isTagStandard ? 'ReblendNodeStandard' : 'ReblendNode',
       element,
     )
-
     element.displayName = tagName
+    if (isTagStandard || isReactNode) {
+      NodeUtil.extendPrototype(element, Reblend.prototype)
+    } else {
+      NodeUtil.extendPrototype(element, clazz.prototype)
+    }
     if (isReactNode) {
       element.ReactClass = displayName
-      NodeUtil.extendPrototype(element, Reblend.prototype)
       NodeUtil.extendPrototype(element, ReblendReactClass.prototype)
-      element.setAttribute(REBLEND_WRAPPER_FOR_REACT_COMPONENT, '')
-    }
-    if (isTagStandard) {
-      NodeUtil.extendPrototype(element, Reblend.prototype)
     }
     element._constructor()
-    /* if (!isTagStandard) {
+    if (!isTagStandard) {
+      const isProduction = process.env.REBLEND_ENVIRONEMENT_PRODUCTION
       if (isReactNode) {
-        element.setAttribute(REBLEND_WRAPPER_FOR__ATTRIBUTE_NAME, process?.env?.REBLEND_DEVELEOPMENT ? tagName : '')
+        element.setAttribute(REBLEND_WRAPPER_FOR_REACT_COMPONENT, isProduction ? '' : tagName)
       } else {
-        element.setAttribute(REBLEND_COMPONENT_ATTRIBUTE_NAME, process?.env?.REBLEND_DEVELEOPMENT ? tagName : '')
+        element.setAttribute(REBLEND_COMPONENT, isProduction ? '' : tagName)
       }
-    } */
+    }
 
     if (isTagStandard && 'ref' in (vNode as VNode).props) {
       if ((vNode as VNode).props.ref && !(vNode as VNode).props.ref.current) {
@@ -242,9 +206,15 @@ export const ElementUtil = class {
       }
     }
 
-    PropertyUtil.setProps((vNode as VNode).props, element, true)
+    if (NodeUtil.isStandard(element)) {
+      await PropertyUtil.setProps((vNode as VNode).props, element, true)
+      await element.populateHtmlElements()
+    } else {
+      PropertyUtil.setProps((vNode as VNode).props, element, true).finally(() => {
+        element.populateHtmlElements()
+      })
+    }
 
-    element.populateHtmlElements()
     return [element]
   }
 

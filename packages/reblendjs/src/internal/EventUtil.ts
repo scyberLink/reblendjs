@@ -7,6 +7,6 @@ export class EventUtil {
    * @returns {(e: Event) => void} A function that invokes the event callback.
    */
   static fn(eventCallback: (e: Event) => any = () => {}): (e: Event) => void {
-    return async (e) => requestAnimationFrame(() => eventCallback && eventCallback(e))
+    return async (e) => eventCallback && eventCallback(e)
   }
 }

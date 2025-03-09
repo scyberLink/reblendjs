@@ -12,49 +12,51 @@ export class PropertyUtil {
    * @param {ReblendTyping.Component} to - The target component to apply the properties to.
    * @param {boolean} init - Whether this is an initial setting of properties.
    */
-  static setProps(props: IAny, to: ReblendTyping.Component, init: boolean): void {
-    if (props && to) {
-      if (init && to.initProps) {
-        to.initProps(props)
-      } else {
-        //@ts-expect-error I know its readonly
-        to.props = { ...(to.props || {}), ...(props || {}) }
-      }
+  static async setProps(props: IAny, to: ReblendTyping.Component, init: boolean) {
+    if (!props || !to) {
+      return
+    }
 
-      if (NodeUtil.isReblendRenderedNodeStandard(to)) {
-        for (const propName in props) {
-          const _attributeName = attributeName(propName)
-          const propValue = props[propName]
-          if (propName == 'dangerouslySetInnerHTML') {
-            to.innerHTML = propValue?.__html
-          } else if (propName.startsWith('on')) {
-            to[_attributeName] = EventUtil.fn(propValue) as any
+    if (init && to.initProps) {
+      await to.initProps(props)
+    } else {
+      //@ts-expect-error I know its readonly
+      to.props = { ...(to.props || {}), ...(props || {}) }
+    }
+
+    if (NodeUtil.isReblendRenderedNodeStandard(to)) {
+      for (const propName in props) {
+        const _attributeName = attributeName(propName)
+        const propValue = props[propName]
+        if (propName == 'dangerouslySetInnerHTML') {
+          to.innerHTML = propValue?.__html
+        } else if (propName.startsWith('on')) {
+          to[_attributeName] = EventUtil.fn(propValue) as any
+        } else {
+          if (_attributeName === 'style') {
+            to.addStyle(propValue)
           } else {
-            if (_attributeName === 'style') {
-              to.addStyle(propValue)
-            } else {
-              const _shouldUseSetAttribute = shouldUseSetAttribute(_attributeName)
-              try {
-                if (_shouldUseSetAttribute) {
-                  ElementUtil.setAttributesWithNamespace(to, {
-                    [_attributeName]: propValue,
-                  })
-                } else {
-                  to[_attributeName] = propValue
-                }
-              } catch (error: any) {
-                /* empty */
+            const _shouldUseSetAttribute = shouldUseSetAttribute(_attributeName)
+            try {
+              if (_shouldUseSetAttribute) {
+                ElementUtil.setAttributesWithNamespace(to, {
+                  [_attributeName]: propValue,
+                })
+              } else {
+                to[_attributeName] = propValue
               }
+            } catch (error: any) {
+              /* empty */
             }
           }
         }
       }
+    }
 
-      if (init && to.initState) {
-        to.initStateRunning = true
-        to.initState()
-        to.initStateRunning = false
-      }
+    if (init && to.initState) {
+      to.initStateRunning = true
+      await to.initState()
+      to.initStateRunning = false
     }
   }
 
