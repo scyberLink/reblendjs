@@ -213,7 +213,10 @@ export class NodeOperationUtil {
           newProp = JSON.stringify(newProp)
         }
 
-        if (oldProp !== newProp) {
+        if (
+          oldProp !== newProp ||
+          (oldNode.displayName === 'select' && key === 'value' && oldNode['value'] !== newProp)
+        ) {
           oldProp = null
           newProp = null
           patches.push({

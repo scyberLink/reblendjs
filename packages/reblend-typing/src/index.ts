@@ -1763,7 +1763,12 @@ declare global {
       /**
        * This hold effects functions
        */
-      effectState: { [key: string]: Primitive | Array<Primitive> };
+      effectState: {
+        [key: string]: {
+          cache: Primitive | Array<Primitive>;
+          cacher: () => Primitive | Array<Primitive>;
+        };
+      };
       /**
        * The effects to apply when the component is mounted.
        */
@@ -1880,10 +1885,14 @@ declare global {
        */
       catchErrorFrom(fn: () => void): void;
       /**
+       * Recache effect functions dependencies, useful in cases where rendering is skipped because of previous unfinished rendering
+       */
+      cacheEffectDependencies(): void;
+      /**
        * Handles state changes, applying effects and updating virtual DOM nodes.
        * @async
        */
-      onStateChange(): void;
+      onStateChange(): Promise<void>;
       /**
        * Returns the virtual DOM structure. Must be implemented by subclasses.
        * @returns {VNode | VNodeChildren} The virtual DOM nodes.

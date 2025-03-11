@@ -173,7 +173,12 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
   ReblendPlaceholder?: VNode | typeof Reblend
   defaultReblendPlaceholderStyle?: CSSProperties | string
   ref!: ReblendTyping.Ref<HTMLElement> | ((node: HTMLElement) => any)
-  effectState!: { [key: string]: Primitive | Array<Primitive> }
+  effectState!: {
+    [key: string]: {
+      cache: Primitive | Array<Primitive>
+      cacher: () => Primitive | Array<Primitive>
+    }
+  }
   effectsFn?: Set<ReblendTyping.StateEffectiveFunction>
   disconnectEffects?: Set<ReblendTyping.StateEffectiveFunction>
   stateIdNotIncluded = new Error('State Identifier/Key not specified')
@@ -232,7 +237,7 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
   connectedCallback() {
     if (this.initStateRunning) {
       this.awaitingInitState = true
-      if (this.placeholderAttached || this.isPlaceholder) {
+      if (this.isPlaceholder) {
         return
       } else if (this.ReblendPlaceholder) {
         let placeholderVNodes
@@ -243,6 +248,9 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
         }
         ElementUtil.createElement(placeholderVNodes).then((placeholderElements) => {
           if (!this.childrenInitialize) {
+            if (this.placeholderAttached) {
+              return
+            }
             this.append(...placeholderElements)
             this.placeholderAttached = true
             this.removePlaceholder = async () => {
@@ -264,6 +272,9 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
           })
           const placeholderElements = await ElementUtil.createElement(placeholderVNodes as VNodeChild)
           if (!this.childrenInitialize) {
+            if (this.placeholderAttached) {
+              return
+            }
             this.append(...placeholderElements)
             this.placeholderAttached = true
             this.removePlaceholder = async () => {
@@ -347,14 +358,21 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     }
   }
 
+  cacheEffectDependencies() {
+    Object.entries(this.effectState).forEach(([_key, value]) => {
+      value.cache = value.cacher()
+    })
+  }
+
   async onStateChange() {
-    if (!this.attached) {
+    if (!this.attached || this.hasDisconnected) {
       return
     }
     if (NodeUtil.isStandard(this)) {
       return
     }
     if (this.stateEffectRunning) {
+      this.cacheEffectDependencies()
       return
     }
     if (this.onStateChangeRunning || this.initStateRunning) {
@@ -426,8 +444,8 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     /* Lifecycle method for component unmount actions. */
   }
 
-  dependenciesChanged(currentDependencies: Array<any>, previousDependencies: Array<any>) {
-    if (!previousDependencies || previousDependencies.length !== currentDependencies.length) {
+  dependenciesChanged(currentDependencies: Array<any> | undefined, previousDependencies: Array<any> | undefined) {
+    if (!previousDependencies || previousDependencies.length !== currentDependencies?.length) {
       return false
     }
 
@@ -489,18 +507,18 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     }
     const effectKey = generateId()
 
-    const cacher = () => dep()
+    const cacher: () => Primitive | Array<Primitive> = () => dep()
 
-    this.effectState[effectKey] = cacher()
+    this.effectState[effectKey] = { cache: cacher(), cacher: cacher }
 
     const internalFn = (() => {
       const current = cacher()
       if (
         !dependencies ||
         this.mountingEffects ||
-        this.dependenciesChanged(current, this.effectState[effectKey] as any)
+        this.dependenciesChanged(current as Primitive[], this.effectState[effectKey].cache as Primitive[])
       ) {
-        this.effectState[effectKey] = current
+        this.effectState[effectKey].cache = current
         fn()
       }
     }).bind(this)
@@ -558,18 +576,18 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     }
     const effectKey = generateId()
 
-    const cacher = () => dep()
+    const cacher: () => Primitive | Array<Primitive> = () => dep()
 
-    this.effectState[effectKey] = cacher()
+    this.effectState[effectKey] = { cache: cacher(), cacher: cacher }
 
     const internalFn = () => {
       const current = cacher()
       if (
         !dependencies ||
         this.mountingEffects ||
-        this.dependenciesChanged(current, this.effectState[effectKey] as any)
+        this.dependenciesChanged(current as Primitive[], this.effectState[effectKey].cache as Primitive[])
       ) {
-        this.effectState[effectKey] = current
+        this.effectState[effectKey].cache = current
         setState(fn())
       }
     }
