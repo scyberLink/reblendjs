@@ -9,7 +9,7 @@ export default function Placeholder({ style }: { style?: CSSProperties | string 
 
   return (
     <div style={styles.placeholder}>
-      <div reblendplaceholder={`${id}`} style={{ ...styles.loadingBar, ...objectStyle }}></div>
+      <div data-reblendplaceholder={`${id}`} style={{ ...styles.loadingBar, ...objectStyle }}></div>
       <style>{`
         @keyframes loading {
           0% {
@@ -20,7 +20,7 @@ export default function Placeholder({ style }: { style?: CSSProperties | string 
           }
         }
 
-        [reblendplaceholder="${id}"] {
+        [data-reblendplaceholder="${id}"] {
           ${stringStyle}
         }
       `}</style>

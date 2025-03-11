@@ -661,7 +661,6 @@ const attributesWithDirectProperties = [
   'checked',
   'selected',
   'disabled',
-  'children',
 ];
 
 /**
@@ -671,22 +670,18 @@ const attributesWithDirectProperties = [
  * @returns {boolean} - Returns true if `setAttribute` should be used, false if the direct property should be accessed.
  */
 export const shouldUseSetAttribute = (key: string): boolean => {
-  if (key.includes(':')) {
+  if (key.includes(':') || key.includes('data-')) {
     return true;
   }
   const attribute = allAttribute[key];
-  const excluded = attributesWithDirectProperties.includes(key);
 
-  if (key === key.toLowerCase() && !excluded && !attribute) {
-    return true;
-  }
-
+  // Handle cases where we should use direct property access
   if (
     !attribute ||
     attribute instanceof Object ||
     attribute.startsWith('on') ||
     attribute.startsWith('aria') ||
-    excluded
+    attributesWithDirectProperties.includes(key)
   ) {
     return false;
   }

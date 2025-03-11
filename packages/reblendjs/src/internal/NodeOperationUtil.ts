@@ -220,7 +220,7 @@ export class NodeOperationUtil {
         }
 
         if (
-          oldProp !== newProp ||
+          !NodeOperationUtil.deepCompare(oldProp, newProp) ||
           (oldNode.displayName === 'select' && key === 'value' && oldNode['value'] !== newProp)
         ) {
           oldProp = null
@@ -249,6 +249,51 @@ export class NodeOperationUtil {
     }
 
     return patches
+  }
+
+  /**
+   * Performs a deep comparison between two objects, including functions.
+   *
+   * @param {*} firstObject - The first object or function to compare.
+   * @param {*} secondObject - The second object or function to compare.
+   * @returns {boolean} - True if the objects are deeply equal, otherwise false.
+   */
+  static deepCompare(firstObject, secondObject) {
+    if (typeof firstObject !== 'function' && secondObject !== 'function') {
+      return firstObject === secondObject
+    }
+
+    // 1. Check if they are the same reference
+    if (firstObject === secondObject) return true
+
+    if (!firstObject || !secondObject) return false
+
+    // 2. Compare function names (useful for named functions)
+    if (firstObject.name !== secondObject.name) return false
+
+    // 3. Compare the source code using toString()
+    if (firstObject.toString() !== secondObject.toString()) return false
+
+    // 4. Compare prototypes
+    if (!isEqual(Object.getPrototypeOf(firstObject), Object.getPrototypeOf(secondObject))) {
+      return false
+    }
+
+    // 5. Compare the properties of the functions (if they have custom properties)
+    const func1Props = Object.getOwnPropertyNames(firstObject)
+    const func2Props = Object.getOwnPropertyNames(secondObject)
+
+    if (!isEqual(func1Props, func2Props)) {
+      return false
+    }
+
+    for (const prop of func1Props) {
+      if (!isEqual(firstObject[prop], secondObject[prop])) {
+        return false
+      }
+    }
+
+    return true
   }
 
   /**
