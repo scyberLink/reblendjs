@@ -36,7 +36,10 @@ export class NodeOperationUtil {
    */
   static detachChildren(node: ReblendTyping.Component) {
     if (NodeUtil.isPrimitive(node)) return
-    for (const child of [...node.childNodes]) {
+    for (const child of new Set([
+      ...node.childNodes,
+      ...((node as ReblendTyping.Component).elementChildren?.values() || []),
+    ])) {
       NodeOperationUtil.detach(child as any)
     }
   }
@@ -52,7 +55,7 @@ export class NodeOperationUtil {
     if ((node as ReblendTyping.Component).connectedCallback) {
       ;(node as ReblendTyping.Component).connectedCallback()
     }
-    for (const child of [...node.childNodes]) {
+    for (const child of [...((node as ReblendTyping.Component).elementChildren?.values() || [])]) {
       this.connected(child as HTMLElement)
     }
   }
@@ -74,16 +77,12 @@ export class NodeOperationUtil {
     }
 
     for (const node of newNode) {
-      if (
-        oldNode.directParent &&
-        NodeUtil.isReactToReblendRenderedNode(node.directParent) &&
-        !oldNode.directParent.reactElementChildren?.has(node)
-      ) {
-        if (!oldNode.directParent.reactElementChildren) {
-          oldNode.directParent.reactElementChildren = new Set()
+      if (oldNode.directParent && !oldNode.directParent.elementChildren?.has(node)) {
+        if (!oldNode.directParent.elementChildren) {
+          oldNode.directParent.elementChildren = new Set()
         }
 
-        const reactElementChildrenArray = Array.from(oldNode.directParent.reactElementChildren)
+        const reactElementChildrenArray = Array.from(oldNode.directParent.elementChildren)
         const lastAttachedIndex = reactElementChildrenArray.indexOf(lastAttached)
 
         if (lastAttachedIndex !== -1) {
@@ -92,7 +91,7 @@ export class NodeOperationUtil {
           reactElementChildrenArray.push(node)
         }
 
-        oldNode.directParent.reactElementChildren = new Set(reactElementChildrenArray)
+        oldNode.directParent.elementChildren = new Set(reactElementChildrenArray)
       }
       lastAttached.after(node)
       setTimeout(() => NodeOperationUtil.connected(node), 0)
@@ -214,7 +213,7 @@ export class NodeOperationUtil {
           newProp = JSON.stringify(newProp)
         }
 
-        if (!NodeOperationUtil.deepCompare(oldProp, newProp)) {
+        if (oldProp !== newProp) {
           oldProp = null
           newProp = null
           patches.push({
@@ -229,7 +228,7 @@ export class NodeOperationUtil {
 
     for (const key in oldProps) {
       if (!ignoredProps.includes(key) || (key === 'children' && isReblendNode)) {
-        if (/* key !== 'children' &&  */ !(key in newProps)) {
+        if (!(key in newProps)) {
           patches.push({
             type: 'REMOVE',
             node: oldNode,
@@ -255,10 +254,7 @@ export class NodeOperationUtil {
     if (!NodeUtil.isStandard(oldNode) && !NodeUtil.isReactToReblendRenderedNode(oldNode)) {
       return []
     }
-    const oldChildren: DomNodeChildren =
-      (NodeUtil.isReactToReblendRenderedNode(oldNode)
-        ? [...(oldNode.reactElementChildren?.values() || [])]
-        : (oldNode.childNodes as any)) || []
+    const oldChildren: DomNodeChildren = [...(oldNode.elementChildren?.values() || [])] as any
 
     const newChildren: VNodeChildren = DiffUtil.deepFlat(newNode?.props?.children || [])
     const patches: Patch[] = []
@@ -285,51 +281,6 @@ export class NodeOperationUtil {
   }
 
   /**
-   * Performs a deep comparison between two objects, including functions.
-   *
-   * @param {*} firstObject - The first object or function to compare.
-   * @param {*} secondObject - The second object or function to compare.
-   * @returns {boolean} - True if the objects are deeply equal, otherwise false.
-   */
-  static deepCompare(firstObject, secondObject) {
-    if (typeof firstObject !== 'function' && secondObject !== 'function') {
-      return firstObject === secondObject
-    }
-
-    // 1. Check if they are the same reference
-    if (firstObject === secondObject) return true
-
-    if (!firstObject || !secondObject) return false
-
-    // 2. Compare function names (useful for named functions)
-    if (firstObject.name !== secondObject.name) return false
-
-    // 3. Compare the source code using toString()
-    if (firstObject.toString() !== secondObject.toString()) return false
-
-    // 4. Compare prototypes
-    if (!isEqual(Object.getPrototypeOf(firstObject), Object.getPrototypeOf(secondObject))) {
-      return false
-    }
-
-    // 5. Compare the properties of the functions (if they have custom properties)
-    const func1Props = Object.getOwnPropertyNames(firstObject)
-    const func2Props = Object.getOwnPropertyNames(secondObject)
-
-    if (!isEqual(func1Props, func2Props)) {
-      return false
-    }
-
-    for (const prop of func1Props) {
-      if (!isEqual(firstObject[prop], secondObject[prop])) {
-        return false
-      }
-    }
-
-    return true
-  }
-
-  /**
    * Applies an array of patches to the component.
    *
    * @param {Patch[]} patches - The array of patches to apply.
@@ -347,15 +298,15 @@ export class NodeOperationUtil {
             const elements = await ElementUtil.createElement(newNode as VNode)
             if (!elements.length) continue
             elements.forEach((element) => (element.directParent = parent))
-            if (NodeUtil.isReactToReblendRenderedNode(parent)) {
-              if (!parent.reactElementChildren) {
-                parent.reactElementChildren = new Set(elements)
-              } else {
-                for (const element of elements) {
-                  parent.reactElementChildren.add(element)
-                }
-                needsUpdate.add(parent)
+            if (!parent.elementChildren) {
+              parent.elementChildren = new Set(elements)
+            } else {
+              for (const element of elements) {
+                parent.elementChildren.add(element)
               }
+            }
+            if (NodeUtil.isReactToReblendRenderedNode(parent)) {
+              needsUpdate.add(parent)
             } else {
               parent.append(...elements)
               elements.forEach((element) => setTimeout(() => NodeOperationUtil.connected(element), 0))
@@ -365,7 +316,7 @@ export class NodeOperationUtil {
         case PatchTypeAndOrder.REMOVE:
           if (oldNode) {
             NodeOperationUtil.replaceOperation(oldNode, async () => {
-              oldNode.remove()
+              /* empty */
             })
           }
           break
@@ -382,9 +333,7 @@ export class NodeOperationUtil {
           oldNode && (oldNode.textContent = newNode as string)
           break
         case PatchTypeAndOrder.UPDATE:
-          // Promise.resolve().then(() => {
           NodeOperationUtil.applyProps(patchess)
-          // })
           break
       }
     }
@@ -402,7 +351,6 @@ export class NodeOperationUtil {
    * @param {PropPatch[]} [patches] - The property patches to apply.
    */
   static async applyProps(patches?: PropPatch[]) {
-    //requestAnimationFrame(() => {
     let nodes = new Set<ReblendTyping.Component>()
     patches?.forEach(({ type, node, key, propValue }) => {
       if (type === 'UPDATE') {
@@ -422,15 +370,13 @@ export class NodeOperationUtil {
     })
     nodes.forEach((node) => {
       if (NodeUtil.isReactToReblendRenderedNode(node)) {
-        //if (node.attached) {
         ;(node as any)?.checkPropsChange()
-        //}
       } else if (NodeUtil.isReblendRenderedNode(node) && node.attached) {
-        Promise.resolve().then(() => node.onStateChange())
+        //This allows us to finish applying updates before we trigger rerender
+        Promise.resolve().then(() => setTimeout(() => node.onStateChange(), 0))
       }
     })
     nodes = null as any
-    //})
   }
 
   /**
@@ -476,7 +422,6 @@ export class NodeOperationUtil {
       if (typeof thiz.ref === 'function') {
         thiz.ref(null as any)
       } else {
-        // @ts-expect-error nothing to worry about
         thiz.ref.current = null as any
       }
     }
@@ -484,8 +429,8 @@ export class NodeOperationUtil {
     thiz.disconnectEffects?.clear()
 
     NodeOperationUtil.detachChildren(thiz as any)
-    thiz.reactElementChildren?.forEach((node) => NodeOperationUtil.detach(node))
-    thiz.directParent?.reactElementChildren?.delete(thiz)
+    thiz.elementChildren?.forEach((node) => NodeOperationUtil.detach(node))
+    thiz.directParent?.elementChildren?.delete(thiz)
 
     // Remove event listeners
     // eslint-disable-next-line no-self-assign
@@ -513,7 +458,7 @@ export class NodeOperationUtil {
     thiz.props = null as any
     // Clear state and props
     thiz.reactElementChildrenWrapper = null as any
-    thiz.reactElementChildren = null as any
+    thiz.elementChildren = null as any
     thiz.effectState = null as any
     thiz.directParent = null as any
     thiz.state = null as any

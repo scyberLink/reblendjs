@@ -68,7 +68,7 @@ export class ReblendReactClass {
               node.childrenAttached = true
             }
 
-            const children = this.reactElementChildren || []
+            const children = this.elementChildren || []
 
             for (const child of children || []) {
               if (!node.contains(child)) {
@@ -76,15 +76,14 @@ export class ReblendReactClass {
                 setTimeout(() => NodeOperationUtil.connected(child), 0)
               }
             }
-            this.reactElementChildrenWrapper = node
           } else {
-            const children = this.reactElementChildren || []
+            const children = this.elementChildren || []
             for (const child of children || []) {
               child.remove()
             }
-            //NodeOperationUtil.detach(thiz.reactElementChildrenWrapper)
-            this.reactElementChildrenWrapper = null
           }
+
+          this.reactElementChildrenWrapper = node
         },
       },
       null,

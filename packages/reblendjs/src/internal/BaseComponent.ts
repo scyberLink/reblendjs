@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { rand } from '../common/utils'
 import { IAny } from '../interface/IAny'
-import { IPair } from '../interface/IPair'
 
 import StyleUtil from './StyleUtil'
 
@@ -12,6 +11,7 @@ import { NodeUtil } from './NodeUtil'
 import { ElementUtil } from './ElementUtil'
 import { DiffUtil } from './DiffUtil'
 import { NodeOperationUtil } from './NodeOperationUtil'
+import { CSSProperties } from 'react'
 
 StyleUtil
 
@@ -25,34 +25,11 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
   implements ReblendTyping.Component<P, S>
 {
   [reblendComponent: symbol]: boolean
-  /**
-   * Used to identify the component, similar to `displayName`.
-   * This can also be used to track components that have changed.
-   *
-   * @static
-   * @type {string}
-   */
   static ELEMENT_NAME = 'BaseComponent'
-
-  /**
-   * Holds the props (properties) of the component.
-   * Can be any type of object containing the default component's configuration.
-   *
-   * @static
-   * @type {IAny}
-   */
   static props: IAny
+  static ReblendPlaceholder?: VNode | typeof Reblend
+  static defaultReblendPlaceholderStyle?: CSSProperties | string
 
-  /**
-   * Constructs a VNode from the provided display name, props, and children.
-   * If the display name is an array, it will return that array.
-   * Otherwise, it constructs a new VNode using the provided properties.
-   *
-   * @param {typeof Reblend | string | VNode[]} displayName - The display name or class for the VNode.
-   * @param {IAny} props - The props to pass to the VNode.
-   * @param {...VNodeChildren} children - The children to include in the VNode.
-   * @returns {VNode | VNodeChildren} The constructed VNode or VNode children.
-   */
   static construct(
     displayName: typeof Reblend | string | VNode[],
     props: IAny,
@@ -95,16 +72,6 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     return velement as any
   }
 
-  /**
-   * Mounts the given component or function component to the DOM at the specified element ID.
-   * The component is constructed and its elements are attached to the DOM root.
-   *
-   * @param {string} elementId - The ID of the DOM element where the component should be mounted.
-   * @param {typeof Reblend | ReblendTyping.FunctionComponent} app - The component or function component to mount.
-   * @param {IAny} [props] - Optional props to pass to the component.
-   * @returns {Promise<void>} A promise that resolves when the component is mounted.
-   * @throws {Error} If the specified element ID is invalid.
-   */
   static async mountOn(
     elementId: string,
     app: typeof Reblend | ReblendTyping.FunctionComponent,
@@ -187,140 +154,40 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     }, 100)
   }
 
-  // Properties
-
   nearestStandardParent?: HTMLElement
-
-  /**
-   * Use to limit rendering
-   */
   onStateChangeRunning: boolean | undefined
-  /**
-   * This holds HTMLElements that suppose to be react children
-   */
-  reactElementChildren!: Set<HTMLElement> | null
-  /**
-   * This is a wrapper for the react element children
-   */
+  elementChildren!: Set<HTMLElement> | null
   reactElementChildrenWrapper!: ReblendTyping.Component<any, any> | null
-  /**
-   * The parent of this component
-   */
   directParent!: ReblendTyping.Component<any, any>
-
-  /**
-   * This denote when current component children has been initialized
-   */
   childrenInitialize!: boolean
-
-  /**
-   * The selector string for querying elements by data ID.
-   */
   dataIdQuerySelector!: string
-
-  /**
-   * The component properties.
-   */
   props!: Readonly<P>
-
-  /**
-   * The rendering error, if any occurred during rendering.
-   */
   renderingError?: ReblendRenderingException
   displayName!: string
-
-  /**
-   * The error handler for rendering exceptions.
-   */
   renderingErrorHandler?: (e: ReblendRenderingException) => void
-
-  /**
-   * Indicates whether the component is attached.
-   */
+  removePlaceholder?: () => Promise<void>
   attached!: boolean
-
-  /**
-   * The React class associated with this component.
-   */
+  isPlaceholder!: boolean
+  placeholderAttached!: boolean
   ReactClass: any
-
-  /**
-   * A reference for the component's DOM node.
-   */
-  //@ts-ignore
+  ReblendPlaceholder?: VNode | typeof Reblend
+  defaultReblendPlaceholderStyle?: CSSProperties | string
   ref!: ReblendTyping.Ref<HTMLElement> | ((node: HTMLElement) => any)
-
-  /**
-   * The context of this component.
-   */
-  context: ReblendTyping.Component | undefined
-  /**
-   * This hold effects functions
-   */
-  effectState: { [key: string]: (state?: any) => any } = {}
-  /**
-   * The effects functions defined for the component.
-   */
+  effectState!: { [key: string]: Primitive | Array<Primitive> }
   effectsFn?: Set<ReblendTyping.StateEffectiveFunction>
-
-  /**
-   * The disconnect effects to apply when the component is disconnected.
-   */
   disconnectEffects?: Set<ReblendTyping.StateEffectiveFunction>
-
-  /**
-   * Error thrown when a state identifier/key is not specified.
-   */
   stateIdNotIncluded = new Error('State Identifier/Key not specified')
-
-  /**
-   * Indicates whether this component disconnected callback was called.
-   */
   hasDisconnected = false
-
-  /**
-   * The HTML elements managed by this component.
-   */
   htmlElements?: ReblendTyping.Component[]
-
-  /**
-   * Set of update types for children properties.
-   */
   childrenPropsUpdate?: Set<ChildrenPropsUpdateType>
-
-  /**
-   * Indicates number of awaiting updates.
-   */
   numAwaitingUpdates!: number
-
-  /**
-   * Indicates whether state effects are currently running.
-   */
   stateEffectRunning!: boolean
-
-  /**
-   * Indicates when first time effects are being called.
-   */
   mountingEffects!: boolean
-
-  /**
-   * Indicate state initialization
-   */
   initStateRunning!: boolean
-
-  /**
-   * The component's state.
-   */
+  awaitingInitState!: boolean
   state!: S
-
-  /**
-   * Lifecycle method for mounting the component in React.
-   */
   reactReblendMount?: undefined | ((afterNode?: HTMLElement) => any)
 
-  /**
-   * Creates and return innerHTML elements for this component.
-   */
   async createInnerHtmlElements() {
     let htmlVNodes = await this.html()
     if (!Array.isArray(htmlVNodes)) {
@@ -332,23 +199,29 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     return htmlElements
   }
 
-  /**
-   * Populates the HTML elements for this component.
-   */
   async populateHtmlElements(): Promise<void> {
+    if (this.hasDisconnected) {
+      return
+    }
     try {
       const isReactReblend = NodeUtil.isReactToReblendRenderedNode(this)
       //This is a guard against race condition where parent state changes before populating this component elements
-      if (isReactReblend && (this.reactElementChildren?.size || this.reactElementChildrenWrapper)) {
+      if (isReactReblend && (this.elementChildren?.size || this.reactElementChildrenWrapper)) {
         return
       }
       const htmlElements: ReblendTyping.Component[] = (await this.createInnerHtmlElements()) as any
       htmlElements.forEach((node) => (node.directParent = this))
+      this.elementChildren = new Set(htmlElements)
+      if (this.removePlaceholder) {
+        this.removePlaceholder()
+      }
       if (isReactReblend) {
-        this.reactElementChildren = new Set(htmlElements)
         this.reactReblendMount && this.reactReblendMount()
       } else {
         this.append(...htmlElements)
+        if (NodeUtil.isReblendRenderedNode(this) && this.awaitingInitState) {
+          NodeOperationUtil.connected(this)
+        }
       }
       this.childrenInitialize = true
     } catch (error) {
@@ -356,30 +229,65 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     }
   }
 
-  /**
-   * Callback invoked when the component is connected to the DOM.
-   */
   connectedCallback() {
+    if (this.initStateRunning) {
+      this.awaitingInitState = true
+      if (this.placeholderAttached || this.isPlaceholder) {
+        return
+      } else if (this.ReblendPlaceholder) {
+        let placeholderVNodes
+        if (typeof this.ReblendPlaceholder === 'function') {
+          placeholderVNodes = BaseComponent.construct(this.ReblendPlaceholder, {})
+        } else {
+          placeholderVNodes = this.ReblendPlaceholder
+        }
+        ElementUtil.createElement(placeholderVNodes).then((placeholderElements) => {
+          if (!this.childrenInitialize) {
+            this.append(...placeholderElements)
+            this.placeholderAttached = true
+            this.removePlaceholder = async () => {
+              placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
+              this.removePlaceholder = undefined
+            }
+            new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+            placeholderElements.forEach((placeholderElement) => {
+              placeholderElement.directParent = this
+              placeholderElement.isPlaceholder = true
+              NodeOperationUtil.connected(placeholderElement)
+            })
+          }
+        })
+      } else {
+        import('./components/Placeholder').then(async ({ default: Placeholder }) => {
+          const placeholderVNodes = BaseComponent.construct(Placeholder as any, {
+            style: this.defaultReblendPlaceholderStyle,
+          })
+          const placeholderElements = await ElementUtil.createElement(placeholderVNodes as VNodeChild)
+          if (!this.childrenInitialize) {
+            this.append(...placeholderElements)
+            this.placeholderAttached = true
+            this.removePlaceholder = async () => {
+              placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
+              this.removePlaceholder = undefined
+            }
+            new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+            placeholderElements.forEach((placeholderElement) => {
+              placeholderElement.directParent = this
+              placeholderElement.isPlaceholder = true
+              NodeOperationUtil.connected(placeholderElement)
+            })
+          }
+        })
+      }
+      return
+    }
     NodeOperationUtil.connectedCallback(this as any)
   }
 
-  /**
-   * Adds a disconnect effect function to be executed when the component is disconnected.
-   *
-   * @param {() => void} effect - The effect function to add.
-   */
   addDisconnectedEffect(effect: () => void) {
     this.disconnectEffects?.add(effect)
   }
 
-  /**
-   * Adds styles to the component.
-   *
-   * @param {string[]} styles - An array of style strings to apply.
-   * @param {IAny} style - An object representing styles as key-value pairs.
-   * @param {string} style - A single style string to apply.
-   * @param {string[] | IAny | string} style - The styles to apply.
-   */
   addStyle(style: string[] | IAny | string): void {
     if (!style) {
       return
@@ -396,88 +304,29 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     }
   }
 
-  /**
-   * Adds an inline style to the component.
-   *
-   * @param {IPair} param - The style name and value pair.
-   * @param {string} param.name - The name of the style property.
-   * @param {any} param.value - The value of the style property.
-   */
-  addInlineStyle({ name, value }: IPair) {
-    this.style[name as any] = value
+  async initState() {
+    /* The state property has been initialize in `@_constructor` */
   }
 
-  /**
-   * Adds one or more class names to the component.
-   *
-   * @param {...string[]} classNames - The class names to add.
-   */
-  addClassNames(...classNames: string[]) {
-    this.classList.add(...classNames)
-  }
-
-  /**
-   * Removes one or more class names from the component.
-   *
-   * @param {...string[]} classNames - The class names to remove.
-   */
-  removeClassNames(...classNames: string[]) {
-    this.classList.remove(...classNames)
-  }
-
-  /**
-   * Replaces an existing class name with a new one.
-   *
-   * @param {string} oldClassName - The class name to be replaced.
-   * @param {string} newClassName - The new class name to set.
-   * @returns {boolean} True if the class name was replaced, false otherwise.
-   */
-  replaceClassName(oldClassName: string, newClassName: string) {
-    return this.classList.replace(oldClassName, newClassName)
-  }
-
-  /**
-   * Initializes the component's state.
-   */
-  async initState() {}
-
-  /**
-   * Initializes the component's properties.
-   *
-   * @param {P} props - The properties to set on the component.
-   */
   async initProps(props: P) {
     this.props = props || ({} as any)
   }
 
-  /**
-   * Lifecycle method called after the component is mounted.
-   */
-  componentDidMount() {}
-
-  /**
-   * Sets the state of the component using the setter.
-   *
-   * @param {ReblendTyping.StateFunctionValue<S>} value - The new state value.
-   */
-  setState(value: S) {
-    this.state = value
+  componentDidMount() {
+    /* Optionally implement this in class component */
   }
 
-  /**
-   * Applies effects defined in the component, executing them in order.
-   */
+  setState(value: S) {
+    this.state = value
+    this.onStateChange()
+  }
+
   applyEffects() {
     this.effectsFn?.forEach((effectFn) => {
       effectFn()
     })
   }
 
-  /**
-   * Handles an error that occurs during rendering or lifecycle methods.
-   *
-   * @param {Error} error - The error to handle.
-   */
   handleError(error: Error) {
     if (this.renderingErrorHandler) {
       this.renderingErrorHandler((((error as any).component = this), error) as ReblendRenderingException)
@@ -490,11 +339,6 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     }
   }
 
-  /**
-   * Catches errors thrown by a given function and handles them.
-   *
-   * @param {() => void} fn - The function to execute and catch errors from.
-   */
   catchErrorFrom(fn: () => void) {
     try {
       fn.bind(this)()
@@ -503,10 +347,6 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     }
   }
 
-  /**
-   * Handles state changes, applying effects and updating virtual DOM nodes.
-   * @async
-   */
   async onStateChange() {
     if (!this.attached) {
       return
@@ -533,10 +373,7 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
         newVNodes = [newVNodes as any]
       }
       newVNodes = DiffUtil.flattenVNodeChildren(newVNodes as VNodeChildren) as any
-      const oldNodes =
-        (NodeUtil.isReactToReblendRenderedNode(this)
-          ? [...(this.reactElementChildren?.values() || [])]
-          : this.childNodes) || []
+      const oldNodes = [...(this.elementChildren?.values() || [])]
 
       const maxLength = Math.max(oldNodes.length || 0, (newVNodes as VNodeChildren).length)
       for (let i = 0; i < maxLength; i++) {
@@ -557,20 +394,10 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     }
   }
 
-  /**
-   * Returns the virtual DOM structure. Must be implemented by subclasses.
-   * @protected
-   * @returns {VNode | VNodeChildren} The virtual DOM nodes.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async html(): Promise<ReblendTyping.ReblendNode> {
     return null as any
   }
 
-  /**
-   * Mounts effects defined in the component, executing them and storing disconnect functions.
-   * @private
-   */
   mountEffects() {
     this.mountingEffects = true
     this.stateEffectRunning = true
@@ -587,25 +414,19 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     }
   }
 
-  /**
-   * Lifecycle method called when the component is disconnected from the DOM.
-   * Cleans up resources and removes the component from its parent.
-   */
   disconnectedCallback(fromCleanUp = false) {
     NodeOperationUtil.disconnectedCallback<P, S>(this as any, fromCleanUp)
   }
 
-  /**
-   * Cleans up resources before the component unmounts.
-   */
-  cleanUp() {}
+  cleanUp() {
+    /* Cleans up resources before the component unmounts. */
+  }
 
-  /**
-   * Lifecycle method for component unmount actions.
-   */
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    /* Lifecycle method for component unmount actions. */
+  }
 
-  dependenciesChanged(currentDependencies: any, previousDependencies: any) {
+  dependenciesChanged(currentDependencies: Array<any>, previousDependencies: Array<any>) {
     if (!previousDependencies || previousDependencies.length !== currentDependencies.length) {
       return false
     }
@@ -615,14 +436,6 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     })
   }
 
-  /**
-   * State management hook for functional components.
-   *
-   * @template T - The type of the state.
-   * @param {ReblendTyping.StateFunctionValue<T>} initial - The initial state value.
-   * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
-   * @returns {[T, ReblendTyping.StateFunction<T>]} The current state and a function to update it.
-   */
   useState<T>(
     initial: ReblendTyping.StateFunctionValue<T>,
     ...dependencyStringAndOrStateKey: string[]
@@ -659,13 +472,6 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     return [initial as T, variableSetter]
   }
 
-  /**
-   * Effect hook for performing side effects in functional components.
-   *
-   * @param {ReblendTyping.StateEffectiveFunction} fn - The effect function to execute.
-   * @param {any[]} dependencies - Array of dependencies for the effect.
-   * @param {...string[]} _dependencyStringAndOrStateKey - Optional dependencies or state key.
-   */
   useEffect(
     fn: ReblendTyping.StateEffectiveFunction,
     dependencies: any[],
@@ -689,7 +495,11 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
 
     const internalFn = (() => {
       const current = cacher()
-      if (!dependencies || this.mountingEffects || this.dependenciesChanged(current, this.effectState[effectKey])) {
+      if (
+        !dependencies ||
+        this.mountingEffects ||
+        this.dependenciesChanged(current, this.effectState[effectKey] as any)
+      ) {
         this.effectState[effectKey] = current
         fn()
       }
@@ -697,16 +507,6 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     this.effectsFn?.add(internalFn)
   }
 
-  /**
-   * Reducer hook for managing state with a reducer function.
-   *
-   * @template T - The type of the state.
-   * @template I - The type of the action.
-   * @param {ReblendTyping.StateReducerFunction<T, I>} reducer - The reducer function.
-   * @param {ReblendTyping.StateFunctionValue<T>} initial - The initial state value.
-   * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
-   * @returns {[T, ReblendTyping.StateFunction<I>]} The current state and a dispatch function.
-   */
   useReducer<T, I>(
     reducer: ReblendTyping.StateReducerFunction<T, I>,
     initial: ReblendTyping.StateFunctionValue<T>,
@@ -733,15 +533,6 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     return [this.state[stateID], fn]
   }
 
-  /**
-   * Memoization hook for caching values in functional components.
-   *
-   * @template T - The type of the memoized value.
-   * @param {ReblendTyping.StateEffectiveMemoFunction<T>} fn - The function to compute the value.
-   * @param {any[]} [dependencies] - Array of dependencies for the memoization.
-   * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
-   * @returns {T} The memoized value.
-   */
   useMemo<T>(
     fn: ReblendTyping.StateEffectiveMemoFunction<T>,
     dependencies?: any[],
@@ -773,7 +564,11 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
 
     const internalFn = () => {
       const current = cacher()
-      if (!dependencies || this.mountingEffects || this.dependenciesChanged(current, this.effectState[effectKey])) {
+      if (
+        !dependencies ||
+        this.mountingEffects ||
+        this.dependenciesChanged(current, this.effectState[effectKey] as any)
+      ) {
         this.effectState[effectKey] = current
         setState(fn())
       }
@@ -782,24 +577,11 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     return this.state[stateID]
   }
 
-  /**
-   * Creates a ref object to hold mutable values that do not trigger re-renders.
-   *
-   * @template T - The type of the referenced value.
-   * @param {T} [initial] - The initial value of the ref.
-   * @returns {ReblendTyping.Ref<T>} The ref object.
-   */
-  useRef<T>(initial?: T) {
-    const ref: ReblendTyping.Ref<T> = { current: initial }
+  useRef<T>(initial: T, stateKey: string) {
+    const ref: ReblendTyping.Ref<T> = { stateKey, current: initial }
     return ref
   }
 
-  /**
-   * Binds a function to the current context.
-   *
-   * @param {() => any} fn - The function to bind.
-   * @returns {Function} The bound function.
-   */
   useCallback(fn: () => any) {
     return fn.bind(this)
   }

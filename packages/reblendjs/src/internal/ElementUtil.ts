@@ -173,6 +173,12 @@ export const ElementUtil = class {
       NodeUtil.extendPrototype(element, Reblend.prototype)
     } else {
       NodeUtil.extendPrototype(element, clazz.prototype)
+      if (clazz.ReblendPlaceholder) {
+        element.ReblendPlaceholder = clazz.ReblendPlaceholder
+      }
+      if (clazz.defaultReblendPlaceholderStyle) {
+        element.defaultReblendPlaceholderStyle = clazz.defaultReblendPlaceholderStyle
+      }
     }
     if (isReactNode) {
       element.ReactClass = displayName

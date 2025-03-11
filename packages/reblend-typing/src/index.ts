@@ -699,7 +699,8 @@ declare global {
      * @property {T | HTMLElement} [current] - The current value held by the reference, which can be of type `T` or an `HTMLElement`.
      */
     type Ref<T> = {
-      readonly current?: T;
+      current?: T;
+      stateKey: string;
     };
     /**
      * A function that updates the state based on the provided value. It accepts a value or a function that returns a new value based on the previous state.
@@ -1656,6 +1657,14 @@ declare global {
        */
       static props: any;
       /**
+       * Component to render first if this component is asyncronous
+       */
+      static ReblendPlaceholder?: VNode | typeof Component<any, any>;
+      /**
+       * Style for default reblend placeholder i.e if your are not using custom placeholder for your async components
+       */
+      static defaultReblendPlaceholderStyle?: CSSProperties | string;
+      /**
        * Constructs a VNode from the provided display name, props, and children.
        * If the display name is an array, it will return that array.
        * Otherwise, it constructs a new VNode using the provided properties.
@@ -1696,9 +1705,9 @@ declare global {
        */
       [reblendComponent: symbol]: boolean;
       /**
-       * This holds HTMLElements that suppose to be react children
+       * This holds reference to children of the component
        */
-      reactElementChildren: Set<HTMLElement> | null;
+      elementChildren: Set<HTMLElement> | null;
       /**
        * This is a wrapper for the react element children
        */
@@ -1724,9 +1733,29 @@ declare global {
        */
       attached: boolean;
       /**
+       * Indicates that the component is part of a placeholder component.
+       */
+      isPlaceholder: boolean;
+      /**
+       * Indicates that a placeholder has been attached to the component.
+       */
+      placeholderAttached: boolean;
+      /**
+       * Function that will be called when the children get attached
+       */
+      removePlaceholder?: () => Promise<void>;
+      /**
        * The React class associated with this component.
        */
       ReactClass: any;
+      /**
+       * Component to render first if this component is asyncronous
+       */
+      ReblendPlaceholder?: VNode | typeof Component<any, any>;
+      /**
+       * Style for default reblend placeholder i.e if your are not using custom placeholder for your async components
+       */
+      defaultReblendPlaceholderStyle?: CSSProperties | string;
       /**
        * A reference for the component's DOM node.
        */
@@ -1734,7 +1763,7 @@ declare global {
       /**
        * This hold effects functions
        */
-      effectState: { [key: string]: (state?: any) => any };
+      effectState: { [key: string]: Primitive | Array<Primitive> };
       /**
        * The effects to apply when the component is mounted.
        */
@@ -1772,6 +1801,10 @@ declare global {
        */
       initStateRunning: boolean;
       /**
+       * Indicate when connectedCallback should be called but state has not finished initializing
+       */
+      awaitingInitState: boolean;
+      /**
        * Indicates whether this component disconnected callback was called.
        */
       hasDisconnected: boolean;
@@ -1786,21 +1819,21 @@ declare global {
       /**
        * Lifecycle method for mounting the component in React.
        */
-      reactReblendMount?: undefined | ((afterNode?: HTMLElement) => any);
+      reactReblendMount?: undefined | ((afterNode?: HTMLElement) => void);
       /**
        * Populates the HTML elements for this component.
        */
-      populateHtmlElements(): any;
+      populateHtmlElements(): void;
       /**
        * Callback invoked when the component is connected to the DOM.
        */
-      connectedCallback(): any;
+      connectedCallback(): void;
       /**
        * Adds a disconnect effect function to be executed when the component is disconnected.
        *
        * @param {() => void} effect - The effect function to add.
        */
-      addDisconnectedEffect(effect: () => void): any;
+      addDisconnectedEffect(effect: () => void): void;
       /**
        * Adds styles to the component.
        *
@@ -1811,37 +1844,9 @@ declare global {
        */
       addStyle(style: string[] | IAny | string): void;
       /**
-       * Adds an inline style to the component.
-       *
-       * @param {IPair} param - The style name and value pair.
-       * @param {string} param.name - The name of the style property.
-       * @param {any} param.value - The value of the style property.
-       */
-      addInlineStyle({ name, value }: { name: string; value: string }): any;
-      /**
-       * Adds one or more class names to the component.
-       *
-       * @param {...string[]} classNames - The class names to add.
-       */
-      addClassNames(...classNames: string[]): any;
-      /**
-       * Removes one or more class names from the component.
-       *
-       * @param {...string[]} classNames - The class names to remove.
-       */
-      removeClassNames(...classNames: string[]): any;
-      /**
-       * Replaces an existing class name with a new one.
-       *
-       * @param {string} oldClassName - The class name to be replaced.
-       * @param {string} newClassName - The new class name to set.
-       * @returns {boolean} True if the class name was replaced, false otherwise.
-       */
-      replaceClassName(oldClassName: string, newClassName: string): any;
-      /**
        * Initializes the component's state.
        */
-      initState(): Promise<any>;
+      initState(): Promise<void>;
       /**
        * Initializes the component's properties.
        *
@@ -1851,34 +1856,34 @@ declare global {
       /**
        * Lifecycle method called after the component is mounted.
        */
-      componentDidMount(): any;
+      componentDidMount(): void;
       /**
        * Sets the state of the component using the setter.
        *
        * @param {S} value - The new state value.
        */
-      setState(value: S): any;
+      setState(value: S): void;
       /**
        * Applies effects defined in the component, executing them in order.
        */
-      applyEffects(): any;
+      applyEffects(): void;
       /**
        * Handles an error that occurs during rendering or lifecycle methods.
        *
        * @param {Error} error - The error to handle.
        */
-      handleError(error: Error): any;
+      handleError(error: Error): void;
       /**
        * Catches errors thrown by a given function and handles them.
        *
        * @param {() => void} fn - The function to execute and catch errors from.
        */
-      catchErrorFrom(fn: () => void): any;
+      catchErrorFrom(fn: () => void): void;
       /**
        * Handles state changes, applying effects and updating virtual DOM nodes.
        * @async
        */
-      onStateChange(): any;
+      onStateChange(): void;
       /**
        * Returns the virtual DOM structure. Must be implemented by subclasses.
        * @returns {VNode | VNodeChildren} The virtual DOM nodes.
@@ -1888,20 +1893,30 @@ declare global {
        * Mounts effects defined in the component, executing them and storing disconnect functions.
        * @
        */
-      mountEffects(): any;
+      mountEffects(): void;
       /**
        * Lifecycle method called when the component is disconnected from the DOM.
        * Cleans up resources and removes the component from its parent.
        */
-      disconnectedCallback(): any;
+      disconnectedCallback(): void;
       /**
        * Cleans up resources before the component unmounts.
        */
-      cleanUp(): any;
+      cleanUp(): void;
       /**
        * Lifecycle method for component unmount actions.
        */
-      componentWillUnmount(): any;
+      componentWillUnmount(): void;
+      /**
+       * Shallow compare dependecies for changes
+       * @param {Array<any>} currentDependencies
+       * @param {Array<any>} previousDependencies
+       * @returns {boolean} Returns true if the two object are not equal
+       */
+      dependenciesChanged(
+        currentDependencies: Array<any>,
+        previousDependencies: Array<any>
+      ): boolean;
       /**
        * State management hook for functional components.
        *
@@ -1925,7 +1940,7 @@ declare global {
         fn: ReblendTyping.StateEffectiveFunction,
         dependencies: any[],
         ..._dependencyStringAndOrStateKey: string[]
-      ): any;
+      ): void;
       /**
        * Reducer hook for managing state with a reducer function.
        *
@@ -1954,27 +1969,28 @@ declare global {
         fn: ReblendTyping.StateEffectiveMemoFunction<T>,
         dependencies?: any[],
         ...dependencyStringAndOrStateKey: string[]
-      ): any;
+      ): T;
       /**
        * Creates a ref object to hold mutable values that do not trigger re-renders.
        *
        * @template T - The type of the referenced value.
        * @param {T} [initial] - The initial value of the ref.
+       * @param {T} [stateKey] - Added for compatibility with reblend function component transpiler
        * @returns {ReblendTyping.Ref<T>} The ref object.
        */
-      useRef<T>(initial?: T): any;
+      useRef<T>(initial: T, stateKey: string): ReblendTyping.Ref<T>;
       /**
        * Binds a function to the current context.
        *
        * @param {() => any} fn - The function to bind.
        * @returns {Function} The bound function.
        */
-      useCallback(fn: () => any): any;
+      useCallback(fn: () => any): Function;
       /**
        * Initializes the component, preparing effect management.
        * For compatibility in case a standard element inherits this prototype; can manually execute this constructor.
        */
-      _constructor(): any;
+      _constructor(): void;
     }
     class PureComponent<P = {}, S = {}, SS = any> extends Component<P, S, SS> {}
     /**
