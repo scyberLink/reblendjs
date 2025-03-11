@@ -97,6 +97,12 @@ export class NodeOperationUtil {
       setTimeout(() => NodeOperationUtil.connected(node), 0)
       lastAttached = node
     }
+
+    oldNode.remove()
+    oldNode.directParent.elementChildren?.delete(oldNode)
+    requestAnimationFrame(() => {
+      /* empty */
+    })
   }
 
   /**
@@ -389,11 +395,10 @@ export class NodeOperationUtil {
    * @param {() => void} operation - The operation to execute for the replacement.
    */
   static replaceOperation(oldNode: ReblendTyping.Component, operation: () => Promise<void>) {
-    operation().finally(
-      () =>
-        //requestIdleCallback(() => {
-        NodeOperationUtil.detach(oldNode),
-      //}),
+    operation().finally(() =>
+      requestIdleCallback(() => {
+        NodeOperationUtil.detach(oldNode)
+      }),
     )
   }
 

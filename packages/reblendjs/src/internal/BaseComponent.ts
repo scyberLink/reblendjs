@@ -403,7 +403,7 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
       this.handleError(error as Error)
     } finally {
       this.onStateChangeRunning = false
-      NodeOperationUtil.applyPatches(patches)
+      await NodeOperationUtil.applyPatches(patches)
       if (this.numAwaitingUpdates) {
         this.numAwaitingUpdates = 0
         setTimeout(() => this.onStateChange(), 0)
