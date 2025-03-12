@@ -181,7 +181,7 @@ export const ElementUtil = class {
       }
     }
     if (isReactNode) {
-      element.ReactClass = displayName
+      element.ReactClass = displayName as any
       NodeUtil.extendPrototype(element, ReblendReactClass.prototype)
     }
     element._constructor()

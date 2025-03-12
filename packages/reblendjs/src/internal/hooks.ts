@@ -272,7 +272,7 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
         context[contextSubscriberModificationTracker].unshift(updateId)
         for (const { component, stateKey } of context[contextSubscribers]) {
           if (context[contextSubscriberModificationTracker][0] === updateId) {
-            component.state[stateKey] = context[contextValue]
+            ;(component.state as object)[stateKey] = context[contextValue]
             if (component.attached) {
               await component.onStateChange()
             }

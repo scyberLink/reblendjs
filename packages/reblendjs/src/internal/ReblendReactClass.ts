@@ -3,35 +3,22 @@
 import { ChildrenPropsUpdateType } from 'reblend-typing'
 import { NodeUtil } from './NodeUtil'
 import { NodeOperationUtil } from './NodeOperationUtil'
-import { REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT, REBLEND_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
-import { ElementUtil } from './ElementUtil'
-import { Reblend } from './Reblend'
+import { REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
+import { type BaseComponent } from './BaseComponent'
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ReblendReactClass extends BaseComponent {}
 
 /**
  * A static class that extends the functionality of `BaseComponent`
  * to provide integration with React and Reblend.
  */
 export class ReblendReactClass {
-  [x: string]: any
-
-  /**
-   * Returns the virtual node (VNode) or children VNodes of the component, used in React's render function.
-   *
-   * @returns {VNode | VNodeChildren} The virtual node representing the component's HTML structure.
-   */
-  html(): ReblendTyping.ReblendNode {
+  html() {
     return (this.props as any).children
   }
 
-  /**
-   * Checks for any changes in the props and updates the component accordingly.
-   * React Reblend nodes can trigger different updates based on the type of children or non-children changes.
-   *
-   * @async
-   * @returns {Promise<void>}
-   * @throws {Error} Throws an error if an invalid props update type is provided.
-   */
-  async checkPropsChange(): Promise<void> {
+  async checkPropsChange() {
     for (const type of Array.from(this.childrenPropsUpdate || []).sort()) {
       this.childrenPropsUpdate?.delete(type)
 
@@ -56,38 +43,38 @@ export class ReblendReactClass {
    *
    * @returns {React.ReactElement} The React element representing the children wrapper for React.
    */
-  async getChildrenWrapperForReact(): Promise<React.ReactElement> {
-    return (await import('react')).default.createElement(
-      'div',
-      {
-        [REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT]: this.displayName || '',
-        ref: async (node: HTMLElement & { childrenAttached?: boolean }) => {
-          if (node) {
-            if (!node.childrenAttached) {
-              NodeUtil.extendPrototype(node, Reblend.prototype)
-              node.childrenAttached = true
-            }
+  async getChildrenWrapperForReact() {
+    const { default: React } = await import('react')
 
-            const children = this.elementChildren || []
+    const children = this.elementChildren
+      ?.values()
+      .toArray()
+      .map((child) => {
+        const isReactNode = NodeUtil.isReactToReblendRenderedNode(child)
+        const isReblendNode = NodeUtil.isReblendRenderedNode(child)
+        const isReblendPrimitiveElement = NodeUtil.isReblendPrimitiveElement(child)
+        const tagName = isReactNode || isReblendNode ? 'div' : isReblendPrimitiveElement ? 'span' : child.displayName
 
-            for (const child of children || []) {
-              if (!node.contains(child)) {
-                node.appendChild(child)
-                setTimeout(() => NodeOperationUtil.connected(child), 0)
+        return React.createElement(
+          tagName,
+          {
+            [REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT]: this.displayName || '',
+            ref: async (node: HTMLElement & { childrenAttached?: boolean }) => {
+              if (node) {
+                if (!node.contains(child)) {
+                  node.appendChild(child)
+                  setTimeout(() => NodeOperationUtil.connected(child), 0)
+                }
+              } else {
+                child.remove()
               }
-            }
-          } else {
-            const children = this.elementChildren || []
-            for (const child of children || []) {
-              child.remove()
-            }
-          }
+            },
+          },
+          null,
+        )
+      })
 
-          this.reactElementChildrenWrapper = node
-        },
-      },
-      null,
-    )
+    return children?.length && children.length < 2 ? children.pop() : children
   }
 
   /**
@@ -115,7 +102,9 @@ export class ReblendReactClass {
     }
 
     const children =
-      !this.props?.children || !this.props?.children?.length ? undefined : await this.getChildrenWrapperForReact()
+      !this.props?.children || !(this.props?.children as any)?.length
+        ? undefined
+        : await this.getChildrenWrapperForReact()
 
     await this.initRoot()
 
@@ -128,13 +117,10 @@ export class ReblendReactClass {
     //window.console.log = () => {}
 
     this.reactDomCreateRoot_root?.render(
-      React.createElement(
-        this.ReactClass,
-        {
-          ...this.props,
-        },
+      React.createElement(this.ReactClass, {
+        ...this.props,
         children,
-      ),
+      }),
     )
 
     //window.console.warn = warn

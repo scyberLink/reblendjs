@@ -1707,11 +1707,15 @@ declare global {
       /**
        * This holds reference to children of the component
        */
-      elementChildren: Set<HTMLElement> | null;
+      elementChildren: Set<Component> | null;
       /**
        * This is a wrapper for the react element children
        */
       reactElementChildrenWrapper: Component<any, any> | null;
+      /**
+       * This is a react dom root
+       */
+      reactDomCreateRoot_root: import('react-dom/client').Root | null;
       /**
        * This denote when current component children has been initialized
        */
@@ -1747,7 +1751,7 @@ declare global {
       /**
        * The React class associated with this component.
        */
-      ReactClass: any;
+      ReactClass: () => any;
       /**
        * Component to render first if this component is asyncronous
        */
@@ -1898,6 +1902,15 @@ declare global {
        * @returns {VNode | VNodeChildren} The virtual DOM nodes.
        */
       html(): Promise<ReblendTyping.ReblendNode>;
+      /**
+       * Checks for any changes in the props and updates the component accordingly.
+       * React Reblend nodes can trigger different updates based on the type of children or non-children changes.
+       *
+       * @async
+       * @returns {Promise<void>}
+       * @throws {Error} Throws an error if an invalid props update type is provided.
+       */
+      checkPropsChange(): Promise<void>;
       /**
        * Mounts effects defined in the component, executing them and storing disconnect functions.
        * @

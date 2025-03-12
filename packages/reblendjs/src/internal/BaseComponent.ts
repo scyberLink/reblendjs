@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { rand } from '../common/utils'
 import { IAny } from '../interface/IAny'
-
 import StyleUtil from './StyleUtil'
-
 import { ChildrenPropsUpdateType } from 'reblend-typing'
 import { Reblend } from './Reblend'
 import { NodeUtil } from './NodeUtil'
@@ -15,14 +12,53 @@ import { CSSProperties } from 'react'
 
 StyleUtil
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-interface BaseComponent extends HTMLElement {
-  //[stateKey: string]: any;
+export interface BaseComponent<P, S> extends HTMLElement {
+  nearestStandardParent?: HTMLElement
+  onStateChangeRunning: boolean | undefined
+  elementChildren: Set<ReblendTyping.Component> | null
+  reactElementChildrenWrapper: ReblendTyping.Component<any, any> | null
+  directParent: ReblendTyping.Component<any, any>
+  childrenInitialize: boolean
+  dataIdQuerySelector: string
+  props: Readonly<P>
+  reactDomCreateRoot_root: import('react-dom/client').Root | null
+  renderingError: ReblendRenderingException
+  displayName: string
+  renderingErrorHandler: (e: ReblendRenderingException) => void
+  removePlaceholder: () => Promise<void>
+  attached: boolean
+  isPlaceholder: boolean
+  placeholderAttached: boolean
+  ReactClass: any
+  ReblendPlaceholder?: VNode | typeof Reblend
+  defaultReblendPlaceholderStyle: CSSProperties | string
+  ref: ReblendTyping.Ref<HTMLElement> | ((node: HTMLElement) => any)
+  effectState: {
+    [key: string]: {
+      cache: Primitive | Array<Primitive>
+      cacher: () => Primitive | Array<Primitive>
+    }
+  }
+  effectsFn: Set<ReblendTyping.StateEffectiveFunction>
+  disconnectEffects: Set<ReblendTyping.StateEffectiveFunction>
+  checkPropsChange(): Promise<void>
+  stateIdNotIncluded: Error
+  hasDisconnected: boolean
+  htmlElements: ReblendTyping.Component[]
+  childrenPropsUpdate: Set<ChildrenPropsUpdateType>
+  numAwaitingUpdates: number
+  stateEffectRunning: boolean
+  mountingEffects: boolean
+  initStateRunning: boolean
+  awaitingInitState: boolean
+  state: S
+  reactReblendMount: undefined | ((afterNode?: HTMLElement) => any)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging, @typescript-eslint/ban-types
-class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) => void } = {}>
-  implements ReblendTyping.Component<P, S>
+export class BaseComponent<
+  P = Record<string, never>,
+  S extends { renderingErrorHandler?: (error: Error) => void } = Record<string, never>,
+> implements ReblendTyping.Component<P, S>
 {
   [reblendComponent: symbol]: boolean
   static ELEMENT_NAME = 'BaseComponent'
@@ -154,44 +190,8 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     }, 100)
   }
 
-  nearestStandardParent?: HTMLElement
-  onStateChangeRunning: boolean | undefined
-  elementChildren!: Set<HTMLElement> | null
-  reactElementChildrenWrapper!: ReblendTyping.Component<any, any> | null
-  directParent!: ReblendTyping.Component<any, any>
-  childrenInitialize!: boolean
-  dataIdQuerySelector!: string
-  props!: Readonly<P>
-  renderingError?: ReblendRenderingException
-  displayName!: string
-  renderingErrorHandler?: (e: ReblendRenderingException) => void
-  removePlaceholder?: () => Promise<void>
-  attached!: boolean
-  isPlaceholder!: boolean
-  placeholderAttached!: boolean
-  ReactClass: any
-  ReblendPlaceholder?: VNode | typeof Reblend
-  defaultReblendPlaceholderStyle?: CSSProperties | string
-  ref!: ReblendTyping.Ref<HTMLElement> | ((node: HTMLElement) => any)
-  effectState!: {
-    [key: string]: {
-      cache: Primitive | Array<Primitive>
-      cacher: () => Primitive | Array<Primitive>
-    }
-  }
-  effectsFn?: Set<ReblendTyping.StateEffectiveFunction>
-  disconnectEffects?: Set<ReblendTyping.StateEffectiveFunction>
   stateIdNotIncluded = new Error('State Identifier/Key not specified')
   hasDisconnected = false
-  htmlElements?: ReblendTyping.Component[]
-  childrenPropsUpdate?: Set<ChildrenPropsUpdateType>
-  numAwaitingUpdates!: number
-  stateEffectRunning!: boolean
-  mountingEffects!: boolean
-  initStateRunning!: boolean
-  awaitingInitState!: boolean
-  state!: S
-  reactReblendMount?: undefined | ((afterNode?: HTMLElement) => any)
 
   async createInnerHtmlElements() {
     let htmlVNodes = await this.html()
@@ -255,7 +255,7 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
             this.placeholderAttached = true
             this.removePlaceholder = async () => {
               placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
-              this.removePlaceholder = undefined
+              this.removePlaceholder = undefined as any
             }
             new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
             placeholderElements.forEach((placeholderElement) => {
@@ -279,7 +279,7 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
             this.placeholderAttached = true
             this.removePlaceholder = async () => {
               placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
-              this.removePlaceholder = undefined
+              this.removePlaceholder = undefined as any
             }
             new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
             placeholderElements.forEach((placeholderElement) => {
@@ -614,7 +614,7 @@ class BaseComponent<P = {}, S extends { renderingErrorHandler?: (error: Error) =
     this.childrenPropsUpdate = new Set()
     this.numAwaitingUpdates = 0
     this.effectState = {}
+    this.stateIdNotIncluded = new Error('State Identifier/Key not specified')
+    this.hasDisconnected = false
   }
 }
-
-export { BaseComponent }

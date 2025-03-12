@@ -213,8 +213,8 @@ export class NodeOperationUtil {
         let oldProp = oldProps[key]
         let newProp = newProps[key]
 
-        // Normalize children before deep comparison
-        if (key === 'children') {
+        // Normalize children or style before deep comparison
+        if (key === 'children' || (key === 'style' && typeof oldProp === 'object')) {
           oldProp = JSON.stringify(oldProp)
           newProp = JSON.stringify(newProp)
         }
@@ -379,7 +379,7 @@ export class NodeOperationUtil {
             NodeOperationUtil.replaceOperation(oldNode, async () => {
               const newNodeElements = await ElementUtil.createElement(newNode as VNode)
               newNodeElements.forEach((element) => (element.directParent = oldNode.directParent as any))
-              NodeOperationUtil.replaceOldNode(newNodeElements, oldNode!)
+              NodeOperationUtil.replaceOldNode(newNodeElements, oldNode)
             })
           }
           break
@@ -458,7 +458,7 @@ export class NodeOperationUtil {
       if (!thiz.attached) {
         thiz.attached = true
         thiz.componentDidMount()
-        thiz.mountEffects!()
+        thiz.mountEffects()
       }
     })
   }
@@ -483,7 +483,7 @@ export class NodeOperationUtil {
 
     NodeOperationUtil.detachChildren(thiz as any)
     thiz.elementChildren?.forEach((node) => NodeOperationUtil.detach(node))
-    thiz.directParent?.elementChildren?.delete(thiz)
+    thiz.directParent?.elementChildren?.delete(thiz as any)
 
     // Remove event listeners
     // eslint-disable-next-line no-self-assign
