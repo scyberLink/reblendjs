@@ -58,7 +58,10 @@ export class ReblendReactClass {
         return React.createElement(
           tagName,
           {
-            [REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT]: this.displayName || '',
+            [REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT]: child.displayName || '',
+            ...child.props,
+            class: '',
+            className: '',
             ref: async (node: HTMLElement & { childrenAttached?: boolean }) => {
               if (node) {
                 if (!node.contains(child)) {
