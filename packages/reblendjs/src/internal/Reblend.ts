@@ -4,7 +4,7 @@
 // @ts-nocheck
 import { IAny } from '../interface/IAny'
 import { BaseComponent } from './BaseComponent'
-import { ReblendTyping, ReblendManagedAttributes, HTMLWebViewElement } from 'reblend-typing'
+import { ReblendManagedAttributes, HTMLWebViewElement } from 'reblend-typing'
 
 declare global {
   export namespace Reblend.JSX {

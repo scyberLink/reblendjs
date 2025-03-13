@@ -724,7 +724,7 @@ declare global {
      */
     type StateFunction<T> = (
       value: StateFunctionValue<T>,
-      force?: boolean
+      force?: boolean,
     ) => void;
     /**
      * The value used to update the state, which can be either a new value directly or a function that computes the new value based on the previous state.
@@ -761,7 +761,7 @@ declare global {
      */
     type StateReducerFunction<ValueType, IncomingType> = (
       previous: ValueType,
-      current: IncomingType
+      current: IncomingType,
     ) => ValueType;
     /**
      * Used to retrieve the possible components which accept a given set of props.
@@ -799,7 +799,7 @@ declare global {
      */
     type ElementType<
       P = any,
-      Tag extends keyof JSX.IntrinsicElements = keyof JSX.IntrinsicElements
+      Tag extends keyof JSX.IntrinsicElements = keyof JSX.IntrinsicElements,
     > =
       | {
           [K in Tag]: P extends JSX.IntrinsicElements[K] ? K : never;
@@ -844,7 +844,7 @@ declare global {
      */
     type RefCallback<T> = {
       bivarianceHack(
-        instance: T | null
+        instance: T | null,
       ):
         | void
         | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES];
@@ -1056,7 +1056,7 @@ declare global {
       P = Pick<
         ComponentProps<T>,
         Exclude<keyof ComponentProps<T>, 'key' | 'ref'>
-      >
+      >,
     > extends ReblendElement {}
     interface FunctionComponentElement<P> extends ReblendElement {
       ref?:
@@ -1083,7 +1083,7 @@ declare global {
     type ClassicElement<P> = CElement<P, ClassicComponent<P, ComponentState>>;
     interface DOMElement<
       P extends HTMLAttributes<T> | SVGAttributes<T>,
-      T extends Element
+      T extends Element,
     > extends ReblendElement {
       ref: LegacyRef<T>;
     }
@@ -1091,7 +1091,7 @@ declare global {
       extends DetailedReblendHTMLElement<AllHTMLAttributes<T>, T> {}
     interface DetailedReblendHTMLElement<
       P extends HTMLAttributes<T>,
-      T extends HTMLElement
+      T extends HTMLElement,
     > extends DOMElement<P, T> {
       type: keyof ReblendHTML;
     }
@@ -1128,7 +1128,7 @@ declare global {
       extends DetailedHTMLFactory<AllHTMLAttributes<T>, T> {}
     interface DetailedHTMLFactory<
       P extends HTMLAttributes<T>,
-      T extends HTMLElement
+      T extends HTMLElement,
     > extends DOMFactory<P, T> {
       (
         props?: (ClassAttributes<T> & P) | null,
@@ -1203,23 +1203,23 @@ declare global {
       | DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_REBLEND_NODES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_REBLEND_NODES];
     /** @deprecated */
     function createFactory<T extends HTMLElement>(
-      type: keyof ReblendHTML
+      type: keyof ReblendHTML,
     ): HTMLFactory<T>;
     /** @deprecated */
     function createFactory(type: keyof ReblendSVG): SVGFactory;
     /** @deprecated */
     function createFactory<P extends DOMAttributes<T>, T extends Element>(
-      type: string
+      type: string,
     ): DOMFactory<P, T>;
     /** @deprecated */
     function createFactory<P>(
-      type: FunctionComponent<P>
+      type: FunctionComponent<P>,
     ): FunctionComponentFactory<P>;
     /** @deprecated */
     function createFactory<
       P,
       T extends Component<P, ComponentState>,
-      C extends ComponentClass<P>
+      C extends ComponentClass<P>,
     >(type: ClassType<P, T, C>): CFactory<P, T>;
     /** @deprecated */
     function createFactory<P>(type: ComponentClass<P>): Factory<P>;
@@ -1257,7 +1257,7 @@ declare global {
     function createElement<
       P extends {},
       T extends Component<P, ComponentState>,
-      C extends ComponentClass<P>
+      C extends ComponentClass<P>,
     >(
       type: ClassType<P, T, C>,
       props?: (ClassAttributes<T> & P) | null,
@@ -1375,9 +1375,8 @@ declare global {
      * // ContextType = { foo: string }
      * ```
      */
-    type ContextType<C extends Context<any>> = C extends Context<infer T>
-      ? T
-      : never;
+    type ContextType<C extends Context<any>> =
+      C extends Context<infer T> ? T : never;
     /**
      * Wraps your components to specify the value of this context for all components inside.
      *
@@ -1469,7 +1468,7 @@ declare global {
      */
     function createContext<T>(defaultValue: T): Context<T>;
     function isValidElement<P>(
-      object: {} | null | undefined
+      object: {} | null | undefined,
     ): object is ReblendElement;
     /**
      * Maintainer's note: Sync with {@link ReblendChildren} until {@link ReblendChildren} is removed.
@@ -1477,18 +1476,18 @@ declare global {
     const Children: {
       map<T, C>(
         children: C | readonly C[],
-        fn: (child: C, index: number) => T
+        fn: (child: C, index: number) => T,
       ): C extends null | undefined
         ? C
         : Array<Exclude<T, boolean | null | undefined>>;
       forEach<C>(
         children: C | readonly C[],
-        fn: (child: C, index: number) => void
+        fn: (child: C, index: number) => void,
       ): void;
       count(children: any): number;
       only<C>(children: C): C extends any[] ? never : C;
       toArray(
-        children: ReblendNode | ReblendNode[]
+        children: ReblendNode | ReblendNode[],
       ): Array<Exclude<ReblendNode, boolean | null | undefined>>;
     };
     /**
@@ -1619,7 +1618,7 @@ declare global {
        *
        * @see {@link https://reblend.dev/reference/reblend/Profiler#onrender-callback Reblend Docs}
        */
-      commitTime: number
+      commitTime: number,
     ) => void;
     /**
      * The props accepted by {@link Profiler}.
@@ -1680,8 +1679,8 @@ declare global {
        * @async
        * @returns {React.ReactNode} The created react node(s).
        */
-      static wrapperChildrenToReact(
-        components: ReblendElement
+      static wrapChildrenToReact(
+        components: JSX.Element | JSXElementConstructor<Record<string, never>>,
       ): Promise<React.ReactNode>;
       /**
        * Constructs a VNode from the provided display name, props, and children.
@@ -1711,7 +1710,7 @@ declare global {
       static mountOn(
         elementId: string,
         app: typeof Component | FunctionComponent,
-        props?: IAny
+        props?: IAny,
       ): Promise<void>;
       nearestStandardParent?: HTMLElement;
       /**
@@ -1953,7 +1952,7 @@ declare global {
        */
       dependenciesChanged(
         currentDependencies: Array<any>,
-        previousDependencies: Array<any>
+        previousDependencies: Array<any>,
       ): boolean;
       /**
        * State management hook for functional components.
@@ -2318,7 +2317,7 @@ declare global {
     type ClassType<
       P,
       T extends Component<P, ComponentState>,
-      C extends ComponentClass<P>
+      C extends ComponentClass<P>,
     > = C & (new (props: P) => T);
     interface ComponentLifecycle<P, S, SS = any>
       extends NewLifecycle<P, S, SS>,
@@ -2426,7 +2425,7 @@ declare global {
      * ```
      */
     function forwardRef<T, P = {}>(
-      render: ForwardRefRenderFunction<T, P>
+      render: ForwardRefRenderFunction<T, P>,
     ): ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<T>>;
     /**
      * Omits the 'ref' attribute from the given props object.
@@ -2481,12 +2480,13 @@ declare global {
      * ```
      */
     type ComponentProps<
-      T extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>
-    > = T extends JSXElementConstructor<infer P>
-      ? P
-      : T extends keyof JSX.IntrinsicElements
-      ? JSX.IntrinsicElements[T]
-      : {};
+      T extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>,
+    > =
+      T extends JSXElementConstructor<infer P>
+        ? P
+        : T extends keyof JSX.IntrinsicElements
+          ? JSX.IntrinsicElements[T]
+          : {};
     /**
      * Used to retrieve the props a component accepts with its ref. Can either be
      * passed a string, indicating a DOM element (e.g. 'div', 'span', etc.) or the
@@ -2527,12 +2527,12 @@ declare global {
      * ```
      */
     type CustomComponentPropsWithRef<T extends ComponentType> = T extends new (
-      props: infer P
+      props: infer P,
     ) => Component<any, any>
       ? PropsWithoutRef<P> & RefAttributes<InstanceType<T>>
       : T extends (props: infer P) => ReblendNode
-      ? PropsWithRef<P>
-      : never;
+        ? PropsWithRef<P>
+        : never;
     /**
      * Used to retrieve the props a component accepts without its ref. Can either be
      * passed a string, indicating a DOM element (e.g. 'div', 'span', etc.) or the
@@ -2582,8 +2582,8 @@ declare global {
       Component: FunctionComponent<P>,
       propsAreEqual?: (
         prevProps: Readonly<P>,
-        nextProps: Readonly<P>
-      ) => boolean
+        nextProps: Readonly<P>,
+      ) => boolean,
     ): NamedExoticComponent<P>;
     interface LazyExoticComponent<T extends ComponentType<any>>
       extends ExoticComponent<CustomComponentPropsWithRef<T>> {
@@ -2612,7 +2612,7 @@ declare global {
     function lazy<T extends ComponentType<any>>(
       load: () => Promise<{
         default: T;
-      }>
+      }>,
     ): LazyExoticComponent<T>;
     /**
      * The instruction passed to a {@link Dispatch} function in {@link useState}
@@ -2646,18 +2646,10 @@ declare global {
     type DispatchWithoutAction = () => void;
     type Reducer<S, A> = (prevState: S, action: A) => S;
     type ReducerWithoutAction<S> = (prevState: S) => S;
-    type ReducerState<R extends Reducer<any, any>> = R extends Reducer<
-      infer S,
-      any
-    >
-      ? S
-      : never;
-    type ReducerAction<R extends Reducer<any, any>> = R extends Reducer<
-      any,
-      infer A
-    >
-      ? A
-      : never;
+    type ReducerState<R extends Reducer<any, any>> =
+      R extends Reducer<infer S, any> ? S : never;
+    type ReducerAction<R extends Reducer<any, any>> =
+      R extends Reducer<any, infer A> ? A : never;
     type ReducerStateWithoutAction<R extends ReducerWithoutAction<any>> =
       R extends ReducerWithoutAction<infer S> ? S : never;
     type DependencyList = readonly unknown[];
@@ -2680,7 +2672,7 @@ declare global {
      * @see {@link https://reblend.dev/reference/reblend/useState}
      */
     function useState<S>(
-      initialState: S | (() => S)
+      initialState: S | (() => S),
     ): [S, Dispatch<SetStateAction<S>>];
     /**
      * Returns a stateful value, and a function to update it.
@@ -2690,7 +2682,7 @@ declare global {
      */
     function useState<S = undefined>(): [
       S | undefined,
-      Dispatch<SetStateAction<S | undefined>>
+      Dispatch<SetStateAction<S | undefined>>,
     ];
     /**
      * An alternative to `useState`.
@@ -2705,7 +2697,7 @@ declare global {
     function useReducer<R extends ReducerWithoutAction<any>, I>(
       reducer: R,
       initializerArg: I,
-      initializer: (arg: I) => ReducerStateWithoutAction<R>
+      initializer: (arg: I) => ReducerStateWithoutAction<R>,
     ): [ReducerStateWithoutAction<R>, DispatchWithoutAction];
     /**
      * An alternative to `useState`.
@@ -2720,7 +2712,7 @@ declare global {
     function useReducer<R extends ReducerWithoutAction<any>>(
       reducer: R,
       initializerArg: ReducerStateWithoutAction<R>,
-      initializer?: undefined
+      initializer?: undefined,
     ): [ReducerStateWithoutAction<R>, DispatchWithoutAction];
     /**
      * An alternative to `useState`.
@@ -2735,7 +2727,7 @@ declare global {
     function useReducer<R extends Reducer<any, any>, I>(
       reducer: R,
       initializerArg: I & ReducerState<R>,
-      initializer: (arg: I & ReducerState<R>) => ReducerState<R>
+      initializer: (arg: I & ReducerState<R>) => ReducerState<R>,
     ): [ReducerState<R>, Dispatch<ReducerAction<R>>];
     /**
      * An alternative to `useState`.
@@ -2750,7 +2742,7 @@ declare global {
     function useReducer<R extends Reducer<any, any>, I>(
       reducer: R,
       initializerArg: I,
-      initializer: (arg: I) => ReducerState<R>
+      initializer: (arg: I) => ReducerState<R>,
     ): [ReducerState<R>, Dispatch<ReducerAction<R>>];
     /**
      * An alternative to `useState`.
@@ -2765,7 +2757,7 @@ declare global {
     function useReducer<R extends Reducer<any, any>>(
       reducer: R,
       initialState: ReducerState<R>,
-      initializer?: undefined
+      initializer?: undefined,
     ): [ReducerState<R>, Dispatch<ReducerAction<R>>];
     /**
      * `useRef` returns a mutable ref object whose `.current` property is initialized to the passed argument
@@ -2818,7 +2810,7 @@ declare global {
      */
     function useLayoutEffect(
       effect: EffectCallback,
-      deps?: DependencyList
+      deps?: DependencyList,
     ): void;
     /**
      * Accepts a function that contains imperative, possibly effectful code.
@@ -2842,7 +2834,7 @@ declare global {
     function useImperativeHandle<T, R extends T>(
       ref: Ref<T> | undefined,
       init: () => R,
-      deps?: DependencyList
+      deps?: DependencyList,
     ): void;
     /**
      * `useCallback` will return a memoized version of the callback that only changes if one of the `inputs`
@@ -2853,7 +2845,7 @@ declare global {
      */
     function useCallback<T extends Function>(
       callback: T,
-      deps: DependencyList
+      deps: DependencyList,
     ): T;
     /**
      * `useMemo` will only recompute the memoized value when one of the `deps` has changed.
@@ -2940,7 +2932,7 @@ declare global {
      */
     function useInsertionEffect(
       effect: EffectCallback,
-      deps?: DependencyList
+      deps?: DependencyList,
     ): void;
     /**
      * @param subscribe
@@ -2951,7 +2943,7 @@ declare global {
     function useSyncExternalStore<Snapshot>(
       subscribe: (onStoreChange: () => void) => () => void,
       getSnapshot: () => Snapshot,
-      getServerSnapshot?: () => Snapshot
+      getServerSnapshot?: () => Snapshot,
     ): Snapshot;
     interface BaseSyntheticEvent<E = object, C = any, T = any> {
       nativeEvent: E;
@@ -3136,7 +3128,7 @@ declare global {
     interface HTMLProps<T> extends AllHTMLAttributes<T>, ClassAttributes<T> {}
     type DetailedHTMLProps<
       E extends HTMLAttributes<T>,
-      T
+      T,
     > = ClassAttributes<T> & E;
     interface SVGProps<T> extends SVGAttributes<T>, ClassAttributes<T> {}
     interface SVGLineElementAttributes<T> extends SVGProps<T> {}
@@ -6487,8 +6479,8 @@ declare global {
       [K in keyof T]?: null extends T[K]
         ? Validator<T[K] | null | undefined>
         : undefined extends T[K]
-        ? Validator<T[K] | null | undefined>
-        : Validator<T[K]>;
+          ? Validator<T[K] | null | undefined>
+          : Validator<T[K]>;
     };
     /**
      * @deprecated Use `PropTypes.*` where `PropTypes` comes from `import * as PropTypes from 'prop-types'` instead.
@@ -6517,18 +6509,18 @@ declare global {
     interface ReblendChildren {
       map<T, C>(
         children: C | readonly C[],
-        fn: (child: C, index: number) => T
+        fn: (child: C, index: number) => T,
       ): C extends null | undefined
         ? C
         : Array<Exclude<T, boolean | null | undefined>>;
       forEach<C>(
         children: C | readonly C[],
-        fn: (child: C, index: number) => void
+        fn: (child: C, index: number) => void,
       ): void;
       count(children: any): number;
       only<C>(children: C): C extends any[] ? never : C;
       toArray(
-        children: ReblendNode | ReblendNode[]
+        children: ReblendNode | ReblendNode[],
       ): Array<Exclude<ReblendNode, boolean | null | undefined>>;
     }
     interface AbstractView {
@@ -6598,10 +6590,10 @@ declare global {
     ? IsExactlyAny<P> extends true
       ? T
       : string extends keyof P
-      ? P
-      : Pick<P, NotExactlyAnyPropertyKeys<P>> &
-          Pick<T, Exclude<keyof T, NotExactlyAnyPropertyKeys<P>>> &
-          Pick<P, Exclude<keyof P, keyof T>>
+        ? P
+        : Pick<P, NotExactlyAnyPropertyKeys<P>> &
+            Pick<T, Exclude<keyof T, NotExactlyAnyPropertyKeys<P>>> &
+            Pick<P, Exclude<keyof P, keyof T>>
     : never;
   /**
    * Description placeholder
@@ -6641,15 +6633,15 @@ declare global {
   }
     ? Defaultize<MergePropTypes<P, PropTypes.InferProps<T>>, D>
     : C extends {
-        propTypes: infer T;
-      }
-    ? MergePropTypes<P, PropTypes.InferProps<T>>
-    : C extends {
-        defaultProps: infer D;
-        props: infer D;
-      }
-    ? Defaultize<P, D>
-    : P;
+          propTypes: infer T;
+        }
+      ? MergePropTypes<P, PropTypes.InferProps<T>>
+      : C extends {
+            defaultProps: infer D;
+            props: infer D;
+          }
+        ? Defaultize<P, D>
+        : P;
 }
 
 export enum ChildrenPropsUpdateType {

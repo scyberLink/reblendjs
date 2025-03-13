@@ -10,11 +10,11 @@ function TooltipPositionedExample() {
         <OverlayTrigger
           key={placement}
           placement={'auto'}
-          overlay={
+          overlay={Reblend.wrapChildrenToReact(
             <Tooltip id={`tooltip-${placement}`}>
               Tooltip on <strong>{placement}</strong>.
-            </Tooltip>
-          }
+            </Tooltip>,
+          )}
         >
           <Button variant="secondary">Tooltip on {placement}</Button>
         </OverlayTrigger>

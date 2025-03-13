@@ -215,16 +215,17 @@ export class NodeOperationUtil {
         let oldProp = oldProps[key]
         let newProp = newProps[key]
 
-        // Normalize children or style before deep comparison
-        if (key === 'children' || (key === 'style' && typeof oldProp === 'object')) {
-          oldProp = JSON.stringify(oldProp)
-          newProp = JSON.stringify(newProp)
+        const shouldUseIterativeComparism = key === 'children' || (key === 'style' && typeof oldProp === 'object')
+        let notEqual = false
+        if (shouldUseIterativeComparism) {
+          notEqual = !NodeOperationUtil.deepEqualIterative(oldProp, newProp)
+        } else {
+          notEqual =
+            !NodeOperationUtil.deepCompare(oldProp, newProp) ||
+            (oldNode.displayName === 'select' && key === 'value' && oldNode['value'] !== newProp)
         }
 
-        if (
-          !NodeOperationUtil.deepCompare(oldProp, newProp) ||
-          (oldNode.displayName === 'select' && key === 'value' && oldNode['value'] !== newProp)
-        ) {
+        if (notEqual) {
           oldProp = null
           newProp = null
           patches.push({
@@ -251,6 +252,63 @@ export class NodeOperationUtil {
     }
 
     return patches
+  }
+
+  /**
+   * Compares two values for deep equality using an iterative approach to avoid stack overflow issues with large objects.
+   * This function handles circular references and ignores properties named 'ref'.
+   * It also ignores instances of `HTMLElement` if they exist in both objects.
+   *
+   * @param a - The first value to compare.
+   * @param b - The second value to compare.
+   * @returns `true` if the values are deeply equal, `false` otherwise.
+   */
+  static deepEqualIterative(a: any, b: any): boolean {
+    const stack = [{ a, b }]
+    const seen = new WeakMap()
+
+    while (stack.length) {
+      const { a, b } = stack.pop()!
+      if (a === b) continue
+
+      if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
+        return false
+      }
+
+      if (a.constructor !== b.constructor) {
+        return false
+      }
+
+      // Ignore instances of HTMLElement if they exist in both
+      if (a instanceof Node && b instanceof Node) {
+        continue
+      }
+
+      if (seen.has(a)) {
+        if (seen.get(a) !== b) {
+          return false // Circular reference detected but points to different objects
+        }
+        continue // Circular reference detected and points to the same objects
+      }
+
+      seen.set(a, b)
+
+      const keysA = Object.keys(a).filter((key) => key !== 'ref')
+      const keysB = Object.keys(b).filter((key) => key !== 'ref')
+
+      if (keysA.length !== keysB.length) {
+        return false
+      }
+
+      for (const key of keysA) {
+        if (!b.hasOwnProperty(key)) {
+          return false
+        }
+        stack.push({ a: a[key], b: b[key] })
+      }
+    }
+
+    return true
   }
 
   /**

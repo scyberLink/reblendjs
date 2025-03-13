@@ -8,7 +8,7 @@ export default function Placeholder({ style }: { style?: CSSProperties | string 
   const id = rand(1234, 5678)
 
   return (
-    <div style={styles.placeholder}>
+    <div style={styles.placeholder as any}>
       <div data-reblendplaceholder={`${id}`} style={{ ...styles.loadingBar, ...objectStyle }}></div>
       <style>{`
         @keyframes loading {

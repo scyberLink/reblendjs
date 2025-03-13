@@ -67,7 +67,9 @@ export class BaseComponent<
   static props: IAny
   static config?: ReblendComponentConfig
 
-  static async wrapperChildrenToReact(components: ReblendTyping.ReblendElement) {
+  static async wrapChildrenToReact(
+    components: JSX.Element | ReblendTyping.JSXElementConstructor<Record<string, never>>,
+  ) {
     const elementChildren = await ElementUtil.createElement(components as any)
     return await ReblendReactClass.getChildrenWrapperForReact(elementChildren)
   }
