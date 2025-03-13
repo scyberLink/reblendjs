@@ -7,6 +7,11 @@ import { PropertyUtil } from './PropertyUtil'
 import { Reblend } from './Reblend'
 import { ReblendReactClass } from './ReblendReactClass'
 
+const componentConfig: { [key: string]: boolean } = {
+  ReblendPlaceholder: true,
+  defaultReblendPlaceholderStyle: true,
+}
+
 export const ElementUtil = class {
   /**
    * Creates an HTML, SVG, MathML, or XML element based on the provided tag name.
@@ -173,11 +178,14 @@ export const ElementUtil = class {
       NodeUtil.extendPrototype(element, Reblend.prototype)
     } else {
       NodeUtil.extendPrototype(element, clazz.prototype)
-      if (clazz.ReblendPlaceholder) {
-        element.ReblendPlaceholder = clazz.ReblendPlaceholder
-      }
-      if (clazz.defaultReblendPlaceholderStyle) {
-        element.defaultReblendPlaceholderStyle = clazz.defaultReblendPlaceholderStyle
+      if (clazz.config) {
+        Object.entries(clazz.config).forEach(([key, value]) => {
+          if (!componentConfig[key]) {
+            throw new Error(`Unsupported key \`${key}\` found in component configuration.`)
+          } else {
+            element[key] = value
+          }
+        })
       }
     }
     if (isReactNode) {

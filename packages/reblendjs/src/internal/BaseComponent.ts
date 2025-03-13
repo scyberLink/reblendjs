@@ -65,8 +65,7 @@ export class BaseComponent<
   [reblendComponent: symbol]: boolean
   static ELEMENT_NAME = 'BaseComponent'
   static props: IAny
-  static ReblendPlaceholder?: VNode | typeof Reblend
-  static defaultReblendPlaceholderStyle?: CSSProperties | string
+  static config?: ReblendComponentConfig
 
   static async wrapperChildrenToReact(components: ReblendTyping.ReblendElement) {
     const elementChildren = await ElementUtil.createElement(components as any)

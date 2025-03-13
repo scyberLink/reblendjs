@@ -1,6 +1,6 @@
 import * as CSS from 'csstype';
 import * as PropTypes from 'prop-types';
-import React from 'react';
+import React, { CSSProperties } from 'react';
 declare global {
   /**
    * Represents a generic event in the DOM.
@@ -690,6 +690,18 @@ declare global {
     parent?: ReblendTyping.Component;
     patches?: PropPatch[];
   }
+
+  export interface ReblendComponentConfig {
+    /**
+     * Component to render first if this component is asyncronous
+     */
+    ReblendPlaceholder?: ReblendTyping.ReblendElement;
+    /**
+     * Style for default reblend placeholder i.e if your are not using custom placeholder for your async components
+     */
+    defaultReblendPlaceholderStyle?: string | CSSProperties;
+  }
+
   export namespace ReblendTyping {
     /**
      * Represents a mutable reference object whose `current` property can hold a value of type `T` or an `HTMLElement`.
@@ -1657,13 +1669,9 @@ declare global {
        */
       static props: any;
       /**
-       * Component to render first if this component is asyncronous
+       * static configuration for the component
        */
-      static ReblendPlaceholder?: VNode | typeof Component<any, any>;
-      /**
-       * Style for default reblend placeholder i.e if your are not using custom placeholder for your async components
-       */
-      static defaultReblendPlaceholderStyle?: CSSProperties | string;
+      static config?: ReblendComponentConfig;
       /**
        * Creates react node that wraps the components.
        * Useful if a react component requires a props of type react nodes.
