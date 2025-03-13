@@ -14,6 +14,48 @@ export interface ReblendReactClass extends BaseComponent {}
  * to provide integration with React and Reblend.
  */
 export class ReblendReactClass {
+  /**
+   * Returns a React element that wraps the children of the current component for rendering in React.
+   * It ensures that child elements are properly attached to the standard parent container.
+   *
+   * @returns {React.ReactElement} The React element representing the children wrapper for React.
+   */
+  static async getChildrenWrapperForReact(elementChildren: Iterable<ReblendTyping.Component>) {
+    const { default: React } = await import('react')
+
+    const children = Array.from(elementChildren).map((child) => {
+      const isReactNode = NodeUtil.isReactToReblendRenderedNode(child)
+      const isReblendNode = NodeUtil.isReblendRenderedNode(child)
+      const isReblendPrimitiveElement = NodeUtil.isReblendPrimitiveElement(child)
+      const tagName = isReactNode || isReblendNode ? 'div' : isReblendPrimitiveElement ? 'span' : child.displayName
+
+      return React.createElement(
+        tagName,
+        {
+          [REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT]: child.displayName || '',
+          ...((child.props as any)?.value !== undefined ? { value: (child.props as any).value } : {}),
+          ref: async (node: HTMLElement) => {
+            if (node) {
+              if (!node.contains(child)) {
+                node.appendChild(child)
+                setTimeout(() => {
+                  if (!child.attached) {
+                    NodeOperationUtil.connected(child)
+                  }
+                }, 0)
+              }
+            } else {
+              child.remove()
+            }
+          },
+        },
+        null,
+      )
+    })
+
+    return children?.length && children.length < 2 ? children.pop() : children
+  }
+
   html() {
     return (this.props as any).children
   }
@@ -35,49 +77,6 @@ export class ReblendReactClass {
           throw new Error('Invalid props update type provided')
       }
     }
-  }
-
-  /**
-   * Returns a React element that wraps the children of the current component for rendering in React.
-   * It ensures that child elements are properly attached to the standard parent container.
-   *
-   * @returns {React.ReactElement} The React element representing the children wrapper for React.
-   */
-  async getChildrenWrapperForReact() {
-    const { default: React } = await import('react')
-
-    const children = this.elementChildren
-      ?.values()
-      .toArray()
-      .map((child) => {
-        const isReactNode = NodeUtil.isReactToReblendRenderedNode(child)
-        const isReblendNode = NodeUtil.isReblendRenderedNode(child)
-        const isReblendPrimitiveElement = NodeUtil.isReblendPrimitiveElement(child)
-        const tagName = isReactNode || isReblendNode ? 'div' : isReblendPrimitiveElement ? 'span' : child.displayName
-
-        return React.createElement(
-          tagName,
-          {
-            [REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT]: child.displayName || '',
-            ...child.props,
-            class: '',
-            className: '',
-            ref: async (node: HTMLElement & { childrenAttached?: boolean }) => {
-              if (node) {
-                if (!node.contains(child)) {
-                  node.appendChild(child)
-                  setTimeout(() => NodeOperationUtil.connected(child), 0)
-                }
-              } else {
-                child.remove()
-              }
-            },
-          },
-          null,
-        )
-      })
-
-    return children?.length && children.length < 2 ? children.pop() : children
   }
 
   /**
@@ -107,28 +106,22 @@ export class ReblendReactClass {
     const children =
       !this.props?.children || !(this.props?.children as any)?.length
         ? undefined
-        : await this.getChildrenWrapperForReact()
+        : await ReblendReactClass.getChildrenWrapperForReact(this.elementChildren!)
 
     await this.initRoot()
 
-    //const warn = window.console.warn
-    //const error = window.console.error
-    //const log = window.console.log
-
-    //window.console.warn = () => {}
-    //window.console.error = () => {}
-    //window.console.log = () => {}
+    const filtered = { ...this.props }
+    if (filtered.children !== undefined) {
+      delete filtered.children
+    }
 
     this.reactDomCreateRoot_root?.render(
-      React.createElement(this.ReactClass, {
-        ...this.props,
-        children,
-      }),
+      React.createElement(
+        this.ReactClass,
+        filtered,
+        ...(Array.isArray(children) ? children : children ? [children] : []),
+      ),
     )
-
-    //window.console.warn = warn
-    //window.console.error = error
-    //window.console.log = log
   }
 
   /**

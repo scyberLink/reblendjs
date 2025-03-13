@@ -1665,6 +1665,17 @@ declare global {
        */
       static defaultReblendPlaceholderStyle?: CSSProperties | string;
       /**
+       * Creates react node that wraps the components.
+       * Useful if a react component requires a props of type react nodes.
+       *
+       * @param {ReblendElement} components - The components to return its react wrapper
+       * @async
+       * @returns {React.ReactNode} The created react node(s).
+       */
+      static wrapperChildrenToReact(
+        components: ReblendElement
+      ): Promise<React.ReactNode>;
+      /**
        * Constructs a VNode from the provided display name, props, and children.
        * If the display name is an array, it will return that array.
        * Otherwise, it constructs a new VNode using the provided properties.
@@ -1785,10 +1796,7 @@ declare global {
        * The disconnect effects to apply when the component is disconnected.
        */
       disconnectEffects?: Set<ReblendTyping.StateEffectiveFunction>;
-      /**
-       * Error thrown when a state identifier/key is not specified.
-       */
-      stateIdNotIncluded: Error;
+
       /**
        * Indicates number of awaiting updates.
        */

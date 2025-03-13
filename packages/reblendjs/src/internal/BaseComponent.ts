@@ -9,6 +9,7 @@ import { ElementUtil } from './ElementUtil'
 import { DiffUtil } from './DiffUtil'
 import { NodeOperationUtil } from './NodeOperationUtil'
 import { CSSProperties } from 'react'
+import { ReblendReactClass } from './ReblendReactClass'
 
 StyleUtil
 
@@ -42,7 +43,6 @@ export interface BaseComponent<P, S> extends HTMLElement {
   effectsFn: Set<ReblendTyping.StateEffectiveFunction>
   disconnectEffects: Set<ReblendTyping.StateEffectiveFunction>
   checkPropsChange(): Promise<void>
-  stateIdNotIncluded: Error
   hasDisconnected: boolean
   htmlElements: ReblendTyping.Component[]
   childrenPropsUpdate: Set<ChildrenPropsUpdateType>
@@ -55,6 +55,8 @@ export interface BaseComponent<P, S> extends HTMLElement {
   reactReblendMount: undefined | ((afterNode?: HTMLElement) => any)
 }
 
+const stateIdNotIncluded = new Error('State Identifier/Key not specified')
+
 export class BaseComponent<
   P = Record<string, never>,
   S extends { renderingErrorHandler?: (error: Error) => void } = Record<string, never>,
@@ -65,6 +67,11 @@ export class BaseComponent<
   static props: IAny
   static ReblendPlaceholder?: VNode | typeof Reblend
   static defaultReblendPlaceholderStyle?: CSSProperties | string
+
+  static async wrapperChildrenToReact(components: ReblendTyping.ReblendElement) {
+    const elementChildren = await ElementUtil.createElement(components as any)
+    return await ReblendReactClass.getChildrenWrapperForReact(elementChildren)
+  }
 
   static construct(
     displayName: typeof Reblend | string | VNode[],
@@ -190,9 +197,6 @@ export class BaseComponent<
     }, 100)
   }
 
-  stateIdNotIncluded = new Error('State Identifier/Key not specified')
-  hasDisconnected = false
-
   async createInnerHtmlElements() {
     let htmlVNodes = await this.html()
     if (!Array.isArray(htmlVNodes)) {
@@ -257,11 +261,13 @@ export class BaseComponent<
               placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
               this.removePlaceholder = undefined as any
             }
-            new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
             placeholderElements.forEach((placeholderElement) => {
               placeholderElement.directParent = this
               placeholderElement.isPlaceholder = true
               NodeOperationUtil.connected(placeholderElement)
+            })
+            requestAnimationFrame(() => {
+              /* empty */
             })
           }
         })
@@ -281,11 +287,13 @@ export class BaseComponent<
               placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
               this.removePlaceholder = undefined as any
             }
-            new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
             placeholderElements.forEach((placeholderElement) => {
               placeholderElement.directParent = this
               placeholderElement.isPlaceholder = true
               NodeOperationUtil.connected(placeholderElement)
+            })
+            requestAnimationFrame(() => {
+              /* empty */
             })
           }
         })
@@ -386,18 +394,20 @@ export class BaseComponent<
       this.applyEffects()
       this.stateEffectRunning = false
       this.onStateChangeRunning = true
-      newVNodes = await this.html()
-      if (!Array.isArray(newVNodes)) {
-        newVNodes = [newVNodes as any]
-      }
-      newVNodes = DiffUtil.flattenVNodeChildren(newVNodes as VNodeChildren) as any
-      const oldNodes = [...(this.elementChildren?.values() || [])]
+      if (this.childrenInitialize) {
+        newVNodes = await this.html()
+        if (!Array.isArray(newVNodes)) {
+          newVNodes = [newVNodes as any]
+        }
+        newVNodes = DiffUtil.flattenVNodeChildren(newVNodes as VNodeChildren) as any
+        const oldNodes = [...(this.elementChildren?.values() || [])]
 
-      const maxLength = Math.max(oldNodes.length || 0, (newVNodes as VNodeChildren).length)
-      for (let i = 0; i < maxLength; i++) {
-        const newVNode: VNodeChild = newVNodes![i]
-        const currentVNode = oldNodes[i]
-        patches.push(...NodeOperationUtil.diff(this as any, currentVNode as any, newVNode))
+        const maxLength = Math.max(oldNodes.length || 0, (newVNodes as VNodeChildren).length)
+        for (let i = 0; i < maxLength; i++) {
+          const newVNode: VNodeChild = newVNodes![i]
+          const currentVNode = oldNodes[i]
+          patches.push(...NodeOperationUtil.diff(this as any, currentVNode as any, newVNode))
+        }
       }
     } catch (error) {
       this.handleError(error as Error)
@@ -461,7 +471,7 @@ export class BaseComponent<
     const stateID: string | undefined = dependencyStringAndOrStateKey.pop()
 
     if (!stateID) {
-      throw this.stateIdNotIncluded
+      throw stateIdNotIncluded
     }
 
     if (typeof initial === 'function') {
@@ -534,7 +544,7 @@ export class BaseComponent<
     const stateID: string | undefined = dependencyStringAndOrStateKey.pop()
 
     if (!stateID) {
-      throw this.stateIdNotIncluded
+      throw stateIdNotIncluded
     }
     const [state, setState] = this.useState<T>(initial, stateID)
     this.state[stateID] = state
@@ -560,7 +570,7 @@ export class BaseComponent<
     const stateID: string | undefined = dependencyStringAndOrStateKey.pop()
 
     if (!stateID) {
-      throw this.stateIdNotIncluded
+      throw stateIdNotIncluded
     }
 
     const [state, setState] = this.useState<T>(fn(), stateID)
@@ -614,7 +624,6 @@ export class BaseComponent<
     this.childrenPropsUpdate = new Set()
     this.numAwaitingUpdates = 0
     this.effectState = {}
-    this.stateIdNotIncluded = new Error('State Identifier/Key not specified')
     this.hasDisconnected = false
   }
 }

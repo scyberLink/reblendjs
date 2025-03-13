@@ -56,7 +56,7 @@ export class NodeOperationUtil {
       ;(node as ReblendTyping.Component).connectedCallback()
     }
     for (const child of [...((node as ReblendTyping.Component).elementChildren?.values() || [])]) {
-      this.connected(child as HTMLElement)
+      NodeOperationUtil.connected(child as HTMLElement)
     }
   }
 
@@ -86,7 +86,7 @@ export class NodeOperationUtil {
         const lastAttachedIndex = reactElementChildrenArray.indexOf(lastAttached)
 
         if (lastAttachedIndex !== -1) {
-          reactElementChildrenArray.splice(lastAttachedIndex + 1, 0, node)
+          reactElementChildrenArray.splice(lastAttachedIndex, 0, node)
         } else {
           reactElementChildrenArray.push(node)
         }
@@ -187,7 +187,9 @@ export class NodeOperationUtil {
             patches: propsDiff,
           })
         }
-        patches.push(...NodeOperationUtil.diffChildren(oldNode, oldNode, newNode as VNode))
+        if (oldNode.childrenInitialize) {
+          patches.push(...NodeOperationUtil.diffChildren(oldNode, oldNode, newNode as VNode))
+        }
       }
     }
 

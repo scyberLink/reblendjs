@@ -70,6 +70,7 @@ export type Context<T> = {
 }
 
 const invalidContext = new Error('Invalid context')
+const stateIdNotIncluded = new Error('State Identifier/Key not specified')
 
 /**
  * Hook to manage state within a Reblend component.
@@ -193,8 +194,7 @@ export function useContext<T>(
   const stateID: string | undefined = dependencyStringAndOrStateKey.pop()
 
   if (!stateID) {
-    //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
-    throw this.stateIdNotIncluded
+    throw stateIdNotIncluded
   }
 
   if (typeof stateID !== 'string') {

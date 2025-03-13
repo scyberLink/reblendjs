@@ -212,7 +212,7 @@ export const ElementUtil = class {
       }
     }
 
-    if (NodeUtil.isStandard(element)) {
+    if (NodeUtil.isStandard(element) || isReactNode) {
       await PropertyUtil.setProps((vNode as VNode).props, element, true)
       await element.populateHtmlElements()
     } else {
