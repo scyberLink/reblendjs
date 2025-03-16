@@ -55,5 +55,5 @@
     "test-cov": "nyc --reporter=html --reporter=text npm test",
     "test-tap": "mocha --require test/support/env --reporter tap --check-leaks test/ test/acceptance/"
   },
-  "gitHead": "ec5937e6f4e846dd8b46bb9d5220d3f62d88c872"
+  "gitHead": "79a3e22f73913a686e76631559ba7830f7eb2e98"
 }
