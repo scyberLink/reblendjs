@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChildrenPropsUpdateType } from 'reblend-typing'
+import { ChildrenPropsUpdateType, ReblendTyping } from 'reblend-typing'
 import { NodeUtil } from './NodeUtil'
 import { NodeOperationUtil } from './NodeOperationUtil'
 import { REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
@@ -20,7 +20,7 @@ export class ReblendReactClass {
    *
    * @returns {React.ReactElement} The React element representing the children wrapper for React.
    */
-  static async getChildrenWrapperForReact(elementChildren: Iterable<ReblendTyping.Component>) {
+  static async getChildrenWrapperForReact<P, S>(elementChildren: Iterable<ReblendTyping.Component<P, S>>) {
     const { default: React } = await import('react')
 
     const children = Array.from(elementChildren).map((child) => {

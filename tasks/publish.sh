@@ -22,6 +22,7 @@ set -e
 # Echo every command being executed
 set -x
 
+npm run npm "run build"
 # Go to root
 cd ..
 root_path=$PWD

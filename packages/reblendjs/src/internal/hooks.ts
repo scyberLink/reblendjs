@@ -6,6 +6,7 @@ import { BaseComponent } from './BaseComponent'
 import { SharedConfig } from '../common/SharedConfig'
 import { rand } from '../common/utils'
 import { NodeUtil } from './NodeUtil'
+import { ReblendTyping } from 'reblend-typing'
 
 const contextValue = Symbol('Reblend.contextValue')
 const contextInnerValue = Symbol('Reblend.contextInnerValue')

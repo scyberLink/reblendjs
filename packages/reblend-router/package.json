@@ -17,8 +17,7 @@
     "reblendjs": "latest"
   },
   "scripts": {
-    "build": "rm -rf dist; rm -rf lib; tsc && babel dist --out-dir lib",
-    "prepublish": "npm run build"
+    "build": "rm -rf dist; rm -rf lib; tsc && babel dist --out-dir lib"
   },
   "browserslist": {
     "production": [

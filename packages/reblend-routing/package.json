@@ -49,7 +49,6 @@
   "scripts": {
     "lint": "eslint .",
     "build": "rm -rf dist; rm -rf lib; tsc",
-    "prepublish": "npm run build",
     "test": "mocha --require test/support/env --reporter spec --bail --check-leaks test/ test/acceptance/",
     "test-ci": "nyc --reporter=lcovonly --reporter=text npm test",
     "test-cov": "nyc --reporter=html --reporter=text npm test",

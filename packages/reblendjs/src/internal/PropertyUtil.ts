@@ -1,4 +1,4 @@
-import { attributeName, shouldUseSetAttribute } from 'reblend-typing'
+import { attributeName, ReblendTyping, shouldUseSetAttribute } from 'reblend-typing'
 import { NodeUtil } from './NodeUtil'
 import { EventUtil } from './EventUtil'
 import { ElementUtil } from './ElementUtil'
@@ -8,19 +8,18 @@ export class PropertyUtil {
   /**
    * Sets properties on the target component, updating attributes and handling special cases like events and style.
    *
-   * @param {IAny} props - The properties to set.
+   * @param {ReblendTyping.IAny} props - The properties to set.
    * @param {ReblendTyping.Component} to - The target component to apply the properties to.
    * @param {boolean} init - Whether this is an initial setting of properties.
    */
-  static async setProps(props: IAny, to: ReblendTyping.Component, init: boolean) {
+  static async setProps<P, S>(props: ReblendTyping.IAny, to: ReblendTyping.Component<P, S>, init: boolean) {
     if (!props || !to) {
       return
     }
 
     if (init && to.initProps) {
-      await to.initProps(props)
+      await to.initProps(props as any)
     } else {
-      //@ts-expect-error I know its readonly
       to.props = { ...(to.props || {}), ...(props || {}) }
     }
 
@@ -64,12 +63,11 @@ export class PropertyUtil {
    * Removes specified properties from the `to` component and removes the corresponding attributes.
    * If a property is to be removed using `setAttribute`, it will also be removed from `props`.
    *
-   * @param {IAny} props - The properties to remove from the component.
+   * @param {ReblendTyping.IAny} props - The properties to remove from the component.
    * @param {ReblendTyping.Component} to - The target component from which to remove the properties.
    */
-  static removeProps(props: IAny, to: ReblendTyping.Component): void {
+  static removeProps<P, S>(props: ReblendTyping.IAny, to: ReblendTyping.Component<P, S>): void {
     if (props && to) {
-      //@ts-expect-error I know its read-only
       to.props = { ...to.props, ...props }
 
       for (const propName in props) {

@@ -49,7 +49,9 @@ function App() {
       {/* @ts-ignore */}
       <Header1 />
       <div {...{ className: 'App' }}>
-        <Header {...{ logo, msg, i: s }} />
+        <Header {...{ logo, msg, i: s }}>
+          <></>
+        </Header>
       </div>
 
       <Routing {...{ s }} />

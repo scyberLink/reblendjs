@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { REBLEND_PRIMITIVE_ELEMENT_NAME } from 'reblend-typing'
+import { REBLEND_PRIMITIVE_ELEMENT_NAME, ReblendTyping } from 'reblend-typing'
 import { isCallable } from '../common/utils'
 import { Reblend } from './Reblend'
 import { type BaseComponent } from './BaseComponent'
@@ -151,10 +151,10 @@ export class NodeUtil {
   /**
    * Checks if the provided display name represents a React node.
    *
-   * @param {IAny} displayName - The display name to check.
+   * @param {ReblendTyping.IAny} displayName - The display name to check.
    * @returns {boolean} `true` if the display name represents a React node, otherwise `false`.
    */
-  static isReactNode(displayName: IAny): boolean {
+  static isReactNode(displayName: ReblendTyping.IAny): boolean {
     return (
       displayName &&
       typeof displayName !== 'string' &&
@@ -170,7 +170,7 @@ export class NodeUtil {
    * @param {ReblendTyping.Component | HTMLElement} node - The node to check.
    * @returns {boolean} - True if the node is standard or a Reblend primitive element, false otherwise.
    */
-  static isStandard(node: ReblendTyping.Component | HTMLElement) {
+  static isStandard<P, S>(node: ReblendTyping.Component<P, S> | HTMLElement) {
     if (!node) {
       return false
     }
@@ -183,7 +183,7 @@ export class NodeUtil {
    * @param {ReblendTyping.Component | HTMLElement} node - The node to check.
    * @returns {boolean} - True if the node is Reblend or a Reblend React element, false otherwise.
    */
-  static isNonStandard(node: ReblendTyping.Component | HTMLElement) {
+  static isNonStandard<P, S>(node: ReblendTyping.Component<P, S> | HTMLElement) {
     if (!node) {
       return false
     }

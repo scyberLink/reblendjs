@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChildrenPropsUpdateType, PatchTypeAndOrder } from 'reblend-typing'
+import { ChildrenPropsUpdateType, PatchTypeAndOrder, ReblendTyping } from 'reblend-typing'
 import { NodeUtil } from './NodeUtil'
 import { isCallable } from '../common/utils'
 import { isEqual } from 'lodash'
@@ -14,12 +14,12 @@ export class NodeOperationUtil {
    * If the node has a `disconnectedCallback`, it will be invoked.
    * Otherwise, it will be removed from the DOM.
    *
-   * @param {ReblendTyping.Component | HTMLElement} node - The node to detach.
+   * @param {ReblendTyping.Component<P, S> | HTMLElement} node - The node to detach.
    */
-  static detach(node: ReblendTyping.Component | HTMLElement) {
+  static detach<P, S>(node: ReblendTyping.Component<P, S> | HTMLElement) {
     if (NodeUtil.isPrimitive(node)) return
-    if ((node as ReblendTyping.Component).disconnectedCallback) {
-      ;(node as ReblendTyping.Component).disconnectedCallback()
+    if ((node as ReblendTyping.Component<P, S>).disconnectedCallback) {
+      ;(node as ReblendTyping.Component<P, S>).disconnectedCallback()
     } else {
       node.outerHTML = ''
       node.innerHTML = ''
@@ -29,16 +29,16 @@ export class NodeOperationUtil {
   }
 
   /**
-   * Detaches all child nodes and HTML elements from the given `ReblendTyping.Component`.
+   * Detaches all child nodes and HTML elements from the given `ReblendTyping.Component<P, S>`.
    * If the node is a primitive, the function returns immediately.
    *
-   * @param {ReblendTyping.Component} node - The parent node from which children will be detached.
+   * @param {ReblendTyping.Component<P, S>} node - The parent node from which children will be detached.
    */
-  static detachChildren(node: ReblendTyping.Component) {
+  static detachChildren<P, S>(node: ReblendTyping.Component<P, S>) {
     if (NodeUtil.isPrimitive(node)) return
     for (const child of new Set([
       ...node.childNodes,
-      ...((node as ReblendTyping.Component).elementChildren?.values() || []),
+      ...((node as ReblendTyping.Component<P, S>).elementChildren?.values() || []),
     ])) {
       NodeOperationUtil.detach(child as any)
     }
@@ -50,12 +50,12 @@ export class NodeOperationUtil {
    * @template T
    * @param {T | undefined} node - The node to connect.
    */
-  static connected<T extends ReblendTyping.Component | HTMLElement>(node: T | undefined) {
+  static connected<P, S, T extends ReblendTyping.Component<P, S> | HTMLElement>(node: T | undefined) {
     if (!node) return
-    if ((node as ReblendTyping.Component).connectedCallback) {
-      ;(node as ReblendTyping.Component).connectedCallback()
+    if ((node as ReblendTyping.Component<P, S>).connectedCallback) {
+      ;(node as ReblendTyping.Component<P, S>).connectedCallback()
     }
-    for (const child of [...((node as ReblendTyping.Component).elementChildren?.values() || [])]) {
+    for (const child of [...((node as ReblendTyping.Component<P, S>).elementChildren?.values() || [])]) {
       NodeOperationUtil.connected(child as HTMLElement)
     }
   }
@@ -64,12 +64,12 @@ export class NodeOperationUtil {
    * Replaces the old node with a new node or nodes.
    * Handles scenarios where old and new nodes may be React-based or standard HTML.
    *
-   * @param {ReblendTyping.Component | ReblendTyping.Component[]} newNode - The new node(s) to replace the old node.
-   * @param {ReblendTyping.Component} oldNode - The old node to be replaced.
+   * @param {ReblendTyping.Component<P, S> | ReblendTyping.Component<P, S>[]} newNode - The new node(s) to replace the old node.
+   * @param {ReblendTyping.Component<P, S>} oldNode - The old node to be replaced.
    */
-  static replaceOldNode(
-    newNode: ReblendTyping.Component | ReblendTyping.Component[],
-    oldNode: ReblendTyping.Component,
+  static replaceOldNode<P, S>(
+    newNode: ReblendTyping.Component<P, S> | ReblendTyping.Component<P, S>[],
+    oldNode: ReblendTyping.Component<P, S>,
   ) {
     let lastAttached = oldNode
     if (!Array.isArray(newNode)) {
@@ -108,17 +108,21 @@ export class NodeOperationUtil {
   /**
    * Creates patches to create or remove nodes by comparing oldNode and newNode.
    *
-   * @param {ReblendTyping.Component} parent - The parent node.
-   * @param {DomNodeChild} oldNode - The old node.
-   * @param {VNodeChild} newNode - The new node.
-   * @returns {Patch[]} - The array of patches.
+   * @param {ReblendTyping.Component<P, S>} parent - The parent node.
+   * @param {ReblendTyping.DomNodeChild} oldNode - The old node.
+   * @param {ReblendTyping.VNodeChild} newNode - The new node.
+   * @returns {ReblendTyping.Patch[]} - The array of patches.
    */
-  static diffCreateOrRemove(parent: ReblendTyping.Component, oldNode: DomNodeChild, newNode: VNodeChild) {
-    const patches: Patch[] = []
+  static diffCreateOrRemove<P, S>(
+    parent: ReblendTyping.Component<P, S>,
+    oldNode: ReblendTyping.DomNodeChild<P, S>,
+    newNode: ReblendTyping.VNodeChild,
+  ) {
+    const patches: ReblendTyping.Patch<P, S>[] = []
     if (
       !NodeUtil.isPrimitive(oldNode) &&
       Object.hasOwn(oldNode, 'reblendPrimitiveData') &&
-      (oldNode as ReblendPrimitive).reblendPrimitiveData == newNode
+      (oldNode as ReblendTyping.ReblendPrimitive<P, S>).reblendPrimitiveData == newNode
     ) {
       return []
     }
@@ -133,13 +137,17 @@ export class NodeOperationUtil {
   /**
    * Diffs oldNode and newNode to generate patches that represent the changes between them.
    *
-   * @param {ReblendTyping.Component} parent - The parent node.
-   * @param {DomNodeChild} oldNode - The old node.
-   * @param {VNodeChild} newNode - The new node.
-   * @returns {Patch[]} - The array of patches.
+   * @param {ReblendTyping.Component<P, S>} parent - The parent node.
+   * @param {ReblendTyping.DomNodeChild} oldNode - The old node.
+   * @param {ReblendTyping.VNodeChild} newNode - The new node.
+   * @returns {ReblendTyping.Patch[]} - The array of patches.
    */
-  static diff(parent: ReblendTyping.Component, oldNode: DomNodeChild, newNode: VNodeChild): Patch[] {
-    const patches: Patch[] = []
+  static diff<P, S>(
+    parent: ReblendTyping.Component<P, S>,
+    oldNode: ReblendTyping.DomNodeChild<P, S>,
+    newNode: ReblendTyping.VNodeChild,
+  ): ReblendTyping.Patch<P, S>[] {
+    const patches: ReblendTyping.Patch<P, S>[] = []
     if (isCallable(oldNode) || isCallable(newNode)) {
       return []
     }
@@ -149,8 +157,8 @@ export class NodeOperationUtil {
     } else if (NodeUtil.isPrimitive(oldNode) && !NodeUtil.isPrimitive(newNode)) {
       patches.push({ type: PatchTypeAndOrder.CREATE, parent, newNode })
     } else if (NodeUtil.isReblendPrimitiveElement(oldNode) && NodeUtil.isPrimitive(newNode)) {
-      if ((<ReblendPrimitive>oldNode).getData() !== newNode) {
-        ;(<ReblendPrimitive>oldNode).setData(newNode as Primitive)
+      if ((<ReblendTyping.ReblendPrimitive<P, S>>oldNode).getData() !== newNode) {
+        ;(<ReblendTyping.ReblendPrimitive<P, S>>oldNode).setData(newNode as ReblendTyping.Primitive)
       }
     } else if (NodeUtil.isReblendPrimitiveElement(oldNode) && !NodeUtil.isPrimitive(newNode)) {
       patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
@@ -171,16 +179,16 @@ export class NodeOperationUtil {
     } else if ('displayName' in oldNode && 'displayName' in (newNode as any)) {
       const oldNodeTag = (oldNode.displayName as string).toLowerCase()
       const newNodeTag = (
-        (NodeUtil.isPrimitive((newNode as VNode).displayName)
-          ? (newNode as VNode).displayName
-          : ((newNode as VNode).displayName as typeof ReblendTyping.Component).ELEMENT_NAME ||
-            ((newNode as VNode).displayName as any).displayName) as string
+        (NodeUtil.isPrimitive((newNode as ReblendTyping.VNode).displayName)
+          ? (newNode as ReblendTyping.VNode).displayName
+          : ((newNode as ReblendTyping.VNode).displayName as any).ELEMENT_NAME ||
+            ((newNode as ReblendTyping.VNode).displayName as any).displayName) as string
       ).toLowerCase()
 
       if (oldNodeTag !== newNodeTag) {
         patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
       } else {
-        const propsDiff = NodeOperationUtil.diffProps(newNode as VNode, oldNode)
+        const propsDiff = NodeOperationUtil.diffProps(newNode as ReblendTyping.VNode, oldNode)
         if (propsDiff && propsDiff.length > 0) {
           patches.push({
             type: PatchTypeAndOrder.UPDATE,
@@ -188,7 +196,7 @@ export class NodeOperationUtil {
           })
         }
         if (oldNode.childrenInitialize) {
-          patches.push(...NodeOperationUtil.diffChildren(oldNode, oldNode, newNode as VNode))
+          patches.push(...NodeOperationUtil.diffChildren(oldNode, oldNode, newNode as ReblendTyping.VNode))
         }
       }
     }
@@ -200,15 +208,15 @@ export class NodeOperationUtil {
    * Diffs the props of the newNode and oldNode to generate a list of prop changes.
    *
    * @param {VNode} newNode - The new virtual node.
-   * @param {ReblendTyping.Component} oldNode - The old base component node.
+   * @param {ReblendTyping.Component<P, S>} oldNode - The old base component node.
    * @returns {any[]} - The array of property differences.
    */
-  static diffProps(newNode: VNode, oldNode: ReblendTyping.Component) {
+  static diffProps<P, S>(newNode: ReblendTyping.VNode, oldNode: ReblendTyping.Component<P, S>) {
     const ignoredProps = ['key', 'children', 'ref']
 
-    const patches: PropPatch[] = []
-    const oldProps: IAny = oldNode?.props || {}
-    const newProps: IAny = { ...oldProps, ...(newNode?.props || {}) }
+    const patches: ReblendTyping.PropPatch<P, S>[] = []
+    const oldProps: ReblendTyping.IAny = oldNode?.props || {}
+    const newProps: ReblendTyping.IAny = { ...oldProps, ...(newNode?.props || {}) }
     const isReblendNode = NodeUtil.isReblendRenderedNode(oldNode)
     for (const key in newProps) {
       if (!ignoredProps.includes(key) || (key === 'children' && isReblendNode)) {
@@ -359,19 +367,23 @@ export class NodeOperationUtil {
   /**
    * Diffs the children of the old and new virtual nodes and returns the patches required to update them.
    *
-   * @param {ReblendTyping.Component} parent - The parent component containing the children.
-   * @param {ReblendTyping.Component} oldNode - The old component node.
+   * @param {ReblendTyping.Component<P, S>} parent - The parent component containing the children.
+   * @param {ReblendTyping.Component<P, S>} oldNode - The old component node.
    * @param {VNode} newNode - The new virtual node.
    * @returns {Patch[]} - An array of patches representing the differences between the old and new children.
    */
-  static diffChildren(parent: ReblendTyping.Component, oldNode: ReblendTyping.Component, newNode: VNode) {
+  static diffChildren<P, S>(
+    parent: ReblendTyping.Component<P, S>,
+    oldNode: ReblendTyping.Component<P, S>,
+    newNode: ReblendTyping.VNode,
+  ) {
     if (!NodeUtil.isStandard(oldNode) && !NodeUtil.isReactToReblendRenderedNode(oldNode)) {
       return []
     }
-    const oldChildren: DomNodeChildren = [...(oldNode.elementChildren?.values() || [])] as any
+    const oldChildren: ReblendTyping.DomNodeChildren<P, S> = [...(oldNode.elementChildren?.values() || [])] as any
 
-    const newChildren: VNodeChildren = DiffUtil.deepFlat(newNode?.props?.children || [])
-    const patches: Patch[] = []
+    const newChildren: ReblendTyping.VNodeChildren = DiffUtil.deepFlat(newNode?.props?.children || [])
+    const patches: ReblendTyping.Patch<P, S>[] = []
     const maxLength = Math.max(oldChildren.length, newChildren.length)
 
     for (let i = 0; i < maxLength; i++) {
@@ -399,8 +411,8 @@ export class NodeOperationUtil {
    *
    * @param {Patch[]} patches - The array of patches to apply.
    */
-  static async applyPatches(patches: Patch[]) {
-    const needsUpdate = new Set<ReblendTyping.Component>()
+  static async applyPatches<P, S>(patches: ReblendTyping.Patch<P, S>[]) {
+    const needsUpdate = new Set<ReblendTyping.Component<P, S>>()
 
     for (const { type, newNode, oldNode, parent, patches: patchess } of (patches || []).sort(
       (a, b) => a.type - b.type,
@@ -409,7 +421,7 @@ export class NodeOperationUtil {
         case PatchTypeAndOrder.CREATE:
           {
             if (!parent) continue
-            const elements = await ElementUtil.createElement(newNode as VNode)
+            const elements = await ElementUtil.createElement(newNode as ReblendTyping.VNode)
             if (!elements.length) continue
             elements.forEach((element) => (element.directParent = parent))
             if (!parent.elementChildren) {
@@ -437,9 +449,9 @@ export class NodeOperationUtil {
         case PatchTypeAndOrder.REPLACE:
           if (oldNode) {
             NodeOperationUtil.replaceOperation(oldNode, async () => {
-              const newNodeElements = await ElementUtil.createElement(newNode as VNode)
+              const newNodeElements = await ElementUtil.createElement(newNode as ReblendTyping.VNode)
               newNodeElements.forEach((element) => (element.directParent = oldNode.directParent as any))
-              NodeOperationUtil.replaceOldNode(newNodeElements, oldNode)
+              NodeOperationUtil.replaceOldNode(newNodeElements as any, oldNode)
             })
           }
           break
@@ -464,8 +476,8 @@ export class NodeOperationUtil {
    *
    * @param {PropPatch[]} [patches] - The property patches to apply.
    */
-  static async applyProps(patches?: PropPatch[]) {
-    let nodes = new Set<ReblendTyping.Component>()
+  static async applyProps<P, S>(patches?: ReblendTyping.PropPatch<P, S>[]) {
+    let nodes = new Set<ReblendTyping.Component<P, S>>()
     patches?.forEach(({ type, node, key, propValue }) => {
       if (type === 'UPDATE') {
         PropertyUtil.setProps({ [key]: propValue }, node, false)
@@ -496,10 +508,10 @@ export class NodeOperationUtil {
   /**
    * Performs a replacement operation on an old node.
    *
-   * @param {ReblendTyping.Component} oldNode - The old node to replace.
+   * @param {ReblendTyping.Component<P, S>} oldNode - The old node to replace.
    * @param {() => void} operation - The operation to execute for the replacement.
    */
-  static replaceOperation(oldNode: ReblendTyping.Component, operation: () => Promise<void>) {
+  static replaceOperation<P, S>(oldNode: ReblendTyping.Component<P, S>, operation: () => Promise<void>) {
     operation().finally(() =>
       requestIdleCallback(() => {
         NodeOperationUtil.detach(oldNode)
@@ -535,7 +547,11 @@ export class NodeOperationUtil {
       if (typeof thiz.ref === 'function') {
         thiz.ref(null as any)
       } else {
-        thiz.ref.current = null as any
+        try {
+          thiz.ref.current = null as any
+        } catch {
+          /* empty */
+        }
       }
     }
     thiz.disconnectEffects?.forEach((fn) => fn())
@@ -567,9 +583,7 @@ export class NodeOperationUtil {
     }
 
     thiz.reactElementChildrenWrapper?.disconnectedCallback()
-    //@ts-expect-error no worry
     thiz.props = null as any
-    // Clear state and props
     thiz.reactElementChildrenWrapper = null as any
     thiz.elementChildren = null as any
     thiz.effectState = null as any

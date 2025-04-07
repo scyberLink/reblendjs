@@ -4,7 +4,7 @@ class Cde extends Reblend<{ code: number }> {
   constructor() {
     super();
   }
-  html() {
+  async html() {
     return (
       <>
         <code>src/App.tsx({this.props.code})</code>

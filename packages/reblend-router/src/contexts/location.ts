@@ -1,5 +1,7 @@
 import { createContext } from 'reblendjs';
 
-const Location = createContext<URL | undefined | null>(null as any);
+const Location = createContext<(URL & { path: string }) | undefined | null>(
+  null as any
+);
 
 export { Location };

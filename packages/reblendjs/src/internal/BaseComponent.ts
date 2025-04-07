@@ -2,7 +2,7 @@
 import { rand } from '../common/utils'
 import { IAny } from '../interface/IAny'
 import StyleUtil from './StyleUtil'
-import { ChildrenPropsUpdateType } from 'reblend-typing'
+import { ChildrenPropsUpdateType, ReblendTyping } from 'reblend-typing'
 import { Reblend } from './Reblend'
 import { NodeUtil } from './NodeUtil'
 import { ElementUtil } from './ElementUtil'
@@ -16,35 +16,35 @@ StyleUtil
 export interface BaseComponent<P, S> extends HTMLElement {
   nearestStandardParent?: HTMLElement
   onStateChangeRunning: boolean | undefined
-  elementChildren: Set<ReblendTyping.Component> | null
+  elementChildren: Set<ReblendTyping.Component<P, S>> | null
   reactElementChildrenWrapper: ReblendTyping.Component<any, any> | null
   directParent: ReblendTyping.Component<any, any>
   childrenInitialize: boolean
   dataIdQuerySelector: string
   props: Readonly<P>
   reactDomCreateRoot_root: import('react-dom/client').Root | null
-  renderingError: ReblendRenderingException
+  renderingError: ReblendTyping.ReblendRenderingException<P, S>
   displayName: string
-  renderingErrorHandler: (e: ReblendRenderingException) => void
+  renderingErrorHandler: (e: ReblendTyping.ReblendRenderingException<P, S>) => void
   removePlaceholder: () => Promise<void>
   attached: boolean
   isPlaceholder: boolean
   placeholderAttached: boolean
   ReactClass: any
-  ReblendPlaceholder?: VNode | typeof Reblend
+  ReblendPlaceholder?: ReblendTyping.VNode | typeof Reblend
   defaultReblendPlaceholderStyle: CSSProperties | string
   ref: ReblendTyping.Ref<HTMLElement> | ((node: HTMLElement) => any)
   effectState: {
     [key: string]: {
-      cache: Primitive | Array<Primitive>
-      cacher: () => Primitive | Array<Primitive>
+      cache: ReblendTyping.Primitive | Array<ReblendTyping.Primitive>
+      cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive>
     }
   }
   effectsFn: Set<ReblendTyping.StateEffectiveFunction>
   disconnectEffects: Set<ReblendTyping.StateEffectiveFunction>
   checkPropsChange(): Promise<void>
   hasDisconnected: boolean
-  htmlElements: ReblendTyping.Component[]
+  htmlElements: ReblendTyping.Component<P, S>[]
   childrenPropsUpdate: Set<ChildrenPropsUpdateType>
   numAwaitingUpdates: number
   stateEffectRunning: boolean
@@ -57,6 +57,7 @@ export interface BaseComponent<P, S> extends HTMLElement {
 
 const stateIdNotIncluded = new Error('State Identifier/Key not specified')
 
+//@ts-expect-error We don't have to redefine HTMLElement methods we just added it for type safety
 export class BaseComponent<
   P = Record<string, never>,
   S extends { renderingErrorHandler?: (error: Error) => void } = Record<string, never>,
@@ -65,7 +66,7 @@ export class BaseComponent<
   [reblendComponent: symbol]: boolean
   static ELEMENT_NAME = 'BaseComponent'
   static props: IAny
-  static config?: ReblendComponentConfig
+  static config?: ReblendTyping.ReblendComponentConfig
 
   static async wrapChildrenToReact(
     components: JSX.Element | ReblendTyping.JSXElementConstructor<Record<string, never>>,
@@ -75,10 +76,10 @@ export class BaseComponent<
   }
 
   static construct(
-    displayName: typeof Reblend | string | VNode[],
+    displayName: typeof Reblend | string | ReblendTyping.VNode[],
     props: IAny,
-    ...children: VNodeChildren
-  ): VNode | VNodeChildren {
+    ...children: ReblendTyping.VNodeChildren
+  ): ReblendTyping.VNode | ReblendTyping.VNodeChildren {
     if (Array.isArray(displayName)) {
       return displayName as []
     }
@@ -204,7 +205,7 @@ export class BaseComponent<
       htmlVNodes = [htmlVNodes]
     }
     htmlVNodes = DiffUtil.flattenVNodeChildren(htmlVNodes as any)
-    const htmlElements: ReblendTyping.Component[] = (await ElementUtil.createChildren(htmlVNodes as any)) as any
+    const htmlElements: ReblendTyping.Component<P, S>[] = (await ElementUtil.createChildren(htmlVNodes as any)) as any
 
     return htmlElements
   }
@@ -219,8 +220,8 @@ export class BaseComponent<
       if (isReactReblend && (this.elementChildren?.size || this.reactElementChildrenWrapper)) {
         return
       }
-      const htmlElements: ReblendTyping.Component[] = (await this.createInnerHtmlElements()) as any
-      htmlElements.forEach((node) => (node.directParent = this))
+      const htmlElements: ReblendTyping.Component<P, S>[] = (await this.createInnerHtmlElements()) as any
+      htmlElements.forEach((node) => (node.directParent = this as any))
       this.elementChildren = new Set(htmlElements)
       if (this.removePlaceholder) {
         this.removePlaceholder()
@@ -263,7 +264,7 @@ export class BaseComponent<
               this.removePlaceholder = undefined as any
             }
             placeholderElements.forEach((placeholderElement) => {
-              placeholderElement.directParent = this
+              placeholderElement.directParent = this as any
               placeholderElement.isPlaceholder = true
               NodeOperationUtil.connected(placeholderElement)
             })
@@ -277,7 +278,7 @@ export class BaseComponent<
           const placeholderVNodes = BaseComponent.construct(Placeholder as any, {
             style: this.defaultReblendPlaceholderStyle,
           })
-          const placeholderElements = await ElementUtil.createElement(placeholderVNodes as VNodeChild)
+          const placeholderElements = await ElementUtil.createElement(placeholderVNodes as ReblendTyping.VNodeChild)
           if (!this.childrenInitialize) {
             if (this.placeholderAttached) {
               return
@@ -289,7 +290,7 @@ export class BaseComponent<
               this.removePlaceholder = undefined as any
             }
             placeholderElements.forEach((placeholderElement) => {
-              placeholderElement.directParent = this
+              placeholderElement.directParent = this as any
               placeholderElement.isPlaceholder = true
               NodeOperationUtil.connected(placeholderElement)
             })
@@ -349,7 +350,9 @@ export class BaseComponent<
 
   handleError(error: Error) {
     if (this.renderingErrorHandler) {
-      this.renderingErrorHandler((((error as any).component = this), error) as ReblendRenderingException)
+      this.renderingErrorHandler(
+        (((error as any).component = this), error) as ReblendTyping.ReblendRenderingException<P, S>,
+      )
     } else if (this.state?.renderingErrorHandler && typeof this.state.renderingErrorHandler === 'function') {
       this.state.renderingErrorHandler(error)
     } else if (this.directParent) {
@@ -388,7 +391,7 @@ export class BaseComponent<
       this.numAwaitingUpdates++
       return
     }
-    const patches: Patch[] = []
+    const patches: ReblendTyping.Patch<P, S>[] = []
     let newVNodes: ReblendTyping.ReblendNode
     try {
       this.stateEffectRunning = true
@@ -400,14 +403,14 @@ export class BaseComponent<
         if (!Array.isArray(newVNodes)) {
           newVNodes = [newVNodes as any]
         }
-        newVNodes = DiffUtil.flattenVNodeChildren(newVNodes as VNodeChildren) as any
+        newVNodes = DiffUtil.flattenVNodeChildren(newVNodes as ReblendTyping.VNodeChildren) as any
         const oldNodes = [...(this.elementChildren?.values() || [])]
 
-        const maxLength = Math.max(oldNodes.length || 0, (newVNodes as VNodeChildren).length)
+        const maxLength = Math.max(oldNodes.length || 0, (newVNodes as ReblendTyping.VNodeChildren).length)
         for (let i = 0; i < maxLength; i++) {
-          const newVNode: VNodeChild = newVNodes![i]
+          const newVNode: ReblendTyping.VNodeChild = newVNodes![i]
           const currentVNode = oldNodes[i]
-          patches.push(...NodeOperationUtil.diff(this as any, currentVNode as any, newVNode))
+          patches.push(...(NodeOperationUtil.diff(this as any, currentVNode as any, newVNode) as any))
         }
       }
     } catch (error) {
@@ -518,7 +521,7 @@ export class BaseComponent<
     }
     const effectKey = generateId()
 
-    const cacher: () => Primitive | Array<Primitive> = () => dep()
+    const cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive> = () => dep()
 
     this.effectState[effectKey] = { cache: cacher(), cacher: cacher }
 
@@ -527,7 +530,10 @@ export class BaseComponent<
       if (
         !dependencies ||
         this.mountingEffects ||
-        this.dependenciesChanged(current as Primitive[], this.effectState[effectKey].cache as Primitive[])
+        this.dependenciesChanged(
+          current as ReblendTyping.Primitive[],
+          this.effectState[effectKey].cache as ReblendTyping.Primitive[],
+        )
       ) {
         this.effectState[effectKey].cache = current
         fn()
@@ -587,7 +593,7 @@ export class BaseComponent<
     }
     const effectKey = generateId()
 
-    const cacher: () => Primitive | Array<Primitive> = () => dep()
+    const cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive> = () => dep()
 
     this.effectState[effectKey] = { cache: cacher(), cacher: cacher }
 
@@ -596,7 +602,10 @@ export class BaseComponent<
       if (
         !dependencies ||
         this.mountingEffects ||
-        this.dependenciesChanged(current as Primitive[], this.effectState[effectKey].cache as Primitive[])
+        this.dependenciesChanged(
+          current as ReblendTyping.Primitive[],
+          this.effectState[effectKey].cache as ReblendTyping.Primitive[],
+        )
       ) {
         this.effectState[effectKey].cache = current
         setState(fn())

@@ -5,9 +5,9 @@ import Placeholder from 'react-bootstrap/Placeholder';
 //@ts-ignore
 import logo from '../logo.svg';
 
-function CardExample() {
+function CardExample(props: { class: string }) {
   return (
-    <div className="d-flex justify-content-around">
+    <div className={'d-flex justify-content-around ' + props.class}>
       <Card style={{ width: '18rem' }}>
         <Card.Img variant="top" src={logo} />
         <Card.Body>

@@ -4,16 +4,14 @@
 // @ts-nocheck
 import { IAny } from '../interface/IAny'
 import { BaseComponent } from './BaseComponent'
-import { ReblendManagedAttributes, HTMLWebViewElement } from 'reblend-typing'
+import { ReblendTyping, ReblendManagedAttributes, HTMLWebViewElement } from 'reblend-typing'
 
 declare global {
   export namespace Reblend.JSX {
-    // eslint-disable-next-line @typescript-eslint/ban-types
     type ElementType = string | ReblendTyping.JSXElementConstructor<any> | typeof BaseComponent<any, any>
-    interface Element extends ReblendTyping.ReblendElement {}
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    type Element = ReblendTyping.ReblendElement
     interface ElementClass<P = {}, S = {}> extends ReblendTyping.Component<P, S> {
-      html?: () => ReblendTyping.ReblendNode
+      html?: () => Promise<ReblendTyping.ReblendNode> | ReblendTyping.ReblendNode
     }
     interface ElementAttributesProperty {
       props: { children: ReblendTyping.ReblendElement[] } & IAny
@@ -21,13 +19,6 @@ declare global {
     interface ElementChildrenAttribute {
       children: { children: ReblendTyping.ReblendElement[] } & IAny
     }
-    type LibraryManagedAttributes<C, P> = C extends
-      | ReblendTyping.MemoExoticComponent<infer T>
-      | ReblendTyping.LazyExoticComponent<infer T>
-      ? T extends ReblendTyping.MemoExoticComponent<infer U> | ReblendTyping.LazyExoticComponent<infer U>
-        ? ReblendManagedAttributes<U, P>
-        : ReblendManagedAttributes<T, P>
-      : ReblendManagedAttributes<C, P>
     interface IntrinsicAttributes extends ReblendTyping.Attributes {}
     interface IntrinsicClassAttributes<T> extends ReblendTyping.ClassAttributes<T> {}
     interface IntrinsicElements {

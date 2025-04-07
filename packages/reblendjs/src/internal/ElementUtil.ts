@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { REBLEND_PRIMITIVE_ELEMENT_NAME } from 'reblend-typing'
+import { REBLEND_PRIMITIVE_ELEMENT_NAME, ReblendTyping } from 'reblend-typing'
 import { capitalize, isCallable, REBLEND_COMPONENT, REBLEND_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
 import { DiffUtil } from './DiffUtil'
 import { NodeUtil } from './NodeUtil'
@@ -86,17 +86,17 @@ export const ElementUtil = class {
   }
 
   /**
-   * Creates child nodes from the given VNode children and appends them to the container array.
+   * Creates child nodes from the given ReblendTyping.VNode children and appends them to the container array.
    * Supports nested arrays, Sets, and various node types such as Reblend, DOM Nodes, React Nodes, and primitive values.
    *
-   * @param {VNodeChildren} children - The children to process.
-   * @param {(ReblendTyping.Component | HTMLElement)[]} [containerArr=[]] - The array to store the created child nodes.
-   * @returns {(ReblendTyping.Component | HTMLElement)[]} The array containing the created child nodes.
+   * @param {ReblendTyping.VNodeChildren} children - The children to process.
+   * @param {(ReblendTyping.Component<P, S> | HTMLElement)[]} [containerArr=[]] - The array to store the created child nodes.
+   * @returns {(ReblendTyping.Component<P, S> | HTMLElement)[]} The array containing the created child nodes.
    */
-  static async createChildren(
-    children: VNodeChildren,
-    containerArr: (ReblendTyping.Component | HTMLElement)[] = [],
-  ): Promise<(ReblendTyping.Component | HTMLElement)[]> {
+  static async createChildren<P, S>(
+    children: ReblendTyping.VNodeChildren,
+    containerArr: (ReblendTyping.Component<P, S> | HTMLElement)[] = [],
+  ): Promise<(ReblendTyping.Component<P, S> | HTMLElement)[]> {
     if (!children) {
       return containerArr
     }
@@ -126,13 +126,15 @@ export const ElementUtil = class {
   }
 
   /**
-   * Creates an element based on the provided virtual node (VNode) or primitive value.
+   * Creates an element based on the provided virtual node (ReblendTyping.VNode) or primitive value.
    * The created element is returned as a `BaseComponent`.
    *
-   * @param {VNode | VNode[] | ReactNode | Primitive} vNode - The virtual node or primitive to create an element from.
-   * @returns {ReblendTyping.Component[]} The created `BaseComponent` instances.
+   * @param {ReblendTyping.VNode | ReblendTyping.VNode[] | ReblendTyping.ReactNode | ReblendTyping.Primitive} vNode - The virtual node or primitive to create an element from.
+   * @returns {ReblendTyping.Component<P, S>[]} The created `BaseComponent` instances.
    */
-  static async createElement(vNode: VNode | VNode[] | ReactNode | Primitive): Promise<ReblendTyping.Component[]> {
+  static async createElement<P, S>(
+    vNode: ReblendTyping.VNode | ReblendTyping.VNode[] | ReblendTyping.ReactNode | ReblendTyping.Primitive,
+  ): Promise<ReblendTyping.Component<P, S>[]> {
     if (vNode instanceof Reblend || vNode instanceof Node) {
       if (!(vNode as any).displayName) {
         ;(vNode as any).displayName = capitalize((vNode as any as HTMLElement).tagName)
@@ -146,28 +148,29 @@ export const ElementUtil = class {
       return (await ElementUtil.createChildren(vNode)) as any
     }
     if (NodeUtil.isPrimitive(vNode)) {
-      return [ElementUtil.newReblendPrimitive().setData(vNode as Primitive)]
+      return [ElementUtil.newReblendPrimitive()?.setData(vNode as ReblendTyping.Primitive) as any]
     }
 
-    const { displayName } = vNode as VNode
+    const { displayName } = vNode as ReblendTyping.VNode
     let clazz: typeof Reblend = displayName as any as typeof Reblend
     const isTagStandard = typeof displayName === 'string'
     const isReactNode = NodeUtil.isReactNode(displayName as any)
 
     const tagName = isTagStandard
       ? displayName
-      : (NodeUtil.isReactNode(clazz) ? (clazz as any as ReactNode).displayName : clazz?.ELEMENT_NAME) || `Anonymous`
+      : (NodeUtil.isReactNode(clazz) ? (clazz as any as ReblendTyping.ReactNode).displayName : clazz?.ELEMENT_NAME) ||
+        `Anonymous`
 
     isTagStandard || (clazz.ELEMENT_NAME = tagName)
 
     if (isReactNode) {
       clazz = ReblendReactClass as any
-      clazz.ELEMENT_NAME = capitalize(`${(displayName as unknown as ReactNode).displayName}`)
+      clazz.ELEMENT_NAME = capitalize(`${(displayName as unknown as ReblendTyping.ReactNode).displayName}`)
     }
 
-    const element: ReblendTyping.Component = ElementUtil.createElementWithNamespace(
+    const element: ReblendTyping.Component<P, S> = ElementUtil.createElementWithNamespace(
       isTagStandard ? displayName : 'div',
-    ) as ReblendTyping.Component
+    ) as ReblendTyping.Component<P, S>
 
     NodeUtil.addSymbol(
       isReactNode ? 'ReactToReblendNode' : isTagStandard ? 'ReblendNodeStandard' : 'ReblendNode',
@@ -202,9 +205,9 @@ export const ElementUtil = class {
       }
     }
 
-    if (isTagStandard && 'ref' in (vNode as VNode).props) {
-      if ((vNode as VNode).props.ref && !(vNode as VNode).props.ref.current) {
-        const ref = (vNode as VNode).props.ref
+    if (isTagStandard && 'ref' in (vNode as ReblendTyping.VNode).props) {
+      if ((vNode as ReblendTyping.VNode).props.ref && !(vNode as ReblendTyping.VNode).props.ref.current) {
+        const ref = (vNode as ReblendTyping.VNode).props.ref
         const descriptor = Object.getOwnPropertyDescriptor(ref, 'current')
 
         if (typeof ref === 'function') {
@@ -221,10 +224,10 @@ export const ElementUtil = class {
     }
 
     if (NodeUtil.isStandard(element) || isReactNode) {
-      await PropertyUtil.setProps((vNode as VNode).props, element, true)
+      await PropertyUtil.setProps((vNode as ReblendTyping.VNode).props, element, true)
       await element.populateHtmlElements()
     } else {
-      PropertyUtil.setProps((vNode as VNode).props, element, true).finally(() => {
+      PropertyUtil.setProps((vNode as ReblendTyping.VNode).props, element, true).finally(() => {
         element.populateHtmlElements()
       })
     }
@@ -235,20 +238,23 @@ export const ElementUtil = class {
   /**
    * Creates a new Reblend primitive element.
    *
-   * @returns {ReblendPrimitive} The newly created Reblend primitive element.
+   * @returns {ReblendTyping.Primitive} The newly created Reblend primitive element.
    */
-  static newReblendPrimitive(): ReblendPrimitive {
-    const text: any = document.createTextNode('') as any as ReblendPrimitive
+  static newReblendPrimitive(): Text & {
+    setData: (data: ReblendTyping.Primitive) => Text
+    getData: () => ReblendTyping.Primitive
+  } {
+    const text: any = document.createTextNode('') as any as ReblendTyping.Primitive
     NodeUtil.extendPrototype(text, Reblend.prototype)
     text.displayName = REBLEND_PRIMITIVE_ELEMENT_NAME
 
     /**
      * Sets the data of the Reblend primitive.
      *
-     * @param {Primitive} data - The data to set.
-     * @returns {ReblendPrimitive} The updated Reblend primitive.
+     * @param {ReblendTyping.Primitive} data - The data to set.
+     * @returns {ReblendTyping.Primitive} The updated Reblend primitive.
      */
-    text.setData = function (data: Primitive): ReblendPrimitive {
+    text.setData = function (data: ReblendTyping.Primitive): ReblendTyping.Primitive {
       this.reblendPrimitiveData = data
       if (this.reblendPrimitiveData !== undefined && this.reblendPrimitiveData !== null) {
         const textContent = `${this.reblendPrimitiveData}`
@@ -262,9 +268,9 @@ export const ElementUtil = class {
     /**
      * Gets the data of the Reblend primitive.
      *
-     * @returns {Primitive} The data of the Reblend primitive.
+     * @returns {ReblendTyping.Primitive} The data of the Reblend primitive.
      */
-    text.getData = function (): Primitive {
+    text.getData = function (): ReblendTyping.Primitive {
       return this.reblendPrimitiveData
     }
 

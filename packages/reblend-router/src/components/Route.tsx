@@ -1,6 +1,6 @@
-import Reblend, { useContext, useReducer } from 'reblendjs';
-import { Routes } from '../contexts/routes';
-import { Request } from 'reblend-routing';
+import Reblend, { useEffect, useReducer } from 'reblendjs';
+import { HistoryRequest, Routes } from '../contexts/routes';
+import { ReblendTyping } from 'reblend-typing';
 
 export function Route<T>({
   Component,
@@ -8,28 +8,50 @@ export function Route<T>({
   path,
 }: {
   Component?: ReblendTyping.JSXElementConstructor<T>;
-  element?: Reblend.JSX.Element | HTMLElement;
+  element?:
+    | ((routeData: HistoryRequest) => Reblend.JSX.Element | HTMLElement)
+    | Reblend.JSX.Element
+    | HTMLElement;
   path: string;
 }) {
   if (!(element || Component)) {
     throw new Error('Route should have element or Component prop');
   }
 
-  const [matched, setMatched] = useReducer<boolean, Request | null>(
-    (_prev, current) => {
-      return !!(current || false);
-    },
-    false
-  );
+  const [matchedData, setMatchedData] = useReducer<
+    HistoryRequest | null | undefined,
+    HistoryRequest | null | undefined
+  >((_prev, current) => {
+    return current || null;
+  }, null);
 
-  Routes.register({ [path]: setMatched as any });
+  useEffect(() => {
+    Routes.register({ [path]: setMatchedData });
+    return () => Routes.unregister(path);
+  }, []);
 
-  return (
-    <>
-      {matched
-        ? //@ts-ignore
-          element || (Component && <Component {...({} as any)} />)
-        : null}
-    </>
-  );
+  return (() => {
+    if (!matchedData) {
+      return null;
+    }
+
+    if (element) {
+      if (typeof element === 'function') {
+        return element(matchedData);
+      }
+      if (typeof element === 'object' && 'props' in element && element.props) {
+        element.props = { ...matchedData, ...element.props };
+        return element;
+      } else {
+        return element;
+      }
+    }
+
+    if (Component) {
+      //@ts-ignore
+      return <Component {...matchedData} />;
+    }
+
+    return null;
+  })();
 }

@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { ReblendTyping } from 'reblend-typing'
 import { isCallable } from '../../common/utils'
-import type { BaseComponent } from '../../internal/BaseComponent'
 import { Reblend } from '../../internal/Reblend'
 
 //@ReblendComponent
 function TryCatchError({
   children = ((_error) => <>{''}</>) as any,
 }: {
-  children?:
-    | ((error?: ReblendRenderingException) => Reblend.JSX.Element | Reblend.JSX.Element[])
+  children?: //@ts-ignore
+  | ((error?: ReblendTyping.ReblendRenderingException) => Reblend.JSX.Element | Reblend.JSX.Element[])
     | Reblend.JSX.Element
     | Reblend.JSX.Element[]
 }) {
   //@ts-ignore
   this &&
     //@ts-ignore
-    (this.renderingErrorHandler = (e: ReblendRenderingException) => {
+    (this.renderingErrorHandler = (e: ReblendTyping.ReblendRenderingException) => {
       //@ts-ignore
       this.renderingError = e
       //if (!this.stateEffectRunning && this.attached) {

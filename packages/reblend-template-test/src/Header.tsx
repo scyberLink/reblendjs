@@ -19,7 +19,7 @@ function Header({
   i: number;
   msg: string;
   logo: string;
-  children: Reblend.JSX.Element | Reblend.JSX.Element[];
+  children: Reblend.JSX.Element;
 }) {
   const [theme] = useContext(ThemeContext);
   const img = new Image(0, 50);

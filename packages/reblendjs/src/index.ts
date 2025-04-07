@@ -21,4 +21,5 @@ export {
   CacheType,
 } from './internal/hooks'
 
+export { Reblend }
 export default Reblend
