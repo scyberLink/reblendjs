@@ -1,7 +1,7 @@
 {
   "name": "reblend-routing",
   "description": "Reblend route pattern matcher",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "author": "Emmanuel Paul Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "repository": "reblendjs/reblend-routing",
