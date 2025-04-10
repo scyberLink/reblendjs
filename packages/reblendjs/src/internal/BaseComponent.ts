@@ -628,7 +628,7 @@ export class BaseComponent<
     return ref
   }
 
-  useCallback(fn: () => any) {
+  useCallback<T extends Function>(fn: T): T {
     return fn.bind(this)
   }
   /**
