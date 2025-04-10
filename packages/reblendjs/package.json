@@ -15,6 +15,7 @@
     "LICENSE",
     "HISTORY.md",
     "README.md",
+    "src",
     "lib",
     "dist"
   ],

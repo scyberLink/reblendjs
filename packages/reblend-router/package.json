@@ -10,6 +10,7 @@
     "HISTORY.md",
     "README.md",
     "lib",
+    "src",
     "dist"
   ],
   "dependencies": {
