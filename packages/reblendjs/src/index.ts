@@ -1,3 +1,5 @@
+import Placeholder from './internal/components/Placeholder'
+import { Preloader } from './internal/components/Preloader'
 import { Reblend } from './internal/Reblend'
 
 export { IAny } from './interface/IAny'
@@ -8,7 +10,7 @@ export * as utils from './common/utils'
 export { SharedConfig } from './common/SharedConfig'
 export { ERROR_EVENTNAME } from 'reblend-typing'
 export { TryCatchError } from './exceptions/components/TryCatchError'
-
+export { ReblendTyping } from 'reblend-typing'
 export {
   useState,
   useEffect,
@@ -21,5 +23,5 @@ export {
   CacheType,
 } from './internal/hooks'
 
-export { Reblend }
+export { Reblend, Preloader, Placeholder }
 export default Reblend

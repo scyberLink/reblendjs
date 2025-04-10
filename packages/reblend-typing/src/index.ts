@@ -707,7 +707,7 @@ export namespace ReblendTyping {
   export type StateFunction<T> = (
     value: StateFunctionValue<T>,
     force?: boolean
-  ) => void;
+  ) => Promise<void>;
   /**
    * The value used to update the state, which can be either a new value directly or a function that computes the new value based on the previous state.
    *
@@ -731,7 +731,10 @@ export namespace ReblendTyping {
    * @callback StateEffectiveFunction
    * @returns {(() => any) | void} - A cleanup function or void if no cleanup is necessary.
    */
-  export type StateEffectiveFunction = () => (() => void) | void;
+  export type StateEffectiveFunction = () =>
+    | Promise<(() => void) | void>
+    | (() => void)
+    | void;
   /**
    * A reducer function that takes a previous value and an incoming value, and returns a new value. This is often used in state management patterns like `useReducer`.
    *
@@ -744,7 +747,7 @@ export namespace ReblendTyping {
   export type StateReducerFunction<ValueType, IncomingType> = (
     previous: ValueType,
     current: IncomingType
-  ) => ValueType;
+  ) => Promise<ValueType> | ValueType;
   /**
    * Used to retrieve the possible components which accept a given set of props.
    *
@@ -2766,10 +2769,15 @@ export namespace ReblendTyping {
     disabled?: boolean | undefined;
     form?: string | undefined;
     formAction?: string | undefined;
+    action?: string | undefined;
     formEncType?: string | undefined;
+    enctype?: string | undefined;
     formMethod?: string | undefined;
+    method?: string | undefined;
     formNoValidate?: boolean | undefined;
+    novalidate?: boolean | undefined;
     formTarget?: string | undefined;
+    target?: string | undefined;
     name?: string | undefined;
     type?: 'submit' | 'reset' | 'button' | undefined;
     value?: string | readonly string[] | number | undefined;
@@ -2955,6 +2963,7 @@ export namespace ReblendTyping {
     accept?: string | undefined;
     alt?: string | undefined;
     autoComplete?: HTMLInputAutoCompleteAttribute | undefined;
+    autocomplete?: HTMLInputAutoCompleteAttribute | undefined;
     capture?: boolean | 'user' | 'environment' | undefined;
     checked?: boolean | undefined;
     disabled?: boolean | undefined;
@@ -2969,10 +2978,15 @@ export namespace ReblendTyping {
       | undefined;
     form?: string | undefined;
     formAction?: string | undefined;
+    action?: string | undefined;
     formEncType?: string | undefined;
+    enctype?: string | undefined;
     formMethod?: string | undefined;
+    method?: string | undefined;
     formNoValidate?: boolean | undefined;
+    novalidate?: boolean | undefined;
     formTarget?: string | undefined;
+    target?: string | undefined;
     height?: number | string | undefined;
     list?: string | undefined;
     max?: number | string | undefined;
@@ -2984,7 +2998,8 @@ export namespace ReblendTyping {
     pattern?: string | undefined;
     placeholder?: string | undefined;
     readOnly?: boolean | undefined;
-    required?: boolean | undefined;
+    readonly?: boolean | string | undefined;
+    required?: boolean | string | undefined;
     size?: number | undefined;
     src?: string | undefined;
     step?: number | string | undefined;
@@ -3013,17 +3028,24 @@ export namespace ReblendTyping {
   export interface LinkHTMLAttributes<T> extends HTMLAttributes<T> {
     as?: string | undefined;
     crossOrigin?: CrossOrigin;
+    crossorigin?: CrossOrigin;
     fetchPriority?: 'high' | 'low' | 'auto';
+    fetchpriority?: 'high' | 'low' | 'auto';
     href?: string | undefined;
     hrefLang?: string | undefined;
+    hreflang?: string | undefined;
     integrity?: string | undefined;
     media?: string | undefined;
     imageSrcSet?: string | undefined;
+    imagesrcset?: string | undefined;
     imageSizes?: string | undefined;
+    imagesizes?: string | undefined;
     referrerPolicy?: HTMLAttributeReferrerPolicy | undefined;
+    referrerpolicy?: HTMLAttributeReferrerPolicy | undefined;
     sizes?: string | undefined;
     type?: string | undefined;
     charSet?: string | undefined;
+    charset?: string | undefined;
   }
   export interface MapHTMLAttributes<T> extends HTMLAttributes<T> {
     name?: string | undefined;
@@ -3033,18 +3055,24 @@ export namespace ReblendTyping {
   }
   export interface MediaHTMLAttributes<T> extends HTMLAttributes<T> {
     autoPlay?: boolean | undefined;
+    autoplay?: boolean | undefined;
     controls?: boolean | undefined;
     controlsList?: string | undefined;
+    controlslist?: string | undefined;
     crossOrigin?: CrossOrigin;
+    crossorigin?: CrossOrigin;
     loop?: boolean | undefined;
     mediaGroup?: string | undefined;
+    mediagroup?: string | undefined;
     muted?: boolean | undefined;
     playsInline?: boolean | undefined;
+    playsinline?: boolean | undefined;
     preload?: string | undefined;
     src?: string | undefined;
   }
   export interface MetaHTMLAttributes<T> extends HTMLAttributes<T> {
     charSet?: string | undefined;
+    charset?: string | undefined;
     content?: string | undefined;
     httpEquiv?: string | undefined;
     media?: string | undefined;
@@ -3091,6 +3119,7 @@ export namespace ReblendTyping {
   export interface OutputHTMLAttributes<T> extends HTMLAttributes<T> {
     form?: string | undefined;
     htmlFor?: string | undefined;
+    for?: string | undefined;
     name?: string | undefined;
   }
   export interface ParamHTMLAttributes<T> extends HTMLAttributes<T> {
@@ -3108,11 +3137,15 @@ export namespace ReblendTyping {
     async?: boolean | undefined;
     /** @deprecated */
     charSet?: string | undefined;
+    charset?: string | undefined;
     crossOrigin?: CrossOrigin;
+    crossorigin?: CrossOrigin;
     defer?: boolean | undefined;
     integrity?: string | undefined;
     noModule?: boolean | undefined;
+    nomodule?: boolean | undefined;
     referrerPolicy?: HTMLAttributeReferrerPolicy | undefined;
+    referrerpolicy?: HTMLAttributeReferrerPolicy | undefined;
     src?: string | undefined;
     type?: string | undefined;
   }

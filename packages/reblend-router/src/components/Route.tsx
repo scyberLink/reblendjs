@@ -1,5 +1,5 @@
 import Reblend, { useEffect, useReducer } from 'reblendjs';
-import { HistoryRequest, Routes } from '../contexts/routes';
+import { RouteProps, Routes } from '../contexts/routes';
 import { ReblendTyping } from 'reblend-typing';
 
 export function Route<T>({
@@ -9,7 +9,7 @@ export function Route<T>({
 }: {
   Component?: ReblendTyping.JSXElementConstructor<T>;
   element?:
-    | ((routeData: HistoryRequest) => Reblend.JSX.Element | HTMLElement)
+    | ((routeData: RouteProps) => Reblend.JSX.Element | HTMLElement)
     | Reblend.JSX.Element
     | HTMLElement;
   path: string;
@@ -19,14 +19,15 @@ export function Route<T>({
   }
 
   const [matchedData, setMatchedData] = useReducer<
-    HistoryRequest | null | undefined,
-    HistoryRequest | null | undefined
+    RouteProps | null | undefined,
+    RouteProps | null | undefined
   >((_prev, current) => {
     return current || null;
   }, null);
 
+  Routes.register({ [path]: setMatchedData });
+
   useEffect(() => {
-    Routes.register({ [path]: setMatchedData });
     return () => Routes.unregister(path);
   }, []);
 

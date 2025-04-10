@@ -1,15 +1,23 @@
-import { CSSProperties } from 'react'
 import { Reblend } from '../Reblend'
 import { rand } from '../../common/utils'
+import { ReblendTyping } from 'reblend-typing'
 
-export default function Placeholder({ style }: { style?: CSSProperties | string }) {
+export default function Placeholder({
+  style,
+  children,
+}: {
+  style?: ReblendTyping.CSSProperties | string
+  children?: Reblend.JSX.Element
+}) {
   const stringStyle = style && typeof style === 'string' ? style : ''
   const objectStyle = style && typeof style !== 'string' ? style : {}
   const id = rand(1234, 5678)
 
   return (
     <div style={styles.placeholder as any}>
-      <div data-reblendplaceholder={`${id}`} style={{ ...styles.loadingBar, ...objectStyle }}></div>
+      <div data-reblendplaceholder={`${id}`} style={{ ...styles.loadingBar, ...objectStyle }}>
+        {children}
+      </div>
       <style>{`
         @keyframes loading {
           0% {
@@ -43,6 +51,9 @@ const styles = {
     width: '100%',
     minHeight: '10px',
     height: '100%',
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'center',
     background: 'linear-gradient(90deg, #f0f0f0 25%,rgb(178, 175, 175) 50%, #f0f0f0 75%)',
     backgroundSize: '200% 100%',
     animation: 'loading 1.5s infinite',

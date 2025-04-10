@@ -6,21 +6,21 @@ import { Location } from './location';
 import { Hash } from './hash';
 import { ReblendTyping } from 'reblend-typing';
 
-export type HistoryRequest = {
+export type RouteProps = {
   query?: ReblendTyping.IAny;
   params?: ReblendTyping.IAny;
-  location?: URL & { path: string };
+  location?: URL & { path?: string };
   hash: string;
   path: string;
 };
 
 interface RoutePath {
-  [path: string]: (res?: HistoryRequest | null) => void;
+  [path: string]: (res?: RouteProps | null) => void;
 }
 
 export const PageNotfound = createContext(false);
 
-type R = [ReblendRouting, (res?: HistoryRequest | null) => void];
+type R = [ReblendRouting, (res?: RouteProps | null) => void];
 
 interface IRoutes {
   routes: Map<string, R>;
@@ -49,13 +49,16 @@ export const Routes: IRoutes = {
       const data = {
         query: res.query,
         params: res.params,
-        location: { ...res.urlObject, path: key },
+        location: (() => {
+          res.urlObject['path'] = key;
+          return res.urlObject;
+        })(),
         hash: res.urlObject.hash,
         path: key,
       };
       Query.update(data.query);
       Params.update(data.params);
-      Location.update(data.location);
+      Location.update(data.location as any);
       Hash.update(data.hash);
       value && value(data);
     });

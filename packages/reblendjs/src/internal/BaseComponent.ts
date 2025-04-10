@@ -435,7 +435,15 @@ export class BaseComponent<
     this.stateEffectRunning = true
     this.effectsFn?.forEach((fn) => {
       const disconnectEffect = fn()
-      disconnectEffect && this.disconnectEffects?.add(disconnectEffect)
+      if (disconnectEffect instanceof Promise) {
+        disconnectEffect.then((val) => {
+          if (val) {
+            this.disconnectEffects?.add(val)
+          }
+        })
+      } else if (typeof disconnectEffect === 'function') {
+        this.disconnectEffects?.add(disconnectEffect)
+      }
     })
     this.mountingEffects = false
     this.stateEffectRunning = false
@@ -536,7 +544,7 @@ export class BaseComponent<
         )
       ) {
         this.effectState[effectKey].cache = current
-        fn()
+        return fn()
       }
     }).bind(this)
     this.effectsFn?.add(internalFn)
@@ -572,7 +580,7 @@ export class BaseComponent<
     fn: ReblendTyping.StateEffectiveMemoFunction<T>,
     dependencies?: any[],
     ...dependencyStringAndOrStateKey: string[]
-  ) {
+  ): T {
     fn = fn.bind(this)
     const stateID: string | undefined = dependencyStringAndOrStateKey.pop()
 
@@ -597,7 +605,7 @@ export class BaseComponent<
 
     this.effectState[effectKey] = { cache: cacher(), cacher: cacher }
 
-    const internalFn = () => {
+    const internalFn = async () => {
       const current = cacher()
       if (
         !dependencies ||

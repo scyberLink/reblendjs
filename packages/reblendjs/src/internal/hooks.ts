@@ -203,7 +203,7 @@ export function useContext<T>(
   }
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   context[contextSubscribe]({ component: this, stateKey: stateID })
-  return [context[contextValue], context.update]
+  return [context[contextValue], context.update as any]
 }
 
 /**
