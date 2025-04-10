@@ -1,6 +1,7 @@
 import { Reblend } from '../Reblend'
 import { rand } from '../../common/utils'
 import { ReblendTyping } from 'reblend-typing'
+import { useMemo } from '../hooks'
 
 export default function Placeholder({
   style,
@@ -9,8 +10,14 @@ export default function Placeholder({
   style?: ReblendTyping.CSSProperties | string
   children?: Reblend.JSX.Element
 }) {
-  const stringStyle = style && typeof style === 'string' ? style : ''
-  const objectStyle = style && typeof style !== 'string' ? style : {}
+  const [stringStyle, objectStyle] = useMemo(() => {
+    if (typeof style === 'string') {
+      return [style, {}]
+    } else if (style && typeof style === 'object') {
+      return ['', style]
+    }
+    return ['', {}]
+  }, [style])
   const id = rand(1234, 5678)
 
   return (
