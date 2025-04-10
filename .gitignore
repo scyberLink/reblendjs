@@ -9,3 +9,4 @@ node_modules/
 
 # Exclude lib directories at any level
 **/lib/
+.npmrc
