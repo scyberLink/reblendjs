@@ -22,7 +22,10 @@ set -e
 # Echo every command being executed
 set -x
 
-npm run npm "run build"
+if [[ "$*" != *"--skip-build"* ]]; then
+  npm run npm "run build"
+fi
+
 # Go to root
 cd ..
 root_path=$PWD
@@ -44,4 +47,9 @@ fi
 
 # Go!
 #NPM_CONFIG_OTP="$otp" 
-./node_modules/.bin/lerna publish "$@"
+args=("$@")
+if [[ " ${args[*]} " == *" --skip-build "* ]]; then
+  args=("${args[@]/--skip-build}")
+fi
+
+./node_modules/.bin/lerna publish "${args[@]}"
