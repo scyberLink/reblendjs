@@ -47,9 +47,5 @@ fi
 
 # Go!
 #NPM_CONFIG_OTP="$otp" 
-args=("$@")
-if [[ " ${args[*]} " == *" --skip-build "* ]]; then
-  args=("${args[@]/--skip-build}")
-fi
 
-./node_modules/.bin/lerna publish "${args[@]}"
+./node_modules/.bin/lerna publish
