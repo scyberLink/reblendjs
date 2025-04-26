@@ -663,7 +663,7 @@ export namespace ReblendTyping {
     props: IAny & {
       children?: VNodeChildren;
     };
-    //@ts-expect-error
+    //@ts-ignore
     displayName: string | typeof Component | ReactNode;
   }
   export interface Patch<P, S> {
@@ -1003,7 +1003,7 @@ export namespace ReblendTyping {
     undefined &
     null;
 
-  //@ts-expect-error Don't have to implement Component
+  //@ts-ignore Don't have to implement Component
   export interface FunctionComponentElement<P> extends Component<P, any> {
     ref?:
       | ('ref' extends keyof P
@@ -1019,7 +1019,7 @@ export namespace ReblendTyping {
   export interface DOMElement<
     P extends HTMLAttributes<T> | SVGAttributes<T>,
     T extends Element
-    //@ts-expect-error
+    //@ts-ignore
   > extends ReblendElement {
     ref: Ref<T>;
   }
@@ -1171,7 +1171,7 @@ export namespace ReblendTyping {
     /**
      * Component to render first if this component is asyncronous
      */
-    //@ts-expect-error
+    //@ts-ignore
     ReblendPlaceholder?: VNode | typeof Component;
     /**
      * Style for default reblend placeholder i.e if your are not using custom placeholder for your async components
@@ -2536,7 +2536,8 @@ export namespace ReblendTyping {
     slot?: string | undefined;
     spellCheck?: Booleanish | undefined;
     style?: CSSProperties | string | undefined | null;
-    tabIndex?: number | undefined;
+    tabIndex?: string | number | undefined;
+    tabindex?: string | number | undefined;
     title?: string | undefined;
     translate?: 'yes' | 'no' | undefined;
     radioGroup?: string | undefined;
@@ -3516,6 +3517,7 @@ export namespace ReblendTyping {
     xmlLang?: string | undefined;
     xmlns?: string | undefined;
     xmlnsXlink?: string | undefined;
+    'xmlns:xlink'?: string | undefined;
     xmlSpace?: string | undefined;
     y1?: number | string | undefined;
     y2?: number | string | undefined;
