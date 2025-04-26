@@ -441,9 +441,13 @@ export class NodeOperationUtil {
           break
         case PatchTypeAndOrder.REMOVE:
           if (oldNode) {
-            NodeOperationUtil.replaceOperation(oldNode, async () => {
-              /* empty */
-            })
+            NodeOperationUtil.replaceOperation(
+              oldNode,
+              async () => {
+                /* empty */
+              },
+              true,
+            )
           }
           break
         case PatchTypeAndOrder.REPLACE:
@@ -511,7 +515,15 @@ export class NodeOperationUtil {
    * @param {ReblendTyping.Component<P, S>} oldNode - The old node to replace.
    * @param {() => void} operation - The operation to execute for the replacement.
    */
-  static replaceOperation<P, S>(oldNode: ReblendTyping.Component<P, S>, operation: () => Promise<void>) {
+  static replaceOperation<P, S>(
+    oldNode: ReblendTyping.Component<P, S>,
+    operation: () => Promise<void>,
+    isRemoveOperation?: boolean,
+  ) {
+    if (isRemoveOperation) {
+      oldNode.directParent?.elementChildren?.delete(oldNode)
+      oldNode.remove()
+    }
     operation().finally(() =>
       requestIdleCallback(() => {
         NodeOperationUtil.detach(oldNode)
