@@ -1,6 +1,6 @@
 {
   "name": "reblendjs",
-  "version": "7.1.6",
+  "version": "7.1.7",
   "codename": "infant",
   "description": "This is build using react way of handling dom but with web components",
   "keywords": [
