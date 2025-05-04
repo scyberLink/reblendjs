@@ -122,6 +122,7 @@ export class BaseComponent<
     elementId: string,
     app: typeof Reblend | ReblendTyping.FunctionComponent,
     props?: IAny,
+    options?: { preloader?: typeof Reblend | ReblendTyping.FunctionComponent },
   ): Promise<void> {
     let appRoot = document.getElementById(elementId)
     if (!appRoot) {
@@ -153,8 +154,13 @@ export class BaseComponent<
     }
 
     // Load and mount the preloader.
+    let customPreloader = options?.preloader
     let { Preloader } = await import('./components/Preloader')
-    let preloaderVNodes = BaseComponent.construct(Preloader as any, {}, ...[])
+    let preloaderVNodes = customPreloader
+      ? typeof customPreloader === 'function'
+        ? BaseComponent.construct(customPreloader as any, {}, ...[])
+        : customPreloader
+      : BaseComponent.construct(Preloader as any, {}, ...[])
     let preloaderNodes: BaseComponent[] = (await ElementUtil.createChildren(
       Array.isArray(preloaderVNodes) ? preloaderVNodes : [preloaderVNodes],
     )) as any

@@ -1,30 +1,16 @@
 import { Reblend } from '../Reblend'
-import { rand } from '../../common/utils'
 import { ReblendTyping } from 'reblend-typing'
-import { useMemo } from '../hooks'
 
 export default function Placeholder({
   style,
   children,
 }: {
-  style?: ReblendTyping.CSSProperties | string
+  style?: ReblendTyping.CSSProperties
   children?: Reblend.JSX.Element
 }) {
-  const [stringStyle, objectStyle] = useMemo(() => {
-    if (typeof style === 'string') {
-      return [style, {}]
-    } else if (style && typeof style === 'object') {
-      return ['', style]
-    }
-    return ['', {}]
-  }, [style])
-  const id = rand(1234, 5678)
-
   return (
     <div style={styles.placeholder as any}>
-      <div data-reblendplaceholder={`${id}`} style={{ ...styles.loadingBar, ...objectStyle }}>
-        {children}
-      </div>
+      <div style={{ ...styles.loadingBar, ...(style || {}) }}>{children}</div>
       <style>{`
         @keyframes loading {
           0% {
@@ -33,10 +19,6 @@ export default function Placeholder({
           100% {
             background-position: -200% 0;
           }
-        }
-
-        [data-reblendplaceholder="${id}"] {
-          ${stringStyle}
         }
       `}</style>
     </div>
