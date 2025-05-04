@@ -2,34 +2,32 @@ import Reblend from 'reblendjs';
 import { setHistory } from '../contexts/history';
 import { ReblendTyping } from 'reblend-typing';
 
-function Link({
-  to,
-  href,
-  children,
-  memory = false,
-  className,
-  ref,
-}: {
+interface LinkProps {
   to?: string;
   href?: string;
   children: any;
   memory?: boolean;
   className?: string;
+  class?: string;
   ref?: ReblendTyping.Ref<HTMLAnchorElement | null>;
-}) {
+  style?: ReblendTyping.CSSProperties;
+}
+
+function Link(props: LinkProps) {
   async function onclick(e: any) {
     e.preventDefault();
-    setHistory(to || href || '#', memory);
+    setHistory(props.to || props.href || '#', props.memory);
   }
 
   return (
     <a
-      href={to || href || '#'}
+      href={props.to || props.href || '#'}
       onClick={onclick}
-      class={className || ''}
-      ref={ref as any}
+      class={props.class || props.className || ''}
+      ref={props.ref as any}
+      style={props.style}
     >
-      {children}
+      {props.children}
     </a>
   );
 }

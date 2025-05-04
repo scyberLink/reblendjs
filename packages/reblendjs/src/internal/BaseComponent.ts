@@ -38,10 +38,11 @@ export interface BaseComponent<P, S> extends HTMLElement {
     [key: string]: {
       cache: ReblendTyping.Primitive | Array<ReblendTyping.Primitive>
       cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive>
+      effect?: ReblendTyping.StateEffectiveFunction
+      disconnectEffect?: ReblendTyping.StateEffectiveFunction
     }
   }
-  effectsFn: Set<ReblendTyping.StateEffectiveFunction>
-  disconnectEffects: Set<ReblendTyping.StateEffectiveFunction>
+  hookDisconnectedEffects?: Set<() => void>
   checkPropsChange(): Promise<void>
   hasDisconnected: boolean
   htmlElements: ReblendTyping.Component<P, S>[]
@@ -305,8 +306,8 @@ export class BaseComponent<
     NodeOperationUtil.connectedCallback(this as any)
   }
 
-  addDisconnectedEffect(effect: () => void) {
-    this.disconnectEffects?.add(effect)
+  addHookDisconnectedEffect(destructor: () => void) {
+    this.hookDisconnectedEffects?.add(destructor)
   }
 
   addStyle(style: string[] | IAny | string): void {
@@ -343,8 +344,19 @@ export class BaseComponent<
   }
 
   applyEffects() {
-    this.effectsFn?.forEach((effectFn) => {
-      effectFn()
+    Object.values(this.effectState)?.forEach((state) => {
+      const disconnectEffect = state.effect && state.effect()
+      if (disconnectEffect) {
+        if (disconnectEffect instanceof Promise) {
+          disconnectEffect.then((resolvedDisconnectEffect) => {
+            if (typeof resolvedDisconnectEffect === 'function') {
+              state.disconnectEffect = resolvedDisconnectEffect
+            }
+          })
+        } else if (typeof disconnectEffect === 'function') {
+          state.disconnectEffect = disconnectEffect
+        }
+      }
     })
   }
 
@@ -433,18 +445,22 @@ export class BaseComponent<
   mountEffects() {
     this.mountingEffects = true
     this.stateEffectRunning = true
-    this.effectsFn?.forEach((fn) => {
-      const disconnectEffect = fn()
-      if (disconnectEffect instanceof Promise) {
-        disconnectEffect.then((val) => {
-          if (val) {
-            this.disconnectEffects?.add(val)
+    if (!NodeUtil.isReblendPrimitiveElement(this)) {
+      Object.values(this.effectState)?.forEach((state) => {
+        const disconnectEffect = state.effect && state.effect()
+        if (disconnectEffect) {
+          if (disconnectEffect instanceof Promise) {
+            disconnectEffect.then((resolvedDisconnectEffect) => {
+              if (typeof resolvedDisconnectEffect === 'function') {
+                state.disconnectEffect = resolvedDisconnectEffect
+              }
+            })
+          } else if (typeof disconnectEffect === 'function') {
+            state.disconnectEffect = disconnectEffect
           }
-        })
-      } else if (typeof disconnectEffect === 'function') {
-        this.disconnectEffects?.add(disconnectEffect)
-      }
-    })
+        }
+      })
+    }
     this.mountingEffects = false
     this.stateEffectRunning = false
     if (NodeUtil.isReblendRenderedNode(this)) {
@@ -547,7 +563,7 @@ export class BaseComponent<
         return fn()
       }
     }).bind(this)
-    this.effectsFn?.add(internalFn)
+    this.effectState[effectKey].effect = internalFn
   }
 
   useReducer<T, I>(
@@ -619,7 +635,7 @@ export class BaseComponent<
         setState(fn())
       }
     }
-    this.effectsFn?.add(internalFn)
+    this.effectState[effectKey].effect = internalFn
     return this.state[stateID]
   }
 
@@ -637,9 +653,8 @@ export class BaseComponent<
    */
   _constructor() {
     this.state = {} as S
-    this.effectsFn = new Set()
-    this.disconnectEffects = new Set()
     this.childrenPropsUpdate = new Set()
+    this.hookDisconnectedEffects = new Set()
     this.numAwaitingUpdates = 0
     this.effectState = {}
     this.hasDisconnected = false

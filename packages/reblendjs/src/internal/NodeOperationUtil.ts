@@ -553,6 +553,9 @@ export class NodeOperationUtil {
    * Uses bruteforce approach insuring that there is not memory leakage
    */
   static disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P, S>, fromCleanUp = false) {
+    if (thiz.hasDisconnected) {
+      return
+    }
     !fromCleanUp && thiz.cleanUp()
     thiz.componentWillUnmount()
     if (thiz.ref) {
@@ -566,8 +569,20 @@ export class NodeOperationUtil {
         }
       }
     }
-    thiz.disconnectEffects?.forEach((fn) => fn())
-    thiz.disconnectEffects?.clear()
+
+    if (!NodeUtil.isReblendPrimitiveElement(thiz)) {
+      Object.values(thiz.effectState)?.forEach((state) => {
+        state.disconnectEffect && state.disconnectEffect()
+        state.cache = null as any
+        state.cacher = null as any
+        state.effect = null as any
+        state.disconnectEffect = null as any
+      })
+    }
+
+    thiz.hookDisconnectedEffects?.forEach((destructor) => {
+      destructor()
+    })
 
     NodeOperationUtil.detachChildren(thiz as any)
     thiz.elementChildren?.forEach((node) => NodeOperationUtil.detach(node))
@@ -587,28 +602,31 @@ export class NodeOperationUtil {
         thiz.parentElement.removeChild(thiz)
       }
     }
-
-    for (const property in thiz) {
-      if (thiz[property] && property.startsWith('on')) {
-        thiz[property] = null
-      }
-    }
-
     thiz.reactElementChildrenWrapper?.disconnectedCallback()
     thiz.props = null as any
     thiz.reactElementChildrenWrapper = null as any
     thiz.elementChildren = null as any
     thiz.effectState = null as any
+    thiz.hookDisconnectedEffects = null as any
     thiz.directParent = null as any
     thiz.state = null as any
-    thiz.effectsFn = null as any
-    thiz.disconnectEffects = null as any
     thiz.renderingError = null as any
     thiz.renderingErrorHandler = null as any
     thiz.nearestStandardParent = null as any
     thiz.ReactClass = null as any
     thiz.ref = null as any
     thiz.childrenPropsUpdate = null as any
+
+    for (const property in thiz) {
+      if (thiz[property]) {
+        try {
+          thiz[property] = null
+        } catch (error) {
+          /* empty */
+        }
+      }
+    }
+
     thiz.hasDisconnected = true
   }
 }

@@ -1188,21 +1188,21 @@ export namespace ReblendTyping {
       [key: string]: {
         cache: Primitive | Array<Primitive>;
         cacher: () => Primitive | Array<Primitive>;
+        /**
+         * The effects functions defined for the component.
+         */
+        effect?: ReblendTyping.StateEffectiveFunction;
+        /**
+         * The disconnect effects to apply when the component is disconnected.
+         */
+        disconnectEffect?: ReblendTyping.StateEffectiveFunction;
       };
     };
     /**
      * The effects to apply when the component is mounted.
      */
     onMountEffects?: Set<ReblendTyping.StateEffectiveFunction>;
-    /**
-     * The effects functions defined for the component.
-     */
-    effectsFn?: Set<ReblendTyping.StateEffectiveFunction>;
-    /**
-     * The disconnect effects to apply when the component is disconnected.
-     */
-    disconnectEffects?: Set<ReblendTyping.StateEffectiveFunction>;
-
+    hookDisconnectedEffects?: Set<() => void>;
     /**
      * Indicates number of awaiting updates.
      */
@@ -3519,6 +3519,7 @@ export namespace ReblendTyping {
     xmlnsXlink?: string | undefined;
     'xmlns:xlink'?: string | undefined;
     xmlSpace?: string | undefined;
+    'xml:space'?: string | undefined;
     y1?: number | string | undefined;
     y2?: number | string | undefined;
     y?: number | string | undefined;
