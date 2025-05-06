@@ -7,6 +7,8 @@ import { type BaseComponent } from './BaseComponent'
 type SymbolsType = {
   ReblendNode: symbol
   ReblendVNode: symbol
+  ReblendLazyNode: symbol
+  ReblendLazyVNode: symbol
   ReactToReblendNode: symbol
   ReactToReblendVNode: symbol
   ReblendNodeStandard: symbol
@@ -16,14 +18,27 @@ type SymbolsType = {
 const Symbols: SymbolsType = {
   ReblendNode: Symbol('Reblend.Node'),
   ReblendVNode: Symbol('Reblend.VNode'),
+  ReblendLazyNode: Symbol('Reblend.Lazy.Node'),
+  ReblendLazyVNode: Symbol('Reblend.Lazy.VNode'),
   ReactToReblendNode: Symbol('React.Reblend.Node'),
   ReactToReblendVNode: Symbol('React.Reblend.VNode'),
   ReblendNodeStandard: Symbol('Reblend.Node.Standard'),
   ReblendVNodeStandard: Symbol('Reblend.VNode.Standard'),
 }
 
+export enum ReblendNodeTypeDict {
+  ReblendNode = 'ReblendNode',
+  ReblendVNode = 'ReblendVNode',
+  ReblendLazyNode = 'ReblendLazyNode',
+  ReblendLazyVNode = 'ReblendLazyVNode',
+  ReactToReblendNode = 'ReactToReblendNode',
+  ReactToReblendVNode = 'ReactToReblendVNode',
+  ReblendNodeStandard = 'ReblendNodeStandard',
+  ReblendVNodeStandard = 'ReblendVNodeStandard',
+}
+
 export class NodeUtil {
-  static addSymbol(type: keyof SymbolsType, obj: object) {
+  static addSymbol(type: ReblendNodeTypeDict, obj: object) {
     const symb = Symbols[type]
 
     if (!obj || !symb) {
@@ -62,6 +77,26 @@ export class NodeUtil {
    */
   static isReblendVirtualNode(node: any): boolean {
     return node && typeof node === 'object' && node![Symbols.ReblendVNode]
+  }
+
+  /**
+   * Checks if the provided node is a rendered Reblend lazy node.
+   *
+   * @param {any} node - The node to check.
+   * @returns {boolean} `true` if the node is a rendered Reblend lazy node, otherwise `false`.
+   */
+  static isReblendRenderedLazyNode(node: any): boolean {
+    return node && typeof node === 'object' && node![Symbols.ReblendLazyNode]
+  }
+
+  /**
+   * Checks if the provided node is a virtual Reblend lazy node.
+   *
+   * @param {any} node - The node to check.
+   * @returns {boolean} `true` if the node is a virtual Reblend lazy node, otherwise `false`.
+   */
+  static isReblendLazyVirtualNode(node: any): boolean {
+    return node && typeof node === 'object' && node![Symbols.ReblendLazyVNode]
   }
 
   /**
@@ -155,6 +190,22 @@ export class NodeUtil {
    * @returns {boolean} `true` if the display name represents a React node, otherwise `false`.
    */
   static isReactNode(displayName: ReblendTyping.IAny): boolean {
+    return (
+      displayName &&
+      typeof displayName !== 'string' &&
+      ('$$typeof' in displayName ||
+        (displayName.prototype && displayName.prototype.isReactComponent) ||
+        (isCallable(displayName) && !(displayName instanceof Reblend)))
+    )
+  }
+
+  /**
+   * Checks if the provided display name represents a Lazy node.
+   *
+   * @param {ReblendTyping.IAny} displayName - The display name to check.
+   * @returns {boolean} `true` if the display name represents a Promise Instance, otherwise `false`.
+   */
+  static isLazyNode(displayName: ReblendTyping.IAny): boolean {
     return (
       displayName &&
       typeof displayName !== 'string' &&
