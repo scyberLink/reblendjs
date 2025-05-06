@@ -2,7 +2,7 @@
 import { REBLEND_PRIMITIVE_ELEMENT_NAME, ReblendTyping } from 'reblend-typing'
 import { capitalize, isCallable, REBLEND_COMPONENT, REBLEND_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
 import { DiffUtil } from './DiffUtil'
-import { NodeUtil } from './NodeUtil'
+import { NodeUtil, ReblendNodeTypeDict } from './NodeUtil'
 import { PropertyUtil } from './PropertyUtil'
 import { Reblend } from './Reblend'
 import { ReblendReactClass } from './ReblendReactClass'
@@ -139,7 +139,7 @@ export const ElementUtil = class {
       if (!(vNode as any).displayName) {
         ;(vNode as any).displayName = capitalize((vNode as any as HTMLElement).tagName)
         NodeUtil.extendPrototype(vNode, Reblend.prototype)
-        NodeUtil.addSymbol('ReblendNodeStandard', vNode)
+        NodeUtil.addSymbol(ReblendNodeTypeDict.ReblendNodeStandard, vNode)
         ;(vNode as any)._constructor()
       }
       return [vNode as any]
@@ -173,7 +173,11 @@ export const ElementUtil = class {
     ) as ReblendTyping.Component<P, S>
 
     NodeUtil.addSymbol(
-      isReactNode ? 'ReactToReblendNode' : isTagStandard ? 'ReblendNodeStandard' : 'ReblendNode',
+      isReactNode
+        ? ReblendNodeTypeDict.ReactToReblendNode
+        : isTagStandard
+        ? ReblendNodeTypeDict.ReblendNodeStandard
+        : ReblendNodeTypeDict.ReblendNode,
       element,
     )
     element.displayName = tagName

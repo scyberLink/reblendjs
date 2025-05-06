@@ -55,8 +55,12 @@ export class NodeOperationUtil {
     if ((node as ReblendTyping.Component<P, S>).connectedCallback) {
       ;(node as ReblendTyping.Component<P, S>).connectedCallback()
     }
-    for (const child of [...((node as ReblendTyping.Component<P, S>).elementChildren?.values() || [])]) {
-      NodeOperationUtil.connected(child as HTMLElement)
+    if (!(node as ReblendTyping.Component<P, S>).elementChildren?.values()) {
+      ;(node as ReblendTyping.Component<P, S>).awaitingChildrenConnectedness = true
+    } else {
+      for (const child of [...((node as ReblendTyping.Component<P, S>).elementChildren?.values() || [])]) {
+        NodeOperationUtil.connected(child as HTMLElement)
+      }
     }
   }
 
@@ -503,7 +507,7 @@ export class NodeOperationUtil {
         ;(node as any)?.checkPropsChange()
       } else if (NodeUtil.isReblendRenderedNode(node) && node.attached) {
         //This allows us to finish applying updates before we trigger rerender
-        Promise.resolve().then(() => setTimeout(() => node.onStateChange(), 0))
+        setTimeout(() => setTimeout(() => node.onStateChange(), 0), 1)
       }
     })
     nodes = null as any

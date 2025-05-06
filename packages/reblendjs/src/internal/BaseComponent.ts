@@ -4,7 +4,7 @@ import { IAny } from '../interface/IAny'
 import StyleUtil from './StyleUtil'
 import { ChildrenPropsUpdateType, ReblendTyping } from 'reblend-typing'
 import { Reblend } from './Reblend'
-import { NodeUtil } from './NodeUtil'
+import { NodeUtil, ReblendNodeTypeDict } from './NodeUtil'
 import { ElementUtil } from './ElementUtil'
 import { DiffUtil } from './DiffUtil'
 import { NodeOperationUtil } from './NodeOperationUtil'
@@ -52,6 +52,7 @@ export interface BaseComponent<P, S> extends HTMLElement {
   mountingEffects: boolean
   initStateRunning: boolean
   awaitingInitState: boolean
+  awaitingChildrenConnectedness: boolean
   state: S
   reactReblendMount: undefined | ((afterNode?: HTMLElement) => any)
 }
@@ -111,7 +112,11 @@ export class BaseComponent<
     }
 
     NodeUtil.addSymbol(
-      isTagStandard ? 'ReblendVNodeStandard' : NodeUtil.isReactNode(clazz) ? 'ReactToReblendVNode' : 'ReblendVNode',
+      isTagStandard
+        ? ReblendNodeTypeDict.ReblendVNodeStandard
+        : NodeUtil.isReactNode(clazz)
+        ? ReblendNodeTypeDict.ReactToReblendVNode
+        : ReblendNodeTypeDict.ReblendVNode,
       velement,
     )
 
@@ -237,8 +242,12 @@ export class BaseComponent<
         this.reactReblendMount && this.reactReblendMount()
       } else {
         this.append(...htmlElements)
-        if (NodeUtil.isReblendRenderedNode(this) && this.awaitingInitState) {
+        if (this.awaitingChildrenConnectedness) {
+          this.awaitingChildrenConnectedness = false
           NodeOperationUtil.connected(this)
+        } else if (NodeUtil.isReblendRenderedNode(this) && this.awaitingInitState) {
+          NodeOperationUtil.connected(this)
+          this.awaitingInitState = false
         }
       }
       this.childrenInitialize = true
@@ -452,27 +461,14 @@ export class BaseComponent<
     this.mountingEffects = true
     this.stateEffectRunning = true
     if (!NodeUtil.isReblendPrimitiveElement(this)) {
-      Object.values(this.effectState)?.forEach((state) => {
-        const disconnectEffect = state.effect && state.effect()
-        if (disconnectEffect) {
-          if (disconnectEffect instanceof Promise) {
-            disconnectEffect.then((resolvedDisconnectEffect) => {
-              if (typeof resolvedDisconnectEffect === 'function') {
-                state.disconnectEffect = resolvedDisconnectEffect
-              }
-            })
-          } else if (typeof disconnectEffect === 'function') {
-            state.disconnectEffect = disconnectEffect
-          }
-        }
-      })
+      this.applyEffects()
     }
     this.mountingEffects = false
     this.stateEffectRunning = false
     if (NodeUtil.isReblendRenderedNode(this)) {
-      Promise.resolve().then(() => {
+      setTimeout(() => {
         this.onStateChange()
-      })
+      }, 1)
     }
   }
 
@@ -526,7 +522,7 @@ export class BaseComponent<
       if (force || this.state[stateID] !== value) {
         this.state[stateID] = value as T
         if (this.attached) {
-          Promise.resolve().then(() => this.onStateChange())
+          setTimeout(() => this.onStateChange(), 1)
         }
       }
     }).bind(this)
