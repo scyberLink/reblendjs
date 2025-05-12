@@ -152,8 +152,9 @@ export class NodeOperationUtil {
     newNode: ReblendTyping.VNodeChild,
   ): ReblendTyping.Patch<P, S>[] {
     const patches: ReblendTyping.Patch<P, S>[] = []
-    if (isCallable(oldNode) || isCallable(newNode)) {
-      return []
+    if (isCallable(newNode)) {
+      patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
+      return patches
     }
 
     if (NodeUtil.isPrimitive(oldNode) && NodeUtil.isPrimitive(newNode)) {
