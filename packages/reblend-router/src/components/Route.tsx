@@ -14,10 +14,6 @@ export function Route<T>({
     | HTMLElement;
   path: string;
 }) {
-  if (!(element || Component)) {
-    throw new Error('Route should have element or Component prop');
-  }
-
   const [matchedData, setMatchedData] = useReducer<
     RouteProps | null | undefined,
     RouteProps | null | undefined
@@ -31,7 +27,30 @@ export function Route<T>({
     return () => Routes.unregister(path);
   }, []);
 
-  return (() => {
+  useEffect(() => {
+    if (!matchedData) {
+      return;
+    }
+
+    const { hash } = matchedData;
+    if (!hash) {
+      return;
+    }
+
+    setTimeout(() => {
+      const idElement = document.querySelector(hash);
+      if (!idElement) {
+        return;
+      }
+      idElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest',
+      });
+    }, 100);
+  }, [matchedData]);
+
+  return () => {
     if (!matchedData) {
       return null;
     }
@@ -54,5 +73,5 @@ export function Route<T>({
     }
 
     return null;
-  })();
+  };
 }

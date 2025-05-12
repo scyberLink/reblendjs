@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { rand } from '../common/utils'
+import { isCallable, rand } from '../common/utils'
 import { IAny } from '../interface/IAny'
 import StyleUtil from './StyleUtil'
 import { ChildrenPropsUpdateType, ReblendTyping } from 'reblend-typing'
@@ -189,6 +189,7 @@ export class BaseComponent<
     root.html = async () => BaseComponent.construct(app as any, props || {}, ...[])
 
     await root.populateHtmlElements()
+    await new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
     NodeOperationUtil.connected(root)
 
     // Final yield to ensure all rendering tasks are complete.
@@ -212,11 +213,17 @@ export class BaseComponent<
       preloaderNodes = undefined as any
     }
 
-    Promise.resolve().then(closePreloader)
+    setTimeout(() => {
+      closePreloader()
+      new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+    }, 100)
   }
 
   async createInnerHtmlElements() {
     let htmlVNodes = await this.html()
+    if (isCallable(htmlVNodes)) {
+      htmlVNodes = (htmlVNodes as any)()
+    }
     if (!Array.isArray(htmlVNodes)) {
       htmlVNodes = [htmlVNodes]
     }
@@ -437,6 +444,9 @@ export class BaseComponent<
       this.onStateChangeRunning = true
       if (this.childrenInitialize) {
         newVNodes = await this.html()
+        if (isCallable(newVNodes)) {
+          newVNodes = (newVNodes as any)()
+        }
         if (!Array.isArray(newVNodes)) {
           newVNodes = [newVNodes as any]
         }

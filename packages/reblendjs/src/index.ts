@@ -22,6 +22,6 @@ export {
   useContext,
   CacheType,
 } from './internal/hooks'
-
+export { rand } from './common/utils'
 export { Reblend, Preloader, Placeholder }
 export default Reblend

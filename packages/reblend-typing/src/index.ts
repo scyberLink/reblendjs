@@ -812,9 +812,15 @@ export namespace ReblendTyping {
    *
    * @template P The props the component accepts.
    */
-  export type JSXElementConstructor<P> = (
-    props: P
-  ) => Promise<ReblendNode | ReblendNode[]> | ReblendNode | ReblendNode[];
+  export type JSXElementConstructor<P> =
+    | Promise<
+        (
+          props: P
+        ) => Promise<ReblendNode | ReblendNode[]> | ReblendNode | ReblendNode[]
+      >
+    | ((
+        props: P
+      ) => Promise<ReblendNode | ReblendNode[]> | ReblendNode | ReblendNode[]);
 
   /**
    * Retrieves the type of the 'ref' prop for a given component type or tag name.
