@@ -192,10 +192,9 @@ export class NodeUtil {
   static isReactNode(displayName: ReblendTyping.IAny): boolean {
     return (
       displayName &&
-      typeof displayName !== 'string' &&
-      ('$$typeof' in displayName ||
-        (displayName.prototype && displayName.prototype.isReactComponent) ||
-        (isCallable(displayName) && !(displayName instanceof Reblend)))
+      (typeof displayName === 'object' || typeof displayName === 'function') &&
+      !('construct' in displayName && 'mountOn' in displayName && 'createInnerHtmlElements' in displayName.prototype) &&
+      ('$$typeof' in displayName || (displayName.prototype && displayName.prototype.isReactComponent))
     )
   }
 
@@ -206,13 +205,7 @@ export class NodeUtil {
    * @returns {boolean} `true` if the display name represents a Promise Instance, otherwise `false`.
    */
   static isLazyNode(displayName: ReblendTyping.IAny): boolean {
-    return (
-      displayName &&
-      typeof displayName !== 'string' &&
-      ('$$typeof' in displayName ||
-        (displayName.prototype && displayName.prototype.isReactComponent) ||
-        (isCallable(displayName) && !(displayName instanceof Reblend)))
-    )
+    return displayName && typeof displayName === 'object' && displayName instanceof Promise
   }
 
   /**

@@ -12,9 +12,13 @@ export class PropertyUtil {
    * @param {ReblendTyping.Component} to - The target component to apply the properties to.
    * @param {boolean} init - Whether this is an initial setting of properties.
    */
-  static async setProps<P, S>(props: ReblendTyping.IAny, to: ReblendTyping.Component<P, S>, init: boolean) {
-    if (!props || !to) {
-      return
+  static async setProps<P, S, ExpectedReturn = any>(
+    props: ReblendTyping.IAny,
+    to: ReblendTyping.Component<P, S>,
+    init: boolean,
+  ): Promise<ExpectedReturn> {
+    if (!to) {
+      return undefined as any
     }
 
     if (init && to.initProps) {
@@ -52,11 +56,15 @@ export class PropertyUtil {
       }
     }
 
+    let initStateResult: ExpectedReturn = undefined as any
+
     if (init && to.initState) {
       to.initStateRunning = true
-      await to.initState()
+      initStateResult = await to.initState<ExpectedReturn>()
       to.initStateRunning = false
     }
+
+    return initStateResult
   }
 
   /**
