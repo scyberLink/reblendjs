@@ -1228,6 +1228,10 @@ export namespace ReblendTyping {
      */
     awaitingInitState: boolean;
     /**
+     * Function to be called when lazy node resolves before its placeholder is inserted to there parent
+     */
+    awaitingLazyReplaceFn?: () => void;
+    /**
      * Indicate when connectedCallback of component children should be called but children have not been populated
      */
     awaitingChildrenConnectedness: boolean;
@@ -1273,7 +1277,7 @@ export namespace ReblendTyping {
     /**
      * Initializes the component's state.
      */
-    initState(): Promise<void>;
+    initState<ExpectedReturn = any>(): Promise<ExpectedReturn>;
     /**
      * Initializes the component's properties.
      *

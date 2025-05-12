@@ -187,9 +187,9 @@ export class NodeOperationUtil {
           ? (newNode as ReblendTyping.VNode).displayName
           : ((newNode as ReblendTyping.VNode).displayName as any).ELEMENT_NAME ||
             ((newNode as ReblendTyping.VNode).displayName as any).displayName) as string
-      ).toLowerCase()
+      )?.toLowerCase()
 
-      if (oldNodeTag !== newNodeTag) {
+      if (oldNodeTag && newNodeTag && oldNodeTag !== newNodeTag) {
         patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
       } else {
         const propsDiff = NodeOperationUtil.diffProps(newNode as ReblendTyping.VNode, oldNode)
@@ -528,6 +528,7 @@ export class NodeOperationUtil {
       oldNode.directParent?.elementChildren?.delete(oldNode)
       oldNode.remove()
     }
+    requestAnimationFrame(() => {})
     operation().finally(() =>
       requestIdleCallback(() => {
         NodeOperationUtil.detach(oldNode)

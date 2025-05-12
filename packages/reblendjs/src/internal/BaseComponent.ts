@@ -85,6 +85,17 @@ export class BaseComponent<
     if (Array.isArray(displayName)) {
       return displayName as []
     }
+
+    if (
+      NodeUtil.isLazyNode(displayName as any) ||
+      NodeUtil.isReblendVirtualNodeStandard(displayName) ||
+      NodeUtil.isReblendVirtualNode(displayName) ||
+      NodeUtil.isReactToReblendVirtualNode(displayName) ||
+      NodeUtil.isReblendLazyVirtualNode(displayName)
+    ) {
+      return displayName as any
+    }
+
     const clazz: typeof Reblend = displayName as typeof Reblend
     const isTagStandard = typeof displayName === 'string'
     if (!isTagStandard && clazz.ELEMENT_NAME === 'Fragment') {
@@ -116,6 +127,8 @@ export class BaseComponent<
         ? ReblendNodeTypeDict.ReblendVNodeStandard
         : NodeUtil.isReactNode(clazz)
         ? ReblendNodeTypeDict.ReactToReblendVNode
+        : NodeUtil.isLazyNode(clazz)
+        ? ReblendNodeTypeDict.ReblendLazyVNode
         : ReblendNodeTypeDict.ReblendVNode,
       velement,
     )
@@ -133,8 +146,8 @@ export class BaseComponent<
     if (!appRoot) {
       throw new Error('Invalid root id')
     }
-    let root = document.createElement('div')
-    root.setAttribute('Root', '')
+    let root: Reblend = (await ElementUtil.createElement(document.createElement('div') as any)).pop() as any
+    root.setAttribute('ReblendRoot', '')
     let initialDisplay = root.style.display || 'initial'
 
     let body = document.body
@@ -173,15 +186,10 @@ export class BaseComponent<
     await mountChunked(preloaderParent, preloaderNodes)
 
     // Construct the main app nodes.
-    let vNodes = BaseComponent.construct(app as any, props || {}, ...[])
-    let nodes: BaseComponent[] = (await ElementUtil.createChildren(
-      Array.isArray(vNodes) ? (vNodes as any) : [vNodes],
-    )) as any
+    root.html = async () => BaseComponent.construct(app as any, props || {}, ...[])
 
-    // Optionally, wait a short time (500ms) before mounting the main app.
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    mountChunked(root, nodes)
+    await root.populateHtmlElements()
+    NodeOperationUtil.connected(root)
 
     // Final yield to ensure all rendering tasks are complete.
     await new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
@@ -199,16 +207,12 @@ export class BaseComponent<
       root = undefined as any
       initialDisplay = undefined as any
       body = undefined as any
-      vNodes = undefined as any
-      nodes = undefined as any
       Preloader = undefined as any
       preloaderVNodes = undefined as any
       preloaderNodes = undefined as any
     }
 
-    setTimeout(() => {
-      requestAnimationFrame(closePreloader)
-    }, 100)
+    Promise.resolve().then(closePreloader)
   }
 
   async createInnerHtmlElements() {
@@ -250,6 +254,12 @@ export class BaseComponent<
           this.awaitingInitState = false
         }
       }
+      htmlElements.forEach((child) => {
+        if (child.awaitingLazyReplaceFn) {
+          child.awaitingLazyReplaceFn()
+          child.awaitingLazyReplaceFn = undefined
+        }
+      })
       this.childrenInitialize = true
     } catch (error) {
       this.handleError(error as Error)
@@ -341,8 +351,8 @@ export class BaseComponent<
     }
   }
 
-  async initState() {
-    /* The state property has been initialize in `@_constructor` */
+  async initState<ExpectedReturn = any>(): Promise<ExpectedReturn> {
+    return undefined as any
   }
 
   async initProps(props: P) {

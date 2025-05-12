@@ -6,6 +6,8 @@ import { NodeUtil, ReblendNodeTypeDict } from './NodeUtil'
 import { PropertyUtil } from './PropertyUtil'
 import { Reblend } from './Reblend'
 import { ReblendReactClass } from './ReblendReactClass'
+import { NodeOperationUtil } from './NodeOperationUtil'
+import { BaseComponent } from './BaseComponent'
 
 const componentConfig: { [key: string]: boolean } = {
   ReblendPlaceholder: true,
@@ -107,12 +109,20 @@ export const ElementUtil = class {
       if (isCallable(child)) {
         containerArr.push(child as any)
       } else if (Array.isArray(child)) {
-        ElementUtil.createChildren(child as any, containerArr)
+        await ElementUtil.createChildren(child as any, containerArr)
+      } else if (
+        !NodeUtil.isPrimitive(child) &&
+        'construct' in child &&
+        'mountOn' in child &&
+        'createInnerHtmlElements' in child.prototype
+      ) {
+        await ElementUtil.createChildren(BaseComponent.construct(child, {}) as any, containerArr)
       } else if (
         child instanceof Reblend ||
         child instanceof Node ||
         NodeUtil.isPrimitive(child) ||
         NodeUtil.isReactToReblendVirtualNode(child) ||
+        NodeUtil.isLazyNode(child) ||
         NodeUtil.isReblendVirtualNode(child) ||
         NodeUtil.isStandardVirtualNode(child)
       ) {
@@ -151,17 +161,35 @@ export const ElementUtil = class {
       return [ElementUtil.newReblendPrimitive()?.setData(vNode as ReblendTyping.Primitive) as any]
     }
 
-    const { displayName } = vNode as ReblendTyping.VNode
+    const tempComponent: typeof Reblend = vNode as any
+
+    if (
+      'construct' in tempComponent &&
+      'mountOn' in tempComponent &&
+      'createInnerHtmlElements' in tempComponent.prototype
+    ) {
+      return (await ElementUtil.createChildren(BaseComponent.construct(tempComponent, {}) as any)) as any
+    }
+
+    let { displayName } = vNode as ReblendTyping.VNode
+    if (isCallable(displayName)) {
+      displayName = await displayName()
+    }
     let clazz: typeof Reblend = displayName as any as typeof Reblend
     const isTagStandard = typeof displayName === 'string'
     const isReactNode = NodeUtil.isReactNode(displayName as any)
+    const isLazyNode = NodeUtil.isLazyNode(vNode as any)
 
-    const tagName = isTagStandard
+    const tagName = isLazyNode
+      ? ReblendNodeTypeDict.ReblendLazyNode
+      : isTagStandard
       ? displayName
       : (NodeUtil.isReactNode(clazz) ? (clazz as any as ReblendTyping.ReactNode).displayName : clazz?.ELEMENT_NAME) ||
         `Anonymous`
 
-    isTagStandard || (clazz.ELEMENT_NAME = tagName)
+    if (!isTagStandard && !isLazyNode) {
+      clazz.ELEMENT_NAME = tagName
+    }
 
     if (isReactNode) {
       clazz = ReblendReactClass as any
@@ -173,7 +201,9 @@ export const ElementUtil = class {
     ) as ReblendTyping.Component<P, S>
 
     NodeUtil.addSymbol(
-      isReactNode
+      isLazyNode
+        ? ReblendNodeTypeDict.ReblendLazyNode
+        : isReactNode
         ? ReblendNodeTypeDict.ReactToReblendNode
         : isTagStandard
         ? ReblendNodeTypeDict.ReblendNodeStandard
@@ -184,17 +214,29 @@ export const ElementUtil = class {
     if (isTagStandard || isReactNode) {
       NodeUtil.extendPrototype(element, Reblend.prototype)
     } else {
-      NodeUtil.extendPrototype(element, clazz.prototype)
-      if (clazz.config) {
-        Object.entries(clazz.config).forEach(([key, value]) => {
+      const config = isLazyNode ? (vNode as any)?.config : clazz.config
+      if (isLazyNode) {
+        NodeUtil.extendPrototype(element, Reblend.prototype)
+      } else {
+        NodeUtil.extendPrototype(element, clazz.prototype)
+      }
+      if (config) {
+        Object.entries(config).forEach(([key, value]) => {
           if (!componentConfig[key]) {
-            throw new Error(`Unsupported key \`${key}\` found in component configuration.`)
+            console.warn(`Unsupported key \`${key}\` found in component configuration.`)
           } else {
             element[key] = value
           }
         })
       }
     }
+
+    if (isLazyNode) {
+      element.initState = (async () => {
+        return (await vNode) as any
+      }).bind(element)
+    }
+
     if (isReactNode) {
       element.ReactClass = displayName as any
       NodeUtil.extendPrototype(element, ReblendReactClass.prototype)
@@ -231,9 +273,24 @@ export const ElementUtil = class {
       await PropertyUtil.setProps((vNode as ReblendTyping.VNode).props, element, true)
       await element.populateHtmlElements()
     } else {
-      PropertyUtil.setProps((vNode as ReblendTyping.VNode).props, element, true).finally(() => {
-        element.populateHtmlElements()
-      })
+      PropertyUtil.setProps((vNode as ReblendTyping.VNode).props, element, true)
+        .then(async (returnedNode) => {
+          if (returnedNode !== undefined) {
+            if (!(returnedNode instanceof Node)) {
+              returnedNode = BaseComponent.construct(returnedNode, {})
+            }
+            const returnedNodeElement = await ElementUtil.createElement(returnedNode)
+            const doReplace = () => NodeOperationUtil.replaceOldNode(returnedNodeElement, element)
+            if (element.directParent) {
+              doReplace()
+            } else {
+              element.awaitingLazyReplaceFn = doReplace
+            }
+          } else {
+            await element.populateHtmlElements()
+          }
+        })
+        .catch(console.error)
     }
 
     return [element]
