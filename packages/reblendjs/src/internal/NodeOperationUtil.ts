@@ -93,7 +93,7 @@ export class NodeOperationUtil {
         )
       }
       lastAttached.after(node)
-      setTimeout(() => NodeOperationUtil.connected(node), 0)
+      Promise.resolve().then(() => NodeOperationUtil.connected(node))
       lastAttached = node
     }
 
@@ -438,7 +438,7 @@ export class NodeOperationUtil {
               needsUpdate.add(parent)
             } else {
               parent.append(...elements)
-              elements.forEach((element) => setTimeout(() => NodeOperationUtil.connected(element), 0))
+              elements.forEach((element) => Promise.resolve().then(() => NodeOperationUtil.connected(element)))
             }
           }
           break
@@ -506,7 +506,7 @@ export class NodeOperationUtil {
         ;(node as any)?.checkPropsChange()
       } else if (NodeUtil.isReblendRenderedNode(node) && node.attached) {
         //This allows us to finish applying updates before we trigger rerender
-        setTimeout(() => setTimeout(() => node.onStateChange(), 0), 1)
+        setTimeout(() => node.onStateChange(), 0)
       }
     })
     nodes = null as any

@@ -44,6 +44,7 @@ export interface BaseComponent<P, S> extends HTMLElement {
   }
   hookDisconnectedEffects?: Set<() => void>
   checkPropsChange(): Promise<void>
+  addHookDisconnectedEffect(destructor: () => void): void
   hasDisconnected: boolean
   htmlElements: ReblendTyping.Component<P, S>[]
   childrenPropsUpdate: Set<ChildrenPropsUpdateType>
@@ -58,8 +59,8 @@ export interface BaseComponent<P, S> extends HTMLElement {
 }
 
 const stateIdNotIncluded = new Error('State Identifier/Key not specified')
+const unxpectedNumberOfArgument = new Error('Unexpected number of argument')
 
-//@ts-expect-error We don't have to redefine HTMLElement methods we just added it for type safety
 export class BaseComponent<
   P = Record<string, never>,
   S extends { renderingErrorHandler?: (error: Error) => void } = Record<string, never>,
@@ -224,7 +225,7 @@ export class BaseComponent<
     const mountChunked = async (parent: HTMLElement, nodes: BaseComponent[]) => {
       for (const node of nodes) {
         parent.appendChild(node)
-        setTimeout(() => NodeOperationUtil.connected(node), 0)
+        NodeOperationUtil.connected(node)
         // Yield to the browser to allow UI updates (e.g., the preloader animation).
         await new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
       }
@@ -490,7 +491,7 @@ export class BaseComponent<
       this.cacheEffectDependencies()
       return
     }
-    if (this.onStateChangeRunning || this.initStateRunning) {
+    if (this.onStateChangeRunning || this.initStateRunning || this.numAwaitingUpdates) {
       this.numAwaitingUpdates++
       return
     }
@@ -544,11 +545,6 @@ export class BaseComponent<
     }
     this.mountingEffects = false
     this.stateEffectRunning = false
-    if (NodeUtil.isReblendRenderedNode(this)) {
-      setTimeout(() => {
-        this.onStateChange()
-      }, 1)
-    }
   }
 
   disconnectedCallback(fromCleanUp = false) {
@@ -573,12 +569,16 @@ export class BaseComponent<
     })
   }
 
-  useState<T>(
-    initial: ReblendTyping.StateFunctionValue<T>,
-    ...dependencyStringAndOrStateKey: string[]
-  ): [T, ReblendTyping.StateFunction<T>] {
-    const stateID: string | undefined = dependencyStringAndOrStateKey.pop()
+  useState<T>(...initial_stateKey: any[]): [T, ReblendTyping.StateFunction<T>] {
+    const argumentsLength = initial_stateKey.length
 
+    if (argumentsLength < 1 || argumentsLength > 2) {
+      throw unxpectedNumberOfArgument
+    }
+
+    let initial = argumentsLength > 1 ? initial_stateKey[0] : undefined
+
+    const stateID: string | undefined = initial_stateKey.pop()
     if (!stateID) {
       throw stateIdNotIncluded
     }
@@ -601,7 +601,7 @@ export class BaseComponent<
       if (force || this.state[stateID] !== value) {
         this.state[stateID] = value as T
         if (this.attached) {
-          setTimeout(() => this.onStateChange(), 1)
+          this.onStateChange()
         }
       }
     }).bind(this)
@@ -609,12 +609,15 @@ export class BaseComponent<
     return [initial as T, variableSetter]
   }
 
-  useEffect(
-    fn: ReblendTyping.StateEffectiveFunction,
-    dependencies: any[],
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ..._dependencyStringAndOrStateKey: string[]
-  ) {
+  useEffect(...fn_dependencies: any[]) {
+    const argumentsLength = fn_dependencies.length
+    if (argumentsLength < 1 || argumentsLength > 2) {
+      throw unxpectedNumberOfArgument
+    }
+
+    let fn: ReblendTyping.StateEffectiveFunction = fn_dependencies[0]
+    const dependencies: any[] = argumentsLength === 2 ? fn_dependencies[1] : undefined
+
     fn = fn.bind(this)
     const dep = new Function(`return (${dependencies})`).bind(this)
     const generateId = () => {
@@ -647,13 +650,18 @@ export class BaseComponent<
     this.effectState[effectKey].effect = internalFn
   }
 
-  useReducer<T, I>(
-    reducer: ReblendTyping.StateReducerFunction<T, I>,
-    initial: ReblendTyping.StateFunctionValue<T>,
-    ...dependencyStringAndOrStateKey: string[]
-  ): [T, ReblendTyping.StateFunction<I>] {
+  useReducer<T, I>(...reducer_initial_stateKey: any[]): [T, ReblendTyping.StateFunction<I>] {
+    const argumentsLength = reducer_initial_stateKey.length
+
+    if (argumentsLength < 2 || argumentsLength > 3) {
+      throw unxpectedNumberOfArgument
+    }
+
+    let reducer: ReblendTyping.StateReducerFunction<T, I> = reducer_initial_stateKey[0]
+    let initial: ReblendTyping.StateFunctionValue<T> = argumentsLength === 3 ? reducer_initial_stateKey[1] : undefined
+
     reducer = reducer.bind(this)
-    const stateID: string | undefined = dependencyStringAndOrStateKey.pop()
+    const stateID: string | undefined = reducer_initial_stateKey[2]
 
     if (!stateID) {
       throw stateIdNotIncluded
@@ -673,13 +681,18 @@ export class BaseComponent<
     return [this.state[stateID], fn]
   }
 
-  useMemo<T>(
-    fn: ReblendTyping.StateEffectiveMemoFunction<T>,
-    dependencies?: any[],
-    ...dependencyStringAndOrStateKey: string[]
-  ): T {
+  useMemo<T>(...fn_dependencies_stateKey: any[]): T {
+    const argumentsLength = fn_dependencies_stateKey.length
+
+    if (argumentsLength < 2 || argumentsLength > 3) {
+      throw unxpectedNumberOfArgument
+    }
+
+    let fn: ReblendTyping.StateEffectiveMemoFunction<T> = fn_dependencies_stateKey[0]
+    const dependencies: any[] = argumentsLength === 3 ? fn_dependencies_stateKey[1] : undefined
+
     fn = fn.bind(this)
-    const stateID: string | undefined = dependencyStringAndOrStateKey.pop()
+    const stateID: string | undefined = fn_dependencies_stateKey[2]
 
     if (!stateID) {
       throw stateIdNotIncluded

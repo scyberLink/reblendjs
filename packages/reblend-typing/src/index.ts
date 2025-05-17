@@ -1103,7 +1103,7 @@ export namespace ReblendTyping {
     | undefined
     | null;
   export interface Component<P, S> extends HTMLElement {
-    constructor();
+    // constructor();
     html(): Promise<ReblendNode>;
     /**
      * Holds the props (properties) of the component.
@@ -1267,11 +1267,11 @@ export namespace ReblendTyping {
      */
     connectedCallback(): void;
     /**
-     * Adds a disconnect effect function to be executed when the component is disconnected.
+     * Adds a hook disconnect effect function to be executed when the component is disconnected.
      *
-     * @param {() => void} effect - The effect function to add.
+     * @param {() => void} destructor - The destructor function to add.
      */
-    addDisconnectedEffect(effect: () => void): void;
+    addHookDisconnectedEffect(destructor: () => void): void;
     /**
      * Adds styles to the component.
      *

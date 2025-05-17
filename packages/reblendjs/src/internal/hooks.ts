@@ -299,7 +299,7 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
       context[contextSubscribers].add(subscriber)
       if (subscriber.component instanceof Node) {
         subscriber.component.addHookDisconnectedEffect(destructor)
-      } else if ((subscriber.component as any).addDisconnectedEffect) {
+      } else if ((subscriber.component as any).addHookDisconnectedEffect) {
         ;(subscriber.component as any).addHookDisconnectedEffect(destructor)
       }
     },
