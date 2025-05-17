@@ -123,6 +123,7 @@ export const ElementUtil = class {
         NodeUtil.isPrimitive(child) ||
         NodeUtil.isReactToReblendVirtualNode(child) ||
         NodeUtil.isLazyNode(child) ||
+        NodeUtil.isReblendLazyVirtualNode(child) ||
         NodeUtil.isReblendVirtualNode(child) ||
         NodeUtil.isStandardVirtualNode(child)
       ) {
@@ -163,6 +164,7 @@ export const ElementUtil = class {
 
     const tempComponent: typeof Reblend = vNode as any
 
+    // Handle Reblend class component
     if (
       'construct' in tempComponent &&
       'mountOn' in tempComponent &&
@@ -178,7 +180,7 @@ export const ElementUtil = class {
     let clazz: typeof Reblend = displayName as any as typeof Reblend
     const isTagStandard = typeof displayName === 'string'
     const isReactNode = NodeUtil.isReactNode(displayName as any)
-    const isLazyNode = NodeUtil.isLazyNode(vNode as any)
+    const isLazyNode = NodeUtil.isLazyNode(vNode as any) || NodeUtil.isLazyNode(displayName as any)
 
     const tagName = isLazyNode
       ? ReblendNodeTypeDict.ReblendLazyNode
@@ -233,7 +235,7 @@ export const ElementUtil = class {
 
     if (isLazyNode) {
       element.initState = (async () => {
-        return (await vNode) as any
+        return (await (displayName || vNode)) as any
       }).bind(element)
     }
 
@@ -273,14 +275,22 @@ export const ElementUtil = class {
       await PropertyUtil.setProps((vNode as ReblendTyping.VNode).props, element, true)
       await element.populateHtmlElements()
     } else {
-      PropertyUtil.setProps((vNode as ReblendTyping.VNode).props, element, true)
+      PropertyUtil.setProps(isLazyNode ? {} : (vNode as ReblendTyping.VNode).props, element, true)
         .then(async (returnedNode) => {
           if (returnedNode !== undefined) {
             if (!(returnedNode instanceof Node)) {
-              returnedNode = BaseComponent.construct(returnedNode, {})
+              returnedNode = BaseComponent.construct(
+                returnedNode,
+                isLazyNode ? (vNode as ReblendTyping.VNode).props : {},
+              )
             }
-            const returnedNodeElement = await ElementUtil.createElement(returnedNode)
-            const doReplace = () => NodeOperationUtil.replaceOldNode(returnedNodeElement, element)
+            const doReplace = () => {
+              NodeOperationUtil.replaceOperation(element, async (newOldNode) => {
+                const returnedNodeElement = await ElementUtil.createElement(returnedNode)
+                returnedNodeElement.forEach((element) => (element.directParent = newOldNode.directParent as any))
+                NodeOperationUtil.replaceOldNode(returnedNodeElement as any, newOldNode)
+              })
+            }
             if (element.directParent) {
               doReplace()
             } else {

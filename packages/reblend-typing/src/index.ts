@@ -813,6 +813,7 @@ export namespace ReblendTyping {
    * @template P The props the component accepts.
    */
   export type JSXElementConstructor<P> =
+    | Primitive
     | Promise<
         (
           props: P
@@ -2841,6 +2842,7 @@ export namespace ReblendTyping {
     action?: string | undefined;
     autoComplete?: string | undefined;
     encType?: string | undefined;
+    enctype?: string | undefined;
     method?: string | undefined;
     name?: string | undefined;
     noValidate?: boolean | undefined;
@@ -3004,11 +3006,13 @@ export namespace ReblendTyping {
     target?: string | undefined;
     height?: number | string | undefined;
     list?: string | undefined;
-    max?: number | string | undefined;
-    maxLength?: number | undefined;
-    min?: number | string | undefined;
-    minLength?: number | undefined;
-    multiple?: boolean | undefined;
+    max?: string | number | string | undefined;
+    maxLength?: string | number | undefined;
+    maxlength?: string | number | undefined;
+    min?: string | number | string | undefined;
+    minLength?: string | number | undefined;
+    minlength?: string | number | undefined;
+    multiple?: string | boolean | undefined;
     name?: string | undefined;
     pattern?: string | undefined;
     placeholder?: string | undefined;
@@ -3213,7 +3217,7 @@ export namespace ReblendTyping {
     placeholder?: string | undefined;
     readOnly?: boolean | undefined;
     required?: boolean | undefined;
-    rows?: number | undefined;
+    rows?: string | number | undefined;
     value?: string | readonly string[] | number | undefined;
     wrap?: string | undefined;
     onChange?: ChangeEventHandler<T> | undefined;

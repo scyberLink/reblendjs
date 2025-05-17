@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChildrenPropsUpdateType, PatchTypeAndOrder, ReblendTyping } from 'reblend-typing'
 import { NodeUtil } from './NodeUtil'
-import { isCallable } from '../common/utils'
+import { isCallable, replaceOrAddItemToList } from '../common/utils'
 import { isEqual } from 'lodash'
 import { ElementUtil } from './ElementUtil'
 import { DiffUtil } from './DiffUtil'
@@ -86,16 +86,11 @@ export class NodeOperationUtil {
           oldNode.directParent.elementChildren = new Set()
         }
 
-        const reactElementChildrenArray = Array.from(oldNode.directParent.elementChildren)
-        const lastAttachedIndex = reactElementChildrenArray.indexOf(lastAttached)
-
-        if (lastAttachedIndex !== -1) {
-          reactElementChildrenArray.splice(lastAttachedIndex, 0, node)
-        } else {
-          reactElementChildrenArray.push(node)
-        }
-
-        oldNode.directParent.elementChildren = new Set(reactElementChildrenArray)
+        oldNode.directParent.elementChildren = replaceOrAddItemToList(
+          oldNode.directParent.elementChildren,
+          lastAttached,
+          node,
+        )
       }
       lastAttached.after(node)
       setTimeout(() => NodeOperationUtil.connected(node), 0)
@@ -103,7 +98,7 @@ export class NodeOperationUtil {
     }
 
     oldNode.remove()
-    oldNode.directParent.elementChildren?.delete(oldNode)
+    oldNode.directParent?.elementChildren?.delete(oldNode)
     requestAnimationFrame(() => {
       /* empty */
     })
@@ -183,12 +178,15 @@ export class NodeOperationUtil {
       patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
     } else if ('displayName' in oldNode && 'displayName' in (newNode as any)) {
       const oldNodeTag = (oldNode.displayName as string).toLowerCase()
-      const newNodeTag = (
-        (NodeUtil.isPrimitive((newNode as ReblendTyping.VNode).displayName)
-          ? (newNode as ReblendTyping.VNode).displayName
-          : ((newNode as ReblendTyping.VNode).displayName as any).ELEMENT_NAME ||
-            ((newNode as ReblendTyping.VNode).displayName as any).displayName) as string
-      )?.toLowerCase()
+      let newNodeTag = ''
+      if (NodeUtil.isPrimitive((newNode as any).displayName)) {
+        newNodeTag = (newNode as ReblendTyping.VNode).displayName
+      } else if ((newNode as any).displayName.ELEMENT_NAME) {
+        newNodeTag = (newNode as any).displayName.ELEMENT_NAME
+      } else if ((newNode as any).displayName.displayName) {
+        newNodeTag = (newNode as any).displayName.displayName
+      }
+      newNodeTag = typeof newNodeTag === 'string' ? newNodeTag?.toLowerCase() : ''
 
       if (oldNodeTag && newNodeTag && oldNodeTag !== newNodeTag) {
         patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
@@ -457,10 +455,10 @@ export class NodeOperationUtil {
           break
         case PatchTypeAndOrder.REPLACE:
           if (oldNode) {
-            NodeOperationUtil.replaceOperation(oldNode, async () => {
+            NodeOperationUtil.replaceOperation(oldNode, async (newOldNode) => {
               const newNodeElements = await ElementUtil.createElement(newNode as ReblendTyping.VNode)
-              newNodeElements.forEach((element) => (element.directParent = oldNode.directParent as any))
-              NodeOperationUtil.replaceOldNode(newNodeElements as any, oldNode)
+              newNodeElements.forEach((element) => (element.directParent = newOldNode.directParent as any))
+              NodeOperationUtil.replaceOldNode(newNodeElements as any, newOldNode)
             })
           }
           break
@@ -522,15 +520,28 @@ export class NodeOperationUtil {
    */
   static replaceOperation<P, S>(
     oldNode: ReblendTyping.Component<P, S>,
-    operation: () => Promise<void>,
+    operation: (newNode: ReblendTyping.Component<P, S>) => Promise<void>,
     isRemoveOperation?: boolean,
   ) {
+    let dummyNode: any = null
     if (isRemoveOperation) {
       oldNode.directParent?.elementChildren?.delete(oldNode)
       oldNode.remove()
+    } else {
+      dummyNode = ElementUtil.newReblendPrimitive()
+      ;(dummyNode as any).directParent = oldNode.directParent
+      oldNode.after(dummyNode)
+      if (oldNode.directParent?.elementChildren) {
+        oldNode.directParent.elementChildren = replaceOrAddItemToList(
+          oldNode.directParent.elementChildren || new Set(),
+          oldNode,
+          dummyNode,
+        )
+      }
+      oldNode.remove()
     }
     requestAnimationFrame(() => {})
-    operation().finally(() =>
+    operation(dummyNode).finally(() =>
       requestIdleCallback(() => {
         NodeOperationUtil.detach(oldNode)
       }),

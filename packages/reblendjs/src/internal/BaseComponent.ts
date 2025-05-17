@@ -87,18 +87,77 @@ export class BaseComponent<
     }
 
     if (
-      NodeUtil.isLazyNode(displayName as any) ||
       NodeUtil.isReblendVirtualNodeStandard(displayName) ||
       NodeUtil.isReblendVirtualNode(displayName) ||
       NodeUtil.isReactToReblendVirtualNode(displayName) ||
+      NodeUtil.isReactToReblendVirtualNode(displayName) ||
       NodeUtil.isReblendLazyVirtualNode(displayName)
     ) {
+      const temp = {
+        ...(displayName as any),
+        props: {
+          ...((displayName as any)?.props || {}),
+          ...props,
+        },
+      }
+
+      if ((displayName as any)?.props?.children || props?.children || children.length) {
+        temp.props.children = [
+          ...((displayName as any)?.props?.children || []),
+          ...(props?.children || []),
+          ...(children || []),
+        ]
+      }
+
+      return temp as any
+    }
+
+    if (
+      NodeUtil.isReblendRenderedNode(displayName) ||
+      NodeUtil.isReblendRenderedNodeStandard(displayName) ||
+      NodeUtil.isReactToReblendRenderedNode(displayName) ||
+      NodeUtil.isReblendRenderedLazyNode(displayName)
+    ) {
+      const temp = {
+        ...((displayName as any)?.props || {}),
+        ...props,
+      }
+
+      if ((displayName as any)?.props?.children || props?.children || children.length) {
+        temp.children = [
+          ...((displayName as any)?.props?.children || []),
+          ...(props?.children || []),
+          ...(children || []),
+        ]
+      }
+
+      ;(displayName as any).props = temp
       return displayName as any
     }
 
-    const clazz: typeof Reblend = displayName as typeof Reblend
+    if (NodeUtil.isLazyNode(displayName as any)) {
+      const temp = {
+        displayName: displayName as any,
+        props: {
+          ...props,
+        },
+      }
+
+      if (props?.children || children.length) {
+        temp.props.children = [
+          ...((displayName as any)?.props?.children || []),
+          ...(props?.children || []),
+          ...(children || []),
+        ]
+      }
+
+      NodeUtil.addSymbol(ReblendNodeTypeDict.ReblendLazyVNode, temp)
+      return temp as any
+    }
+
+    const clazz: undefined | typeof Reblend = displayName as typeof Reblend
     const isTagStandard = typeof displayName === 'string'
-    if (!isTagStandard && clazz.ELEMENT_NAME === 'Fragment') {
+    if (!isTagStandard && clazz?.ELEMENT_NAME === 'Fragment') {
       return children || []
     }
 
@@ -110,7 +169,7 @@ export class BaseComponent<
     }
 
     const mergedProp = {
-      ...(!isTagStandard && clazz.props ? clazz.props : {}),
+      ...(!isTagStandard && clazz?.props ? clazz.props : {}),
       ...props,
     }
     if (clazz?.props?.children || props?.children || children.length) {
@@ -118,16 +177,16 @@ export class BaseComponent<
     }
 
     const velement = {
-      displayName: clazz,
+      displayName: clazz || displayName,
       props: mergedProp,
     }
 
     NodeUtil.addSymbol(
       isTagStandard
         ? ReblendNodeTypeDict.ReblendVNodeStandard
-        : NodeUtil.isReactNode(clazz)
+        : NodeUtil.isReactNode(clazz!)
         ? ReblendNodeTypeDict.ReactToReblendVNode
-        : NodeUtil.isLazyNode(clazz)
+        : NodeUtil.isLazyNode(clazz!)
         ? ReblendNodeTypeDict.ReblendLazyVNode
         : ReblendNodeTypeDict.ReblendVNode,
       velement,

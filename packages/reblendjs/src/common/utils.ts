@@ -196,6 +196,25 @@ export const isCallable = (obj: any) => {
   return true
 }
 
+export const replaceOrAddItemToList = <T extends Array<any> | Set<any>>(list: T, oldItem: any, newItem: any): T => {
+  if (!list) return null as any
+
+  const items = Array.from(list)
+  const lastAttachedIndex = items.indexOf(oldItem)
+
+  if (lastAttachedIndex !== -1) {
+    items.splice(lastAttachedIndex, 1, newItem)
+  } else {
+    items.push(newItem)
+  }
+
+  if (list instanceof Set) {
+    return new Set(items) as any
+  }
+
+  return items as any
+}
+
 export const REBLEND_COMPONENT = 'reblendcomponent'
 export const REBLEND_WRAPPER_FOR_REACT_COMPONENT = 'reblendwrapperforreactcomponent'
 export const REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT = 'reblendchildrenwrapperforreactcomponent'
