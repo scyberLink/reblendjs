@@ -2,7 +2,7 @@ import Reblend from 'reblendjs';
 import { setHistory } from '../contexts/history';
 import { ReblendTyping } from 'reblend-typing';
 
-interface LinkProps {
+export interface LinkProps {
   to?: string;
   href?: string;
   children: any;

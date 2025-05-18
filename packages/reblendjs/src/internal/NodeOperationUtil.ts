@@ -181,7 +181,7 @@ export class NodeOperationUtil {
       }
       newNodeTag = typeof newNodeTag === 'string' ? newNodeTag?.toLowerCase() : ''
 
-      if (oldNodeTag && newNodeTag && oldNodeTag !== newNodeTag) {
+      if (isCallable((newNode as any).displayName) || (oldNodeTag && newNodeTag && oldNodeTag !== newNodeTag)) {
         patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
       } else {
         const propsDiff = NodeOperationUtil.diffProps(newNode as ReblendTyping.VNode, oldNode)
@@ -499,8 +499,7 @@ export class NodeOperationUtil {
       if (NodeUtil.isReactToReblendRenderedNode(node)) {
         ;(node as any)?.checkPropsChange()
       } else if (NodeUtil.isReblendRenderedNode(node) && node.attached) {
-        //This allows us to finish applying updates before we trigger rerender
-        setTimeout(() => node.onStateChange(), 0)
+        node.onStateChange()
       }
     })
     nodes = null as any

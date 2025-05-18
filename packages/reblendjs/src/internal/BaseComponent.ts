@@ -50,6 +50,7 @@ export interface BaseComponent<P, S> extends HTMLElement {
   childrenPropsUpdate: Set<ChildrenPropsUpdateType>
   numAwaitingUpdates: number
   stateEffectRunning: boolean
+  forceEffects: boolean
   mountingEffects: boolean
   initStateRunning: boolean
   awaitingInitState: boolean
@@ -493,6 +494,7 @@ export class BaseComponent<
       this.stateEffectRunning = true
       this.applyEffects()
       this.stateEffectRunning = false
+      this.forceEffects = false
       this.onStateChangeRunning = true
       if (this.childrenInitialize) {
         newVNodes = await this.html()
@@ -519,7 +521,7 @@ export class BaseComponent<
       this.onStateChangeRunning = false
       if (this.numAwaitingUpdates) {
         this.numAwaitingUpdates = 0
-        setTimeout(() => this.onStateChange(), 0)
+        this.onStateChange()
       }
       newVNodes = null as any
     }
@@ -604,7 +606,10 @@ export class BaseComponent<
       if (force || this.state[stateID] !== value) {
         this.state[stateID] = value as T
         if (this.attached) {
-          Promise.resolve().then(() => this.onStateChange())
+          if (force) {
+            this.forceEffects = true
+          }
+          this.onStateChange()
         }
       }
     }).bind(this)
@@ -632,6 +637,7 @@ export class BaseComponent<
     const internalFn = (() => {
       const current = cacher()
       if (
+        this.forceEffects ||
         !dependencies ||
         this.mountingEffects ||
         this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
@@ -661,14 +667,17 @@ export class BaseComponent<
     }
     const [state, setState] = this.useState<T>(initial, stateID)
     this.state[stateID] = state
-    const fn: ReblendTyping.StateFunction<I> = (async (newValue: ReblendTyping.StateFunctionValue<I>) => {
+    const fn: ReblendTyping.StateFunction<I> = (async (
+      newValue: ReblendTyping.StateFunctionValue<I>,
+      force?: boolean,
+    ) => {
       let reducedVal: ReblendTyping.StateFunctionValue<T>
       if (typeof newValue === 'function') {
         reducedVal = await reducer(this.state[stateID], (newValue as (v: T) => I)(this.state[stateID]))
       } else {
         reducedVal = await reducer(this.state[stateID], newValue as any)
       }
-      setState(reducedVal)
+      setState(reducedVal, force)
     }).bind(this)
 
     return [this.state[stateID], fn]
@@ -704,6 +713,7 @@ export class BaseComponent<
     const internalFn = async () => {
       const current = cacher()
       if (
+        this.forceEffects ||
         !dependencies ||
         this.mountingEffects ||
         this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])

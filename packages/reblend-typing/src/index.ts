@@ -1220,6 +1220,10 @@ export namespace ReblendTyping {
      */
     stateEffectRunning: boolean;
     /**
+     * Indicates when effects function are required to update regardless of changes
+     */
+    forceEffects: boolean;
+    /**
      * The parent of this component
      */
     directParent: Component<any, any>;
