@@ -15,7 +15,9 @@ function Router({ children }: { children?: any }) {
   addEventListener('popstate', handleHistoryChange);
 
   useEffect(() => {
-    Routes.handle(history);
+    setTimeout(() => {
+      Routes.handle(history);
+    }, 0);
     return () => {
       removeEventListener('popstate', handleHistoryChange);
     };

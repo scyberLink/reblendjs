@@ -50,17 +50,10 @@ export class NodeOperationUtil {
    * @template T
    * @param {T | undefined} node - The node to connect.
    */
-  static connected<P, S, T extends ReblendTyping.Component<P, S> | HTMLElement>(node: T | undefined) {
+  static async connected<P, S, T extends ReblendTyping.Component<P, S> | HTMLElement>(node: T | undefined) {
     if (!node) return
     if ((node as ReblendTyping.Component<P, S>).connectedCallback) {
-      ;(node as ReblendTyping.Component<P, S>).connectedCallback()
-    }
-    if (!(node as ReblendTyping.Component<P, S>).elementChildren?.values()) {
-      ;(node as ReblendTyping.Component<P, S>).awaitingChildrenConnectedness = true
-    } else {
-      for (const child of [...((node as ReblendTyping.Component<P, S>).elementChildren?.values() || [])]) {
-        NodeOperationUtil.connected(child as HTMLElement)
-      }
+      await (node as ReblendTyping.Component<P, S>).connectedCallback()
     }
   }
 
@@ -93,7 +86,7 @@ export class NodeOperationUtil {
         )
       }
       lastAttached.after(node)
-      Promise.resolve().then(() => NodeOperationUtil.connected(node))
+      NodeOperationUtil.connected(node)
       lastAttached = node
     }
 
@@ -416,36 +409,37 @@ export class NodeOperationUtil {
    */
   static async applyPatches<P, S>(patches: ReblendTyping.Patch<P, S>[]) {
     const needsUpdate = new Set<ReblendTyping.Component<P, S>>()
+    patches = Array.from((patches || []).sort((a, b) => a.type - b.type))
 
-    for (const { type, newNode, oldNode, parent, patches: patchess } of (patches || []).sort(
-      (a, b) => a.type - b.type,
-    )) {
-      switch (type) {
+    for (const patch of patches) {
+      switch (patch.type) {
         case PatchTypeAndOrder.CREATE:
           {
-            if (!parent) continue
-            const elements = await ElementUtil.createElement(newNode as ReblendTyping.VNode)
-            if (!elements.length) continue
-            elements.forEach((element) => (element.directParent = parent))
-            if (!parent.elementChildren) {
-              parent.elementChildren = new Set(elements)
+            if (!patch.parent) break
+            const elements = await ElementUtil.createElement(patch.newNode as ReblendTyping.VNode)
+            if (!elements.length) break
+            elements.forEach((element) => (element.directParent = patch.parent!))
+            if (!patch.parent.elementChildren) {
+              patch.parent.elementChildren = new Set(elements)
             } else {
               for (const element of elements) {
-                parent.elementChildren.add(element)
+                patch.parent.elementChildren.add(element)
               }
             }
-            if (NodeUtil.isReactToReblendRenderedNode(parent)) {
-              needsUpdate.add(parent)
+            if (NodeUtil.isReactToReblendRenderedNode(patch.parent)) {
+              needsUpdate.add(patch.parent)
             } else {
-              parent.append(...elements)
-              elements.forEach((element) => Promise.resolve().then(() => NodeOperationUtil.connected(element)))
+              elements?.forEach((node) => {
+                patch.parent?.appendChild(node)
+                NodeOperationUtil.connected(node)
+              })
             }
           }
           break
         case PatchTypeAndOrder.REMOVE:
-          if (oldNode) {
+          if (patch.oldNode) {
             NodeOperationUtil.replaceOperation(
-              oldNode,
+              patch.oldNode,
               async () => {
                 /* empty */
               },
@@ -454,19 +448,19 @@ export class NodeOperationUtil {
           }
           break
         case PatchTypeAndOrder.REPLACE:
-          if (oldNode) {
-            NodeOperationUtil.replaceOperation(oldNode, async (newOldNode) => {
-              const newNodeElements = await ElementUtil.createElement(newNode as ReblendTyping.VNode)
+          if (patch.oldNode) {
+            NodeOperationUtil.replaceOperation(patch.oldNode, async (newOldNode) => {
+              const newNodeElements = await ElementUtil.createElement(patch.newNode as ReblendTyping.VNode)
               newNodeElements.forEach((element) => (element.directParent = newOldNode.directParent as any))
               NodeOperationUtil.replaceOldNode(newNodeElements as any, newOldNode)
             })
           }
           break
         case PatchTypeAndOrder.TEXT:
-          oldNode && (oldNode.textContent = newNode as string)
+          patch.oldNode && (patch.oldNode.textContent = patch.newNode as string)
           break
         case PatchTypeAndOrder.UPDATE:
-          NodeOperationUtil.applyProps(patchess)
+          NodeOperationUtil.applyProps(patch.patches)
           break
       }
     }
@@ -588,7 +582,7 @@ export class NodeOperationUtil {
     }
 
     if (!NodeUtil.isReblendPrimitiveElement(thiz)) {
-      Object.values(thiz.effectState)?.forEach((state) => {
+      thiz.effectsState?.forEach((state) => {
         state.disconnectEffect && state.disconnectEffect()
         state.cache = null as any
         state.cacher = null as any
@@ -623,7 +617,7 @@ export class NodeOperationUtil {
     thiz.props = null as any
     thiz.reactElementChildrenWrapper = null as any
     thiz.elementChildren = null as any
-    thiz.effectState = null as any
+    thiz.effectsState = null as any
     thiz.hookDisconnectedEffects = null as any
     thiz.directParent = null as any
     thiz.state = null as any

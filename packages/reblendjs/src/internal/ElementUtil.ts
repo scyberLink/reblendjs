@@ -271,36 +271,32 @@ export const ElementUtil = class {
       }
     }
 
-    if (NodeUtil.isStandard(element) || isReactNode) {
+    if (element.isPlaceholder || NodeUtil.isStandard(element) || isReactNode) {
       await PropertyUtil.setProps((vNode as ReblendTyping.VNode).props, element, true)
       await element.populateHtmlElements()
     } else {
-      PropertyUtil.setProps(isLazyNode ? {} : (vNode as ReblendTyping.VNode).props, element, true)
-        .then(async (returnedNode) => {
-          if (returnedNode !== undefined) {
-            if (!(returnedNode instanceof Node)) {
-              returnedNode = BaseComponent.construct(
-                returnedNode,
-                isLazyNode ? (vNode as ReblendTyping.VNode).props : {},
-              )
+      const setPropsAndInitState = () =>
+        PropertyUtil.setProps(isLazyNode ? {} : (vNode as ReblendTyping.VNode).props, element, true)
+          .then((returnedNode) => {
+            if (returnedNode !== undefined) {
+              element.html = async () => returnedNode
             }
-            const doReplace = () => {
-              NodeOperationUtil.replaceOperation(element, async (newOldNode) => {
-                const returnedNodeElement = await ElementUtil.createElement(returnedNode)
-                returnedNodeElement.forEach((element) => (element.directParent = newOldNode.directParent as any))
-                NodeOperationUtil.replaceOldNode(returnedNodeElement as any, newOldNode)
-              })
+            if (element.awaitingInitState) {
+              element.awaitingInitState = false
+              NodeOperationUtil.connected(element)
             }
-            if (element.directParent) {
-              doReplace()
-            } else {
-              element.awaitingLazyReplaceFn = doReplace
-            }
-          } else {
-            await element.populateHtmlElements()
-          }
-        })
-        .catch(console.error)
+          })
+          .catch(console.error)
+
+      if (isLazyNode) {
+        // Let's force placeholder ui
+        element.initStateRunning = true
+        setTimeout(() => {
+          setPropsAndInitState()
+        }, 500)
+      } else {
+        setPropsAndInitState()
+      }
     }
 
     return [element]

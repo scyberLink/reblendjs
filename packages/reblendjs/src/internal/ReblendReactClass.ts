@@ -38,11 +38,9 @@ export class ReblendReactClass {
             if (node) {
               if (!node.contains(child)) {
                 node.appendChild(child)
-                Promise.resolve().then(() => {
-                  if (!child.attached) {
-                    NodeOperationUtil.connected(child)
-                  }
-                })
+                if (!child.attached) {
+                  NodeOperationUtil.connected(child)
+                }
               }
             } else {
               child.remove()

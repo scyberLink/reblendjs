@@ -1191,8 +1191,9 @@ export namespace ReblendTyping {
     /**
      * This hold effects functions
      */
-    effectState: {
-      [key: string]: {
+    effectsState: Map<
+      string,
+      {
         cache: Primitive | Array<Primitive>;
         cacher: () => Primitive | Array<Primitive>;
         /**
@@ -1203,8 +1204,8 @@ export namespace ReblendTyping {
          * The disconnect effects to apply when the component is disconnected.
          */
         disconnectEffect?: ReblendTyping.StateEffectiveFunction;
-      };
-    };
+      }
+    >;
     /**
      * The effects to apply when the component is mounted.
      */
@@ -1234,10 +1235,6 @@ export namespace ReblendTyping {
      * Indicate when connectedCallback should be called but state has not finished initializing
      */
     awaitingInitState: boolean;
-    /**
-     * Function to be called when lazy node resolves before its placeholder is inserted to there parent
-     */
-    awaitingLazyReplaceFn?: () => void;
     /**
      * Indicate when connectedCallback of component children should be called but children have not been populated
      */

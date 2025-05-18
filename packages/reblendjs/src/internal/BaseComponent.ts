@@ -13,6 +13,13 @@ import { ReblendReactClass } from './ReblendReactClass'
 
 StyleUtil
 
+interface EffectState {
+  cache: ReblendTyping.Primitive | Array<ReblendTyping.Primitive>
+  cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive>
+  effect?: ReblendTyping.StateEffectiveFunction
+  disconnectEffect?: ReblendTyping.StateEffectiveFunction
+}
+
 export interface BaseComponent<P, S> extends HTMLElement {
   nearestStandardParent?: HTMLElement
   onStateChangeRunning: boolean | undefined
@@ -34,14 +41,7 @@ export interface BaseComponent<P, S> extends HTMLElement {
   ReblendPlaceholder?: ReblendTyping.VNode | typeof Reblend
   defaultReblendPlaceholderStyle: CSSProperties | string
   ref: ReblendTyping.Ref<HTMLElement> | ((node: HTMLElement) => any)
-  effectState: {
-    [key: string]: {
-      cache: ReblendTyping.Primitive | Array<ReblendTyping.Primitive>
-      cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive>
-      effect?: ReblendTyping.StateEffectiveFunction
-      disconnectEffect?: ReblendTyping.StateEffectiveFunction
-    }
-  }
+  effectsState: Map<string, EffectState>
   hookDisconnectedEffects?: Set<() => void>
   checkPropsChange(): Promise<void>
   addHookDisconnectedEffect(destructor: () => void): void
@@ -210,12 +210,12 @@ export class BaseComponent<
     root.setAttribute('ReblendRoot', '')
     let initialDisplay = root.style.display || 'initial'
 
-    let body = document.body
     let preloaderParent = document.createElement('div')
     preloaderParent.setAttribute('preloaderParent', '')
-    body.appendChild(preloaderParent)
 
     const openPreloader = () => {
+      let body = document.body
+      body.appendChild(preloaderParent)
       root.style.display = 'none'
       preloaderParent.style.display = 'initial'
     }
@@ -242,18 +242,17 @@ export class BaseComponent<
     let preloaderNodes: BaseComponent[] = (await ElementUtil.createChildren(
       Array.isArray(preloaderVNodes) ? preloaderVNodes : [preloaderVNodes],
     )) as any
-    openPreloader()
     await mountChunked(preloaderParent, preloaderNodes)
+    openPreloader()
 
     // Construct the main app nodes.
     root.html = async () => BaseComponent.construct(app as any, props || {}, ...[])
 
-    await root.populateHtmlElements()
-    await new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
     NodeOperationUtil.connected(root)
 
-    // Final yield to ensure all rendering tasks are complete.
-    await new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+    // Let's show the preloader for a second to make it look like a real app
+    await new Promise<void>((resolve) => setTimeout(() => requestAnimationFrame(<any>resolve), 1000))
+    root.populateHtmlElements()
 
     const closePreloader = () => {
       root.style.display = initialDisplay
@@ -267,16 +266,13 @@ export class BaseComponent<
       preloaderParent = undefined as any
       root = undefined as any
       initialDisplay = undefined as any
-      body = undefined as any
       Preloader = undefined as any
       preloaderVNodes = undefined as any
       preloaderNodes = undefined as any
     }
 
-    setTimeout(() => {
-      closePreloader()
-      new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
-    }, 100)
+    closePreloader()
+    Promise.resolve().then(() => requestAnimationFrame(() => {}))
   }
 
   async createInnerHtmlElements() {
@@ -312,31 +308,27 @@ export class BaseComponent<
       if (isReactReblend) {
         this.reactReblendMount && this.reactReblendMount()
       } else {
-        this.append(...htmlElements)
-        if (this.awaitingChildrenConnectedness) {
-          this.awaitingChildrenConnectedness = false
-          NodeOperationUtil.connected(this)
-        } else if (NodeUtil.isReblendRenderedNode(this) && this.awaitingInitState) {
-          NodeOperationUtil.connected(this)
-          this.awaitingInitState = false
+        htmlElements.forEach((node) => {
+          this.appendChild(node)
+          NodeOperationUtil.connected(node)
+        })
+        if (this.isPlaceholder && this.directParent?.awaitingInitState && !this.directParent?.initStateRunning) {
+          setTimeout(() => {
+            NodeOperationUtil.connected(this.directParent)
+            this.directParent.awaitingInitState = false
+          }, 1)
         }
       }
-      htmlElements.forEach((child) => {
-        if (child.awaitingLazyReplaceFn) {
-          child.awaitingLazyReplaceFn()
-          child.awaitingLazyReplaceFn = undefined
-        }
-      })
       this.childrenInitialize = true
     } catch (error) {
       this.handleError(error as Error)
     }
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     if (this.initStateRunning) {
-      this.awaitingInitState = true
       if (this.isPlaceholder) {
+        this.awaitingInitState = true
         return
       } else if (this.ReblendPlaceholder) {
         let placeholderVNodes
@@ -345,57 +337,57 @@ export class BaseComponent<
         } else {
           placeholderVNodes = this.ReblendPlaceholder
         }
-        ElementUtil.createElement(placeholderVNodes).then((placeholderElements) => {
-          if (!this.childrenInitialize) {
-            if (this.placeholderAttached) {
-              return
-            }
-            this.append(...placeholderElements)
-            this.placeholderAttached = true
-            this.removePlaceholder = async () => {
-              placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
-              this.removePlaceholder = undefined as any
-            }
-            placeholderElements.forEach((placeholderElement) => {
-              placeholderElement.directParent = this as any
-              placeholderElement.isPlaceholder = true
-              NodeOperationUtil.connected(placeholderElement)
-            })
-            requestAnimationFrame(() => {
-              /* empty */
-            })
+        const placeholderElements = await ElementUtil.createElement(placeholderVNodes)
+        if (!this.childrenInitialize) {
+          if (this.placeholderAttached) {
+            return
           }
-        })
-      } else {
-        import('./components/Placeholder').then(async ({ default: Placeholder }) => {
-          const placeholderVNodes = BaseComponent.construct(Placeholder as any, {
-            style: this.defaultReblendPlaceholderStyle,
+          this.placeholderAttached = true
+          placeholderElements.forEach((placeholderElement) => {
+            placeholderElement.directParent = this as any
+            placeholderElement.isPlaceholder = true
+            this.appendChild(placeholderElement)
+            NodeOperationUtil.connected(placeholderElement)
           })
-          const placeholderElements = await ElementUtil.createElement(placeholderVNodes as ReblendTyping.VNodeChild)
-          if (!this.childrenInitialize) {
-            if (this.placeholderAttached) {
-              return
-            }
-            this.append(...placeholderElements)
-            this.placeholderAttached = true
-            this.removePlaceholder = async () => {
-              placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
-              this.removePlaceholder = undefined as any
-            }
-            placeholderElements.forEach((placeholderElement) => {
-              placeholderElement.directParent = this as any
-              placeholderElement.isPlaceholder = true
-              NodeOperationUtil.connected(placeholderElement)
-            })
-            requestAnimationFrame(() => {
-              /* empty */
-            })
+          this.awaitingInitState = true
+          this.removePlaceholder = async () => {
+            placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
+            this.removePlaceholder = undefined as any
           }
+          requestAnimationFrame(() => {
+            /* empty */
+          })
+        }
+      } else {
+        const { default: Placeholder } = await import('./components/Placeholder')
+        const placeholderVNodes = BaseComponent.construct(Placeholder as any, {
+          style: this.defaultReblendPlaceholderStyle,
         })
+        const placeholderElements = await ElementUtil.createElement(placeholderVNodes as ReblendTyping.VNodeChild)
+        if (!this.childrenInitialize) {
+          if (this.placeholderAttached) {
+            return
+          }
+          this.placeholderAttached = true
+          placeholderElements.forEach((placeholderElement) => {
+            placeholderElement.directParent = this as any
+            placeholderElement.isPlaceholder = true
+            this.appendChild(placeholderElement)
+            NodeOperationUtil.connected(placeholderElement)
+          })
+          this.awaitingInitState = true
+          this.removePlaceholder = async () => {
+            placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
+            this.removePlaceholder = undefined as any
+          }
+          requestAnimationFrame(() => {
+            /* empty */
+          })
+        }
       }
       return
     }
-    NodeOperationUtil.connectedCallback(this as any)
+    await NodeOperationUtil.connectedCallback(this as any)
   }
 
   addHookDisconnectedEffect(destructor: () => void) {
@@ -436,7 +428,7 @@ export class BaseComponent<
   }
 
   applyEffects() {
-    Object.values(this.effectState)?.forEach((state) => {
+    this.effectsState?.forEach((state) => {
       const disconnectEffect = state.effect && state.effect()
       if (disconnectEffect) {
         if (disconnectEffect instanceof Promise) {
@@ -475,7 +467,7 @@ export class BaseComponent<
   }
 
   cacheEffectDependencies() {
-    Object.entries(this.effectState).forEach(([_key, value]) => {
+    this.effectsState?.forEach((value) => {
       value.cache = value.cacher()
     })
   }
@@ -523,8 +515,8 @@ export class BaseComponent<
     } catch (error) {
       this.handleError(error as Error)
     } finally {
-      this.onStateChangeRunning = false
       await NodeOperationUtil.applyPatches(patches)
+      this.onStateChangeRunning = false
       if (this.numAwaitingUpdates) {
         this.numAwaitingUpdates = 0
         setTimeout(() => this.onStateChange(), 0)
@@ -537,7 +529,7 @@ export class BaseComponent<
     return null as any
   }
 
-  mountEffects() {
+  async mountEffects() {
     this.mountingEffects = true
     this.stateEffectRunning = true
     if (!NodeUtil.isReblendPrimitiveElement(this)) {
@@ -545,6 +537,9 @@ export class BaseComponent<
     }
     this.mountingEffects = false
     this.stateEffectRunning = false
+    if (!NodeUtil.isStandard(this) && !NodeUtil.isReactToReblendRenderedNode(this)) {
+      await this.populateHtmlElements()
+    }
   }
 
   disconnectedCallback(fromCleanUp = false) {
@@ -567,6 +562,14 @@ export class BaseComponent<
     return currentDependencies.some((dep, index) => {
       return !Object.is(dep, previousDependencies[index])
     })
+  }
+
+  generateId() {
+    const id = rand(10000, 999999) + '_effectId'
+    if (this.effectsState.get(id)) {
+      return this.generateId()
+    }
+    return id
   }
 
   useState<T>(...initial_stateKey: any[]): [T, ReblendTyping.StateFunction<T>] {
@@ -601,7 +604,7 @@ export class BaseComponent<
       if (force || this.state[stateID] !== value) {
         this.state[stateID] = value as T
         if (this.attached) {
-          this.onStateChange()
+          Promise.resolve().then(() => this.onStateChange())
         }
       }
     }).bind(this)
@@ -620,34 +623,24 @@ export class BaseComponent<
 
     fn = fn.bind(this)
     const dep = new Function(`return (${dependencies})`).bind(this)
-    const generateId = () => {
-      const id = rand(10000, 999999) + '_effectId'
-      if (this.effectState[id]) {
-        return generateId()
-      }
-      return id
-    }
-    const effectKey = generateId()
+    const effectKey = this.generateId()
 
     const cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive> = () => dep()
-
-    this.effectState[effectKey] = { cache: cacher(), cacher: cacher }
+    const effectState: EffectState = { cache: cacher(), cacher: cacher }
+    this.effectsState.set(effectKey, effectState)
 
     const internalFn = (() => {
       const current = cacher()
       if (
         !dependencies ||
         this.mountingEffects ||
-        this.dependenciesChanged(
-          current as ReblendTyping.Primitive[],
-          this.effectState[effectKey].cache as ReblendTyping.Primitive[],
-        )
+        this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
       ) {
-        this.effectState[effectKey].cache = current
+        effectState.cache = current
         return fn()
       }
     }).bind(this)
-    this.effectState[effectKey].effect = internalFn
+    effectState.effect = internalFn
   }
 
   useReducer<T, I>(...reducer_initial_stateKey: any[]): [T, ReblendTyping.StateFunction<I>] {
@@ -702,34 +695,24 @@ export class BaseComponent<
     this.state[stateID] = state
 
     const dep = new Function(`return (${dependencies})`).bind(this)
-    const generateId = () => {
-      const id = rand(10000, 999999) + '_effectId'
-      if (this.effectState[id]) {
-        return generateId()
-      }
-      return id
-    }
-    const effectKey = generateId()
+    const effectKey = this.generateId()
 
     const cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive> = () => dep()
-
-    this.effectState[effectKey] = { cache: cacher(), cacher: cacher }
+    const effectState: EffectState = { cache: cacher(), cacher: cacher }
+    this.effectsState.set(effectKey, effectState)
 
     const internalFn = async () => {
       const current = cacher()
       if (
         !dependencies ||
         this.mountingEffects ||
-        this.dependenciesChanged(
-          current as ReblendTyping.Primitive[],
-          this.effectState[effectKey].cache as ReblendTyping.Primitive[],
-        )
+        this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
       ) {
-        this.effectState[effectKey].cache = current
+        effectState.cache = current
         setState(fn())
       }
     }
-    this.effectState[effectKey].effect = internalFn
+    effectState.effect = internalFn
     return this.state[stateID]
   }
 
@@ -750,7 +733,7 @@ export class BaseComponent<
     this.childrenPropsUpdate = new Set()
     this.hookDisconnectedEffects = new Set()
     this.numAwaitingUpdates = 0
-    this.effectState = {}
+    this.effectsState = new Map()
     this.hasDisconnected = false
   }
 }
