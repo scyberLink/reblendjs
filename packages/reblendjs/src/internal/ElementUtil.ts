@@ -279,7 +279,8 @@ export const ElementUtil = class {
         PropertyUtil.setProps(isLazyNode ? {} : (vNode as ReblendTyping.VNode).props, element, true)
           .then((returnedNode) => {
             if (returnedNode !== undefined) {
-              element.html = async () => returnedNode
+              element.html = async () =>
+                BaseComponent.construct(returnedNode, isLazyNode ? (vNode as ReblendTyping.VNode).props : {}) as any
             }
             if (element.awaitingInitState) {
               element.awaitingInitState = false
