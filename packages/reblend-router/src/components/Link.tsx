@@ -11,10 +11,10 @@ export interface LinkProps {
   class?: string;
   ref?: ReblendTyping.Ref<HTMLAnchorElement | null>;
   style?: ReblendTyping.CSSProperties;
-  onclick:
+  onclick?:
     | ReblendTyping.DOMAttributes<HTMLAnchorElement>['onclick']
     | undefined;
-  onClick:
+  onClick?:
     | ReblendTyping.DOMAttributes<HTMLAnchorElement>['onClick']
     | undefined;
 }
