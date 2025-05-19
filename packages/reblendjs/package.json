@@ -1,8 +1,8 @@
 {
   "name": "reblendjs",
-  "version": "8.2.0",
+  "version": "9.0.0",
   "codename": "infant",
-  "description": "This is build using react way of handling dom but with web components",
+  "description": "ReblendJs uses Reactjs pradigm to build UI components, with isolated state for each components.",
   "keywords": [
     "ReblendJs",
     "Reative",
