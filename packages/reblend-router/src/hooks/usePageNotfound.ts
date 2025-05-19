@@ -1,5 +1,5 @@
 import { useContext } from 'reblendjs';
-import { PageNotfound } from '../contexts/routes';
+import { PageNotfound } from '../contexts/notfound';
 
 //@ReblendHook
 export function usePageNotfound() {

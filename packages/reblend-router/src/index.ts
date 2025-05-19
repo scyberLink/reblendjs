@@ -8,6 +8,7 @@ export { useHash } from './hooks/useHash';
 export { useHistory } from './hooks/useHistory';
 export { Link } from './components/Link';
 export { Route } from './components/Route';
-export { RouteProps } from './contexts/routes';
+export { RouteProps, RouterProps } from './components/Router';
+export { LinkProps } from './components/Link';
 export { Router };
 export default Router;

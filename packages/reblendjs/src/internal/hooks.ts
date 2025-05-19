@@ -275,7 +275,10 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
           if (context[contextSubscriberModificationTracker][0] === updateId) {
             ;(component.state as object)[stateKey] = context[contextValue]
             if (component.attached) {
-              Promise.resolve().then(() => component.onStateChange())
+              if (force) {
+                component.forceEffects = true
+              }
+              await component.onStateChange()
             }
           } else {
             context[contextSubscriberModificationTracker] = []

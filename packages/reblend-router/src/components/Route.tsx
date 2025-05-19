@@ -1,12 +1,14 @@
-import Reblend, { useEffect, useReducer } from 'reblendjs';
-import { RouteProps, Routes } from '../contexts/routes';
+import Reblend, { useEffect } from 'reblendjs';
 import { ReblendTyping } from 'reblend-typing';
+import { RouteProps } from './Router';
+import { Routes } from '../contexts/routes';
 
-export function Route<T>({
-  Component,
-  element,
-  path,
-}: {
+/**
+ * @deprecated Pass routes to Router components
+ * @param props
+ * @returns Reblend.JSX.Element
+ */
+export function Route<T>(props: {
   Component?: ReblendTyping.JSXElementConstructor<T>;
   element?:
     | ((routeData: RouteProps) => Reblend.JSX.Element | HTMLElement)
@@ -14,64 +16,16 @@ export function Route<T>({
     | HTMLElement;
   path: string;
 }) {
-  const [matchedData, setMatchedData] = useReducer<
-    RouteProps | null | undefined,
-    RouteProps | null | undefined
-  >((_prev, current) => {
-    return current || null;
-  }, null);
-
-  Routes.register({ [path]: setMatchedData });
-
   useEffect(() => {
-    return () => Routes.unregister(path);
-  }, []);
-
-  useEffect(() => {
-    if (!matchedData) {
-      return;
-    }
-
-    const { hash } = matchedData;
-    if (!hash) {
-      return;
-    }
-
-    setTimeout(() => {
-      const idElement = document.querySelector(hash);
-      if (!idElement) {
-        return;
-      }
-      idElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest',
+    Routes.update(prev => {
+      prev.set(props.path, {
+        Component: props.Component,
+        element: props.element,
+        path: props.path,
       });
-    }, 100);
-  }, [matchedData]);
+      return prev;
+    }, true);
+  }, [props.path]);
 
-  return () => {
-    if (!matchedData) {
-      return null;
-    }
-
-    if (element) {
-      if (typeof element === 'function') {
-        return element(matchedData);
-      }
-      if (typeof element === 'object' && 'props' in element && element.props) {
-        element.props = { ...matchedData, ...element.props };
-        return element;
-      } else {
-        return element;
-      }
-    }
-
-    if (Component) {
-      //@ts-ignore
-      return <Component {...matchedData} />;
-    }
-
-    return null;
-  };
+  return <>{null}</>;
 }

@@ -1220,6 +1220,10 @@ export namespace ReblendTyping {
      */
     stateEffectRunning: boolean;
     /**
+     * Indicates when effects function are required to update regardless of changes
+     */
+    forceEffects: boolean;
+    /**
      * The parent of this component
      */
     directParent: Component<any, any>;
@@ -1236,9 +1240,9 @@ export namespace ReblendTyping {
      */
     awaitingInitState: boolean;
     /**
-     * Indicate when connectedCallback of component children should be called but children have not been populated
+     * Indicate when onStateChange of a component is triggered before its children initialized
      */
-    awaitingChildrenConnectedness: boolean;
+    awaitingReRender: boolean;
     /**
      * Indicates whether this component disconnected callback was called.
      */

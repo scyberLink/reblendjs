@@ -2,7 +2,7 @@ import Reblend from 'reblendjs';
 import { setHistory } from '../contexts/history';
 import { ReblendTyping } from 'reblend-typing';
 
-interface LinkProps {
+export interface LinkProps {
   to?: string;
   href?: string;
   children: any;
@@ -11,6 +11,12 @@ interface LinkProps {
   class?: string;
   ref?: ReblendTyping.Ref<HTMLAnchorElement | null>;
   style?: ReblendTyping.CSSProperties;
+  onclick:
+    | ReblendTyping.DOMAttributes<HTMLAnchorElement>['onclick']
+    | undefined;
+  onClick:
+    | ReblendTyping.DOMAttributes<HTMLAnchorElement>['onClick']
+    | undefined;
 }
 
 function Link(props: LinkProps) {
@@ -22,7 +28,7 @@ function Link(props: LinkProps) {
   return (
     <a
       href={props.to || props.href || '#'}
-      onClick={onclick}
+      onClick={props.onclick || props.onClick || onclick}
       class={props.class || props.className || ''}
       ref={props.ref as any}
       style={props.style}
