@@ -54,7 +54,7 @@ export interface BaseComponent<P, S> extends HTMLElement {
   mountingEffects: boolean
   initStateRunning: boolean
   awaitingInitState: boolean
-  awaitingChildrenConnectedness: boolean
+  awaitingReRender: boolean
   state: S
   reactReblendMount: undefined | ((afterNode?: HTMLElement) => any)
 }
@@ -321,6 +321,9 @@ export class BaseComponent<
         }
       }
       this.childrenInitialize = true
+      if (this.awaitingReRender) {
+        this.onStateChange()
+      }
     } catch (error) {
       this.handleError(error as Error)
     }
@@ -513,6 +516,8 @@ export class BaseComponent<
           const currentVNode = oldNodes[i]
           patches.push(...(NodeOperationUtil.diff(this as any, currentVNode as any, newVNode) as any))
         }
+      } else {
+        this.awaitingReRender = true
       }
     } catch (error) {
       this.handleError(error as Error)

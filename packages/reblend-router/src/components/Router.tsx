@@ -1,10 +1,4 @@
-import Reblend, {
-  rand,
-  ReblendTyping,
-  useEffect,
-  useReducer,
-  useState,
-} from 'reblendjs';
+import Reblend, { ReblendTyping, useEffect, useState } from 'reblendjs';
 import { useContext } from 'reblendjs';
 import { History } from '../contexts/history';
 import ReblendRouting from 'reblend-routing';
@@ -46,7 +40,16 @@ function Router<T>({ routes }: { routes: { [key: string]: RouterProps<T> } }) {
     if (!routes) {
       console.warn('List of routes is empty');
     } else {
-      setRoutesContext(prev => ({ ...(prev || {}), ...routes }));
+      setRoutesContext(() => {
+        const map = new Map();
+        Object.values(routes).forEach(route => {
+          map.set(route.path, {
+            Component: route.Component,
+            path: route.path,
+          });
+        });
+        return map;
+      });
     }
   }, [routes]);
 

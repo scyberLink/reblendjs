@@ -1240,9 +1240,9 @@ export namespace ReblendTyping {
      */
     awaitingInitState: boolean;
     /**
-     * Indicate when connectedCallback of component children should be called but children have not been populated
+     * Indicate when onStateChange of a component is triggered before its children initialized
      */
-    awaitingChildrenConnectedness: boolean;
+    awaitingReRender: boolean;
     /**
      * Indicates whether this component disconnected callback was called.
      */
