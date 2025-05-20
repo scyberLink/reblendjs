@@ -187,10 +187,10 @@ export class BaseComponent<
       isTagStandard
         ? ReblendNodeTypeDict.ReblendVNodeStandard
         : NodeUtil.isReactNode(clazz!)
-        ? ReblendNodeTypeDict.ReactToReblendVNode
-        : NodeUtil.isLazyNode(clazz!)
-        ? ReblendNodeTypeDict.ReblendLazyVNode
-        : ReblendNodeTypeDict.ReblendVNode,
+          ? ReblendNodeTypeDict.ReactToReblendVNode
+          : NodeUtil.isLazyNode(clazz!)
+            ? ReblendNodeTypeDict.ReblendLazyVNode
+            : ReblendNodeTypeDict.ReblendVNode,
       velement,
     )
 
@@ -331,8 +331,8 @@ export class BaseComponent<
 
   async connectedCallback() {
     if (this.initStateRunning) {
+      this.awaitingInitState = true
       if (this.isPlaceholder) {
-        this.awaitingInitState = true
         return
       } else if (this.ReblendPlaceholder) {
         let placeholderVNodes
@@ -348,15 +348,19 @@ export class BaseComponent<
           }
           this.placeholderAttached = true
           placeholderElements.forEach((placeholderElement) => {
+            if (!this.initStateRunning) {
+              return requestIdleCallback(() => NodeOperationUtil.detach(placeholderElement))
+            }
             placeholderElement.directParent = this as any
             placeholderElement.isPlaceholder = true
             this.appendChild(placeholderElement)
             NodeOperationUtil.connected(placeholderElement)
           })
-          this.awaitingInitState = true
-          this.removePlaceholder = async () => {
-            placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
-            this.removePlaceholder = undefined as any
+          if (this.initStateRunning) {
+            this.removePlaceholder = async () => {
+              placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
+              this.removePlaceholder = undefined as any
+            }
           }
           requestAnimationFrame(() => {
             /* empty */
@@ -374,15 +378,19 @@ export class BaseComponent<
           }
           this.placeholderAttached = true
           placeholderElements.forEach((placeholderElement) => {
+            if (!this.initStateRunning) {
+              return requestIdleCallback(() => NodeOperationUtil.detach(placeholderElement))
+            }
             placeholderElement.directParent = this as any
             placeholderElement.isPlaceholder = true
             this.appendChild(placeholderElement)
             NodeOperationUtil.connected(placeholderElement)
           })
-          this.awaitingInitState = true
-          this.removePlaceholder = async () => {
-            placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
-            this.removePlaceholder = undefined as any
+          if (this.initStateRunning) {
+            this.removePlaceholder = async () => {
+              placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
+              this.removePlaceholder = undefined as any
+            }
           }
           requestAnimationFrame(() => {
             /* empty */
@@ -484,7 +492,7 @@ export class BaseComponent<
       return
     }
     if (this.stateEffectRunning) {
-      this.cacheEffectDependencies()
+      //this.cacheEffectDependencies()
       return
     }
     if (this.onStateChangeRunning || this.initStateRunning || this.numAwaitingUpdates) {
@@ -544,6 +552,9 @@ export class BaseComponent<
     }
     this.mountingEffects = false
     this.stateEffectRunning = false
+    if (this.displayName === 'Placeholder' || (this.props as any)?.isPlaceholder || this.isPlaceholder) {
+      return
+    }
     if (!NodeUtil.isStandard(this) && !NodeUtil.isReactToReblendRenderedNode(this)) {
       await this.populateHtmlElements()
     }

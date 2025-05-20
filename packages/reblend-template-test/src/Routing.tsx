@@ -15,19 +15,18 @@ export default function Routing({ s }) {
 
   return (
     <Container class="text-center py-5">
-      <Router>
-        <h3>Testing Reblend Router</h3>
-        <TryCatchError>
-          {error => {
-            return error && <b>{error.message}</b>;
-          }}
-          <Route path={'/user/detail/:id([0-9]{10})?'} element={span} />
-          <Route path={'/user/detail/:id([0-9]{10})?'} Component={Counter} />
-        </TryCatchError>
-        <StaticExample />
-        <BasicExample />
-        <DismissibleExample />
-      </Router>
+      <h3>Testing Reblend Router</h3>
+      <TryCatchError>
+        {error => {
+          return error && <b>{error.message}</b>;
+        }}
+        <Router />
+        <Route path={'/user/detail/:id([0-9]{10})?'} Component={Counter} />
+        <Route path={'*'} Component={span} />
+      </TryCatchError>
+      <StaticExample />
+      <BasicExample />
+      <DismissibleExample />
     </Container>
   );
 }
