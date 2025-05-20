@@ -20,10 +20,9 @@ export default function Routing({ s }) {
         {error => {
           return error && <b>{error.message}</b>;
         }}
-        <Router>
-          <Route path={'/user/detail/:id([0-9]{10})?'} element={span} />
-          <Route path={'/user/detail/:id([0-9]{10})?'} Component={Counter} />
-        </Router>
+        <Router />
+        <Route path={'/user/detail/:id([0-9]{10})?'} Component={Counter} />
+        <Route path={'*'} Component={span} />
       </TryCatchError>
       <StaticExample />
       <BasicExample />
