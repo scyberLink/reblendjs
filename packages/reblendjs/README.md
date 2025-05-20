@@ -16,6 +16,34 @@ ReblendJS is a lightweight frontend library that seamlessly integrates the flexi
 - ✅ **Component-Level State Management** – Each element holds its own state.
 - ✅ **No Mixed or Async State Rendering** – Eliminates issues with pre/post rendering.
 - ✅ **Faster Rendering** – State is localized within each element, reducing unnecessary updates.
+- ✅ **Async Components & Rendering** – Out-of-the-box support for async components and lazy loading.
+
+---
+
+## ⚡ Async Components & Rendering
+
+ReblendJS supports **async components and async rendering** natively. You can return a `Promise` from your component, enabling features like code-splitting and conditional lazy loading without extra libraries.
+
+Example:
+
+```js
+import Reblend from "reblendjs";
+import { useIsAdmin } from "../../lib/hooks";
+
+export async function AdvertPage() {
+  const isAdmin = useIsAdmin();
+
+  return (
+    <>
+      {isAdmin
+        ? import("../admin/advert/admin-advert").then((m) => m.default)
+        : import("./advert").then((m) => m.default)}
+    </>
+  );
+}
+```
+
+Just use `async` components and return Promises or dynamic imports—ReblendJS will handle the rendering automatically.
 
 ---
 
@@ -48,10 +76,10 @@ yarn add reblendjs
 ReblendJS uses `mountOn` to attach components to the DOM:
 
 ```js
-import Reblend from 'reblendjs'
-import App from './App'
+import Reblend from 'reblendjs';
+import App from './App';
 
-Reblend.mountOn('root', App)
+Reblend.mountOn('root', App);
 ```
 
 ### Functional Component Example
@@ -59,20 +87,20 @@ Reblend.mountOn('root', App)
 ReblendJS **recommends using functional components** for better performance, as they are efficiently compiled into class components:
 
 ```js
-import Reblend, { useState } from 'reblendjs'
+import Reblend, { useState } from 'reblendjs';
 
 const Counter = () => {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <div>
       <h1>Counter: {count}</h1>
       <button onClick={() => setCount(count + 1)}>Increment</button>
     </div>
-  )
-}
+  );
+};
 
-Reblend.mountOn('root', Counter)
+Reblend.mountOn('root', Counter);
 ```
 
 ### JSX Support (`for`, `style`, `class`, and Attributes)
@@ -93,14 +121,17 @@ const FormExample = () => {
       <label for="name">Name:</label>
       <input id="name" type="text" placeholder="Enter your name" />
 
-      <button class="btn btn-primary" style="background-color: blue; padding: 10px;">
+      <button
+        class="btn btn-primary"
+        style="background-color: blue; padding: 10px;"
+      >
         Submit
       </button>
     </form>
-  )
-}
+  );
+};
 
-Reblend.mountOn('root', FormExample)
+Reblend.mountOn('root', FormExample);
 ```
 
 ---
@@ -138,36 +169,45 @@ ReblendJS is ideal for:
 Here’s an example of creating a button that toggles a modal:
 
 ```js
-import { Button } from 'react-bootstrap'
-import Reblend, { useState } from 'reblendjs'
-import Modal from 'react-bootstrap/Modal'
+import { Button } from 'react-bootstrap';
+import Reblend, { useState } from 'reblendjs';
+import Modal from 'react-bootstrap/Modal';
 
 export function MyVerticallyCenteredModal(props: any) {
   return (
-    <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered closeButton>
+    <Modal
+      {...props}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+      closeButton
+    >
       <Modal.Header>
-        <Modal.Title id="contained-modal-title-vcenter">Modal heading</Modal.Title>
+        <Modal.Title id="contained-modal-title-vcenter">
+          Modal heading
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <h4>Centered Modal</h4>
         <p>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-          Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
+          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
+          consectetur ac, vestibulum at eros.
         </p>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>
       </Modal.Footer>
     </Modal>
-  )
+  );
 }
 
 const App = () => {
-  const [modalShow, setModalShow] = useState(false)
+  const [modalShow, setModalShow] = useState(false);
 
   const toggleModal = () => {
-    setModalShow(!modalShow)
-  }
+    setModalShow(!modalShow);
+  };
 
   return (
     <div>
@@ -176,10 +216,10 @@ const App = () => {
       </Button>
       <MyVerticallyCenteredModal show={modalShow} onHide={toggleModal} />
     </div>
-  )
-}
+  );
+};
 
-Reblend.mountOn('root', App)
+Reblend.mountOn('root', App);
 ```
 
 ---

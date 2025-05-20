@@ -16,6 +16,34 @@ ReblendJS is a lightweight frontend library that seamlessly integrates the flexi
 - ✅ **Component-Level State Management** – Each element holds its own state.
 - ✅ **No Mixed or Async State Rendering** – Eliminates issues with pre/post rendering.
 - ✅ **Faster Rendering** – State is localized within each element, reducing unnecessary updates.
+- ✅ **Async Components & Rendering** – Out-of-the-box support for async components and lazy loading.
+
+---
+
+## ⚡ Async Components & Rendering
+
+ReblendJS supports **async components and async rendering** natively. You can return a `Promise` from your component, enabling features like code-splitting and conditional lazy loading without extra libraries.
+
+Example:
+
+```js
+import Reblend from "reblendjs";
+import { useIsAdmin } from "../../lib/hooks";
+
+export async function AdvertPage() {
+  const isAdmin = useIsAdmin();
+
+  return (
+    <>
+      {isAdmin
+        ? import("../admin/advert/admin-advert").then((m) => m.default)
+        : import("./advert").then((m) => m.default)}
+    </>
+  );
+}
+```
+
+Just use `async` components and return Promises or dynamic imports—ReblendJS will handle the rendering automatically.
 
 ---
 
