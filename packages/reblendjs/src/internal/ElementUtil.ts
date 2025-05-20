@@ -106,9 +106,7 @@ export const ElementUtil = class {
       children = [children]
     }
     for (const child of children instanceof Set ? Array.from(children) : children) {
-      if (isCallable(child)) {
-        containerArr.push(child as any)
-      } else if (Array.isArray(child)) {
+      if (Array.isArray(child)) {
         await ElementUtil.createChildren(child as any, containerArr)
       } else if (
         !NodeUtil.isPrimitive(child) &&
@@ -118,6 +116,7 @@ export const ElementUtil = class {
       ) {
         await ElementUtil.createChildren(BaseComponent.construct(child, {}) as any, containerArr)
       } else if (
+        isCallable(child) ||
         child instanceof Reblend ||
         child instanceof Node ||
         NodeUtil.isPrimitive(child) ||
@@ -155,11 +154,17 @@ export const ElementUtil = class {
       }
       return [vNode as any]
     }
+
     if (Array.isArray(vNode)) {
       return (await ElementUtil.createChildren(vNode)) as any
     }
+
     if (NodeUtil.isPrimitive(vNode)) {
       return [ElementUtil.newReblendPrimitive()?.setData(vNode as ReblendTyping.Primitive) as any]
+    }
+
+    if (isCallable(vNode)) {
+      vNode = (vNode as any)()
     }
 
     const tempComponent: typeof Reblend = vNode as any
@@ -177,6 +182,47 @@ export const ElementUtil = class {
     if (isCallable(displayName)) {
       displayName = await displayName()
     }
+    
+    const node = displayName as any
+    if (displayName instanceof Reblend || displayName instanceof Node) {
+      if (!node.displayName) {
+        node.displayName = capitalize(node.tagName)
+        NodeUtil.extendPrototype(node, Reblend.prototype)
+        NodeUtil.addSymbol(ReblendNodeTypeDict.ReblendNodeStandard, node)
+        node._constructor()
+      }
+      if ((vNode as any)?.props) {
+        if (!node.props) {
+          node.props = {}
+        }
+        node.props = {
+          ...node.props,
+          ...(vNode as any).props,
+        }
+      }
+      return [node]
+    }
+
+    if (
+      NodeUtil.isReblendVirtualNodeStandard(node) ||
+      NodeUtil.isReblendVirtualNode(node) ||
+      NodeUtil.isReactToReblendVirtualNode(node) ||
+      NodeUtil.isReactToReblendVirtualNode(node) ||
+      NodeUtil.isReblendLazyVirtualNode(node)
+    ) {
+      if ((vNode as any)?.props) {
+        if (!node.props) {
+          node.props = {}
+        }
+        node.props = {
+          ...node.props,
+          ...(vNode as any).props,
+        }
+      }
+
+      return ElementUtil.createElement(node)
+    }
+
     let clazz: typeof Reblend = displayName as any as typeof Reblend
     const isTagStandard = typeof displayName === 'string'
     const isReactNode = NodeUtil.isReactNode(displayName as any)
@@ -185,9 +231,9 @@ export const ElementUtil = class {
     const tagName = isLazyNode
       ? ReblendNodeTypeDict.ReblendLazyNode
       : isTagStandard
-      ? displayName
-      : (NodeUtil.isReactNode(clazz) ? (clazz as any as ReblendTyping.ReactNode).displayName : clazz?.ELEMENT_NAME) ||
-        `Anonymous`
+        ? displayName
+        : (NodeUtil.isReactNode(clazz) ? (clazz as any as ReblendTyping.ReactNode).displayName : clazz?.ELEMENT_NAME) ||
+          `Anonymous`
 
     if (!isTagStandard && !isLazyNode) {
       clazz.ELEMENT_NAME = tagName
@@ -206,10 +252,10 @@ export const ElementUtil = class {
       isLazyNode
         ? ReblendNodeTypeDict.ReblendLazyNode
         : isReactNode
-        ? ReblendNodeTypeDict.ReactToReblendNode
-        : isTagStandard
-        ? ReblendNodeTypeDict.ReblendNodeStandard
-        : ReblendNodeTypeDict.ReblendNode,
+          ? ReblendNodeTypeDict.ReactToReblendNode
+          : isTagStandard
+            ? ReblendNodeTypeDict.ReblendNodeStandard
+            : ReblendNodeTypeDict.ReblendNode,
       element,
     )
     element.displayName = tagName
@@ -271,7 +317,12 @@ export const ElementUtil = class {
       }
     }
 
-    if (element.isPlaceholder || NodeUtil.isStandard(element) || isReactNode) {
+    if (
+      (vNode as ReblendTyping.VNode)?.props?.isPlaceholder ||
+      element.isPlaceholder ||
+      NodeUtil.isStandard(element) ||
+      isReactNode
+    ) {
       await PropertyUtil.setProps((vNode as ReblendTyping.VNode).props, element, true)
       await element.populateHtmlElements()
     } else {

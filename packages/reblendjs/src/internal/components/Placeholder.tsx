@@ -4,9 +4,11 @@ import { ReblendTyping } from 'reblend-typing'
 export default function Placeholder({
   style,
   children,
+  isPlaceholder = true,
 }: {
   style?: ReblendTyping.CSSProperties
   children?: Reblend.JSX.Element
+  isPlaceholder?: boolean
 }) {
   return (
     <div style={styles.placeholder as any}>
@@ -24,6 +26,8 @@ export default function Placeholder({
     </div>
   )
 }
+
+;(Placeholder as any).props = { isPlaceholder: true }
 
 const styles = {
   placeholder: {
