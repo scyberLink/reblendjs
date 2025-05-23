@@ -21,7 +21,12 @@ export class ReblendReactClass {
    * @returns {React.ReactElement} The React element representing the children wrapper for React.
    */
   static async getChildrenWrapperForReact<P, S>(elementChildren: Iterable<ReblendTyping.Component<P, S>>) {
-    const { default: React } = await import('react')
+    let React: any
+    try {
+      React = require('react')
+    } catch (err) {
+      throw new Error('React is not available. Please ensure React is properly installed.')
+    }
 
     const children = Array.from(elementChildren).map((child) => {
       const isReactNode = NodeUtil.isReactToReblendRenderedNode(child)
