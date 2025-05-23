@@ -81,10 +81,13 @@ export class ReblendReactClass {
    * Initializes the root for React DOM rendering if it has not been created already.
    */
   async initRoot() {
-    const { default: ReactDOM } = await import('react-dom/client')
-
-    if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
-      this.reactDomCreateRoot_root = ReactDOM.createRoot(this as any)
+    try {
+      const ReactDOM = require('react-dom/client')
+      if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
+        this.reactDomCreateRoot_root = ReactDOM.createRoot(this as any)
+      }
+    } catch (err) {
+      throw new Error('ReactDOM is not available. Please ensure React and ReactDOM are properly installed.')
     }
   }
 
@@ -95,7 +98,12 @@ export class ReblendReactClass {
    * @protected
    */
   async reactReblendMount() {
-    const { default: React } = await import('react')
+    let React: any
+    try {
+      React = require('react')
+    } catch (err) {
+      throw new Error('React is not available. Please ensure React is properly installed.')
+    }
 
     if (!this.ReactClass) {
       return
