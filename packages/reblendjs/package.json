@@ -1,6 +1,6 @@
 {
   "name": "reblendjs",
-  "version": "9.1.0",
+  "version": "9.1.1",
   "codename": "infant",
   "description": "ReblendJs uses Reactjs pradigm to build UI components, with isolated state for each components.",
   "keywords": [
@@ -38,7 +38,6 @@
   "devDependencies": {
     "@babel/cli": "^7.25.7",
     "@babel/core": "^7.25.8",
-    "@types/lodash": "^4.17.10",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "babel-preset-reblend": "latest",
@@ -55,12 +54,7 @@
     "typescript-eslint": "^7.6.0"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
     "reblend-typing": "latest"
-  },
-  "peerDependencies": {
-    "react": ">=18.3.1",
-    "react-dom": ">=18.3.1"
   },
   "gitHead": "79a3e22f73913a686e76631559ba7830f7eb2e98"
 }

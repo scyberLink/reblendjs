@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-rest-params */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { isEqual } from 'lodash'
 import { BaseComponent } from './BaseComponent'
 import { SharedConfig } from '../common/SharedConfig'
 import { rand } from '../common/utils'
 import { NodeUtil } from './NodeUtil'
 import { ReblendTyping } from 'reblend-typing'
+import { NodeOperationUtil } from './NodeOperationUtil'
 
 const contextValue = Symbol('Reblend.contextValue')
 const contextInnerValue = Symbol('Reblend.contextInnerValue')
@@ -314,7 +314,7 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
       return context[contextValue]
     },
     isEqual(value: T) {
-      return isEqual(value, context[contextValue])
+      return NodeOperationUtil.deepEqualIterative(value, context[contextValue])
     },
   }
   return context

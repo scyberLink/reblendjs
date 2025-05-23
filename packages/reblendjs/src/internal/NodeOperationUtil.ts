@@ -2,7 +2,6 @@
 import { ChildrenPropsUpdateType, PatchTypeAndOrder, ReblendTyping } from 'reblend-typing'
 import { NodeUtil } from './NodeUtil'
 import { isCallable, replaceOrAddItemToList } from '../common/utils'
-import { isEqual } from 'lodash'
 import { ElementUtil } from './ElementUtil'
 import { DiffUtil } from './DiffUtil'
 import { PropertyUtil } from './PropertyUtil'
@@ -339,7 +338,9 @@ export class NodeOperationUtil {
     if (firstObject.toString() !== secondObject.toString()) return false
 
     // 4. Compare prototypes
-    if (!isEqual(Object.getPrototypeOf(firstObject), Object.getPrototypeOf(secondObject))) {
+    if (
+      !NodeOperationUtil.deepEqualIterative(Object.getPrototypeOf(firstObject), Object.getPrototypeOf(secondObject))
+    ) {
       return false
     }
 
@@ -347,12 +348,12 @@ export class NodeOperationUtil {
     const func1Props = Object.getOwnPropertyNames(firstObject)
     const func2Props = Object.getOwnPropertyNames(secondObject)
 
-    if (!isEqual(func1Props, func2Props)) {
+    if (!NodeOperationUtil.deepEqualIterative(func1Props, func2Props)) {
       return false
     }
 
     for (const prop of func1Props) {
-      if (!isEqual(firstObject[prop], secondObject[prop])) {
+      if (!NodeOperationUtil.deepEqualIterative(firstObject[prop], secondObject[prop])) {
         return false
       }
     }

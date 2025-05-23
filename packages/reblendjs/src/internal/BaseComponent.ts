@@ -8,7 +8,6 @@ import { NodeUtil, ReblendNodeTypeDict } from './NodeUtil'
 import { ElementUtil } from './ElementUtil'
 import { DiffUtil } from './DiffUtil'
 import { NodeOperationUtil } from './NodeOperationUtil'
-import { CSSProperties } from 'react'
 import { ReblendReactClass } from './ReblendReactClass'
 
 StyleUtil
@@ -39,7 +38,7 @@ export interface BaseComponent<P, S> extends HTMLElement {
   placeholderAttached: boolean
   ReactClass: any
   ReblendPlaceholder?: ReblendTyping.VNode | typeof Reblend
-  defaultReblendPlaceholderStyle: CSSProperties | string
+  defaultReblendPlaceholderStyle: ReblendTyping.CSSProperties | string
   ref: ReblendTyping.Ref<HTMLElement> | ((node: HTMLElement) => any)
   effectsState: Map<string, EffectState>
   hookDisconnectedEffects?: Set<() => void>
@@ -187,10 +186,10 @@ export class BaseComponent<
       isTagStandard
         ? ReblendNodeTypeDict.ReblendVNodeStandard
         : NodeUtil.isReactNode(clazz!)
-          ? ReblendNodeTypeDict.ReactToReblendVNode
-          : NodeUtil.isLazyNode(clazz!)
-            ? ReblendNodeTypeDict.ReblendLazyVNode
-            : ReblendNodeTypeDict.ReblendVNode,
+        ? ReblendNodeTypeDict.ReactToReblendVNode
+        : NodeUtil.isLazyNode(clazz!)
+        ? ReblendNodeTypeDict.ReblendLazyVNode
+        : ReblendNodeTypeDict.ReblendVNode,
       velement,
     )
 
