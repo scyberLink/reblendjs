@@ -28,7 +28,19 @@ function Link(props: LinkProps) {
   return (
     <a
       href={props.to || props.href || '#'}
-      onClick={props.onclick || props.onClick || onclick}
+      onClick={e => {
+        try {
+          if (props.onclick) {
+            props.onclick(e);
+          }
+          if (props.onClick) {
+            props.onClick(e);
+          }
+        } catch (e) {}
+        if (!e.defaultPrevented) {
+          onclick(e);
+        }
+      }}
       class={props.class || props.className || ''}
       ref={props.ref as any}
       style={props.style}
