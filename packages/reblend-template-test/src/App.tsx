@@ -1,11 +1,10 @@
 import './App.css';
-import Reblend, { useMemo, useState } from 'reblendjs';
+import Reblend, { rand, useMemo, useState } from 'reblendjs';
 //@ts-ignore
 import logo, { ReblendComponent } from './logo.svg';
 import { ThemeContext } from './context';
 import Header from './Header';
 import useI from './hook';
-import { rand } from 'reblendjs/lib/common/utils';
 import Routing from './Routing';
 import { Button } from 'react-bootstrap';
 import { MyVerticallyCenteredModal } from './modal/MyVerticallyCenteredModal';

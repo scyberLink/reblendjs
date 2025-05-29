@@ -9,15 +9,26 @@
     "UI",
     "Library"
   ],
-  "main": "lib/index.js",
-  "types": "src/index.ts",
+  "main": "lib/index.cjs.js",
+  "module": "lib/esm/reblendjs.esm.js",
+  "browser": "lib/umd/reblendjs.umd.js",
+  "types": "types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/reblendjs.esm.js",
+      "require": "./lib/index.cjs.js",
+      "browser": "./lib/umd/reblendjs.umd.js",
+      "types": "./types/index.d.ts"
+    }
+  },
   "files": [
     "LICENSE",
     "HISTORY.md",
     "README.md",
     "src",
     "lib",
-    "dist"
+    "dist",
+    "types"
   ],
   "repository": {
     "type": "git",
@@ -25,20 +36,28 @@
     "directory": "packages/reblendjs"
   },
   "scripts": {
-    "dev": "tsc && babel dist --out-dir lib",
-    "build": "rm -rf dist; rm -rf lib; tsc && babel dist --out-dir lib",
+    "dev": "tsc && npm run setReblendVersion && babel dist --out-dir build",
+    "build": "npm run clean; tsc && npm run setReblendVersion && npm run types && babel dist --out-dir build && npm run bundle",
+    "bundle": "npm run bundle:dev && npm run bundle:prod",
+    "bundle:dev": "rollup -c",
+    "bundle:prod": "rollup -c --configProd",
     "format": "prettier --write ./src",
     "lint": "eslint ./src",
     "lint:autofix": "eslint ./src --fix",
     "prettier": "prettier ./src",
-    "prepublishOnly": "node ./setReblendVersion.js",
-    "prettier:fix": "prettier --write ./src"
+    "setReblendVersion": "node ./scripts/setReblendVersion.js",
+    "prettier:fix": "prettier --write ./src",
+    "types": "tsc --project tsconfig.types.json",
+    "clean": "rm -rf dist; rm -rf build; rm -rf lib; rm -rf types;",
+    "postbuild": "node ./scripts/createCjsEntry.js"
   },
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@babel/cli": "^7.25.7",
     "@babel/core": "^7.25.8",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "babel-preset-reblend": "latest",
@@ -51,6 +70,8 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-sort-class-members": "^1.20.0",
     "prettier": "^3.2.5",
+    "rollup": "^4.41.1",
+    "rollup-plugin-terser": "^7.0.2",
     "typescript": "^5.6.3",
     "typescript-eslint": "^7.6.0"
   },

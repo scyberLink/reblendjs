@@ -11,7 +11,7 @@
     "noFallthroughCasesInSwitch": true,
     "outDir": "./dist",
     "noImplicitAny": false,
-    "declaration": true,
+    "declaration": false,
     "moduleResolution": "Node",
     "jsx": "preserve",
     "jsxFactory": "Reblend"

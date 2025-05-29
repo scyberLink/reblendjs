@@ -1,14 +1,8 @@
-import Reblend, {
-  TryCatchError,
-  useContext,
-  useEffect,
-  useMemo,
-} from 'reblendjs';
+import Reblend, { rand, TryCatchError, useContext, useEffect } from 'reblendjs';
 import { ThemeContext } from './context';
 import Cde from './C';
 import { Link } from 'reblend-router';
 import { Button, Container } from 'react-bootstrap';
-import { rand } from 'reblendjs/lib/common/utils';
 
 function Header({
   i = 0,
