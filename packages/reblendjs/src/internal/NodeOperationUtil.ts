@@ -20,7 +20,9 @@ export class NodeOperationUtil {
     if ((node as ReblendTyping.Component<P, S>).disconnectedCallback) {
       ;(node as ReblendTyping.Component<P, S>).disconnectedCallback()
     } else {
-      node.outerHTML = ''
+      if (node.parentElement) {
+        node.outerHTML = ''
+      }
       node.innerHTML = ''
       node?.remove()
       //NodeOperationUtil.detachChildren(node as any)
@@ -500,7 +502,9 @@ export class NodeOperationUtil {
       if (NodeUtil.isReactToReblendRenderedNode(node)) {
         ;(node as any)?.checkPropsChange()
       } else if (NodeUtil.isReblendRenderedNode(node) && node.attached) {
-        node.onStateChange()
+        setTimeout(() => {
+          node.onStateChange()
+        }, 0)
       }
     })
     nodes = null as any

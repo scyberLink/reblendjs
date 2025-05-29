@@ -246,6 +246,7 @@ declare global {
 // eslint-disable-next-line @typescript-eslint/ban-types
 class Reblend<P = {}, S = {}> extends BaseComponent<P, S> {
   static ELEMENT_NAME = 'Fragment'
+  static version = '1.0.0'
 
   constructor() {
     super()

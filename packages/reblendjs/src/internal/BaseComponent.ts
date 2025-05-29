@@ -186,10 +186,10 @@ export class BaseComponent<
       isTagStandard
         ? ReblendNodeTypeDict.ReblendVNodeStandard
         : NodeUtil.isReactNode(clazz!)
-        ? ReblendNodeTypeDict.ReactToReblendVNode
-        : NodeUtil.isLazyNode(clazz!)
-        ? ReblendNodeTypeDict.ReblendLazyVNode
-        : ReblendNodeTypeDict.ReblendVNode,
+          ? ReblendNodeTypeDict.ReactToReblendVNode
+          : NodeUtil.isLazyNode(clazz!)
+            ? ReblendNodeTypeDict.ReblendLazyVNode
+            : ReblendNodeTypeDict.ReblendVNode,
       velement,
     )
 
@@ -533,7 +533,7 @@ export class BaseComponent<
       this.onStateChangeRunning = false
       if (this.numAwaitingUpdates) {
         this.numAwaitingUpdates = 0
-        this.onStateChange()
+        setTimeout(() => this.onStateChange(), 0)
       }
       newVNodes = null as any
     }
@@ -624,7 +624,7 @@ export class BaseComponent<
           if (force) {
             this.forceEffects = true
           }
-          this.onStateChange()
+          setTimeout(() => this.onStateChange(), 0)
         }
       }
     }).bind(this)
@@ -741,7 +741,16 @@ export class BaseComponent<
     return this.state[stateID]
   }
 
-  useRef<T>(initial: T, stateKey: string) {
+  useRef<T>(...initial_stateKey: any[]) {
+    const argumentsLength = initial_stateKey.length
+
+    if (argumentsLength < 1 || argumentsLength > 2) {
+      throw unxpectedNumberOfArgument
+    }
+
+    const initial = argumentsLength === 2 ? initial_stateKey[0] : undefined
+    let stateKey = initial_stateKey.pop()
+
     const ref: ReblendTyping.Ref<T> = { stateKey, current: initial }
     return ref
   }
