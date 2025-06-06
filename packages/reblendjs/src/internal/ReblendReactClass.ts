@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChildrenPropsUpdateType, ReblendTyping } from 'reblend-typing'
-import { NodeUtil } from './NodeUtil'
-import { NodeOperationUtil } from './NodeOperationUtil'
 import { REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
 import { type BaseComponent } from './BaseComponent'
+import { connected } from './NodeOperationUtil'
+import { isReactToReblendRenderedNode, isReblendPrimitiveElement, isReblendRenderedNode } from './NodeUtil'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ReblendReactClass extends BaseComponent {}
@@ -29,10 +29,10 @@ export class ReblendReactClass {
     }
 
     const children = Array.from(elementChildren).map((child) => {
-      const isReactNode = NodeUtil.isReactToReblendRenderedNode(child)
-      const isReblendNode = NodeUtil.isReblendRenderedNode(child)
-      const isReblendPrimitiveElement = NodeUtil.isReblendPrimitiveElement(child)
-      const tagName = isReactNode || isReblendNode ? 'div' : isReblendPrimitiveElement ? 'span' : child.displayName
+      const isReactNode = isReactToReblendRenderedNode(child)
+      const isReblendNode = isReblendRenderedNode(child)
+      const _isReblendPrimitiveElement = isReblendPrimitiveElement(child)
+      const tagName = isReactNode || isReblendNode ? 'div' : _isReblendPrimitiveElement ? 'span' : child.displayName
 
       return React.createElement(
         tagName,
@@ -44,7 +44,7 @@ export class ReblendReactClass {
               if (!node.contains(child)) {
                 node.appendChild(child)
                 if (!child.attached) {
-                  NodeOperationUtil.connected(child)
+                  connected(child)
                 }
               }
             } else {

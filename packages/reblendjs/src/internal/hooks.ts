@@ -4,9 +4,9 @@
 import { BaseComponent } from './BaseComponent'
 import { SharedConfig } from '../common/SharedConfig'
 import { rand } from '../common/utils'
-import { NodeUtil } from './NodeUtil'
 import { ReblendTyping } from 'reblend-typing'
-import { NodeOperationUtil } from './NodeOperationUtil'
+import { deepEqualIterative } from './NodeOperationUtil'
+import { isPrimitive } from './NodeUtil'
 
 const contextValue = Symbol('Reblend.contextValue')
 const contextInnerValue = Symbol('Reblend.contextInnerValue')
@@ -147,12 +147,15 @@ export function useMemo<T>(
  *
  * @template T - The type of the ref value.
  * @param {T} [_initial] - The initial ref value.
- * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
  * @returns {ReblendTyping.Ref<T>} - Returns a reference object with the current value.
  */
-export function useRef<T>(_initial?: T, ..._dependencyStringAndOrStateKey: string[]): ReblendTyping.Ref<T> {
+export function useRef<T>(_initial?: T): ReblendTyping.Ref<T> {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
-  return this.useRef(...arguments)
+  return !this
+    ? //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+      BaseComponent.createRef(...arguments)
+    : //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+      this.useRef(...arguments)
 }
 
 /**
@@ -290,7 +293,7 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
       return false
     },
     [contextSubscribe](subscriber) {
-      if (!subscriber.component || NodeUtil.isPrimitive(subscriber.component)) {
+      if (!subscriber.component || isPrimitive(subscriber.component)) {
         throw new Error('Invalid component or object')
       }
       if (!subscriber.stateKey) {
@@ -314,7 +317,7 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
       return context[contextValue]
     },
     isEqual(value: T) {
-      return NodeOperationUtil.deepEqualIterative(value, context[contextValue])
+      return deepEqualIterative(value, context[contextValue])
     },
   }
   return context

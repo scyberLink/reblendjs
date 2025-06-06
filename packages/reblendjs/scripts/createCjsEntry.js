@@ -1,9 +1,7 @@
-import { writeFileSync } from 'fs';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+const fs = require('fs')
+const path = require('path')
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const outPath = join(__dirname, '../lib/index.cjs.js');
+const outPath = path.join(__dirname, '../lib/index.cjs.js')
 
 const content = `'use strict';
 
@@ -12,6 +10,6 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   module.exports = require('./cjs/reblendjs.cjs.js');
 }
-`;
+`
 
-writeFileSync(outPath, content);
+fs.writeFileSync(outPath, content)

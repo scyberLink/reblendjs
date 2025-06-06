@@ -1,4 +1,4 @@
-import Placeholder from './internal/components/Placeholder'
+import { Placeholder } from './internal/components/Placeholder'
 import { Preloader } from './internal/components/Preloader'
 import { Reblend } from './internal/Reblend'
 
@@ -22,6 +22,7 @@ export {
   useContext,
   CacheType,
 } from './internal/hooks'
+export { ConfigUtil } from './internal/ConfigUtil'
 export { rand } from './common/utils'
 export { Reblend, Preloader, Placeholder }
 export default Reblend

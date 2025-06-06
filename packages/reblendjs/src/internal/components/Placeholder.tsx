@@ -1,7 +1,7 @@
 import { Reblend } from '../Reblend'
 import { ReblendTyping } from 'reblend-typing'
 
-export default function Placeholder({
+export function Placeholder({
   style,
   children,
   isPlaceholder = true,

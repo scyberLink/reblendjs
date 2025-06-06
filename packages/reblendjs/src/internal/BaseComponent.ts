@@ -1,16 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isCallable, rand } from '../common/utils'
 import { IAny } from '../interface/IAny'
-import StyleUtil from './StyleUtil'
+import { StyleUtil } from './StyleUtil'
 import { ChildrenPropsUpdateType, ReblendTyping } from 'reblend-typing'
 import { Reblend } from './Reblend'
-import { NodeUtil, ReblendNodeTypeDict } from './NodeUtil'
-import { ElementUtil } from './ElementUtil'
-import { DiffUtil } from './DiffUtil'
-import { NodeOperationUtil } from './NodeOperationUtil'
+import {
+  addSymbol,
+  isLazyNode,
+  isReactNode,
+  isReactToReblendRenderedNode,
+  isReactToReblendVirtualNode,
+  isReblendLazyVirtualNode,
+  isReblendPrimitiveElement,
+  isReblendRenderedLazyNode,
+  isReblendRenderedNode,
+  isReblendRenderedNodeStandard,
+  isReblendVirtualNode,
+  isReblendVirtualNodeStandard,
+  isStandard,
+  ReblendNodeTypeDict,
+} from './NodeUtil'
 import { ReblendReactClass } from './ReblendReactClass'
-
-StyleUtil
+import { createChildren, createElement } from './ElementUtil'
+import { deepFlat, flattenVNodeChildren } from './DiffUtil'
+import {
+  connected,
+  detach,
+  detachChildren,
+  connectedCallback,
+  diff,
+  applyPatches,
+  disconnectedCallback,
+} from './NodeOperationUtil'
+import { ConfigUtil, IReblendAppConfig } from './ConfigUtil'
 
 interface EffectState {
   cache: ReblendTyping.Primitive | Array<ReblendTyping.Primitive>
@@ -74,12 +96,12 @@ export class BaseComponent<
   static async wrapChildrenToReact(
     components: JSX.Element | ReblendTyping.JSXElementConstructor<Record<string, never>>,
   ) {
-    const elementChildren = await ElementUtil.createElement(components as any)
+    const elementChildren = await createElement(components as any)
     return await ReblendReactClass.getChildrenWrapperForReact(elementChildren)
   }
 
   static construct(
-    displayName: typeof Reblend | string | ReblendTyping.VNode[],
+    displayName: ReblendTyping.ReblendNode,
     props: IAny,
     ...children: ReblendTyping.VNodeChildren
   ): ReblendTyping.VNode | ReblendTyping.VNodeChildren {
@@ -88,11 +110,11 @@ export class BaseComponent<
     }
 
     if (
-      NodeUtil.isReblendVirtualNodeStandard(displayName) ||
-      NodeUtil.isReblendVirtualNode(displayName) ||
-      NodeUtil.isReactToReblendVirtualNode(displayName) ||
-      NodeUtil.isReactToReblendVirtualNode(displayName) ||
-      NodeUtil.isReblendLazyVirtualNode(displayName)
+      isReblendVirtualNodeStandard(displayName) ||
+      isReblendVirtualNode(displayName) ||
+      isReactToReblendVirtualNode(displayName) ||
+      isReactToReblendVirtualNode(displayName) ||
+      isReblendLazyVirtualNode(displayName)
     ) {
       const temp = {
         ...(displayName as any),
@@ -114,10 +136,10 @@ export class BaseComponent<
     }
 
     if (
-      NodeUtil.isReblendRenderedNode(displayName) ||
-      NodeUtil.isReblendRenderedNodeStandard(displayName) ||
-      NodeUtil.isReactToReblendRenderedNode(displayName) ||
-      NodeUtil.isReblendRenderedLazyNode(displayName)
+      isReblendRenderedNode(displayName) ||
+      isReblendRenderedNodeStandard(displayName) ||
+      isReactToReblendRenderedNode(displayName) ||
+      isReblendRenderedLazyNode(displayName)
     ) {
       const temp = {
         ...((displayName as any)?.props || {}),
@@ -136,7 +158,7 @@ export class BaseComponent<
       return displayName as any
     }
 
-    if (NodeUtil.isLazyNode(displayName as any)) {
+    if (isLazyNode(displayName as any)) {
       const temp = {
         displayName: displayName as any,
         props: {
@@ -152,7 +174,7 @@ export class BaseComponent<
         ]
       }
 
-      NodeUtil.addSymbol(ReblendNodeTypeDict.ReblendLazyVNode, temp)
+      addSymbol(ReblendNodeTypeDict.ReblendLazyVNode, temp)
       return temp as any
     }
 
@@ -182,12 +204,12 @@ export class BaseComponent<
       props: mergedProp,
     }
 
-    NodeUtil.addSymbol(
+    addSymbol(
       isTagStandard
         ? ReblendNodeTypeDict.ReblendVNodeStandard
-        : NodeUtil.isReactNode(clazz!)
+        : isReactNode(clazz!)
           ? ReblendNodeTypeDict.ReactToReblendVNode
-          : NodeUtil.isLazyNode(clazz!)
+          : isLazyNode(clazz!)
             ? ReblendNodeTypeDict.ReblendLazyVNode
             : ReblendNodeTypeDict.ReblendVNode,
       velement,
@@ -196,95 +218,112 @@ export class BaseComponent<
     return velement as any
   }
 
+  static async renderToString(ui: ReblendTyping.ReblendNode, props?: IAny) {
+    const parent: ReblendTyping.Component<any, any> = (
+      await createElement(
+        BaseComponent.construct('div', {}, BaseComponent.construct(ui as any, props || {}) as any) as any,
+      )
+    ).pop()!
+    await connected(parent)
+    const renderedString = parent.innerHTML
+    return renderedString
+  }
+
+  static createElement = createElement
+  static createChildren = createChildren
+  static detach = detach
+  static detachChildren = detachChildren
+  static connected = connected
+  static deepFlat = deepFlat
+
   static async mountOn(
-    elementId: string,
-    app: typeof Reblend | ReblendTyping.FunctionComponent,
-    props?: IAny,
-    options?: { preloader?: typeof Reblend | ReblendTyping.FunctionComponent },
+    elementOrElementId: string | HTMLElement,
+    app: ReblendTyping.ReblendNode,
+    options?: IReblendAppConfig,
   ): Promise<void> {
-    let appRoot = document.getElementById(elementId)
+    let appRoot: HTMLElement =
+      typeof elementOrElementId === 'string' ? document.getElementById(elementOrElementId) : (elementOrElementId as any)
     if (!appRoot) {
-      throw new Error('Invalid root id')
-    }
-    let root: Reblend = (await ElementUtil.createElement(document.createElement('div') as any)).pop() as any
-    root.setAttribute('ReblendRoot', '')
-    let initialDisplay = root.style.display || 'initial'
-
-    let preloaderParent = document.createElement('div')
-    preloaderParent.setAttribute('preloaderParent', '')
-
-    const openPreloader = () => {
-      let body = document.body
-      body.appendChild(preloaderParent)
-      root.style.display = 'none'
-      preloaderParent.style.display = 'initial'
+      throw new Error('Invalid root or root id')
     }
 
-    // A new mount function that processes nodes one by one,
-    // yielding after each node so the browser can update the UI.
-    const mountChunked = async (parent: HTMLElement, nodes: BaseComponent[]) => {
-      for (const node of nodes) {
-        parent.appendChild(node)
-        NodeOperationUtil.connected(node)
-        // Yield to the browser to allow UI updates (e.g., the preloader animation).
-        await new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+    let initialDisplay = appRoot.style.display || 'initial'
+    new StyleUtil()
+    const configs = ConfigUtil.getInstance().update(options)
+
+    let closePreloader: undefined | (() => void)
+    if (!configs.noDefering) {
+      let preloaderParent = document.createElement('div')
+      preloaderParent.setAttribute('preloaderParent', '')
+
+      const openPreloader = () => {
+        let body = document.body
+        body.appendChild(preloaderParent)
+        appRoot.style.display = 'none'
+        preloaderParent.style.display = 'initial'
       }
-    }
 
-    // Load and mount the preloader.
-    let customPreloader = options?.preloader
-    let { Preloader } = await import('./components/Preloader')
-    let preloaderVNodes = customPreloader
-      ? typeof customPreloader === 'function'
+      // A new mount function that processes nodes one by one,
+      // yielding after each node so the browser can update the UI.
+      const mountChunked = async (parent: HTMLElement, nodes: BaseComponent[]) => {
+        for (const node of nodes) {
+          parent.appendChild(node)
+          connected(node)
+          // Yield to the browser to allow UI updates (e.g., the preloader animation).
+          await new Promise<void>((resolve) => requestAnimationFrame(<any>resolve))
+        }
+      }
+
+      // Load and mount the preloader.
+      let customPreloader = options?.preloader
+      let preloaderVNodes = customPreloader
         ? BaseComponent.construct(customPreloader as any, {}, ...[])
-        : customPreloader
-      : BaseComponent.construct(Preloader as any, {}, ...[])
-    let preloaderNodes: BaseComponent[] = (await ElementUtil.createChildren(
-      Array.isArray(preloaderVNodes) ? preloaderVNodes : [preloaderVNodes],
-    )) as any
-    await mountChunked(preloaderParent, preloaderNodes)
-    openPreloader()
+        : BaseComponent.construct((await import('./components/Preloader')).Preloader, {}, ...[])
+      let preloaderNodes: BaseComponent[] = (await createChildren(
+        Array.isArray(preloaderVNodes) ? preloaderVNodes : [preloaderVNodes],
+      )) as any
+      await mountChunked(preloaderParent, preloaderNodes)
+      openPreloader()
+
+      closePreloader = async () => {
+        appRoot.style.display = initialDisplay
+        preloaderParent.style.display = 'none'
+        preloaderParent.remove()
+        preloaderNodes.forEach((n) => {
+          detach(n)
+        })
+        appRoot = undefined as any
+        preloaderParent = undefined as any
+        initialDisplay = undefined as any
+        preloaderVNodes = undefined as any
+        preloaderNodes = undefined as any
+      }
+
+      await new Promise((resolve) => {
+        setTimeout(() => requestAnimationFrame(resolve), configs.preloaderDeferTimeout)
+      })
+    }
 
     // Construct the main app nodes.
-    root.html = async () => BaseComponent.construct(app as any, props || {}, ...[])
+    const appElement = await createElement(BaseComponent.construct(app as any, {}, ...[]))
+    appRoot.append(...appElement)
+    appElement.forEach((child) => connected(child))
 
-    NodeOperationUtil.connected(root)
-
-    // Let's show the preloader for a second to make it look like a real app
-    await new Promise<void>((resolve) => setTimeout(() => requestAnimationFrame(<any>resolve), 1000))
-    root.populateHtmlElements()
-
-    const closePreloader = () => {
-      root.style.display = initialDisplay
-      preloaderParent.style.display = 'none'
-      appRoot?.appendChild(root)
-      preloaderParent.remove()
-      preloaderNodes.forEach((n) => {
-        NodeOperationUtil.detach(n)
-      })
-      appRoot = undefined as any
-      preloaderParent = undefined as any
-      root = undefined as any
-      initialDisplay = undefined as any
-      Preloader = undefined as any
-      preloaderVNodes = undefined as any
-      preloaderNodes = undefined as any
+    if (closePreloader) {
+      closePreloader()
     }
-
-    closePreloader()
-    Promise.resolve().then(() => requestAnimationFrame(() => {}))
   }
 
   async createInnerHtmlElements() {
     let htmlVNodes = await this.html()
     if (isCallable(htmlVNodes)) {
-      htmlVNodes = (htmlVNodes as any)()
+      htmlVNodes = (htmlVNodes as any)(this.props)
     }
     if (!Array.isArray(htmlVNodes)) {
       htmlVNodes = [htmlVNodes]
     }
-    htmlVNodes = DiffUtil.flattenVNodeChildren(htmlVNodes as any)
-    const htmlElements: ReblendTyping.Component<P, S>[] = (await ElementUtil.createChildren(htmlVNodes as any)) as any
+    htmlVNodes = flattenVNodeChildren(htmlVNodes as any)
+    const htmlElements: ReblendTyping.Component<P, S>[] = (await createChildren(htmlVNodes as any)) as any
 
     return htmlElements
   }
@@ -293,8 +332,9 @@ export class BaseComponent<
     if (this.hasDisconnected) {
       return
     }
+    const configs = ConfigUtil.getInstance().configs
     try {
-      const isReactReblend = NodeUtil.isReactToReblendRenderedNode(this)
+      const isReactReblend = isReactToReblendRenderedNode(this)
       //This is a guard against race condition where parent state changes before populating this component elements
       if (isReactReblend && (this.elementChildren?.size || this.reactElementChildrenWrapper)) {
         return
@@ -303,25 +343,48 @@ export class BaseComponent<
       htmlElements.forEach((node) => (node.directParent = this as any))
       this.elementChildren = new Set(htmlElements)
       if (this.removePlaceholder) {
-        this.removePlaceholder()
+        await new Promise<void>((resolve) => {
+          setTimeout(resolve, configs.placeholderDeferTimeout)
+        })
+        await this.removePlaceholder()
       }
       if (isReactReblend) {
-        this.reactReblendMount && this.reactReblendMount()
+        if (configs.noDefering) {
+          this.reactReblendMount && (await this.reactReblendMount())
+        } else {
+          this.reactReblendMount && this.reactReblendMount()
+        }
       } else {
-        htmlElements.forEach((node) => {
-          this.appendChild(node)
-          NodeOperationUtil.connected(node)
-        })
+        await Promise.allSettled(
+          htmlElements.map(async (node) => {
+            this.appendChild(node)
+            if (configs.noDefering) {
+              await connected(node)
+            } else {
+              connected(node)
+            }
+          }),
+        )
+
         if (this.isPlaceholder && this.directParent?.awaitingInitState && !this.directParent?.initStateRunning) {
-          setTimeout(() => {
-            NodeOperationUtil.connected(this.directParent)
+          if (configs.noDefering) {
+            await connected(this.directParent)
             this.directParent.awaitingInitState = false
-          }, 1)
+          } else {
+            setTimeout(() => {
+              connected(this.directParent)
+              this.directParent.awaitingInitState = false
+            }, configs.deferTimeout)
+          }
         }
       }
       this.childrenInitialize = true
       if (this.awaitingReRender) {
-        this.onStateChange()
+        if (configs.noDefering) {
+          await this.onStateChange()
+        } else {
+          this.onStateChange()
+        }
       }
     } catch (error) {
       this.handleError(error as Error)
@@ -340,7 +403,7 @@ export class BaseComponent<
         } else {
           placeholderVNodes = this.ReblendPlaceholder
         }
-        const placeholderElements = await ElementUtil.createElement(placeholderVNodes)
+        const placeholderElements = await createElement(placeholderVNodes)
         if (!this.childrenInitialize) {
           if (this.placeholderAttached) {
             return
@@ -348,29 +411,32 @@ export class BaseComponent<
           this.placeholderAttached = true
           placeholderElements.forEach((placeholderElement) => {
             if (!this.initStateRunning) {
-              return requestIdleCallback(() => NodeOperationUtil.detach(placeholderElement))
+              return requestIdleCallback(() => detach(placeholderElement))
             }
             placeholderElement.directParent = this as any
             placeholderElement.isPlaceholder = true
             this.appendChild(placeholderElement)
-            NodeOperationUtil.connected(placeholderElement)
+            connected(placeholderElement)
           })
           if (this.initStateRunning) {
             this.removePlaceholder = async () => {
-              placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
+              placeholderElements.forEach((placeholderElement) => detach(placeholderElement))
               this.removePlaceholder = undefined as any
             }
           }
-          requestAnimationFrame(() => {
-            /* empty */
-          })
+          /* requestAnimationFrame(() => { */
+          /* empty */
+          /* }) */
         }
       } else {
-        const { default: Placeholder } = await import('./components/Placeholder')
-        const placeholderVNodes = BaseComponent.construct(Placeholder as any, {
-          style: this.defaultReblendPlaceholderStyle,
-        })
-        const placeholderElements = await ElementUtil.createElement(placeholderVNodes as ReblendTyping.VNodeChild)
+        const config = ConfigUtil.getInstance().configs
+        const placeholderVNodes = BaseComponent.construct(
+          (config.placeholder as any) || (await import('./components/Placeholder')).Placeholder,
+          {
+            style: this.defaultReblendPlaceholderStyle,
+          },
+        )
+        const placeholderElements = await createElement(placeholderVNodes as ReblendTyping.VNodeChild)
         if (!this.childrenInitialize) {
           if (this.placeholderAttached) {
             return
@@ -378,27 +444,27 @@ export class BaseComponent<
           this.placeholderAttached = true
           placeholderElements.forEach((placeholderElement) => {
             if (!this.initStateRunning) {
-              return requestIdleCallback(() => NodeOperationUtil.detach(placeholderElement))
+              return requestIdleCallback(() => detach(placeholderElement))
             }
             placeholderElement.directParent = this as any
             placeholderElement.isPlaceholder = true
             this.appendChild(placeholderElement)
-            NodeOperationUtil.connected(placeholderElement)
+            connected(placeholderElement)
           })
           if (this.initStateRunning) {
             this.removePlaceholder = async () => {
-              placeholderElements.forEach((placeholderElement) => NodeOperationUtil.detach(placeholderElement))
+              placeholderElements.forEach((placeholderElement) => detach(placeholderElement))
               this.removePlaceholder = undefined as any
             }
           }
-          requestAnimationFrame(() => {
-            /* empty */
-          })
+          /* requestAnimationFrame(() => { */
+          /* empty */
+          /* }) */
         }
       }
       return
     }
-    await NodeOperationUtil.connectedCallback(this as any)
+    await connectedCallback(this as any)
   }
 
   addHookDisconnectedEffect(destructor: () => void) {
@@ -487,7 +553,7 @@ export class BaseComponent<
     if (!this.attached || this.hasDisconnected) {
       return
     }
-    if (NodeUtil.isStandard(this)) {
+    if (isStandard(this)) {
       return
     }
     if (this.stateEffectRunning) {
@@ -509,19 +575,19 @@ export class BaseComponent<
       if (this.childrenInitialize) {
         newVNodes = await this.html()
         if (isCallable(newVNodes)) {
-          newVNodes = (newVNodes as any)()
+          newVNodes = (newVNodes as any)(this.props)
         }
         if (!Array.isArray(newVNodes)) {
           newVNodes = [newVNodes as any]
         }
-        newVNodes = DiffUtil.flattenVNodeChildren(newVNodes as ReblendTyping.VNodeChildren) as any
+        newVNodes = flattenVNodeChildren(newVNodes as ReblendTyping.VNodeChildren) as any
         const oldNodes = [...(this.elementChildren?.values() || [])]
 
         const maxLength = Math.max(oldNodes.length || 0, (newVNodes as ReblendTyping.VNodeChildren).length)
         for (let i = 0; i < maxLength; i++) {
           const newVNode: ReblendTyping.VNodeChild = newVNodes![i]
           const currentVNode = oldNodes[i]
-          patches.push(...(NodeOperationUtil.diff(this as any, currentVNode as any, newVNode) as any))
+          patches.push(...(diff(this as any, currentVNode as any, newVNode) as any))
         }
       } else {
         this.awaitingReRender = true
@@ -529,11 +595,16 @@ export class BaseComponent<
     } catch (error) {
       this.handleError(error as Error)
     } finally {
-      await NodeOperationUtil.applyPatches(patches)
+      await applyPatches(patches)
       this.onStateChangeRunning = false
       if (this.numAwaitingUpdates) {
         this.numAwaitingUpdates = 0
-        setTimeout(() => this.onStateChange(), 0)
+        const configs = ConfigUtil.getInstance().configs
+        if (configs.noDefering) {
+          await this.onStateChange()
+        } else {
+          setTimeout(() => this.onStateChange(), configs.deferTimeout)
+        }
       }
       newVNodes = null as any
     }
@@ -546,7 +617,7 @@ export class BaseComponent<
   async mountEffects() {
     this.mountingEffects = true
     this.stateEffectRunning = true
-    if (!NodeUtil.isReblendPrimitiveElement(this)) {
+    if (!isReblendPrimitiveElement(this)) {
       this.applyEffects()
     }
     this.mountingEffects = false
@@ -554,13 +625,13 @@ export class BaseComponent<
     if (this.displayName === 'Placeholder' || (this.props as any)?.isPlaceholder || this.isPlaceholder) {
       return
     }
-    if (!NodeUtil.isStandard(this) && !NodeUtil.isReactToReblendRenderedNode(this)) {
+    if (!isStandard(this) && !isReactToReblendRenderedNode(this)) {
       await this.populateHtmlElements()
     }
   }
 
   disconnectedCallback(fromCleanUp = false) {
-    NodeOperationUtil.disconnectedCallback<P, S>(this as any, fromCleanUp)
+    disconnectedCallback<P, S>(this as any, fromCleanUp)
   }
 
   cleanUp() {
@@ -624,7 +695,12 @@ export class BaseComponent<
           if (force) {
             this.forceEffects = true
           }
-          setTimeout(() => this.onStateChange(), 0)
+          const configs = ConfigUtil.getInstance().configs
+          if (configs.noDefering) {
+            await this.onStateChange()
+          } else {
+            setTimeout(() => this.onStateChange(), configs.deferTimeout)
+          }
         }
       }
     }).bind(this)
@@ -741,17 +817,19 @@ export class BaseComponent<
     return this.state[stateID]
   }
 
-  useRef<T>(...initial_stateKey: any[]) {
-    const argumentsLength = initial_stateKey.length
+  /**
+   * Hook to create a mutable reference object within a Reblend component.
+   *
+   * @template T - The type of the ref value.
+   * @param {T} [_initial] - The initial ref value.
+   * @returns {ReblendTyping.Ref<T>} - Returns a reference object with the current value.
+   */
+  static createRef<T>(_initial?: T) {
+    return BaseComponent.prototype.useRef.call(null, ...arguments)
+  }
 
-    if (argumentsLength < 1 || argumentsLength > 2) {
-      throw unxpectedNumberOfArgument
-    }
-
-    const initial = argumentsLength === 2 ? initial_stateKey[0] : undefined
-    let stateKey = initial_stateKey.pop()
-
-    const ref: ReblendTyping.Ref<T> = { stateKey, current: initial }
+  useRef<T>(initial?: T) {
+    const ref: ReblendTyping.Ref<T> = { current: initial }
     return ref
   }
 

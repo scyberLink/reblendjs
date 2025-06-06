@@ -34,8 +34,7 @@
     "directory": "packages/reblendjs"
   },
   "scripts": {
-    "dev": "tsc && npm run setReblendVersion && babel dist --out-dir build",
-    "build": "npm run clean; tsc && npm run setReblendVersion && npm run types && babel dist --out-dir build && npm run bundle",
+    "build": "npm run clean; tsc && npm run setReblendVersion && npm run types && babel dist --out-dir build && npm run bundle && npm run createCjsEntry",
     "bundle": "npm run bundle:dev && npm run bundle:prod",
     "bundle:dev": "rollup -c",
     "bundle:prod": "rollup -c --configProd",
@@ -44,10 +43,10 @@
     "lint:autofix": "eslint ./src --fix",
     "prettier": "prettier ./src",
     "setReblendVersion": "node ./scripts/setReblendVersion.js",
+    "createCjsEntry": "node ./scripts/createCjsEntry.js",
     "prettier:fix": "prettier --write ./src",
     "types": "tsc --project tsconfig.types.json",
-    "clean": "rm -rf dist; rm -rf build; rm -rf lib; rm -rf types;",
-    "postbuild": "node ./scripts/createCjsEntry.js"
+    "clean": "rm -rf dist; rm -rf build; rm -rf lib; rm -rf types;"
   },
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",

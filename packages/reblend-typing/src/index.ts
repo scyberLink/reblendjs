@@ -694,7 +694,6 @@ export namespace ReblendTyping {
    */
   export type Ref<T> = {
     current?: T;
-    stateKey: string;
   };
   /**
    * A function that updates the state based on the provided value. It accepts a value or a function that returns a new value based on the previous state.
@@ -1095,13 +1094,22 @@ export namespace ReblendTyping {
    * <Component customElement={<div>hello</div>} />
    * ```
    */
-  export type ReblendNode =
+  export type ReblendNode<P = {}, S = {}> =
     | ReblendElement
     | HTMLs
     | React.ReactNode
     | Iterable<ReblendNode>
+    | FC<P>
+    | Component<P, S>
+    | typeof Component<P, S>
     | undefined
+    | VNodeChild
+    | VNodeChildren
+    | DomNodeChild<P, S>
+    | DomNodeChildren<P, S>
+    | Promise<ReblendNode>
     | null;
+
   export interface Component<P, S> extends HTMLElement {
     // constructor();
     html(): Promise<ReblendNode>;
@@ -1430,7 +1438,7 @@ export namespace ReblendTyping {
      * @param {T} [stateKey] - Added for compatibility with reblend function component transpiler
      * @returns {ReblendTyping.Ref<T>} The ref object.
      */
-    useRef<T>(initial: T, stateKey: string): ReblendTyping.Ref<T>;
+    useRef<T>(initial: T): ReblendTyping.Ref<T>;
     /**
      * Binds a function to the current context.
      *
@@ -1444,6 +1452,8 @@ export namespace ReblendTyping {
      */
     _constructor(): void;
   }
+
+  export class Component<P, S> {}
 
   /**
    * Represents the type of a function component. Can optionally
