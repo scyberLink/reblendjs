@@ -102,7 +102,7 @@ export function replaceOldNode<P, S>(
   oldNode.remove()
   oldNode.directParent?.elementChildren?.delete(oldNode)
   /* requestAnimationFrame(() => { */
-    /* empty */
+  /* empty */
   /* }) */
 }
 
@@ -511,22 +511,20 @@ export async function applyProps<P, S>(patches?: ReblendTyping.PropPatch<P, S>[]
       }
     }
   })
-  await Promise.allSettled(
-    nodes.values().map(async (node) => {
-      if (isReactToReblendRenderedNode(node)) {
-        ;(node as any)?.checkPropsChange()
-      } else if (isReblendRenderedNode(node) && node.attached) {
-        const configs = ConfigUtil.getInstance().configs
-        if (configs.noDefering) {
-          await node.onStateChange()
-        } else {
-          setTimeout(() => {
-            node.onStateChange()
-          }, configs.deferTimeout)
-        }
+  for (const node of nodes) {
+    if (isReactToReblendRenderedNode(node)) {
+      ;(node as any)?.checkPropsChange()
+    } else if (isReblendRenderedNode(node) && node.attached) {
+      const configs = ConfigUtil.getInstance().configs
+      if (configs.noDefering) {
+        await node.onStateChange()
+      } else {
+        setTimeout(() => {
+          node.onStateChange()
+        }, configs.deferTimeout)
       }
-    }),
-  )
+    }
+  }
   nodes = null as any
 }
 
@@ -569,15 +567,15 @@ export function replaceOperation<P, S>(
 /**
  * Callback invoked when the component is connected to the DOM.
  */
-export function connectedCallback<P, S>(thiz: ReblendTyping.Component<P, S>) {
+export async function connectedCallback<P, S>(thiz: ReblendTyping.Component<P, S>) {
   if (thiz.hasDisconnected) {
     return
   }
-  thiz.catchErrorFrom(() => {
+  await thiz.catchErrorFrom(async () => {
     if (!thiz.attached) {
       thiz.attached = true
-      thiz.componentDidMount()
-      thiz.mountEffects()
+      await thiz.componentDidMount()
+      await thiz.mountEffects()
     }
   })
 }
@@ -588,6 +586,7 @@ export function connectedCallback<P, S>(thiz: ReblendTyping.Component<P, S>) {
  * Uses bruteforce approach insuring that there is not memory leakage
  */
 export function disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P, S>, fromCleanUp = false) {
+  //TODO make it async to reduce ui blocking 
   if (thiz.hasDisconnected) {
     return
   }

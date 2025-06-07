@@ -685,6 +685,14 @@ export namespace ReblendTyping {
     defaultReblendPlaceholderStyle?: string | CSSProperties;
   }
 
+  export interface EffectState {
+    cache: Primitive | Array<Primitive>;
+    cacher: () => Primitive | Array<Primitive>;
+    type: EffectType;
+    effect?: StateEffectiveFunction;
+    disconnectEffect?: StateEffectiveFunction;
+  }
+
   /**
    * Represents a mutable reference object whose `current` property can hold a value of type `T` or an `HTMLElement`.
    *
@@ -1111,8 +1119,6 @@ export namespace ReblendTyping {
     | null;
 
   export interface Component<P, S> extends HTMLElement {
-    // constructor();
-    html(): Promise<ReblendNode>;
     /**
      * Holds the props (properties) of the component.
      * Can be any type of object containing the default component's configuration.
@@ -1187,7 +1193,7 @@ export namespace ReblendTyping {
      * Component to render first if this component is asyncronous
      */
     //@ts-ignore
-    ReblendPlaceholder?: VNode | typeof Component;
+    ReblendPlaceholder?: ReblendNode;
     /**
      * Style for default reblend placeholder i.e if your are not using custom placeholder for your async components
      */
@@ -1303,7 +1309,7 @@ export namespace ReblendTyping {
     /**
      * Lifecycle method called after the component is mounted.
      */
-    componentDidMount(): void;
+    componentDidMount(): void | Promise<void>;
     /**
      * Sets the state of the component using the setter.
      *
@@ -1313,7 +1319,7 @@ export namespace ReblendTyping {
     /**
      * Applies effects defined in the component, executing them in order.
      */
-    applyEffects(): void;
+    applyEffects(type: EffectType): void;
     /**
      * Handles an error that occurs during rendering or lifecycle methods.
      *
@@ -1325,7 +1331,7 @@ export namespace ReblendTyping {
      *
      * @param {() => void} fn - The function to execute and catch errors from.
      */
-    catchErrorFrom(fn: () => void): void;
+    catchErrorFrom(fn: () => void): Promise<void>;
     /**
      * Recache effect functions dependencies, useful in cases where rendering is skipped because of previous unfinished rendering
      */
@@ -1337,9 +1343,9 @@ export namespace ReblendTyping {
     onStateChange(): Promise<void>;
     /**
      * Returns the virtual DOM structure. Must be implemented by subclasses.
-     * @returns {VNode | VNodeChildren} The virtual DOM nodes.
+     * @returns {ReblendNode} The reblend nodes.
      */
-    html(): Promise<ReblendTyping.ReblendNode>;
+    html(): Promise<ReblendNode>;
     /**
      * Checks for any changes in the props and updates the component accordingly.
      * React Reblend nodes can trigger different updates based on the type of children or non-children changes.
@@ -1353,7 +1359,7 @@ export namespace ReblendTyping {
      * Mounts effects defined in the component, executing them and storing disconnect functions.
      * @
      */
-    mountEffects(): void;
+    mountEffects(): Promise<void>;
     /**
      * Lifecycle method called when the component is disconnected from the DOM.
      * Cleans up resources and removes the component from its parent.
@@ -1397,6 +1403,18 @@ export namespace ReblendTyping {
      * @param {...string[]} _dependencyStringAndOrStateKey - Optional dependencies or state key.
      */
     useEffect(
+      fn: ReblendTyping.StateEffectiveFunction,
+      dependencies: any[],
+      ..._dependencyStringAndOrStateKey: string[]
+    ): void;
+    /**
+     * Effect hook for performing side effects after children of a component is populated or after state changes.
+     *
+     * @param {ReblendTyping.StateEffectiveFunction} fn - The effect function to execute.
+     * @param {any[]} dependencies - Array of dependencies for the effect.
+     * @param {...string[]} _dependencyStringAndOrStateKey - Optional dependencies or state key.
+     */
+    useEffectAfter(
       fn: ReblendTyping.StateEffectiveFunction,
       dependencies: any[],
       ..._dependencyStringAndOrStateKey: string[]
@@ -3963,6 +3981,11 @@ export enum PatchTypeAndOrder {
   CREATE = 3,
   REPLACE = 4,
   UPDATE = 5,
+}
+
+export enum EffectType {
+  BEFORE = 'BEFORE',
+  AFTER = 'AFTER',
 }
 
 export const ERROR_EVENTNAME = 'reblend-render-error';

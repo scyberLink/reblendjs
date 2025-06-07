@@ -93,16 +93,32 @@ export function useState<T>(
  * Hook to perform side effects within a Reblend component.
  *
  * @param {ReblendTyping.StateEffectiveFunction} _fn - The effect function to run.
- * @param {any[]} [_dependencies] - Optional array of dependencies to control when the effect runs.
+ * @param {any} [_dependencies] - Optional dependency or array of dependencies to control when the effect runs.
  * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
  */
 export function useEffect(
   _fn: ReblendTyping.StateEffectiveFunction,
-  _dependencies?: any[],
+  _dependencies?: any,
   ..._dependencyStringAndOrStateKey: string[]
 ): void {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useEffect(...arguments)
+}
+
+/**
+ * Hook to perform side effects within a Reblend component after children populate or after state change.
+ *
+ * @param {ReblendTyping.StateEffectiveFunction} _fn - The effect function to run.
+ * @param {any} [_dependencies] - Optional dependency or array of dependencies to control when the effect runs.
+ * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ */
+export function useEffectAfter(
+  _fn: ReblendTyping.StateEffectiveFunction,
+  _dependencies?: any,
+  ..._dependencyStringAndOrStateKey: string[]
+): void {
+  //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+  return this.useEffectAfter(...arguments)
 }
 
 /**
@@ -129,13 +145,13 @@ export function useReducer<T, I>(
  *
  * @template T - The type of the memoized value.
  * @param {ReblendTyping.StateEffectiveMemoFunction<T>} _fn - The function to compute the memoized value.
- * @param {any[]} [_dependencies] - Optional array of dependencies to control memoization.
+ * @param {any} [_dependencies] - Optional dependency or array of dependencies to control memoization.
  * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
  * @returns {T} - The memoized value.
  */
 export function useMemo<T>(
   _fn: ReblendTyping.StateEffectiveMemoFunction<T>,
-  _dependencies?: any[],
+  _dependencies?: any,
   ..._dependencyStringAndOrStateKey: string[]
 ): T {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to

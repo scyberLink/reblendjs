@@ -14,6 +14,7 @@ export { ReblendTyping } from 'reblend-typing'
 export {
   useState,
   useEffect,
+  useEffectAfter,
   useReducer,
   useMemo,
   useRef,
