@@ -47,5 +47,6 @@
   },
   "dependencies": {
     "babel-preset-reblend": "^7.24.51"
-  }
+  },
+  "packageManager": "yarn@4.9.2"
 }

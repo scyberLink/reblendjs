@@ -57,7 +57,7 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
-    "babel-preset-reblend": "latest",
+    "babel-preset-reblend": "7.27.1",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard-with-typescript": "^43.0.1",
@@ -69,11 +69,11 @@
     "prettier": "^3.2.5",
     "rollup": "^4.41.1",
     "rollup-plugin-terser": "^7.0.2",
-    "typescript": "^5.6.3",
+    "typescript": "^5.8.3",
     "typescript-eslint": "^7.6.0"
   },
   "dependencies": {
-    "reblend-typing": "latest"
+    "reblend-typing": "6.3.1"
   },
   "gitHead": "79a3e22f73913a686e76631559ba7830f7eb2e98"
 }

@@ -15,7 +15,6 @@ export default function Counter() {
 
   return (
     <>
-    
       <b style={'padding: 20px; color: red'}>
         {i} {iElement}
       </b>
