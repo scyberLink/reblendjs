@@ -30,7 +30,8 @@
     "build": "rm -rf dist; rm -rf lib; tsc"
   },
   "dependencies": {
-    "@types/react": "^18.3.11",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
     "csstype": "^3.1.3"
   },
   "gitHead": "79a3e22f73913a686e76631559ba7830f7eb2e98",
