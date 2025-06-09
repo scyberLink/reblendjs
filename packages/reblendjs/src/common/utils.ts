@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IAny } from '../interface/IAny'
 import NullException from '../exceptions/NullException'
+import { ConfigUtil } from '../internal/ConfigUtil'
 
 export function objectEquals(obj1: { [x: string]: any } | null, obj2: { [x: string]: any } | null) {
   // Check if both object are strictly equal
@@ -214,6 +215,9 @@ export const replaceOrAddItemToList = <T extends Array<any> | Set<any>>(list: T,
 
   return items as any
 }
+
+export const getConfig = () => ConfigUtil.getInstance().configs
+export const donotDeffer = () => getConfig().noDefering
 
 export const REBLEND_COMPONENT = 'reblendcomponent'
 export const REBLEND_WRAPPER_FOR_REACT_COMPONENT = 'reblendwrapperforreactcomponent'

@@ -33,7 +33,7 @@ export async function setProps<P, S, ExpectedReturn = any>(
       if (propName == 'dangerouslySetInnerHTML') {
         to.innerHTML = propValue?.__html
       } else if (propName.startsWith('on')) {
-        to[_attributeName] = fn(propValue) as any
+        to[_attributeName] = fn(to, propValue) as any
       } else {
         if (_attributeName === 'style') {
           to.addStyle(propValue)

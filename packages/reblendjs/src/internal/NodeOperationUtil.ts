@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChildrenPropsUpdateType, PatchTypeAndOrder, ReblendTyping } from 'reblend-typing'
-import { isCallable, replaceOrAddItemToList } from '../common/utils'
+import { donotDeffer, getConfig, isCallable, replaceOrAddItemToList } from '../common/utils'
 import { deepFlat } from './DiffUtil'
 import {
   isPrimitive,
@@ -13,7 +13,6 @@ import {
 } from './NodeUtil'
 import { setProps, removeProps } from './PropertyUtil'
 import { createElement, newReblendPrimitive } from './ElementUtil'
-import { ConfigUtil } from './ConfigUtil'
 
 /**
  * Detaches the given node from the DOM.
@@ -23,10 +22,14 @@ import { ConfigUtil } from './ConfigUtil'
  *
  * @param {ReblendTyping.Component<P, S> | HTMLElement} node - The node to detach.
  */
-export function detach<P, S>(node: ReblendTyping.Component<P, S> | HTMLElement) {
+export async function detach<P, S>(node: ReblendTyping.Component<P, S> | HTMLElement) {
   if (isPrimitive(node)) return
   if ((node as ReblendTyping.Component<P, S>).disconnectedCallback) {
-    ;(node as ReblendTyping.Component<P, S>).disconnectedCallback()
+    if (donotDeffer()) {
+      await (node as ReblendTyping.Component<P, S>).disconnectedCallback()
+    } else {
+      ;(node as ReblendTyping.Component<P, S>).disconnectedCallback()
+    }
   } else {
     if (node.parentElement) {
       node.outerHTML = ''
@@ -38,18 +41,22 @@ export function detach<P, S>(node: ReblendTyping.Component<P, S> | HTMLElement) 
 }
 
 /**
- * Detaches all child nodes and HTML elements from the given `ReblendTyping.Component<P, S>`.
+ * Detaches all child nodes and HTML elements from the given `HTMLElement/Component`.
  * If the node is a primitive, the function returns immediately.
  *
- * @param {ReblendTyping.Component<P, S>} node - The parent node from which children will be detached.
+ * @param {HTMLElement} node - The parent node from which children will be detached.
  */
-export function detachChildren<P, S>(node: ReblendTyping.Component<P, S>) {
+export async function detachChildren<P, S>(node: HTMLElement) {
   if (isPrimitive(node)) return
   for (const child of new Set([
     ...node.childNodes,
     ...((node as ReblendTyping.Component<P, S>).elementChildren?.values() || []),
   ])) {
-    detach(child as any)
+    if (donotDeffer()) {
+      await detach(child as any)
+    } else {
+      detach(child as any)
+    }
   }
 }
 
@@ -73,7 +80,7 @@ export async function connected<P, S, T extends ReblendTyping.Component<P, S> | 
  * @param {ReblendTyping.Component<P, S> | ReblendTyping.Component<P, S>[]} newNode - The new node(s) to replace the old node.
  * @param {ReblendTyping.Component<P, S>} oldNode - The old node to be replaced.
  */
-export function replaceOldNode<P, S>(
+export async function replaceOldNode<P, S>(
   newNode: ReblendTyping.Component<P, S> | ReblendTyping.Component<P, S>[],
   oldNode: ReblendTyping.Component<P, S>,
 ) {
@@ -82,23 +89,30 @@ export function replaceOldNode<P, S>(
     newNode = [newNode]
   }
 
+  // Use DocumentFragment to batch insertions
+  const fragment = document.createDocumentFragment()
   for (const node of newNode) {
     if (oldNode.directParent && !oldNode.directParent.elementChildren?.has(node)) {
       if (!oldNode.directParent.elementChildren) {
         oldNode.directParent.elementChildren = new Set()
       }
-
       oldNode.directParent.elementChildren = replaceOrAddItemToList(
         oldNode.directParent.elementChildren,
         lastAttached,
         node,
       )
     }
-    lastAttached.after(node)
-    connected(node)
+    fragment.appendChild(node)
+    if (donotDeffer()) {
+      await connected(node)
+    } else {
+      connected(node)
+    }
     lastAttached = node
   }
 
+  // Insert the fragment after the oldNode
+  oldNode.after(fragment)
   oldNode.remove()
   oldNode.directParent?.elementChildren?.delete(oldNode)
   /* requestAnimationFrame(() => { */
@@ -418,65 +432,128 @@ export function diffChildren<P, S>(
  */
 export async function applyPatches<P, S>(patches: ReblendTyping.Patch<P, S>[]) {
   const needsUpdate = new Set<ReblendTyping.Component<P, S>>()
-  patches = Array.from((patches || []).sort((a, b) => a.type - b.type))
+  patches = Array.from(patches || [] /* .sort((a, b) => a.type - b.type) */)
+  const configs = getConfig()
+
+  // Batching structures
+  const fragmentMap = new Map<any, DocumentFragment>()
+  const nodesToRemove: Array<HTMLElement | ReblendTyping.Component<P, S>> = []
+  const replaceOps: Array<{
+    oldNode: ReblendTyping.Component<P, S>
+    newNodeElements: Array<any>
+  }> = []
+  const afterPatchConnected: Array<() => Promise<void> | void> = []
+  const allPropPatches: ReblendTyping.PropPatch<P, S>[][] = []
 
   for (const patch of patches) {
     switch (patch.type) {
-      case PatchTypeAndOrder.CREATE:
-        {
-          if (!patch.parent) break
-          const elements = await createElement(patch.newNode as ReblendTyping.VNode)
-          if (!elements.length) break
-          elements.forEach((element) => (element.directParent = patch.parent!))
-          if (!patch.parent.elementChildren) {
-            patch.parent.elementChildren = new Set(elements)
-          } else {
-            for (const element of elements) {
-              patch.parent.elementChildren.add(element)
-            }
+      case PatchTypeAndOrder.CREATE: {
+        if (!patch.parent) break
+        const elements = await createElement(patch.newNode as ReblendTyping.VNode)
+        if (!elements.length) break
+        elements.forEach((element) => (element.directParent = patch.parent!))
+        if (!patch.parent.elementChildren) {
+          patch.parent.elementChildren = new Set(elements)
+        } else {
+          for (const element of elements) {
+            patch.parent.elementChildren.add(element)
           }
-          if (isReactToReblendRenderedNode(patch.parent)) {
-            needsUpdate.add(patch.parent)
-          } else {
-            elements?.forEach((node) => {
-              patch.parent?.appendChild(node)
-              connected(node)
+        }
+        if (isReactToReblendRenderedNode(patch.parent)) {
+          needsUpdate.add(patch.parent)
+        } else {
+          let fragment = fragmentMap.get(patch.parent)
+          if (!fragment) {
+            fragment = document.createDocumentFragment()
+            fragmentMap.set(patch.parent, fragment)
+          }
+          for (const node of elements) {
+            fragment.appendChild(node)
+            // Defer connected callbacks until after DOM insertion
+            afterPatchConnected.push(async () => {
+              if (configs.noDefering) {
+                await connected(node)
+              } else {
+                connected(node)
+              }
             })
           }
         }
         break
-      case PatchTypeAndOrder.REMOVE:
+      }
+      case PatchTypeAndOrder.REMOVE: {
         if (patch.oldNode) {
-          replaceOperation(
-            patch.oldNode,
-            async () => {
-              /* empty */
-            },
-            true,
-          )
+          nodesToRemove.push(patch.oldNode)
         }
         break
-      case PatchTypeAndOrder.REPLACE:
+      }
+      case PatchTypeAndOrder.REPLACE: {
         if (patch.oldNode) {
-          replaceOperation(patch.oldNode, async (newOldNode) => {
-            const newNodeElements = await createElement(patch.newNode as ReblendTyping.VNode)
-            newNodeElements.forEach((element) => (element.directParent = newOldNode.directParent as any))
-            replaceOldNode(newNodeElements as any, newOldNode)
-          })
+          const newNodeElements = await createElement(patch.newNode as ReblendTyping.VNode)
+          newNodeElements.forEach((element) => (element.directParent = patch.oldNode?.directParent as any))
+          replaceOps.push({ oldNode: patch.oldNode, newNodeElements })
         }
         break
-      case PatchTypeAndOrder.TEXT:
+      }
+      case PatchTypeAndOrder.TEXT: {
         patch.oldNode && (patch.oldNode.textContent = patch.newNode as string)
         break
-      case PatchTypeAndOrder.UPDATE:
-        applyProps(patch.patches)
+      }
+      case PatchTypeAndOrder.UPDATE: {
+        if (patch.patches) {
+          allPropPatches.push(patch.patches)
+        }
         break
+      }
     }
+  }
+
+  // Batch all prop updates in a single call
+  if (allPropPatches.length > 0) {
+    if (configs.noDefering) {
+      await applyProps(allPropPatches)
+    } else {
+      applyProps(allPropPatches)
+    }
+  }
+
+  // Batch insertions
+  for (const [parent, fragment] of fragmentMap.entries()) {
+    parent.appendChild(fragment)
+  }
+
+  // Batch removals
+  for (const node of nodesToRemove) {
+    await replaceOperation(
+      node as any,
+      async () => {
+        /* empty */
+      },
+      true,
+    )
+  }
+
+  // Batch replacements
+  for (const { oldNode, newNodeElements } of replaceOps) {
+    await replaceOperation(oldNode, async () => {
+      for (const element of newNodeElements) {
+        element.directParent = oldNode.directParent as any
+      }
+      if (donotDeffer()) {
+        await replaceOldNode(newNodeElements as any, oldNode!)
+      } else {
+        replaceOldNode(newNodeElements as any, oldNode!)
+      }
+    })
+  }
+
+  // Run connected callbacks after DOM insertions
+  for (const fn of afterPatchConnected) {
+    await fn()
   }
 
   for (const parentUpdate of needsUpdate) {
     if (isReactToReblendRenderedNode(parentUpdate)) {
-      const configs = ConfigUtil.getInstance().configs
       if (configs.noDefering) {
         parentUpdate.reactReblendMount && (await parentUpdate.reactReblendMount())
       } else {
@@ -493,15 +570,21 @@ export async function applyPatches<P, S>(patches: ReblendTyping.Patch<P, S>[]) {
  *
  * @param {PropPatch[]} [patches] - The property patches to apply.
  */
-export async function applyProps<P, S>(patches?: ReblendTyping.PropPatch<P, S>[]) {
-  let nodes = new Set<ReblendTyping.Component<P, S>>()
-  patches?.forEach(({ type, node, key, propValue }) => {
+export async function applyProps<P, S>(patches?: ReblendTyping.PropPatch<P, S>[][]) {
+  const flatPatches: ReblendTyping.PropPatch<P, S>[] = Array.isArray(patches) ? patches.flat() : (patches as any) || []
+  const propUpdates = new Map<ReblendTyping.Component<P, S>, Record<string, any>>()
+  const propRemovals = new Map<ReblendTyping.Component<P, S>, Set<string>>()
+  const reactToReblendNodes: Set<ReblendTyping.Component<P, S>> = new Set()
+  const reblendNodesToUpdate: Set<ReblendTyping.Component<P, S>> = new Set()
+  const configs = getConfig()
+
+  flatPatches.forEach(({ type, node, key, propValue }) => {
     if (type === 'UPDATE') {
-      setProps({ [key]: propValue }, node, false)
-      nodes.add(node)
+      if (!propUpdates.has(node)) propUpdates.set(node, {})
+      propUpdates.get(node)![key] = propValue
     } else if (type === 'REMOVE') {
-      removeProps({ [key]: undefined }, node)
-      nodes.add(node)
+      if (!propRemovals.has(node)) propRemovals.set(node, new Set())
+      propRemovals.get(node)!.add(key)
     }
     if (isReactToReblendRenderedNode(node)) {
       if (key === 'children') {
@@ -509,23 +592,41 @@ export async function applyProps<P, S>(patches?: ReblendTyping.PropPatch<P, S>[]
       } else {
         node.childrenPropsUpdate?.add(ChildrenPropsUpdateType.NON_CHILDREN)
       }
+      reactToReblendNodes.add(node)
+    } else if (isReblendRenderedNode(node) && node.attached) {
+      reblendNodesToUpdate.add(node)
     }
   })
-  for (const node of nodes) {
-    if (isReactToReblendRenderedNode(node)) {
-      ;(node as any)?.checkPropsChange()
-    } else if (isReblendRenderedNode(node) && node.attached) {
-      const configs = ConfigUtil.getInstance().configs
-      if (configs.noDefering) {
+
+  // Batch setProps and removeProps for each node
+  for (const [node, props] of propUpdates.entries()) {
+    setProps(props, node, false)
+  }
+  for (const [node, keys] of propRemovals.entries()) {
+    const removeObj: Record<string, undefined> = {}
+    for (const key of keys) removeObj[key] = undefined
+    removeProps(removeObj, node)
+  }
+
+  // Batch checkPropsChange for React-to-Reblend nodes
+  for (const node of reactToReblendNodes) {
+    ;(node as any)?.checkPropsChange()
+  }
+
+  // Batch onStateChange for Reblend nodes
+  if (reblendNodesToUpdate.size > 0) {
+    if (configs.noDefering) {
+      for (const node of reblendNodesToUpdate) {
         await node.onStateChange()
-      } else {
-        setTimeout(() => {
-          node.onStateChange()
-        }, configs.deferTimeout)
       }
+    } else {
+      setTimeout(() => {
+        for (const node of reblendNodesToUpdate) {
+          node.onStateChange()
+        }
+      }, configs.deferTimeout)
     }
   }
-  nodes = null as any
 }
 
 /**
@@ -534,34 +635,26 @@ export async function applyProps<P, S>(patches?: ReblendTyping.PropPatch<P, S>[]
  * @param {ReblendTyping.Component<P, S>} oldNode - The old node to replace.
  * @param {() => void} operation - The operation to execute for the replacement.
  */
-export function replaceOperation<P, S>(
+export async function replaceOperation<P, S>(
   oldNode: ReblendTyping.Component<P, S>,
-  operation: (newNode: ReblendTyping.Component<P, S>) => Promise<void>,
+  operation: () => Promise<void>,
   isRemoveOperation?: boolean,
 ) {
-  let dummyNode: any = null
   if (isRemoveOperation) {
     oldNode.directParent?.elementChildren?.delete(oldNode)
     oldNode.remove()
-  } else {
-    dummyNode = newReblendPrimitive()
-    ;(dummyNode as any).directParent = oldNode.directParent
-    oldNode.after(dummyNode)
-    if (oldNode.directParent?.elementChildren) {
-      oldNode.directParent.elementChildren = replaceOrAddItemToList(
-        oldNode.directParent.elementChildren || new Set(),
-        oldNode,
-        dummyNode,
-      )
-    }
-    oldNode.remove()
   }
-  //requestAnimationFrame(() => {})
-  operation(dummyNode).finally(() =>
-    requestIdleCallback(() => {
-      detach(oldNode)
-    }),
-  )
+
+  if (donotDeffer()) {
+    await operation()
+    await detach(oldNode)
+  } else {
+    operation().then(() =>
+      requestIdleCallback(() => {
+        detach(oldNode)
+      }),
+    )
+  }
 }
 
 /**
@@ -571,13 +664,11 @@ export async function connectedCallback<P, S>(thiz: ReblendTyping.Component<P, S
   if (thiz.hasDisconnected) {
     return
   }
-  await thiz.catchErrorFrom(async () => {
-    if (!thiz.attached) {
-      thiz.attached = true
-      await thiz.componentDidMount()
-      await thiz.mountEffects()
-    }
-  })
+  if (!thiz.attached) {
+    thiz.attached = true
+    await thiz.componentDidMount()
+    await thiz.mountEffects()
+  }
 }
 
 /**
@@ -585,13 +676,13 @@ export async function connectedCallback<P, S>(thiz: ReblendTyping.Component<P, S
  * Cleans up resources and removes the component from its parent.
  * Uses bruteforce approach insuring that there is not memory leakage
  */
-export function disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P, S>, fromCleanUp = false) {
-  //TODO make it async to reduce ui blocking 
+export async function disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P, S>, fromCleanUp = false) {
   if (thiz.hasDisconnected) {
     return
   }
-  !fromCleanUp && thiz.cleanUp()
-  thiz.componentWillUnmount && thiz.componentWillUnmount()
+  const configs = getConfig()
+  !fromCleanUp && (await thiz.cleanUp())
+  thiz.componentWillUnmount && (await thiz.componentWillUnmount())
   if (thiz.ref) {
     if (typeof thiz.ref === 'function') {
       thiz.ref(null as any)
@@ -605,21 +696,32 @@ export function disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P, S>, 
   }
 
   if (!isReblendPrimitiveElement(thiz)) {
-    thiz.effectsState?.forEach((state) => {
-      state.disconnectEffect && state.disconnectEffect()
+    for (const state of thiz.effectsState?.values() || []) {
+      state.disconnectEffect && (await state.disconnectEffect())
       state.cache = null as any
       state.cacher = null as any
       state.effect = null as any
       state.disconnectEffect = null as any
-    })
+    }
   }
 
   thiz.hookDisconnectedEffects?.forEach((destructor) => {
     destructor()
   })
 
-  detachChildren(thiz as any)
-  thiz.elementChildren?.forEach((node) => detach(node))
+  if (configs.noDefering) {
+    await detachChildren(thiz as any)
+  } else {
+    detachChildren(thiz as any)
+  }
+  for (const node of thiz.elementChildren?.values() || []) {
+    if (configs.noDefering) {
+      await detach(node)
+    } else {
+      detach(node)
+    }
+  }
+
   thiz.directParent?.elementChildren?.delete(thiz as any)
 
   // Remove event listeners
@@ -636,7 +738,11 @@ export function disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P, S>, 
       thiz.parentElement.removeChild(thiz)
     }
   }
-  thiz.reactElementChildrenWrapper?.disconnectedCallback()
+  if (configs.noDefering) {
+    await thiz.reactElementChildrenWrapper?.disconnectedCallback()
+  } else {
+    thiz.reactElementChildrenWrapper?.disconnectedCallback()
+  }
   thiz.props = null as any
   thiz.reactElementChildrenWrapper = null as any
   thiz.elementChildren = null as any

@@ -1110,13 +1110,14 @@ export namespace ReblendTyping {
     | FC<P>
     | Component<P, S>
     | typeof Component<P, S>
-    | undefined
     | VNodeChild
     | VNodeChildren
     | DomNodeChild<P, S>
     | DomNodeChildren<P, S>
     | Promise<ReblendNode>
-    | null;
+    | undefined
+    | null
+    | void;
 
   export interface Component<P, S> extends HTMLElement {
     /**
@@ -1177,6 +1178,10 @@ export namespace ReblendTyping {
      * Indicates that the component is part of a placeholder component.
      */
     isPlaceholder: boolean;
+    /**
+     * Indicates a root component
+     */
+    isRootComponent: boolean;
     /**
      * Indicates that a placeholder has been attached to the component.
      */
@@ -1245,6 +1250,10 @@ export namespace ReblendTyping {
      * Indicates when first time effects are being called.
      */
     mountingEffects: boolean;
+    /**
+     * Indicates when first time after effects are being called.
+     */
+    mountingAfterEffects: boolean;
     /**
      * Indicate state initialization
      */
@@ -1319,23 +1328,13 @@ export namespace ReblendTyping {
     /**
      * Applies effects defined in the component, executing them in order.
      */
-    applyEffects(type: EffectType): void;
+    applyEffects(type: EffectType): Promise<void>;
     /**
      * Handles an error that occurs during rendering or lifecycle methods.
      *
      * @param {Error} error - The error to handle.
      */
     handleError(error: Error): void;
-    /**
-     * Catches errors thrown by a given function and handles them.
-     *
-     * @param {() => void} fn - The function to execute and catch errors from.
-     */
-    catchErrorFrom(fn: () => void): Promise<void>;
-    /**
-     * Recache effect functions dependencies, useful in cases where rendering is skipped because of previous unfinished rendering
-     */
-    cacheEffectDependencies(): void;
     /**
      * Handles state changes, applying effects and updating virtual DOM nodes.
      * @async
@@ -1364,15 +1363,15 @@ export namespace ReblendTyping {
      * Lifecycle method called when the component is disconnected from the DOM.
      * Cleans up resources and removes the component from its parent.
      */
-    disconnectedCallback(): void;
+    disconnectedCallback(): Promise<void>;
     /**
      * Cleans up resources before the component unmounts.
      */
-    cleanUp(): void;
+    cleanUp(): void | Promise<void>;
     /**
      * Lifecycle method for component unmount actions.
      */
-    componentWillUnmount(): void;
+    componentWillUnmount(): Promise<void> | void;
     /**
      * Shallow compare dependecies for changes
      * @param {Array<any>} currentDependencies

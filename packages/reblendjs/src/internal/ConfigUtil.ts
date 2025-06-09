@@ -2,6 +2,7 @@ import { ReblendTyping } from 'reblend-typing'
 
 export interface IReblendAppConfig {
   noDefering?: boolean
+  noPreloader?: boolean
   deferTimeout?: number
   preloaderDeferTimeout?: number
   placeholderDeferTimeout?: number
@@ -15,6 +16,7 @@ export class ConfigUtil {
   defaultConfigs: IReblendAppConfig = {
     noDefering: false,
     deferTimeout: 0,
+    noPreloader: false,
     preloaderDeferTimeout: 1000,
     placeholderDeferTimeout: 100,
     lazyComponentDeferTimeout: 500,

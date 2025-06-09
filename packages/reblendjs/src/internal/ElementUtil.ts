@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { REBLEND_PRIMITIVE_ELEMENT_NAME, ReblendTyping } from 'reblend-typing'
-import { capitalize, isCallable, REBLEND_COMPONENT, REBLEND_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
+import {
+  capitalize,
+  getConfig,
+  isCallable,
+  REBLEND_COMPONENT,
+  REBLEND_WRAPPER_FOR_REACT_COMPONENT,
+} from '../common/utils'
 import {
   addSymbol,
   extendPrototype,
@@ -246,10 +252,16 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
     ? ReblendNodeTypeDict.ReblendLazyNode
     : isTagStandard
       ? (displayName as string)
-      : (isReactNode(clazz) ? (clazz as any as ReblendTyping.ReactNode).displayName : clazz?.ELEMENT_NAME) ||
-        `Anonymous`
+      : (isReactNode(clazz)
+          ? (clazz as any as ReblendTyping.ReactNode).displayName
+          : clazz?.ELEMENT_NAME === 'Fragment'
+            ? clazz.name
+            : clazz?.ELEMENT_NAME) || `Anonymous`
 
   if (!isTagStandard && !_isLazyNode) {
+    if ((displayName as any)?.ELEMENT_NAME === 'Reblend' && (displayName as any)?.name === 'Reblend') {
+      return (displayName as any)?.children
+    }
     ;(clazz as any).ELEMENT_NAME = tagName
   }
 
@@ -351,7 +363,7 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
         connected(element)
       }
     }
-    const configs = ConfigUtil.getInstance().configs
+    const configs = getConfig()
     if (configs.noDefering) {
       await setPropsAndInitState()
     } else if (_isLazyNode) {
