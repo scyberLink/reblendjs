@@ -1,0 +1,227 @@
+---
+title: Animation and Transitions
+---
+
+A few components like `Overlay` and `Modal` offer animation API affordances to
+enable transitioning elements in and out over time.
+
+## `Transition` component
+
+Animation of components is handled by `transition` props. If
+a component accepts a `transition` prop you can provide
+a [react-transition-group@2.0.0](https://github.com/reactjs/react-transition-group)
+compatible `Transition` component and it will work. Feel free to use `CSSTransition`
+specifically, or roll your own like the below example.
+
+```js live
+import { Modal, Overlay } from "@restart/ui";
+import clsx from "clsx";
+import Transition from "react-transition-group/Transition";
+import Button from "../src/Button";
+import Tooltip from "../src/Tooltip";
+import "../src/css/transitions.css";
+
+const FADE_DURATION = 200;
+
+const fadeStyles = {
+  entering: "show",
+  entered: "show",
+};
+
+const Fade = ({ children, ...props }) => (
+  <Transition {...props} timeout={FADE_DURATION}>
+    {(status, innerProps) => (
+      console.log(status),
+      React.cloneElement(children, {
+        ...innerProps,
+        className: clsx(
+          "fade",
+          fadeStyles[status],
+          children.props.className
+        ),
+      })
+    )}
+  </Transition>
+);
+
+function TransitionExample() {
+  const [showModal, setShowModal] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  const triggerRef = useRef(null);
+
+  return (
+    <div className="flex flex-col items-center">
+      <Button
+        type="button"
+        className="btn btn-primary mr-3"
+        onClick={() => setShowModal((prev) => !prev)}
+      >
+        Show Animated Modal
+      </Button>
+
+      <Button
+        type="button"
+        className="btn btn-primary"
+        onClick={() => setShowTooltip((prev) => !prev)}
+        ref={triggerRef}
+      >
+        Show Tooltip
+      </Button>
+
+      <Overlay
+        placement="top"
+        transition={Fade}
+        show={showTooltip}
+        target={triggerRef}
+        popperConfig={{
+          modifiers: [
+            {
+              name: "offset",
+              enabled: true,
+              options: { offset: [0, 10] },
+            },
+          ],
+        }}
+      >
+        {(props, { arrowProps, popper, show }) => (
+          <Tooltip
+            {...props}
+            arrowProps={arrowProps}
+            popper={popper}
+          >
+            Tooltip content
+          </Tooltip>
+        )}
+      </Overlay>
+
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        transition={Fade}
+        backdropTransition={Fade}
+        renderBackdrop={(props) => (
+          <div
+            {...props}
+            className="backdrop fixed inset-0 bg-black z-[300]"
+          />
+        )}
+        renderDialog={(props) => (
+          <div
+            {...props}
+            className="fixed inset-0 z-[310] flex items-center justify-center pointer-events-none"
+          >
+            <div className="dialog dialog-transitions-example bg-white shadow rounded-lg pointer-events-auto">
+              <h4 id="modal-label">I&apos;m fading in!</h4>
+              <p>
+                Anim pariatur cliche reprehenderit, enim
+                eiusmod high life accusamus terry richardson
+                ad squid. Nihil anim keffiyeh helvetica,
+                craft beer labore wes anderson cred nesciunt
+                sapiente ea proident.
+              </p>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => setShowModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+      />
+    </div>
+  );
+}
+
+<TransitionExample />;
+```
+
+## Imperative custom transitions
+
+If you don't want to use `react-transition-group` that's fine too. Transitions can also be defined as promise-returning
+functions. This allows for imperative animation APIs like the native `element.animate`:
+
+```js live
+import { Modal, Overlay } from "@restart/ui";
+import Button from "../src/Button";
+
+const FADE_DURATION = 200;
+
+function fadeTo(opacity) {
+  return ({ in: inProp, element }) => {
+    const animation = element.animate(
+      {
+        opacity: [0, opacity],
+      },
+      {
+        ease: "ease-in-out",
+        duration: 200,
+        fill: "forwards",
+      }
+    );
+
+    if (!inProp) animation.reverse();
+
+    return animation.finished;
+  };
+}
+
+function TransitionExample() {
+  const [showModal, setShowModal] = useState(false);
+
+  const triggerRef = useRef(null);
+
+  return (
+    <div className="flex flex-col items-center">
+      <Button
+        type="button"
+        className="btn btn-primary mr-3"
+        onClick={() => setShowModal((prev) => !prev)}
+      >
+        Show Animated Modal
+      </Button>
+
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        runTransition={fadeTo(1)}
+        runBackdropTransition={fadeTo(0.5)}
+        renderBackdrop={(props) => (
+          <div
+            {...props}
+            className="backdrop fixed inset-0 bg-black z-[300]"
+          />
+        )}
+        renderDialog={(props) => (
+          <div
+            {...props}
+            className="fixed inset-0 z-[310] flex items-center justify-center pointer-events-none"
+          >
+            <div className="dialog dialog-transitions-example bg-white shadow rounded-lg pointer-events-auto">
+              <h4 id="modal-label">I&apos;m fading in!</h4>
+              <p>
+                Anim pariatur cliche reprehenderit, enim
+                eiusmod high life accusamus terry richardson
+                ad squid. Nihil anim keffiyeh helvetica,
+                craft beer labore wes anderson cred nesciunt
+                sapiente ea proident.
+              </p>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => setShowModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+      />
+    </div>
+  );
+}
+
+<TransitionExample />;
+```

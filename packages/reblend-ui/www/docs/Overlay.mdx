@@ -1,0 +1,155 @@
+A flexible base component for building tooltips, popups, and any other floating UI components.
+`Overlay` combines [Popper](https://popper.js.org/), click-to-dismiss, and optional transitions for
+rendering floating UI relative to another element.
+
+## Creating an Overlay
+
+Overlays consist of at least two elements, the "overlay", the element to be positioned,
+as well as a "target", the element the overlay is positioned in relation to. Popper
+also provides functionality for optional tooltip "arrows" like in the example below.
+Be sure to check out the Popper documentation for more details about the underlying
+positioning engine.
+
+```jsx live editor=collapse
+import clsx from "clsx";
+import { Overlay } from "@restart/ui";
+import Button from "../src/Button";
+import Tooltip from "../src/Tooltip";
+
+const PLACEMENTS = ["left", "top", "right", "bottom"];
+
+const initialSstate = {
+  show: false,
+  placement: null,
+};
+
+function reducer(state, [type, payload]) {
+  switch (type) {
+    case "placement":
+      return { show: !!payload, placement: payload };
+    default:
+      return state;
+  }
+}
+
+function OverlayExample() {
+  const [{ show, placement }, dispatch] = useReducer(
+    reducer,
+    initialSstate
+  );
+  const triggerRef = useRef(null);
+  const containerRef = useRef(null);
+
+  const handleClick = () => {
+    const nextPlacement =
+      PLACEMENTS[PLACEMENTS.indexOf(placement) + 1];
+
+    dispatch(["placement", nextPlacement]);
+  };
+
+  return (
+    <div
+      className="flex flex-col items-center"
+      ref={containerRef}
+    >
+      <Button
+        className="mb-4"
+        id="overlay-toggle"
+        ref={triggerRef}
+        onClick={handleClick}
+      >
+        I am an Overlay target
+      </Button>
+      <p>Keep clicking to see the placement change.</p>
+
+      <Overlay
+        show={show}
+        rootClose
+        offset={[0, 10]}
+        placement={placement}
+        container={containerRef}
+        target={triggerRef}
+      >
+        {(props, { arrowProps, popper, show }) => (
+          <Tooltip {...props} arrowProps={arrowProps} popper={popper}>
+            I&rsquo;m placed to the{" "}
+            <strong>{popper.placement}</strong>
+          </Tooltip>
+        )}
+      </Overlay>
+    </div>
+  );
+}
+
+<OverlayExample />;
+```
+
+## Animations
+
+Overlays support `react-transition-group` compliant Transition components (though you are welcome to use something else).
+
+```jsx live
+import Transition from "react-transition-group/Transition";
+import clsx from "clsx";
+import { Overlay } from "@restart/ui";
+import Tooltip from "../src/Tooltip";
+
+function Fade({ children, ...props }) {
+  return (
+    <Transition
+      {...props}
+      timeout={300}
+      onEnter={(node) => {
+        // trigger a reflow
+        node.offsetWidth;
+      }}
+    >
+      {(status, innerProps) =>
+        React.cloneElement(children, {
+          ...innerProps,
+          className: clsx(
+            "transition-opacity duration-300",
+            status === "entering" || status === "entered"
+              ? "opacity-1"
+              : "opacity-0"
+          ),
+        })
+      }
+    </Transition>
+  );
+}
+
+function Example() {
+  const ref = useRef(null);
+  const [show, setShow] = useState(false);
+  return (
+    <>
+      <a
+        ref={ref}
+        href="#home"
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+      >
+        A link with a tooltip
+      </a>
+      <Overlay
+        show={show}
+        target={ref}
+        offset={[0, 8]}
+        transition={Fade}
+        placement="top"
+      >
+        {(props, { arrowProps, popper }) => (
+          <Tooltip
+            {...props}
+            arrowProps={arrowProps}
+            popper={popper}
+          >
+            I am a tooltip
+          </Tooltip>
+        )}
+      </Overlay>
+    </>
+  );
+}
+```

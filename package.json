@@ -23,16 +23,6 @@
     "lint-staged": "^12.1.2",
     "prettier": "^2.5.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,json,yml,yaml,css,scss,ts,tsx,md}": [
-      "prettier --write"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",

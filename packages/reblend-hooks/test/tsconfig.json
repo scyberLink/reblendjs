@@ -1,0 +1,9 @@
+{
+  "extends": "..",
+  "compilerOptions": {
+    "rootDir": "..",
+    "noEmit": true,
+    "noImplicitAny": false
+  },
+  "include": [".", "../src"]
+}

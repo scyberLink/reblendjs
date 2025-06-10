@@ -1,0 +1,19 @@
+{
+  "presets": ["@4c", "@babel/typescript"],
+  "env": {
+    "esm": {
+      "presets": [
+        [
+          "@4c",
+          {
+            "modules": false
+          }
+        ]
+        
+      ]
+    },
+    "test": {
+      "presets": [["@4c", { "development": true }],  "@babel/typescript"]
+    }
+  }
+}

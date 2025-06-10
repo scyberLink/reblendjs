@@ -1,0 +1,34 @@
+The `<Portal/>` component renders its children into a new "subtree" outside of current component hierarchy.
+You can think of it as a declarative `appendChild()`, or jQuery's `$().appendTo()`.
+The children of `<Portal/>` component will be appended to the `container` specified.
+
+The component is a light wrapper around `React.createPortal` with some conveniences around
+specifying and waiting for the container element.
+
+```jsx live renderAsComponent
+import { Portal } from "@restart/ui";
+import Button from "../src/Button";
+
+const [show, setShow] = useState(false);
+const containerRef = useRef(null);
+
+let child = <span>But I actually render here!</span>;
+
+<div className="flex flex-col items-center">
+  <Button type="button" onClick={() => setShow(true)}>
+    Render Child
+  </Button>
+  <div className="bg-primary-200 p-6 rounded-lg shadow my-4">
+    <span>It looks like I will render in here.</span>
+
+    <Portal container={containerRef}>
+      {show && child}
+    </Portal>
+  </div>
+
+  <div
+    className="bg-primary-200 p-6 rounded-lg shadow "
+    ref={containerRef}
+  />
+</div>;
+```
