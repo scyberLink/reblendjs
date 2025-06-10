@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { REBLEND_PRIMITIVE_ELEMENT_NAME, ReblendTyping } from 'reblend-typing'
+import * as ReblendTyping from 'reblend-typing'
 import {
   capitalize,
   getConfig,
@@ -390,7 +390,7 @@ export function newReblendPrimitive(): Text & {
 } {
   const text: any = document.createTextNode('') as any as ReblendTyping.Primitive
   extendPrototype(text, Reblend.prototype)
-  text.displayName = REBLEND_PRIMITIVE_ELEMENT_NAME
+  text.displayName = ReblendTyping.REBLEND_PRIMITIVE_ELEMENT_NAME
 
   /**
    * Sets the data of the Reblend primitive.

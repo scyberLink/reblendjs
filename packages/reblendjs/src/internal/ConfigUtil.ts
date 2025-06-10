@@ -1,4 +1,4 @@
-import { ReblendTyping } from 'reblend-typing'
+import * as ReblendTyping from 'reblend-typing'
 
 export interface IReblendAppConfig {
   noDefering?: boolean
@@ -13,6 +13,9 @@ export interface IReblendAppConfig {
 
 export class ConfigUtil {
   static instance: ConfigUtil
+  static getInstance() {
+    return new ConfigUtil()
+  }
   defaultConfigs: IReblendAppConfig = {
     noDefering: false,
     deferTimeout: 0,
@@ -29,10 +32,6 @@ export class ConfigUtil {
     } else {
       ConfigUtil.instance = this
     }
-  }
-
-  static getInstance() {
-    return new ConfigUtil()
   }
 
   update(config?: IReblendAppConfig) {

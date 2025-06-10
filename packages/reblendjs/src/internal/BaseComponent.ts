@@ -2,7 +2,8 @@
 import { getConfig, isCallable, rand } from '../common/utils'
 import { IAny } from '../interface/IAny'
 import { StyleUtil } from './StyleUtil'
-import { ChildrenPropsUpdateType, EffectType, ReblendTyping } from 'reblend-typing'
+import { ChildrenPropsUpdateType, EffectType } from 'reblend-typing'
+import * as ReblendTyping from 'reblend-typing'
 import { Reblend } from './Reblend'
 import {
   addSymbol,

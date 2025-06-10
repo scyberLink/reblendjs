@@ -1,9 +1,10 @@
 import { Reblend } from '../Reblend'
-import { ReblendTyping } from 'reblend-typing'
+import * as ReblendTyping from 'reblend-typing'
 
 export function Placeholder({
   style,
   children,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isPlaceholder = true,
 }: {
   style?: ReblendTyping.CSSProperties
@@ -11,7 +12,7 @@ export function Placeholder({
   isPlaceholder?: boolean
 }) {
   return (
-    <div style={styles.placeholder as any}>
+    <div style={styles.placeholder}>
       <div style={{ ...styles.loadingBar, ...(style || {}) }}>{children}</div>
       <style>{`
         @keyframes loading {
@@ -27,9 +28,9 @@ export function Placeholder({
   )
 }
 
-;(Placeholder as any).props = { isPlaceholder: true }
+;(Placeholder as ReblendTyping.FC).props = { isPlaceholder: true }
 
-const styles = {
+const styles: { [key: string]: ReblendTyping.CSSProperties } = {
   placeholder: {
     display: 'flex',
     justifyContent: 'center',

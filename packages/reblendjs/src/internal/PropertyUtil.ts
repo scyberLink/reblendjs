@@ -1,4 +1,5 @@
-import { attributeName, ReblendTyping, shouldUseSetAttribute } from 'reblend-typing'
+import { attributeName, shouldUseSetAttribute } from 'reblend-typing'
+import * as ReblendTyping from 'reblend-typing'
 import { setAttributesWithNamespace } from './ElementUtil'
 import { fn } from './EventUtil'
 import { isReblendRenderedNodeStandard } from './NodeUtil'
@@ -95,4 +96,3 @@ export function removeProps<P, S>(props: ReblendTyping.IAny, to: ReblendTyping.C
     }
   }
 }
-

@@ -1,6 +1,5 @@
 import Reblend from 'reblendjs';
 import { setHistory } from '../contexts/history';
-import { ReblendTyping } from 'reblend-typing';
 
 export interface LinkProps {
   to?: string;
@@ -9,14 +8,10 @@ export interface LinkProps {
   memory?: boolean;
   className?: string;
   class?: string;
-  ref?: ReblendTyping.Ref<HTMLAnchorElement | null>;
-  style?: ReblendTyping.CSSProperties;
-  onclick?:
-    | ReblendTyping.DOMAttributes<HTMLAnchorElement>['onclick']
-    | undefined;
-  onClick?:
-    | ReblendTyping.DOMAttributes<HTMLAnchorElement>['onClick']
-    | undefined;
+  ref?: Reblend.Ref<HTMLAnchorElement | null>;
+  style?: Reblend.CSSProperties;
+  onclick?: Reblend.DOMAttributes<HTMLAnchorElement>['onclick'] | undefined;
+  onClick?: Reblend.DOMAttributes<HTMLAnchorElement>['onClick'] | undefined;
 }
 
 function Link(props: LinkProps) {

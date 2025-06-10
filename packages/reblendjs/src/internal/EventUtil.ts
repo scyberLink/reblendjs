@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { ReblendTyping } from 'reblend-typing'
+import * as ReblendTyping from 'reblend-typing'
 
 /**
  * Wraps an event callback function, ensuring that the event callback is always called.

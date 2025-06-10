@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { REBLEND_PRIMITIVE_ELEMENT_NAME, ReblendTyping } from 'reblend-typing'
+import { REBLEND_PRIMITIVE_ELEMENT_NAME } from 'reblend-typing'
+import * as ReblendTyping from 'reblend-typing'
 import { type BaseComponent } from './BaseComponent'
 
 type SymbolsType = {

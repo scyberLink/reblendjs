@@ -1,5 +1,4 @@
 import Reblend, { useEffect } from 'reblendjs';
-import { ReblendTyping } from 'reblend-typing';
 import { RouteProps } from './Router';
 import { Routes } from '../contexts/routes';
 
@@ -9,7 +8,7 @@ import { Routes } from '../contexts/routes';
  * @returns Reblend.JSX.Element
  */
 export function Route<T>(props: {
-  Component?: ReblendTyping.JSXElementConstructor<T>;
+  Component?: Reblend.JSXElementConstructor<T>;
   element?:
     | ((routeData: RouteProps) => Reblend.JSX.Element | HTMLElement)
     | Reblend.JSX.Element

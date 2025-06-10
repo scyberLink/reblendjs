@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ReblendTyping } from 'reblend-typing'
 import { isCallable } from '../../common/utils'
 import { Reblend } from '../../internal/Reblend'
 
@@ -10,14 +9,14 @@ function TryCatchError({
   children = ((_error) => <>{''}</>) as any,
 }: {
   children?: //@ts-ignore
-  | ((error?: ReblendTyping.ReblendRenderingException) => Reblend.JSX.Element | Reblend.JSX.Element[])
+  | ((error?: Reblend.ReblendRenderingException) => Reblend.JSX.Element | Reblend.JSX.Element[])
     | Reblend.JSX.Element
     | Reblend.JSX.Element[]
 }) {
   //@ts-ignore
   this &&
     //@ts-ignore
-    (this.renderingErrorHandler = (e: ReblendTyping.ReblendRenderingException) => {
+    (this.renderingErrorHandler = (e: Reblend.ReblendRenderingException) => {
       //@ts-ignore
       this.renderingError = e
       //if (!this.stateEffectRunning && this.attached) {

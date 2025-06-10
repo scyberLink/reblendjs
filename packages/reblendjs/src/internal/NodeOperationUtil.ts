@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChildrenPropsUpdateType, PatchTypeAndOrder, ReblendTyping } from 'reblend-typing'
+import { ChildrenPropsUpdateType, PatchTypeAndOrder } from 'reblend-typing'
+import * as ReblendTyping from 'reblend-typing'
 import { donotDeffer, getConfig, isCallable, replaceOrAddItemToList } from '../common/utils'
 import { deepFlat } from './DiffUtil'
 import {
@@ -12,7 +13,7 @@ import {
   isReactToReblendRenderedNode,
 } from './NodeUtil'
 import { setProps, removeProps } from './PropertyUtil'
-import { createElement, newReblendPrimitive } from './ElementUtil'
+import { createElement } from './ElementUtil'
 
 /**
  * Detaches the given node from the DOM.
@@ -328,7 +329,7 @@ export function deepEqualIterative(a: any, b: any): boolean {
     }
 
     for (const key of keysA) {
-      if (!b.hasOwnProperty(key)) {
+      if (!Object.prototype.hasOwnProperty.call(b, key)) {
         return false
       }
       stack.push({ a: a[key], b: b[key] })

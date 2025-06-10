@@ -10,7 +10,9 @@ import { Button } from 'react-bootstrap';
 import { MyVerticallyCenteredModal } from './modal/MyVerticallyCenteredModal';
 import CardExample from './card/CardExample';
 import AutoLayoutSizingExample from './grid/AutoLayoutSizingExample';
+import * as R from 'reblendjs';
 
+const t: R.EffectState | null = null;
 function App() {
   const [msg, s] = useI();
 

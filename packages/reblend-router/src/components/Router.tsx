@@ -1,4 +1,4 @@
-import Reblend, { ReblendTyping, useEffect, useState } from 'reblendjs';
+import Reblend, { useEffect, useState } from 'reblendjs';
 import { useContext } from 'reblendjs';
 import { History } from '../contexts/history';
 import ReblendRouting from 'reblend-routing';
@@ -10,15 +10,15 @@ import { Routes } from '../contexts/routes';
 import { PageNotfound } from '../contexts/notfound';
 
 export type RouteProps = {
-  query?: ReblendTyping.IAny;
-  params?: ReblendTyping.IAny;
+  query?: Reblend.IAny;
+  params?: Reblend.IAny;
   location?: URL & { path?: string };
   hash: string;
   path: string;
 };
 
 export interface RouterProps<T> {
-  Component?: ReblendTyping.JSXElementConstructor<T>;
+  Component?: Reblend.JSXElementConstructor<T>;
   element?:
     | ((routeData: RouteProps) => Reblend.JSX.Element | HTMLElement)
     | Reblend.JSX.Element

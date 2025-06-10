@@ -1,18 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChildrenPropsUpdateType, ReblendTyping } from 'reblend-typing'
+import * as ReblendTyping from 'reblend-typing'
+import { ChildrenPropsUpdateType } from 'reblend-typing'
 import { REBLEND_CHILDREN_WRAPPER_FOR_REACT_COMPONENT } from '../common/utils'
 import { type BaseComponent } from './BaseComponent'
 import { connected } from './NodeOperationUtil'
 import { isReactToReblendRenderedNode, isReblendPrimitiveElement, isReblendRenderedNode } from './NodeUtil'
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-unsafe-declaration-merging
 export interface ReblendReactClass extends BaseComponent {}
 
 /**
  * A static class that extends the functionality of `BaseComponent`
  * to provide integration with React and Reblend.
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class ReblendReactClass {
   /**
    * Returns a React element that wraps the children of the current component for rendering in React.
@@ -87,6 +89,7 @@ export class ReblendReactClass {
    */
   async initRoot() {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const ReactDOM = require('react-dom/client')
       if (!this.reactDomCreateRoot_root || !Object.values(this.reactDomCreateRoot_root)[0]) {
         this.reactDomCreateRoot_root = ReactDOM.createRoot(this as any)

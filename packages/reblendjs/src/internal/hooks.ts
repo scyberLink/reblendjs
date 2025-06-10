@@ -4,7 +4,7 @@
 import { BaseComponent } from './BaseComponent'
 import { SharedConfig } from '../common/SharedConfig'
 import { rand } from '../common/utils'
-import { ReblendTyping } from 'reblend-typing'
+import * as ReblendTyping from 'reblend-typing'
 import { deepEqualIterative } from './NodeOperationUtil'
 import { isPrimitive } from './NodeUtil'
 
@@ -181,7 +181,7 @@ export function useRef<T>(_initial?: T): ReblendTyping.Ref<T> {
  * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
  * @returns {Function} - The memoized callback function.
  */
-export function useCallback<T extends Function>(_fn: T, ..._dependencyStringAndOrStateKey: string[]): T {
+export function useCallback<T extends (...args: any[]) => any>(_fn: T, ..._dependencyStringAndOrStateKey: string[]): T {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useCallback(...arguments)
 }
