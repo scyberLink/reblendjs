@@ -14,7 +14,7 @@
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.3.1",
     "reblend-router": "^4.0.4",
-    "reblend-scripts": "6.0.67",
+    "reblend-scripts": "^6.0.69",
     "reblendjs": "^9.3.4",
     "typescript": "^5.8.3"
   },

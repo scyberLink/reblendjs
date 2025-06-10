@@ -27,7 +27,6 @@ import { BaseComponent } from './BaseComponent'
 import { deepFlat } from './DiffUtil'
 import { connected } from './NodeOperationUtil'
 import { setProps } from './PropertyUtil'
-import { ConfigUtil } from './ConfigUtil'
 
 const componentConfig: { [key: string]: boolean } = {
   ReblendPlaceholder: true,
@@ -200,7 +199,7 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
 
   let { displayName } = ui as ReblendTyping.VNode
   if (isCallable(displayName)) {
-    displayName = await (displayName as Function)((ui as any).props)
+    displayName = await (displayName as any)((ui as any).props)
   }
 
   const node = displayName as any
@@ -251,16 +250,16 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
   const tagName: string = _isLazyNode
     ? ReblendNodeTypeDict.ReblendLazyNode
     : isTagStandard
-      ? (displayName as string)
-      : (isReactNode(clazz)
-          ? (clazz as any as ReblendTyping.ReactNode).displayName
-          : clazz?.ELEMENT_NAME === 'Fragment'
-            ? clazz.name
-            : clazz?.ELEMENT_NAME) || `Anonymous`
+    ? (displayName as string)
+    : (isReactNode(clazz)
+        ? (clazz as any as ReblendTyping.ReactNode).displayName
+        : clazz?.ELEMENT_NAME === 'Fragment'
+        ? clazz.name
+        : clazz?.ELEMENT_NAME) || `Anonymous`
 
   if (!isTagStandard && !_isLazyNode) {
     if ((displayName as any)?.ELEMENT_NAME === 'Reblend' && (displayName as any)?.name === 'Reblend') {
-      return (displayName as any)?.children
+      return [...((displayName as any)?.children || [])]
     }
     ;(clazz as any).ELEMENT_NAME = tagName
   }
@@ -278,10 +277,10 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
     _isLazyNode
       ? ReblendNodeTypeDict.ReblendLazyNode
       : _isReactNode
-        ? ReblendNodeTypeDict.ReactToReblendNode
-        : isTagStandard
-          ? ReblendNodeTypeDict.ReblendNodeStandard
-          : ReblendNodeTypeDict.ReblendNode,
+      ? ReblendNodeTypeDict.ReactToReblendNode
+      : isTagStandard
+      ? ReblendNodeTypeDict.ReblendNodeStandard
+      : ReblendNodeTypeDict.ReblendNode,
     element,
   )
   element.displayName = tagName

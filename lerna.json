@@ -1,11 +1,8 @@
 {
-  "lerna": "2.6.0",
-  "npmClient": "yarn",
-  "useWorkspaces": true,
+  "npmClient": "npm",
   "version": "independent",
-  "packages": ["packages/*"],
   "changelog": {
-    "repo": "scyberLink/create-reblend-app",
+    "repo": "scyberLink/reblendjs",
     "labels": {
       "tag: new feature": ":rocket: New Feature",
       "tag: breaking change": ":boom: Breaking Change",

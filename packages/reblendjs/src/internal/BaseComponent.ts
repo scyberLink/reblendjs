@@ -23,16 +23,8 @@ import {
 } from './NodeUtil'
 import { ReblendReactClass } from './ReblendReactClass'
 import { createChildren, createElement } from './ElementUtil'
-import { deepFlat, flattenVNodeChildren } from './DiffUtil'
-import {
-  connected,
-  detach,
-  detachChildren,
-  connectedCallback,
-  diff,
-  applyPatches,
-  disconnectedCallback,
-} from './NodeOperationUtil'
+import { flattenVNodeChildren } from './DiffUtil'
+import { connected, detach, connectedCallback, diff, applyPatches, disconnectedCallback } from './NodeOperationUtil'
 import { ConfigUtil, IReblendAppConfig } from './ConfigUtil'
 
 export interface BaseComponent<P, S> extends HTMLElement {
@@ -79,6 +71,7 @@ export interface BaseComponent<P, S> extends HTMLElement {
 const stateIdNotIncluded = new Error('State Identifier/Key not specified')
 const unxpectedNumberOfArgument = new Error('Unexpected number of argument')
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class BaseComponent<
   P = Record<string, never>,
   S extends { renderingErrorHandler?: (error: Error) => void } = Record<string, never>,
@@ -208,10 +201,10 @@ export class BaseComponent<
       isTagStandard
         ? ReblendNodeTypeDict.ReblendVNodeStandard
         : isReactNode(clazz!)
-          ? ReblendNodeTypeDict.ReactToReblendVNode
-          : isLazyNode(clazz!)
-            ? ReblendNodeTypeDict.ReblendLazyVNode
-            : ReblendNodeTypeDict.ReblendVNode,
+        ? ReblendNodeTypeDict.ReactToReblendVNode
+        : isLazyNode(clazz!)
+        ? ReblendNodeTypeDict.ReblendLazyVNode
+        : ReblendNodeTypeDict.ReblendVNode,
       velement,
     )
 
@@ -256,7 +249,7 @@ export class BaseComponent<
       preloaderParent.setAttribute('preloaderParent', '')
 
       const openPreloader = () => {
-        let body = document.body
+        const body = document.body
         body.appendChild(preloaderParent)
         appRoot.style.display = 'none'
         preloaderParent.style.display = 'initial'
@@ -274,7 +267,7 @@ export class BaseComponent<
       }
 
       // Load and mount the preloader.
-      let customPreloader = options?.preloader
+      const customPreloader = options?.preloader
       let preloaderVNodes = customPreloader
         ? BaseComponent.construct(customPreloader as any, {}, ...[])
         : BaseComponent.construct((await import('./components/Preloader')).Preloader, {}, ...[])
@@ -291,7 +284,6 @@ export class BaseComponent<
         preloaderNodes.forEach((n) => {
           detach(n)
         })
-        appRoot = undefined as any
         preloaderParent = undefined as any
         initialDisplay = undefined as any
         preloaderVNodes = undefined as any
@@ -320,6 +312,18 @@ export class BaseComponent<
     return Array.from((appRoot.elementChildren || new Set()).values())
   }
 
+  /**
+   * Hook to create a mutable reference object within a Reblend component.
+   *
+   * @template T - The type of the ref value.
+   * @param {T} [_initial] - The initial ref value.
+   * @returns {ReblendTyping.Ref<T>} - Returns a reference object with the current value.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static createRef<T>(_initial?: T) {
+    // eslint-disable-next-line prefer-rest-params
+    return BaseComponent.prototype.useRef.call(null, ...arguments)
+  }
   async createInnerHtmlElements() {
     let htmlVNodes = await this.html()
     if (isCallable(htmlVNodes)) {
@@ -784,7 +788,7 @@ export class BaseComponent<
     }
 
     let reducer: ReblendTyping.StateReducerFunction<T, I> = reducer_initial_stateKey[0]
-    let initial: ReblendTyping.StateFunctionValue<T> = argumentsLength === 3 ? reducer_initial_stateKey[1] : undefined
+    const initial: ReblendTyping.StateFunctionValue<T> = argumentsLength === 3 ? reducer_initial_stateKey[1] : undefined
 
     reducer = reducer.bind(this)
     const stateID: string | undefined = reducer_initial_stateKey[2]
@@ -853,24 +857,13 @@ export class BaseComponent<
     return this.state[stateID]
   }
 
-  /**
-   * Hook to create a mutable reference object within a Reblend component.
-   *
-   * @template T - The type of the ref value.
-   * @param {T} [_initial] - The initial ref value.
-   * @returns {ReblendTyping.Ref<T>} - Returns a reference object with the current value.
-   */
-  static createRef<T>(_initial?: T) {
-    return BaseComponent.prototype.useRef.call(null, ...arguments)
-  }
-
   useRef<T>(initial?: T) {
     const ref: ReblendTyping.Ref<T> = { current: initial }
     return ref
   }
 
-  useCallback<T extends Function>(fn: T): T {
-    return fn.bind(this)
+  useCallback<T extends (...args: any[]) => any>(fn: T): T {
+    return fn.bind(this) as T
   }
   /**
    * Initializes the component, preparing effect management.
