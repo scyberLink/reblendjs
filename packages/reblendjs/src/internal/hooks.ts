@@ -77,14 +77,11 @@ const stateIdNotIncluded = new Error('State Identifier/Key not specified')
  * Hook to manage state within a Reblend component.
  *
  * @template T - The type of the state value.
- * @param {T} _initial - The initial state value.
- * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @param {T} initial - The initial state value.
  * @returns {[T, ReblendTyping.StateFunction<T>]} - Returns the current state and a function to update it.
+ * @Note The function signature is not same as Reblend.useState because this is meant to be used in functional component which will be transpiled.
  */
-export function useState<T>(
-  _initial: T,
-  ..._dependencyStringAndOrStateKey: string[]
-): [T, ReblendTyping.StateFunction<T>] {
+export function useState<T>(initial: T): [T, ReblendTyping.StateFunction<T>] {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useState(...arguments)
 }
@@ -92,15 +89,11 @@ export function useState<T>(
 /**
  * Hook to perform side effects within a Reblend component.
  *
- * @param {ReblendTyping.StateEffectiveFunction} _fn - The effect function to run.
- * @param {any} [_dependencies] - Optional dependency or array of dependencies to control when the effect runs.
- * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @param {ReblendTyping.StateEffectiveFunction} fn - The effect function to run.
+ * @param {any} [dependencies] - Optional dependency or array of dependencies to control when the effect runs.
+ * @Note The function signature is not same as Reblend.useEffect because this is meant to be used in functional component which will be transpiled.
  */
-export function useEffect(
-  _fn: ReblendTyping.StateEffectiveFunction,
-  _dependencies?: any,
-  ..._dependencyStringAndOrStateKey: string[]
-): void {
+export function useEffect(fn: ReblendTyping.StateEffectiveFunction, dependencies?: any): void {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useEffect(...arguments)
 }
@@ -108,15 +101,11 @@ export function useEffect(
 /**
  * Hook to perform side effects within a Reblend component after children populate or after state change.
  *
- * @param {ReblendTyping.StateEffectiveFunction} _fn - The effect function to run.
- * @param {any} [_dependencies] - Optional dependency or array of dependencies to control when the effect runs.
- * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @param {ReblendTyping.StateEffectiveFunction} fn - The effect function to run.
+ * @param {any} [dependencies] - Optional dependency or array of dependencies to control when the effect runs.
+ * @Note The function signature is not same as Reblend.useEffectAfter because this is meant to be used in functional component which will be transpiled.
  */
-export function useEffectAfter(
-  _fn: ReblendTyping.StateEffectiveFunction,
-  _dependencies?: any,
-  ..._dependencyStringAndOrStateKey: string[]
-): void {
+export function useEffectAfter(fn: ReblendTyping.StateEffectiveFunction, dependencies?: any): void {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useEffectAfter(...arguments)
 }
@@ -126,15 +115,14 @@ export function useEffectAfter(
  *
  * @template T - The type of the state value.
  * @template I - The type of the action passed to the reducer.
- * @param {ReblendTyping.StateReducerFunction<T, I>} _reducer - The reducer function to apply actions to state.
- * @param {T} _initial - The initial state value.
- * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @param {ReblendTyping.StateReducerFunction<T, I>} reducer - The reducer function to apply actions to state.
+ * @param {T} initial - The initial state value.
  * @returns {[T, ReblendTyping.StateFunction<T>]} - Returns the current state and a function to dispatch actions.
+ * @Note The function signature is not same as Reblend.useReducer because this is meant to be used in functional component which will be transpiled.
  */
 export function useReducer<T, I>(
-  _reducer: ReblendTyping.StateReducerFunction<T, I>,
-  _initial: T,
-  ..._dependencyStringAndOrStateKey: string[]
+  reducer: ReblendTyping.StateReducerFunction<T, I>,
+  initial: T,
 ): [T, ReblendTyping.StateFunction<T>] {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useReducer(...arguments)
@@ -144,16 +132,12 @@ export function useReducer<T, I>(
  * Hook to create memoized values within a Reblend component.
  *
  * @template T - The type of the memoized value.
- * @param {ReblendTyping.StateEffectiveMemoFunction<T>} _fn - The function to compute the memoized value.
- * @param {any} [_dependencies] - Optional dependency or array of dependencies to control memoization.
- * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @param {ReblendTyping.StateEffectiveMemoFunction<T>} fn - The function to compute the memoized value.
+ * @param {any} [dependencies] - Optional dependency or array of dependencies to control memoization.
  * @returns {T} - The memoized value.
+ * @Note The function signature is not same as Reblend.useMemo because this is meant to be used in functional component which will be transpiled.
  */
-export function useMemo<T>(
-  _fn: ReblendTyping.StateEffectiveMemoFunction<T>,
-  _dependencies?: any,
-  ..._dependencyStringAndOrStateKey: string[]
-): T {
+export function useMemo<T>(fn: ReblendTyping.StateEffectiveMemoFunction<T>, dependencies?: any): T {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useMemo(...arguments)
 }
@@ -162,10 +146,10 @@ export function useMemo<T>(
  * Hook to create a mutable reference object within a Reblend component.
  *
  * @template T - The type of the ref value.
- * @param {T} [_initial] - The initial ref value.
+ * @param {T} [initial] - The initial ref value.
  * @returns {ReblendTyping.Ref<T>} - Returns a reference object with the current value.
  */
-export function useRef<T>(_initial?: T): ReblendTyping.Ref<T> {
+export function useRef<T>(initial?: T): ReblendTyping.Ref<T> {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return !this
     ? //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
@@ -175,13 +159,13 @@ export function useRef<T>(_initial?: T): ReblendTyping.Ref<T> {
 }
 
 /**
- * Hook to memoize a callback function within a Reblend component.
+ * Bind callback function to the current component.
  *
- * @param {Function} _fn - The callback function to memoize.
- * @param {string[]} _dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
- * @returns {Function} - The memoized callback function.
+ * @param {Function} fn - The callback function to be bound to this
+ * @returns {Function} - The bounded callback function.
+ * @Note This function is just here for compatibility with Reactjs it same as regular function define inside function component
  */
-export function useCallback<T extends (...args: any[]) => any>(_fn: T, ..._dependencyStringAndOrStateKey: string[]): T {
+export function useCallback<T extends (...args: any[]) => any>(fn: T): T {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useCallback(...arguments)
 }
@@ -191,14 +175,12 @@ export function useCallback<T extends (...args: any[]) => any>(_fn: T, ..._depen
  *
  * @template T - The type of the context value.
  * @param {Context<T>} context - The context to subscribe to.
- * @param {string[]} dependencyStringAndOrStateKey - Optional dependencies and state keys for tracking.
+ * @param {string} stateKey - State key.
  * @returns {[T, ReblendTyping.StateFunction<T>]} - Returns the current context value and a function to update it.
- * @throws Will throw an error if the context is invalid or if a state key is not provided.
+ * @throws Will throw an error if the context is invalid
+ * @Note State key is optional because this function is assume to be called in a functional component which is meant to be transpile
  */
-export function useContext<T>(
-  context: Context<T>,
-  ...dependencyStringAndOrStateKey: string[]
-): [T, ReblendTyping.StateFunction<T>] {
+export function useContext<T>(context: Context<T>, stateKey?: string): [T, ReblendTyping.StateFunction<T>] {
   if (
     !(
       contextValue in context &&
@@ -211,17 +193,16 @@ export function useContext<T>(
   ) {
     throw invalidContext
   }
-  const stateID: string | undefined = dependencyStringAndOrStateKey.pop()
 
-  if (!stateID) {
+  if (!stateKey) {
     throw stateIdNotIncluded
   }
 
-  if (typeof stateID !== 'string') {
+  if (typeof stateKey !== 'string') {
     throw new Error('Invalid state key. Make sure you are calling useContext correctly')
   }
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
-  context[contextSubscribe]({ component: this, stateKey: stateID })
+  context[contextSubscribe]({ component: this, stateKey: stateKey })
   return [context[contextValue], context.update as any]
 }
 

@@ -250,12 +250,12 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
   const tagName: string = _isLazyNode
     ? ReblendNodeTypeDict.ReblendLazyNode
     : isTagStandard
-    ? (displayName as string)
-    : (isReactNode(clazz)
-        ? (clazz as any as ReblendTyping.ReactNode).displayName
-        : clazz?.ELEMENT_NAME === 'Fragment'
-        ? clazz.name
-        : clazz?.ELEMENT_NAME) || `Anonymous`
+      ? (displayName as string)
+      : (isReactNode(clazz)
+          ? (clazz as any as ReblendTyping.ReactNode).displayName
+          : clazz?.ELEMENT_NAME === 'Fragment'
+            ? clazz.name
+            : clazz?.ELEMENT_NAME) || `Anonymous`
 
   if (!isTagStandard && !_isLazyNode) {
     if ((displayName as any)?.ELEMENT_NAME === 'Reblend' && (displayName as any)?.name === 'Reblend') {
@@ -277,10 +277,10 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
     _isLazyNode
       ? ReblendNodeTypeDict.ReblendLazyNode
       : _isReactNode
-      ? ReblendNodeTypeDict.ReactToReblendNode
-      : isTagStandard
-      ? ReblendNodeTypeDict.ReblendNodeStandard
-      : ReblendNodeTypeDict.ReblendNode,
+        ? ReblendNodeTypeDict.ReactToReblendNode
+        : isTagStandard
+          ? ReblendNodeTypeDict.ReblendNodeStandard
+          : ReblendNodeTypeDict.ReblendNode,
     element,
   )
   element.displayName = tagName

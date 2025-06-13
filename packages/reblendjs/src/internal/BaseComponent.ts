@@ -70,7 +70,6 @@ export interface BaseComponent<P, S> extends HTMLElement {
 }
 
 const stateIdNotIncluded = new Error('State Identifier/Key not specified')
-const unxpectedNumberOfArgument = new Error('Unexpected number of argument')
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class BaseComponent<
@@ -202,10 +201,10 @@ export class BaseComponent<
       isTagStandard
         ? ReblendNodeTypeDict.ReblendVNodeStandard
         : isReactNode(clazz!)
-        ? ReblendNodeTypeDict.ReactToReblendVNode
-        : isLazyNode(clazz!)
-        ? ReblendNodeTypeDict.ReblendLazyVNode
-        : ReblendNodeTypeDict.ReblendVNode,
+          ? ReblendNodeTypeDict.ReactToReblendVNode
+          : isLazyNode(clazz!)
+            ? ReblendNodeTypeDict.ReblendLazyVNode
+            : ReblendNodeTypeDict.ReblendVNode,
       velement,
     )
 
@@ -358,13 +357,19 @@ export class BaseComponent<
         await new Promise<void>((resolve) => {
           setTimeout(resolve, configs.placeholderDeferTimeout)
         })
-        this.removePlaceholder && (await this.removePlaceholder())
+        if (this.removePlaceholder) {
+          await this.removePlaceholder()
+        }
       }
       if (isReactReblend) {
         if (configs.noDefering) {
-          this.reactReblendMount && (await this.reactReblendMount())
+          if (this.reactReblendMount) {
+            await this.reactReblendMount()
+          }
         } else {
-          this.reactReblendMount && this.reactReblendMount()
+          if (this.reactReblendMount) {
+            this.reactReblendMount()
+          }
         }
       } else {
         for (const node of htmlElements) {
@@ -669,37 +674,30 @@ export class BaseComponent<
     return id
   }
 
-  useState<T>(...initial_stateKey: any[]): [T, ReblendTyping.StateFunction<T>] {
-    const argumentsLength = initial_stateKey.length
-
-    if (argumentsLength < 1 || argumentsLength > 2) {
-      throw unxpectedNumberOfArgument
-    }
-
-    let initial = argumentsLength > 1 ? initial_stateKey[0] : undefined
-
-    const stateID: string | undefined = initial_stateKey.pop()
-    if (!stateID) {
+  useState<T>(initial: ReblendTyping.StateFunctionValue<T>, stateKey: string): [T, ReblendTyping.StateFunction<T>] {
+    if (!stateKey) {
       throw stateIdNotIncluded
     }
 
     if (typeof initial === 'function') {
-      initial = (initial as () => T)()
-      this.state[stateID] = initial
-    } else if (initial instanceof Promise) {
-      initial.then((val) => (this.state[stateID] = val))
+      initial = (initial as () => T).bind(this)()
+    }
+    if (initial instanceof Promise) {
+      initial.then((val) => (this.state[stateKey] = val))
+    } else {
+      this.state[stateKey] = initial
     }
     const variableSetter: ReblendTyping.StateFunction<T> = (async (
       value: ReblendTyping.StateFunctionValue<T>,
       force = false,
     ) => {
       if (typeof value === 'function') {
-        value = await (value as (v: T) => T)(this.state[stateID])
+        value = await (value as (v: T) => T)(this.state[stateKey])
       } else if (value instanceof Promise) {
         value = await value
       }
-      if (force || this.state[stateID] !== value) {
-        this.state[stateID] = value as T
+      if (force || this.state[stateKey] !== value) {
+        this.state[stateKey] = value as T
         if (this.attached) {
           if (force) {
             this.forceEffects = true
@@ -717,24 +715,15 @@ export class BaseComponent<
     return [initial as T, variableSetter]
   }
 
-  useEffect(...fn_dependencies: any[]) {
-    const argumentsLength = fn_dependencies.length
-    if (argumentsLength < 1 || argumentsLength > 2) {
-      throw unxpectedNumberOfArgument
-    }
-
-    let fn: ReblendTyping.StateEffectiveFunction = fn_dependencies[0]
-    const dependencies: any[] = argumentsLength === 2 ? fn_dependencies[1] : undefined
-
+  useEffect(fn: ReblendTyping.StateEffectiveFunction, dependencies?: () => any) {
     fn = fn.bind(this)
-    const dep = new Function(`return (${dependencies})`).bind(this)
     const effectKey = this.generateId()
 
-    const cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive> = () => dep()
+    const cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive> = () => dependencies && dependencies()
     const effectState: ReblendTyping.EffectState = { cache: cacher(), cacher: cacher, type: EffectType.BEFORE }
     this.effectsState.set(effectKey, effectState)
 
-    const internalFn = (() => {
+    const internalFn = (async () => {
       const current = cacher()
       if (
         this.forceEffects ||
@@ -743,30 +732,21 @@ export class BaseComponent<
         this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
       ) {
         effectState.cache = current
-        return fn()
+        return await fn()
       }
     }).bind(this)
     effectState.effect = internalFn
   }
 
-  useEffectAfter(...fn_dependencies: any[]) {
-    const argumentsLength = fn_dependencies.length
-    if (argumentsLength < 1 || argumentsLength > 2) {
-      throw unxpectedNumberOfArgument
-    }
-
-    let fn: ReblendTyping.StateEffectiveFunction = fn_dependencies[0]
-    const dependencies: any[] = argumentsLength === 2 ? fn_dependencies[1] : undefined
-
+  useEffectAfter(fn: ReblendTyping.StateEffectiveFunction, dependencies?: () => any) {
     fn = fn.bind(this)
-    const dep = new Function(`return (${dependencies})`).bind(this)
     const effectKey = this.generateId()
 
-    const cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive> = () => dep()
+    const cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive> = () => dependencies && dependencies()
     const effectState: ReblendTyping.EffectState = { cache: cacher(), cacher: cacher, type: EffectType.AFTER }
     this.effectsState.set(effectKey, effectState)
 
-    const internalFn = (() => {
+    const internalFn = (async () => {
       const current = cacher()
       if (
         this.forceEffects ||
@@ -775,70 +755,53 @@ export class BaseComponent<
         this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
       ) {
         effectState.cache = current
-        return fn()
+        return await fn()
       }
     }).bind(this)
     effectState.effect = internalFn
   }
 
-  useReducer<T, I>(...reducer_initial_stateKey: any[]): [T, ReblendTyping.StateFunction<I>] {
-    const argumentsLength = reducer_initial_stateKey.length
-
-    if (argumentsLength < 2 || argumentsLength > 3) {
-      throw unxpectedNumberOfArgument
-    }
-
-    let reducer: ReblendTyping.StateReducerFunction<T, I> = reducer_initial_stateKey[0]
-    const initial: ReblendTyping.StateFunctionValue<T> = argumentsLength === 3 ? reducer_initial_stateKey[1] : undefined
-
+  useReducer<T, I>(
+    reducer: ReblendTyping.StateReducerFunction<T, I>,
+    initial: ReblendTyping.StateFunctionValue<T>,
+    stateKey: string,
+  ): [T, ReblendTyping.StateFunction<I>] {
     reducer = reducer.bind(this)
-    const stateID: string | undefined = reducer_initial_stateKey[2]
 
-    if (!stateID) {
+    if (!stateKey) {
       throw stateIdNotIncluded
     }
-    const [state, setState] = this.useState<T>(initial, stateID)
-    this.state[stateID] = state
+    const [state, setState] = this.useState<T>(initial, stateKey)
+    this.state[stateKey] = state
     const fn: ReblendTyping.StateFunction<I> = (async (
       newValue: ReblendTyping.StateFunctionValue<I>,
       force?: boolean,
     ) => {
       let reducedVal: ReblendTyping.StateFunctionValue<T>
       if (typeof newValue === 'function') {
-        reducedVal = await reducer(this.state[stateID], (newValue as (v: T) => I)(this.state[stateID]))
+        reducedVal = await reducer(this.state[stateKey], await (newValue as (v: T) => I)(this.state[stateKey]))
       } else {
-        reducedVal = await reducer(this.state[stateID], newValue as any)
+        reducedVal = await reducer(this.state[stateKey], newValue as any)
       }
-      setState(reducedVal, force)
+      await setState(reducedVal, force)
     }).bind(this)
 
-    return [this.state[stateID], fn]
+    return [this.state[stateKey], fn]
   }
 
-  useMemo<T>(...fn_dependencies_stateKey: any[]): T {
-    const argumentsLength = fn_dependencies_stateKey.length
-
-    if (argumentsLength < 2 || argumentsLength > 3) {
-      throw unxpectedNumberOfArgument
-    }
-
-    let fn: ReblendTyping.StateEffectiveMemoFunction<T> = fn_dependencies_stateKey[0]
-    const dependencies: any[] = argumentsLength === 3 ? fn_dependencies_stateKey[1] : undefined
-
+  useMemo<T>(fn: ReblendTyping.StateEffectiveMemoFunction<T>, stateKey: string, dependencies?: () => any): T {
     fn = fn.bind(this)
-    const stateID: string | undefined = fn_dependencies_stateKey[2]
 
-    if (!stateID) {
+    if (!stateKey) {
       throw stateIdNotIncluded
     }
 
-    const [state, setState] = this.useState<T>(fn(), stateID)
-    this.state[stateID] = state
+    const [state, setState] = this.useState<T>(fn(), stateKey)
+    this.state[stateKey] = state
 
-    const dep = new Function(`return (${dependencies})`).bind(this)
     const effectKey = this.generateId()
 
-    const cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive> = () => dep()
+    const cacher: () => ReblendTyping.Primitive | Array<ReblendTyping.Primitive> = () => dependencies && dependencies()
     const effectState: ReblendTyping.EffectState = { cache: cacher(), cacher: cacher, type: EffectType.BEFORE }
     this.effectsState.set(effectKey, effectState)
 
@@ -851,15 +814,15 @@ export class BaseComponent<
         this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
       ) {
         effectState.cache = current
-        setState(fn())
+        await setState(await fn())
       }
     }
     effectState.effect = internalFn
-    return this.state[stateID]
+    return this.state[stateKey]
   }
 
   useRef<T>(initial?: T) {
-    const ref: ReblendTyping.Ref<T> = { current: initial }
+    const ref: ReblendTyping.Ref<T> = { current: initial! }
     return ref
   }
 
