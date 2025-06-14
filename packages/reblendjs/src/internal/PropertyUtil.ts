@@ -48,7 +48,7 @@ export async function setProps<P, S, ExpectedReturn = any>(
             } else {
               to[_attributeName] = propValue
             }
-          } catch (error: any) {
+          } catch {
             /* empty */
           }
         }
@@ -90,7 +90,7 @@ export function removeProps<P, S>(props: ReblendTyping.IAny, to: ReblendTyping.C
           to[_attributeName] = props[propName]
           delete to[_attributeName]
         }
-      } catch (error: any) {
+      } catch {
         /* empty */
       }
     }

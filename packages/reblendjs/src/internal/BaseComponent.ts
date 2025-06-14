@@ -197,16 +197,17 @@ export class BaseComponent<
       props: mergedProp,
     }
 
-    addSymbol(
-      isTagStandard
-        ? ReblendNodeTypeDict.ReblendVNodeStandard
-        : isReactNode(clazz!)
-          ? ReblendNodeTypeDict.ReactToReblendVNode
-          : isLazyNode(clazz!)
-            ? ReblendNodeTypeDict.ReblendLazyVNode
-            : ReblendNodeTypeDict.ReblendVNode,
-      velement,
-    )
+    let symbolType
+    if (isTagStandard) {
+      symbolType = ReblendNodeTypeDict.ReblendVNodeStandard
+    } else if (isReactNode(clazz!)) {
+      symbolType = ReblendNodeTypeDict.ReactToReblendVNode
+    } else if (isLazyNode(clazz!)) {
+      symbolType = ReblendNodeTypeDict.ReblendLazyVNode
+    } else {
+      symbolType = ReblendNodeTypeDict.ReblendVNode
+    }
+    addSymbol(symbolType, velement)
 
     return velement as any
   }
@@ -796,8 +797,13 @@ export class BaseComponent<
       throw stateIdNotIncluded
     }
 
-    const [state, setState] = this.useState<T>(fn(), stateKey)
-    this.state[stateKey] = state
+    const initial = fn()
+
+    if (initial instanceof Promise) {
+      initial.then((val) => (this.state[stateKey] = val))
+    } else {
+      this.state[stateKey] = initial
+    }
 
     const effectKey = this.generateId()
 
@@ -814,11 +820,11 @@ export class BaseComponent<
         this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
       ) {
         effectState.cache = current
-        await setState(await fn())
+        this.state[stateKey] = await fn()
       }
     }
     effectState.effect = internalFn
-    return this.state[stateKey]
+    return initial as T
   }
 
   useRef<T>(initial?: T) {

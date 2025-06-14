@@ -148,7 +148,9 @@ export async function createChildren<P, S>(
       isStandardVirtualNode(child)
     ) {
       const domChild = deepFlat(await createElement(child as any))
-      domChild && containerArr.push(...domChild)
+      if (domChild) {
+        containerArr.push(...domChild)
+      }
     } else {
       throw new TypeError('Invalid child node in children')
     }
@@ -247,15 +249,18 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
   const _isReactNode = isReactNode(displayName as any)
   const _isLazyNode = isLazyNode(ui as any) || isLazyNode(displayName as any)
 
-  const tagName: string = _isLazyNode
-    ? ReblendNodeTypeDict.ReblendLazyNode
-    : isTagStandard
-      ? (displayName as string)
-      : (isReactNode(clazz)
-          ? (clazz as any as ReblendTyping.ReactNode).displayName
-          : clazz?.ELEMENT_NAME === 'Fragment'
-            ? clazz.name
-            : clazz?.ELEMENT_NAME) || `Anonymous`
+  let tagName: string
+  if (_isLazyNode) {
+    tagName = ReblendNodeTypeDict.ReblendLazyNode
+  } else if (isTagStandard) {
+    tagName = displayName as string
+  } else if (isReactNode(clazz)) {
+    tagName = (clazz as any as ReblendTyping.ReactNode).displayName
+  } else if (clazz?.ELEMENT_NAME === 'Fragment') {
+    tagName = clazz.name
+  } else {
+    tagName = clazz?.ELEMENT_NAME || 'Anonymous'
+  }
 
   if (!isTagStandard && !_isLazyNode) {
     if ((displayName as any)?.ELEMENT_NAME === 'Reblend' && (displayName as any)?.name === 'Reblend') {
@@ -273,16 +278,17 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
     isTagStandard ? (displayName as string) : 'div',
   ) as ReblendTyping.Component<P, S>
 
-  addSymbol(
-    _isLazyNode
-      ? ReblendNodeTypeDict.ReblendLazyNode
-      : _isReactNode
-        ? ReblendNodeTypeDict.ReactToReblendNode
-        : isTagStandard
-          ? ReblendNodeTypeDict.ReblendNodeStandard
-          : ReblendNodeTypeDict.ReblendNode,
-    element,
-  )
+  let symbolType
+  if (_isLazyNode) {
+    symbolType = ReblendNodeTypeDict.ReblendLazyNode
+  } else if (_isReactNode) {
+    symbolType = ReblendNodeTypeDict.ReactToReblendNode
+  } else if (isTagStandard) {
+    symbolType = ReblendNodeTypeDict.ReblendNodeStandard
+  } else {
+    symbolType = ReblendNodeTypeDict.ReblendNode
+  }
+  addSymbol(symbolType, element)
   element.displayName = tagName
   if (isTagStandard || _isReactNode) {
     extendPrototype(element, Reblend.prototype)
