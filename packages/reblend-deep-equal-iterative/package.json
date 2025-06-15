@@ -1,0 +1,14 @@
+{
+  "name": "reblend-deep-equal-iterative",
+  "version": "1.0.0",
+  "description": "Non-recursive deep equal with circular, depth, and key ignoring support",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "author": "Emmanuel Elom <scansioquielom@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "rimraf lib && tsc",
+    "test": "jest"
+  },
+  "devDependencies": {}
+}
