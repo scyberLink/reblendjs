@@ -1,6 +1,6 @@
 {
   "name": "reblend-deep-equal-iterative",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Non-recursive deep equal with circular, depth, and key ignoring support",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

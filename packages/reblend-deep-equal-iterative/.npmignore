@@ -1,2 +1,13 @@
-tests
-coverage
+# Ignore everything by default
+*
+
+# But not these files:
+!lib/**/*.js
+!LICENSE
+!README.md
+
+# Exclude test and coverage even if .js
+lib/test/
+lib/tests/
+lib/__tests__/
+lib/test/coverage/
