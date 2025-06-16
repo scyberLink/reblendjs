@@ -682,11 +682,11 @@ export interface ReblendComponentConfig {
 }
 
 export interface EffectState {
-  cache: Primitive | Array<Primitive>;
-  cacher: () => Primitive | Array<Primitive>;
+  cache: any;
+  cacher: () => any;
   type: EffectType;
-  effect?: StateEffectiveFunction;
-  disconnectEffect?: StateEffectiveFunction;
+  effect?: Function;
+  disconnectEffect?: () => void | Promise<void>;
 }
 
 /**
@@ -697,7 +697,7 @@ export interface EffectState {
  * @property {T | HTMLElement} [current] - The current value held by the reference, which can be of type `T` or an `HTMLElement`.
  */
 export type Ref<T> = {
-  current?: T;
+  current: T;
 };
 /**
  * A function that updates the state based on the provided value. It accepts a value or a function that returns a new value based on the previous state.
@@ -721,23 +721,32 @@ export type StateFunctionValue<T> =
   | T
   | Promise<T>;
 /**
- * A function that returns a memoized value, which is recalculated only when dependencies change.
+ * Represents a function that computes a value of type `T` based on the previous and current state of type `E`.
+ * The function can return the computed value synchronously or as a Promise.
  *
- * @template T
- * @callback StateEffectiveMemoFunction
- * @returns {T} - The memoized value.
+ * @typeParam T - The type of the computed value.
+ * @typeParam E - The type representing the state.
+ * @param previous - The previous state.
+ * @param current - The current state.
+ * @returns The computed value of type `T`, either synchronously or as a Promise.
  */
-export type StateEffectiveMemoFunction<T> = () => T | Promise<T>;
+export type StateEffectiveMemoFunction<T, E> = (
+  previous: E,
+  current: E
+) => T | Promise<T>;
 /**
- * A function that can return a cleanup function or nothing, commonly used in effect hooks.
+ * Represents a function that determines the effect to run based on changes between two states.
  *
- * @callback StateEffectiveFunction
- * @returns {(() => any) | void} - A cleanup function or void if no cleanup is necessary.
+ * @template E - The type of the state.
+ * @param previous - The previous state value.
+ * @param current - The current state value.
+ * @returns A cleanup function, a promise of a cleanup function, or nothing.
+ *          The cleanup function is called to dispose of side effects when the state changes.
  */
-export type StateEffectiveFunction = () =>
-  | Promise<(() => void) | void>
-  | (() => void)
-  | void;
+export type StateEffectiveFunction<E> = (
+  previous: E,
+  current: E
+) => (() => void) | Promise<(() => void) | void> | (() => Promise<void>) | void;
 /**
  * A reducer function that takes a previous value and an incoming value, and returns a new value. This is often used in state management patterns like `useReducer`.
  *
@@ -1111,10 +1120,29 @@ export type ReblendNode<P = any, S = any> =
   | DomNodeChild<P, S>
   | DomNodeChildren<P, S>
   | Promise<ReblendNode>
+  | ((...args: any[]) => Promise<ReblendNode>)
+  | ((...args: any[]) => ReblendNode)
   | undefined
   | null
   | void;
 
+/**
+ * Represents a Reblend component, extending the standard HTMLElement with additional
+ * properties and lifecycle methods for managing state, props, effects, and rendering.
+ *
+ * @template P - The type of the component's props.
+ * @template S - The type of the component's state.
+ *
+ * This interface defines the contract for a Reblend component, including:
+ * - Properties for managing props, state, effects, and children.
+ * - Lifecycle methods for mounting, updating, and unmounting.
+ * - Hooks for state, effects, memoization, and refs.
+ * - Error handling and rendering logic.
+ *
+ * Implementations of this interface are expected to provide custom logic for rendering,
+ * state management, and effect handling, similar to React components but tailored for
+ * the Reblend framework.
+ */
 export interface Component<P, S> extends HTMLElement {
   /**
    * Holds the props (properties) of the component.
@@ -1206,25 +1234,11 @@ export interface Component<P, S> extends HTMLElement {
   /**
    * This hold effects functions
    */
-  effectsState: Map<
-    string,
-    {
-      cache: Primitive | Array<Primitive>;
-      cacher: () => Primitive | Array<Primitive>;
-      /**
-       * The effects functions defined for the component.
-       */
-      effect?: StateEffectiveFunction;
-      /**
-       * The disconnect effects to apply when the component is disconnected.
-       */
-      disconnectEffect?: StateEffectiveFunction;
-    }
-  >;
+  effectsState: Map<string, EffectState>;
   /**
    * The effects to apply when the component is mounted.
    */
-  onMountEffects?: Set<StateEffectiveFunction>;
+  onMountEffects?: Set<StateEffectiveFunction<any>>;
   hookDisconnectedEffects?: Set<() => void>;
   /**
    * Indicates number of awaiting updates.
@@ -1369,7 +1383,7 @@ export interface Component<P, S> extends HTMLElement {
    */
   componentWillUnmount(): Promise<void> | void;
   /**
-   * Shallow compare dependecies for changes
+   * Deep compare dependecies for changes
    * @param {Array<any>} currentDependencies
    * @param {Array<any>} previousDependencies
    * @returns {boolean} Returns true if the two object are not equal
@@ -1383,37 +1397,36 @@ export interface Component<P, S> extends HTMLElement {
    *
    * @template T - The type of the state.
    * @param {StateFunctionValue<T>} initial - The initial state value.
-   * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
+   * @param {string} stateKey - State key.
    * @returns {[T, StateFunction<T>]} The current state and a function to update it.
    */
   useState<T>(
     initial: StateFunctionValue<T>,
-    ...dependencyStringAndOrStateKey: string[]
+    stateKey: string
   ): [T, StateFunction<T>];
   /**
    * Effect hook for performing side effects in functional components.
    *
    * @param {StateEffectiveFunction} fn - The effect function to execute.
-   * @param {any[]} dependencies - Array of dependencies for the effect.
-   * @param {...string[]} _dependencyStringAndOrStateKey - Optional dependencies or state key.
+   * @param {() => any} dependencies - A function that returns dependency or array of dependencies for the effect.
    */
-  useEffect(
-    fn: StateEffectiveFunction,
-    dependencies: any[],
-    ..._dependencyStringAndOrStateKey: string[]
-  ): void;
+  useEffect<T>(fn: StateEffectiveFunction<T>, dependencies?: () => any): void;
   /**
    * Effect hook for performing side effects after children of a component is populated or after state changes.
    *
    * @param {StateEffectiveFunction} fn - The effect function to execute.
-   * @param {any[]} dependencies - Array of dependencies for the effect.
-   * @param {...string[]} _dependencyStringAndOrStateKey - Optional dependencies or state key.
+   * @param {() => any} dependencies - A function that returns a dependency or array of dependencies for the effect.
    */
-  useEffectAfter(
-    fn: StateEffectiveFunction,
-    dependencies: any[],
-    ..._dependencyStringAndOrStateKey: string[]
+  useEffectAfter<T>(
+    fn: StateEffectiveFunction<T>,
+    dependencies?: () => any
   ): void;
+  /**
+   * Effect hook for performing side effects or have access to previous and current props usefull within custom hooks.
+   *
+   * @param {StateEffectiveFunction} fn - The effect function to execute.
+   */
+  useProps(fn: StateEffectiveFunction<P>): void;
   /**
    * Reducer hook for managing state with a reducer function.
    *
@@ -1421,27 +1434,28 @@ export interface Component<P, S> extends HTMLElement {
    * @template I - The type of the action.
    * @param {StateReducerFunction<T, I>} reducer - The reducer function.
    * @param {StateFunctionValue<T>} initial - The initial state value.
-   * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
+   * @param {string} stateKey - State key.
    * @returns {[T, StateFunction<I>]} The current state and a dispatch function.
    */
   useReducer<T, I>(
     reducer: StateReducerFunction<T, I>,
     initial: StateFunctionValue<T>,
-    ...dependencyStringAndOrStateKey: string[]
+    stateKey: string
   ): [T, StateFunction<I>];
   /**
    * Memoization hook for caching values in functional components.
    *
    * @template T - The type of the memoized value.
-   * @param {StateEffectiveMemoFunction<T>} fn - The function to compute the value.
-   * @param {any[]} [dependencies] - Array of dependencies for the memoization.
-   * @param {...string[]} dependencyStringAndOrStateKey - Optional dependencies or state key.
+   * @template E - The type of dependencies.
+   * @param {StateEffectiveMemoFunction<T, E>} fn - The function to compute the value.
+   * @param {string} stateKey - State key.
+   * @param {() => any} dependencies - A function that returns dependency or array of dependencies for the effect.
    * @returns {T} The memoized value.
    */
-  useMemo<T>(
-    fn: StateEffectiveMemoFunction<T>,
-    dependencies?: any[],
-    ...dependencyStringAndOrStateKey: string[]
+  useMemo<T, E>(
+    fn: StateEffectiveMemoFunction<T, E>,
+    stateKey: string,
+    dependencies?: () => any
   ): T;
   /**
    * Creates a ref object to hold mutable values that do not trigger re-renders.
@@ -1855,7 +1869,7 @@ export interface TransitionEvent<T = Element>
   propertyName: string;
   pseudoElement: string;
 }
-type EventHandler<E extends SyntheticEvent<any>> = {
+export type EventHandler<E extends SyntheticEvent<any>> = {
   bivarianceHack(event: E): void;
 }['bivarianceHack'];
 export type ReblendEventHandler<T = Element> = EventHandler<SyntheticEvent<T>>;
