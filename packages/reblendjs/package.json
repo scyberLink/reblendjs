@@ -1,6 +1,6 @@
 {
   "name": "reblendjs",
-  "version": "10.2.0",
+  "version": "10.2.1",
   "codename": "infant",
   "description": "ReblendJs uses Reactjs pradigm to build UI components, with isolated state for each components.",
   "keywords": [

@@ -18,6 +18,7 @@ export {
   useState,
   useEffect,
   useEffectAfter,
+  useProps,
   useReducer,
   useMemo,
   useRef,
