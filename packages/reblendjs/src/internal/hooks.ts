@@ -3,10 +3,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BaseComponent } from './BaseComponent'
 import { SharedConfig } from '../common/SharedConfig'
-import { rand } from '../common/utils'
+import { getConfig, rand } from '../common/utils'
 import * as ReblendTyping from 'reblend-typing'
-import { deepEqualIterative } from './NodeOperationUtil'
 import { isPrimitive } from './NodeUtil'
+import deepEqualIterative from 'reblend-deep-equal-iterative'
 
 const contextValue = Symbol('Reblend.contextValue')
 const contextInnerValue = Symbol('Reblend.contextInnerValue')
@@ -93,7 +93,7 @@ export function useState<T>(initial: T): [T, ReblendTyping.StateFunction<T>] {
  * @param {any} [dependencies] - Optional dependency or array of dependencies to control when the effect runs.
  * @Note The function signature is not same as Reblend.useEffect because this is meant to be used in functional component which will be transpiled.
  */
-export function useEffect(fn: ReblendTyping.StateEffectiveFunction, dependencies?: any): void {
+export function useEffect<T>(fn: ReblendTyping.StateEffectiveFunction<T>, dependencies?: T): void {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useEffect(...arguments)
 }
@@ -105,9 +105,20 @@ export function useEffect(fn: ReblendTyping.StateEffectiveFunction, dependencies
  * @param {any} [dependencies] - Optional dependency or array of dependencies to control when the effect runs.
  * @Note The function signature is not same as Reblend.useEffectAfter because this is meant to be used in functional component which will be transpiled.
  */
-export function useEffectAfter(fn: ReblendTyping.StateEffectiveFunction, dependencies?: any): void {
+export function useEffectAfter<T>(fn: ReblendTyping.StateEffectiveFunction<T>, dependencies?: T): void {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useEffectAfter(...arguments)
+}
+
+/**
+ * Effect hook for performing side effects or have access to previous and current props useful within custom hooks.
+ *
+ * @param {ReblendTyping.StateEffectiveFunction} fn - The effect function to run.
+ * @Note The function signature is not same as Reblend.useProps because this is meant to be used in functional component which will be transpiled.
+ */
+export function useProps<T>(fn: ReblendTyping.StateEffectiveFunction<T>): void {
+  //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
+  return this.useProps(...arguments)
 }
 
 /**
@@ -137,7 +148,7 @@ export function useReducer<T, I>(
  * @returns {T} - The memoized value.
  * @Note The function signature is not same as Reblend.useMemo because this is meant to be used in functional component which will be transpiled.
  */
-export function useMemo<T>(fn: ReblendTyping.StateEffectiveMemoFunction<T>, dependencies?: any): T {
+export function useMemo<T, E>(fn: ReblendTyping.StateEffectiveMemoFunction<T, E>, dependencies?: E): T {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return this.useMemo(...arguments)
 }
@@ -314,7 +325,7 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
       return context[contextValue]
     },
     isEqual(value: T) {
-      return deepEqualIterative(value, context[contextValue])
+      return deepEqualIterative(value, context[contextValue], getConfig().diffConfig || {})
     },
   }
   return context

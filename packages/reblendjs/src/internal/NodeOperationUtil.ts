@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChildrenPropsUpdateType, PatchTypeAndOrder } from 'reblend-typing'
 import * as ReblendTyping from 'reblend-typing'
@@ -14,6 +15,7 @@ import {
 } from './NodeUtil'
 import { setProps, removeProps } from './PropertyUtil'
 import { createElement } from './ElementUtil'
+import deepEqualIterative from 'reblend-deep-equal-iterative'
 
 /**
  * Detaches the given node from the DOM.
@@ -238,20 +240,19 @@ export function diffProps<P, S>(newNode: ReblendTyping.VNode, oldNode: ReblendTy
   const oldProps: ReblendTyping.IAny = oldNode?.props || {}
   const newProps: ReblendTyping.IAny = { ...oldProps, ...(newNode?.props || {}) }
   const isReblendNode = isReblendRenderedNode(oldNode)
+  const diffConfig = getConfig().diffConfig || undefined
   for (const key in newProps) {
     if (!ignoredProps.includes(key) || (key === 'children' && isReblendNode)) {
       let oldProp = oldProps[key]
       let newProp = newProps[key]
 
-      const shouldUseIterativeComparism = key === 'children' || (key === 'style' && typeof oldProp === 'object')
-      let notEqual = false
-      if (shouldUseIterativeComparism) {
-        notEqual = !deepEqualIterative(oldProp, newProp)
-      } else {
-        notEqual =
-          !deepCompare(oldProp, newProp) ||
-          (oldNode.displayName === 'select' && key === 'value' && oldNode['value'] !== newProp)
-      }
+      const notEqual =
+        !deepEqualIterative(
+          oldProp,
+          newProp,
+          key === 'children' ? { ...diffConfig, depthThreshold: undefined, keyThreshold: undefined } : diffConfig,
+        ) ||
+        (oldNode.displayName === 'select' && key === 'value' && oldNode['value'] !== newProp)
 
       if (notEqual) {
         oldProp = null
@@ -280,108 +281,6 @@ export function diffProps<P, S>(newNode: ReblendTyping.VNode, oldNode: ReblendTy
   }
 
   return patches
-}
-
-/**
- * Compares two values for deep equality using an iterative approach to avoid stack overflow issues with large objects.
- * This function handles circular references and ignores properties named 'ref'.
- * It also ignores instances of `HTMLElement` if they exist in both objects.
- *
- * @param a - The first value to compare.
- * @param b - The second value to compare.
- * @returns `true` if the values are deeply equal, `false` otherwise.
- */
-export function deepEqualIterative(a: any, b: any): boolean {
-  const stack = [{ a, b }]
-  const seen = new WeakMap()
-
-  while (stack.length) {
-    const { a, b } = stack.pop()!
-    if (a === b) continue
-
-    if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
-      return false
-    }
-
-    if (a.constructor !== b.constructor) {
-      return false
-    }
-
-    // Ignore instances of HTMLElement if they exist in both
-    if (a instanceof Node && b instanceof Node) {
-      continue
-    }
-
-    if (seen.has(a)) {
-      if (seen.get(a) !== b) {
-        return false // Circular reference detected but points to different objects
-      }
-      continue // Circular reference detected and points to the same objects
-    }
-
-    seen.set(a, b)
-
-    const keysA = Object.keys(a).filter((key) => key !== 'ref')
-    const keysB = Object.keys(b).filter((key) => key !== 'ref')
-
-    if (keysA.length !== keysB.length) {
-      return false
-    }
-
-    for (const key of keysA) {
-      if (!Object.prototype.hasOwnProperty.call(b, key)) {
-        return false
-      }
-      stack.push({ a: a[key], b: b[key] })
-    }
-  }
-
-  return true
-}
-
-/**
- * Performs a deep comparison between two objects, including functions.
- *
- * @param {*} firstObject - The first object or function to compare.
- * @param {*} secondObject - The second object or function to compare.
- * @returns {boolean} - True if the objects are deeply equal, otherwise false.
- */
-export function deepCompare(firstObject, secondObject) {
-  if (typeof firstObject !== 'function' && secondObject !== 'function') {
-    return firstObject === secondObject
-  }
-
-  // 1. Check if they are the same reference
-  if (firstObject === secondObject) return true
-
-  if (!firstObject || !secondObject) return false
-
-  // 2. Compare function names (useful for named functions)
-  if (firstObject.name !== secondObject.name) return false
-
-  // 3. Compare the source code using toString()
-  if (firstObject.toString() !== secondObject.toString()) return false
-
-  // 4. Compare prototypes
-  if (!deepEqualIterative(Object.getPrototypeOf(firstObject), Object.getPrototypeOf(secondObject))) {
-    return false
-  }
-
-  // 5. Compare the properties of the functions (if they have custom properties)
-  const func1Props = Object.getOwnPropertyNames(firstObject)
-  const func2Props = Object.getOwnPropertyNames(secondObject)
-
-  if (!deepEqualIterative(func1Props, func2Props)) {
-    return false
-  }
-
-  for (const prop of func1Props) {
-    if (!deepEqualIterative(firstObject[prop], secondObject[prop])) {
-      return false
-    }
-  }
-
-  return true
 }
 
 /**
@@ -684,17 +583,17 @@ export async function disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P
   const configs = getConfig()
   !fromCleanUp && (await thiz.cleanUp())
   thiz.componentWillUnmount && (await thiz.componentWillUnmount())
-  if (thiz.ref) {
+  /* if (thiz.ref) {
     if (typeof thiz.ref === 'function') {
       thiz.ref(null as any)
     } else {
       try {
         thiz.ref.current = null as any
       } catch {
-        /* empty */
+        // empty
       }
     }
-  }
+  } */
 
   if (!isReblendPrimitiveElement(thiz)) {
     for (const state of thiz.effectsState?.values() || []) {
@@ -735,7 +634,7 @@ export async function disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P
     thiz.outerHTML = ''
     try {
       HTMLElement.prototype.remove.call(thiz)
-    } catch (error) {
+    } catch {
       thiz.parentElement.removeChild(thiz)
     }
   }
@@ -762,7 +661,7 @@ export async function disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P
     if (thiz[property]) {
       try {
         thiz[property] = null
-      } catch (error) {
+      } catch {
         /* empty */
       }
     }

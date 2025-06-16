@@ -331,18 +331,12 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
   }
 
   if (isTagStandard && 'ref' in (ui as ReblendTyping.VNode).props) {
-    if ((ui as ReblendTyping.VNode).props.ref && !(ui as ReblendTyping.VNode).props.ref.current) {
+    if ((ui as ReblendTyping.VNode).props.ref) {
       const ref = (ui as ReblendTyping.VNode).props.ref
-      const descriptor = Object.getOwnPropertyDescriptor(ref, 'current')
-
       if (typeof ref === 'function') {
         ref(element)
-      } else if (!descriptor || descriptor.configurable) {
-        Object.defineProperty(ref, 'current', {
-          value: element,
-          configurable: false,
-          writable: false,
-        })
+      } else {
+        ref.current = element
       }
       element.ref = ref
     }

@@ -1,4 +1,5 @@
 import * as ReblendTyping from 'reblend-typing'
+import { Config } from 'reblend-deep-equal-iterative'
 
 export interface IReblendAppConfig {
   noDefering?: boolean
@@ -9,6 +10,7 @@ export interface IReblendAppConfig {
   lazyComponentDeferTimeout?: number
   preloader?: ReblendTyping.ReblendNode
   placeholder?: ReblendTyping.ReblendNode
+  diffConfig?: Config
 }
 
 export class ConfigUtil {
@@ -23,6 +25,12 @@ export class ConfigUtil {
     preloaderDeferTimeout: 1000,
     placeholderDeferTimeout: 100,
     lazyComponentDeferTimeout: 500,
+    diffConfig: {
+      keyThreshold: 50,
+      depthThreshold: 3,
+      treatInstancesAsEqual: [Node],
+      excludeKeys: ['ref'],
+    },
   }
   configs: IReblendAppConfig = this.defaultConfigs
 
