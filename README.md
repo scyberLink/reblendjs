@@ -156,7 +156,7 @@ ReblendJS is ideal for:
 | React Component Support     | ✅ Fully Compatible                    | ✅ Native                                       |
 | Functional Components       | ✅ Compiled to Classes                 | ✅ Functional with Hooks                        |
 | Hooks                       | ✅ Supported                           | ✅ Supported                                    |
-| Web Component Support       | ✅ Native (renders without wrapper)    | ❌ Requires wrappers like `React.createElement` |
+| Web Component Support       | ✅ Native (renders without wrapper)    | ❌ Requires wrappers like `Reblend.createElement` |
 | State Management            | ✅ Localized in elements               | ✅ Centralized (React Context, Redux)           |
 | Rendering Performance       | ✅ Faster (isolated state per element) | ⚠️ Slower when dealing with large states        |
 | Build Tool                  | ✅ Uses React's toolchain              | ✅ Uses its own build tools                     |
