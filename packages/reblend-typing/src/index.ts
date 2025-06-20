@@ -721,40 +721,65 @@ export type StateFunctionValue<T> =
   | T
   | Promise<T>;
 /**
- * Represents a function that computes a value of type `T` based on the previous and current state of type `E`.
+ * A function for computing a memoized value of type `T` based on the previous and current state of type `E`.
+ * Used for memoization in stateful components, allowing you to cache expensive computations.
+ *
+ * The function receives an object with:
+ * - `previous` (optional): The previous state value of type `E`.
+ * - `current`: The current state value of type `E`.
+ * - `initial`: Whether the component is in its mounting (initialization) phase.
+ * - `memoInitializationCall`: Whether this is the first call to initialize the memoized value.
+ *
  * The function can return the computed value synchronously or as a Promise.
  *
- * @typeParam T - The type of the computed value.
+ * @typeParam T - The type of the computed (memoized) value.
  * @typeParam E - The type representing the state.
- * @param previous - The previous state.
- * @param current - The current state.
+ * @param args - The arguments object containing previous/current state and flags.
  * @returns The computed value of type `T`, either synchronously or as a Promise.
  */
-export type StateEffectiveMemoFunction<T, E> = (
-  previous: E,
-  current: E
-) => T | Promise<T>;
+export type StateEffectiveMemoFunction<T, E> = (args: {
+  previous?: E;
+  current: E;
+  initial: boolean;
+  memoInitializationCall: boolean;
+}) => T | Promise<T>;
 /**
- * Represents a function that determines the effect to run based on changes between two states.
+ * A function that determines and runs side effects based on changes between two states.
+ * Used for effect hooks in stateful components.
  *
- * @template E - The type of the state.
- * @param previous - The previous state value.
- * @param current - The current state value.
+ * The function receives an object with:
+ * - `previous`: The previous state value of type `E`.
+ * - `current`: The current state value of type `E`.
+ * - `initial`: Whether the component is mounting.
+ *
+ * The function can return:
+ * - A cleanup function (to dispose of side effects when the state changes),
+ * - A promise resolving to a cleanup function or void,
+ * - Or nothing.
+ *
+ * @typeParam E - The type of the state.
+ * @param args - The arguments object containing previous/current state and initial flag.
  * @returns A cleanup function, a promise of a cleanup function, or nothing.
- *          The cleanup function is called to dispose of side effects when the state changes.
  */
-export type StateEffectiveFunction<E> = (
-  previous: E,
-  current: E
-) => (() => void) | Promise<(() => void) | void> | (() => Promise<void>) | void;
+export type StateEffectiveFunction<E> = (args: {
+  previous: E;
+  current: E;
+  initial: boolean;
+}) =>
+  | (() => void)
+  | Promise<(() => void) | void>
+  | (() => Promise<void>)
+  | void;
 /**
- * A reducer function that takes a previous value and an incoming value, and returns a new value. This is often used in state management patterns like `useReducer`.
+ * A reducer function for state management, similar to React's `useReducer`.
+ * It takes the previous value and an incoming value (or action), and returns the new value.
+ * The return value can be synchronous or a Promise.
  *
- * @template ValueType, IncomingType
- * @callback StateReducerFunction
- * @param {ValueType} previous - The previous state or value.
- * @param {IncomingType} current - The incoming value or action that affects the state.
- * @returns {ValueType} - The new value after applying the reducer logic.
+ * @typeParam ValueType - The type of the state value.
+ * @typeParam IncomingType - The type of the incoming value or action.
+ * @param previous - The previous state or value.
+ * @param current - The incoming value or action that affects the state.
+ * @returns The new value after applying the reducer logic, synchronously or as a Promise.
  */
 export type StateReducerFunction<ValueType, IncomingType> = (
   previous: ValueType,
@@ -1515,7 +1540,7 @@ export type FC<P = {}> = FunctionComponent<P>;
 /**
  * Represents the type of a function component. Can optionally
  * receive a type argument that represents the props the component
- * accepts.
+ * receives.
  *
  * @template P The props the component accepts.
  * @see {@link https://reblend-typescript-cheatsheet.netlify.app/docs/basic/getting-started/function_components Reblend TypeScript Cheatsheet}

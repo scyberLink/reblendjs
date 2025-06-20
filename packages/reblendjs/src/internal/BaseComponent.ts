@@ -724,7 +724,7 @@ export class BaseComponent<
         this.mountingEffects ||
         this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
       ) {
-        const destructor = await fn(effectState.cache, current)
+        const destructor = await fn({ previous: effectState.cache, current: current, initial: this.mountingEffects })
         effectState.cache = current
         return destructor
       }
@@ -748,7 +748,11 @@ export class BaseComponent<
         this.mountingAfterEffects ||
         this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
       ) {
-        const destructor = await fn(effectState.cache, current)
+        const destructor = await fn({
+          previous: effectState.cache,
+          current: current,
+          initial: this.mountingEffects,
+        })
         effectState.cache = current
         return destructor
       }
@@ -771,7 +775,7 @@ export class BaseComponent<
         this.mountingAfterEffects ||
         this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
       ) {
-        const destructor = await fn(effectState.cache, current)
+        const destructor = await fn({ previous: effectState.cache, current: current, initial: this.mountingEffects })
         effectState.cache = current
         return destructor
       }
@@ -815,7 +819,7 @@ export class BaseComponent<
     }
     const cacher = this.getCacher(dependencies)
     const cache = cacher()
-    const initial = fn(cache, cache)
+    const initial = fn({ previous: cache, current: cache, initial: false, memoInitializationCall: true })
 
     if (initial instanceof Promise) {
       initial.then((val) => (this.state[stateKey] = val))
@@ -835,7 +839,12 @@ export class BaseComponent<
         this.mountingEffects ||
         this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
       ) {
-        this.state[stateKey] = await fn(effectState.cache, current)
+        this.state[stateKey] = await fn({
+          previous: effectState.cache,
+          current: current,
+          initial: this.mountingEffects,
+          memoInitializationCall: false,
+        })
         effectState.cache = current
       }
     }

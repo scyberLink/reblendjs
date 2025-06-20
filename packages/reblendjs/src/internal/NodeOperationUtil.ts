@@ -238,7 +238,7 @@ export function diffProps<P, S>(newNode: ReblendTyping.VNode, oldNode: ReblendTy
 
   const patches: ReblendTyping.PropPatch<P, S>[] = []
   const oldProps: ReblendTyping.IAny = oldNode?.props || {}
-  const newProps: ReblendTyping.IAny = { ...oldProps, ...(newNode?.props || {}) }
+  const newProps: ReblendTyping.IAny = { /* ...oldProps,  */ ...(newNode?.props || {}) }
   const isReblendNode = isReblendRenderedNode(oldNode)
   const diffConfig = getConfig().diffConfig || undefined
   for (const key in newProps) {
