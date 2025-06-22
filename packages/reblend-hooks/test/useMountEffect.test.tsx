@@ -1,6 +1,6 @@
 import { renderHook } from './helpers'
 
-import useMountEffect from '../lib/useMountEffect'
+import useMountEffect from '../cjs/useMountEffect'
 import Reblend from 'reblendjs'
 
 describe('useMountEffect', () => {

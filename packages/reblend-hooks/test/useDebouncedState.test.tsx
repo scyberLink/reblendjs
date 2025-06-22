@@ -1,5 +1,5 @@
 import { render, act, waitFor } from 'reblend-testing-library'
-import useDebouncedState from '../lib/useDebouncedState'
+import useDebouncedState from '../cjs/useDebouncedState'
 import Reblend from 'reblendjs'
 
 describe('useDebouncedState', () => {

@@ -1,23 +1,24 @@
 {
   "name": "reblend-hooks",
   "version": "1.0.1",
-  "type": "module",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "types": "types/index.d.ts",
   "exports": {
-    "./*": {
-      "require": {
-        "types": "./cjs/*.d.ts",
-        "default": "./cjs/*.js"
-      },
-      "import": {
-        "types": "./lib/*.d.ts",
-        "default": "./lib/*.js"
-      }
+    ".": {
+      "import": "esm/index.js",
+      "require": "cjs/index.js",
+      "types": "types/index.d.ts"
     }
   },
   "files": [
     "cjs",
-    "lib",
-    "CHANGELOG.md"
+    "esm",
+    "types",
+    "CHANGELOG.md",
+    "LICENSE",
+    "HISTORY.md",
+    "README.md"
   ],
   "repository": {
     "type": "git",
@@ -36,14 +37,12 @@
     "bootstrap": "yarn && yarn --cwd www",
     "test": "jest --coverage",
     "tdd": "jest --watch",
-    "build": "rimraf lib cjs && concurrently --names 'esm,cjs' 'npm run build:esm' 'npm run build:cjs' && concurrently --names 'esm types,cjs types' 'npm run build:esm:types' 'npm run build:cjs:types'",
-    "build:esm": "babel src --env-name esm --out-dir lib --extensions '.tsx,.ts,.js' --ignore='**/*.d.ts'",
-    "build:esm:types": "tsc -p . --emitDeclarationOnly --declaration --outDir lib",
-    "build:cjs": "babel src --out-dir cjs --extensions '.ts'  --ignore='**/*.d.ts' && echo '{\"type\": \"commonjs\"}' > cjs/package.json",
-    "build:cjs:test": "babel test --out-dir cjs-test --extensions '.tsx,.js'  --ignore='**/*.d.ts' && echo '{\"type\": \"commonjs\"}' > cjs-test/package.json",
-    "build:cjs:types": "tsc -p . --emitDeclarationOnly --declaration --outDir cjs --module commonjs --moduleResolution node",
+    "build": "rimraf esm cjs types && npm run build:types && concurrently 'npm run build:esm' 'npm run build:cjs'",
+    "build:esm": "babel src --out-dir esm --extensions '.tsx,.ts,.js' --no-babelrc --presets=reblend",
+    "build:cjs": "babel src --out-dir cjs --extensions '.tsx,.ts,.js'",
+    "build:types": "tsc -p tsconfig.types.json",
+    "build:test": "concurrently \"npm run build:cjs\" \"babel test --out-dir cjs-test --extensions '.tsx,.js'  --ignore='**/*.d.ts'\"",
     "deploy-docs": "yarn --cwd www build --prefix-paths && gh-pages -d www/public",
-    "prepublishOnly": "yarn build",
     "typecheck": "tsc -p . --noEmit",
     "release": "rollout"
   },
@@ -52,9 +51,6 @@
     "semi": false,
     "trailingComma": "all"
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "release": {
     "conventionalCommits": true
   },
@@ -62,25 +58,7 @@
     "reblendjs": "12.0.0"
   },
   "devDependencies": {
-    "@4c/babel-preset": "^10.2.1",
-    "@4c/cli": "^4.0.4",
-    "@4c/rollout": "^4.0.2",
-    "@4c/tsconfig": "^0.4.1",
-    "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.195",
-    "@vitest/coverage-v8": "2.1.8",
-    "babel-jest": "^27.5.1",
-    "babel-plugin-transform-rename-import": "^2.3.0",
-    "cherry-pick": "^0.5.0",
-    "codecov": "^3.8.3",
-    "concurrently": "^9.1.2",
-    "eslint": "^8.44.0",
-    "gh-pages": "^3.1.0",
-    "husky": "^4.3.6",
-    "lint-staged": "^13.2.3",
-    "mq-polyfill": "^1.1.8",
-    "prettier": "^3.0.0",
-    "rimraf": "^5.0.1",
-    "ts-jest": "^29.4.0"
+    "gh-pages": "^3.1.0"
   }
 }

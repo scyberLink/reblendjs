@@ -1,4 +1,4 @@
-import useMediaQuery from '../lib/useMediaQuery'
+import useMediaQuery from '../cjs/useMediaQuery'
 
 import { renderHook, act } from 'reblend-testing-library'
 import Reblend, { useProps } from 'reblendjs'

@@ -1,6 +1,6 @@
 import { renderHook } from 'reblend-testing-library'
 
-import useIsInitialRenderRef from '../lib/useIsInitialRenderRef'
+import useIsInitialRenderRef from '../cjs/useIsInitialRenderRef'
 import Reblend, { useEffectAfter } from 'reblendjs'
 
 describe('useIsInitialRenderRef', () => {

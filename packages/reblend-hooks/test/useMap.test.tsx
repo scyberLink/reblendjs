@@ -1,6 +1,6 @@
 import { act, render, waitFor } from 'reblend-testing-library'
 
-import useMap, { ObservableMap } from '../lib/useMap'
+import useMap, { ObservableMap } from '../cjs/useMap'
 import Reblend from 'reblendjs'
 
 describe('useMap', () => {

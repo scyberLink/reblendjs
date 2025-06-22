@@ -1,6 +1,6 @@
 import { act, render, waitFor } from 'reblend-testing-library'
-import useMutationObserver from '../lib/useMutationObserver'
-import useCallbackRef from '../lib/useCallbackRef'
+import useMutationObserver from '../cjs/useMutationObserver'
+import useCallbackRef from '../cjs/useCallbackRef'
 import Reblend, { useEffect, useProps } from 'reblendjs'
 
 describe('useMutationObserver', () => {

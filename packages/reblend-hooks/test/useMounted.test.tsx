@@ -1,5 +1,5 @@
 import { renderHook } from 'reblend-testing-library'
-import useMounted from '../lib/useMounted'
+import useMounted from '../cjs/useMounted'
 
 describe('useMounted', () => {
   it('should return a function that returns mount state', async () => {

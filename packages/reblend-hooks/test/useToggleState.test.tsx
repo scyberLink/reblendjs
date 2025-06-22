@@ -1,4 +1,4 @@
-import useToggleState from '../lib/useToggleState'
+import useToggleState from '../cjs/useToggleState'
 import { act, renderHook } from 'reblend-testing-library'
 import Reblend from 'reblendjs'
 

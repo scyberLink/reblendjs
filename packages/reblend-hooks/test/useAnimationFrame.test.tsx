@@ -1,5 +1,5 @@
 import { renderHook, act } from 'reblend-testing-library'
-import useAnimationFrame from '../lib/useAnimationFrame'
+import useAnimationFrame from '../cjs/useAnimationFrame'
 import Reblend from 'reblendjs'
 
 describe('useAnimationFrame', () => {

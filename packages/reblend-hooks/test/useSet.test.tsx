@@ -1,6 +1,6 @@
 import { render, act, waitFor } from 'reblend-testing-library'
 
-import useSet, { ObservableSet } from '../lib/useSet'
+import useSet, { ObservableSet } from '../cjs/useSet'
 import Reblend from 'reblendjs'
 
 describe('useSet', () => {

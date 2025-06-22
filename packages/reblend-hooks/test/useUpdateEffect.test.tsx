@@ -1,5 +1,5 @@
 import { renderHook } from './helpers'
-import useUpdateEffect from '../lib/useUpdateEffect'
+import useUpdateEffect from '../cjs/useUpdateEffect'
 import { useProps } from 'reblendjs'
 
 describe('useUpdateEffect', () => {
