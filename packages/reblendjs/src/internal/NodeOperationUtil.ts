@@ -657,15 +657,13 @@ export async function disconnectedCallback<P, S>(thiz: ReblendTyping.Component<P
   thiz.ref = null as any
   thiz.childrenPropsUpdate = null as any
 
-  for (const property in thiz) {
+  /* for (const property in thiz) {
     if (thiz[property]) {
       try {
         thiz[property] = null
-      } catch {
-        /* empty */
-      }
+      } catch {}
     }
-  }
+  } */
 
   thiz.hasDisconnected = true
 }

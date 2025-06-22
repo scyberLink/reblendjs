@@ -765,14 +765,14 @@ export class BaseComponent<
     const effectKey = this.generateId()
 
     const cacher = this.getCacher(() => this.props)
-    const effectState: ReblendTyping.EffectState = { cache: cacher(), cacher: cacher, type: EffectType.AFTER }
+    const effectState: ReblendTyping.EffectState = { cache: cacher(), cacher: cacher, type: EffectType.BEFORE }
     this.effectsState.set(effectKey, effectState)
 
     const internalFn = (async () => {
       const current = cacher()
       if (
         this.forceEffects ||
-        this.mountingAfterEffects ||
+        this.mountingEffects ||
         this.dependenciesChanged(current as ReblendTyping.Primitive[], effectState.cache as ReblendTyping.Primitive[])
       ) {
         const destructor = await fn({ previous: effectState.cache, current: current, initial: this.mountingEffects })
