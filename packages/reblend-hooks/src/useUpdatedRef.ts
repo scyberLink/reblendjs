@@ -6,7 +6,7 @@ import { useRef } from 'reblendjs'
  * @param value The Ref value
  * @category refs
  */
-export default function useUpdatedRef<T>(value: T) {
+export function useUpdatedRef<T>(value: T) {
   const valueRef = useRef<T>(value)
   valueRef.current = value
   return valueRef

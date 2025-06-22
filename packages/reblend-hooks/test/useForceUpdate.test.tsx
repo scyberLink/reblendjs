@@ -1,6 +1,6 @@
 import { act, renderHook } from 'reblend-testing-library'
 
-import useForceUpdate from '../cjs/useForceUpdate'
+import { useForceUpdate } from '..'
 import Reblend, { useEffect } from 'reblendjs'
 
 describe('useForceUpdate', () => {

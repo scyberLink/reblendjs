@@ -1,6 +1,11 @@
-import deepEqualIterative from 'reblend-deep-equal-iterative'
-import useEventCallback from './useEventCallback'
-import { StateFunction, useEffect, useReducer, useState } from 'reblendjs'
+import { useEventCallback } from './useEventCallback'
+import {
+  deepEqualIterative,
+  StateFunction,
+  useEffect,
+  useReducer,
+  useState,
+} from 'reblendjs'
 
 /**
  * Observe mutations on a DOM node or tree of DOM nodes.
@@ -22,7 +27,7 @@ import { StateFunction, useEffect, useReducer, useState } from 'reblendjs'
  * @param config The observer configuration
  * @param callback A callback fired when a mutation occurs
  */
-function useMutationObserver(
+export function useMutationObserver(
   element: Element | null | undefined,
   config: MutationObserverInit,
   callback?: MutationCallback,
@@ -78,5 +83,3 @@ function useMutationObserver(
 
   return useMutationObserverReturnObject
 }
-
-export default useMutationObserver

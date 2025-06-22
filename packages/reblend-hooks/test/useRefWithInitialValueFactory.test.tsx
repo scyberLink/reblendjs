@@ -1,5 +1,5 @@
 import { renderHook } from './helpers'
-import useRefWithInitialValueFactory from '../cjs/useRefWithInitialValueFactory'
+import { useRefWithInitialValueFactory } from '..'
 import Reblend from 'reblendjs'
 
 describe('useRefWithInitialValueFactory', () => {

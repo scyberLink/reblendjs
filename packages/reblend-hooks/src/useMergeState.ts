@@ -24,7 +24,7 @@ export type MergeStateSetter<TState> = (
  *
  * @param initialState The initial state object
  */
-export default function useMergeState<TState extends {}>(
+export function useMergeState<TState extends {}>(
   initialState: TState | (() => TState),
 ): { mergedState: TState; updater: MergeStateSetter<TState> } {
   const [mergedState, setMergedState] = useState<TState>(initialState as any)

@@ -16,7 +16,7 @@ import { useReducer } from 'reblendjs'
  * return <button type="button" onClick={updateOnClick}>Hi there</button>
  * ```
  */
-export default function useForceUpdate(): () => void {
+export function useForceUpdate(): () => void {
   // The toggling state value is designed to defeat Reblend optimizations for skipping
   // updates when they are strictly equal to the last state value
   const [, dispatch] = useReducer((revision) => revision + 1, 0)

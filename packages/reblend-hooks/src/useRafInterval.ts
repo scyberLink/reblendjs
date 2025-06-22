@@ -1,7 +1,7 @@
 import { useEffect } from 'reblendjs'
 
-function useRafInterval(fn: () => void, ms: number): void
-function useRafInterval(
+export function useRafInterval(fn: () => void, ms: number): void
+export function useRafInterval(
   fn: () => void,
   ms: number,
   paused: boolean = false,
@@ -34,5 +34,3 @@ function useRafInterval(
     return () => cancelAnimationFrame(handle)
   }, [])
 }
-
-export default useRafInterval

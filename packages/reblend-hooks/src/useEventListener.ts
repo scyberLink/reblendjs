@@ -1,8 +1,8 @@
 import { useEffect } from 'reblendjs'
 
-import useEventCallback from './useEventCallback'
+import { useEventCallback } from './useEventCallback'
 
-type EventHandler<T, K extends keyof DocumentEventMap> = (
+export type EventHandler<T, K extends keyof DocumentEventMap> = (
   this: T,
   ev: DocumentEventMap[K],
 ) => any
@@ -16,7 +16,7 @@ type EventHandler<T, K extends keyof DocumentEventMap> = (
  * @param handler An event handler
  * @param capture Whether or not to listen during the capture event phase
  */
-export default function useEventListener<
+export function useEventListener<
   T extends Element | Document | Window,
   K extends keyof DocumentEventMap,
 >(

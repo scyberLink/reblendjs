@@ -1,7 +1,7 @@
 /*! tests an impl adapted from https://github.com/xnimorz/use-debounce/blob/master/test/useDebouncedCallback.test.tsx itself adapted from lodash*/
 import { renderHook, act, waitFor } from 'reblend-testing-library'
 
-import useDebouncedCallback from '../cjs/useDebouncedCallback'
+import { useDebouncedCallback } from '..'
 import Reblend from 'reblendjs'
 
 describe('useDebouncedCallback', () => {

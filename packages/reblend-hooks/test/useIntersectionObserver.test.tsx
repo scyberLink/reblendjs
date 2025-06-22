@@ -1,4 +1,4 @@
-import useIntersectionObserver from '../cjs/useIntersectionObserver'
+import { useIntersectionObserver } from '..'
 
 import { renderHook, act } from 'reblend-testing-library'
 import Reblend, { useEffect, useProps } from 'reblendjs'

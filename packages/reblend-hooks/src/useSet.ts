@@ -1,4 +1,4 @@
-import useForceUpdate from './useForceUpdate'
+import { useForceUpdate } from './useForceUpdate'
 import { useMemo } from 'reblendjs'
 
 export class ObservableSet<V> extends Set<V> {
@@ -49,10 +49,8 @@ export class ObservableSet<V> extends Set<V> {
  *
  * @param init initial Set values
  */
-function useSet<V>(init?: Iterable<V>): { set: ObservableSet<V> } {
+export function useSet<V>(init?: Iterable<V>): { set: ObservableSet<V> } {
   const forceUpdate = useForceUpdate()
   const set = useMemo(() => new ObservableSet<V>(forceUpdate, init), [])
   return { set }
 }
-
-export default useSet

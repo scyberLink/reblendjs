@@ -1,7 +1,7 @@
 import Reblend, { useEffect, useProps } from 'reblendjs'
 import { render, renderHook, waitFor } from 'reblend-testing-library'
 
-import useDebouncedValue from '../cjs/useDebouncedValue'
+import { useDebouncedValue } from '..'
 
 describe('useDebouncedValue', () => {
   beforeEach(async () => {

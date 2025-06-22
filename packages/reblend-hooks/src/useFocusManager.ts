@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef } from 'reblendjs'
-import useEventCallback from './useEventCallback'
-import useMounted from './useMounted'
+import { useEventCallback } from './useEventCallback'
+import { useMounted } from './useMounted'
 
 export interface FocusManagerOptions {
   /**
@@ -54,9 +54,7 @@ export interface FocusController {
  *
  * @returns a memoized FocusController containing event handlers
  */
-export default function useFocusManager(
-  opts: FocusManagerOptions,
-): FocusController {
+export function useFocusManager(opts: FocusManagerOptions): FocusController {
   const isMounted = useMounted()
 
   const lastFocused = useRef<boolean | undefined>(undefined)

@@ -15,7 +15,7 @@ import { StateFunction, useEffect, useState } from 'reblendjs'
  * @param fn an function run on each interval
  * @param ms The milliseconds duration of the interval
  */
-function useInterval(
+export function useInterval(
   fn: () => void,
   ms: number,
 ): { setPause: StateFunction<boolean> }
@@ -42,7 +42,7 @@ function useInterval(
  * @param ms The milliseconds duration of the interval
  * @param paused Whether or not the interval is currently running
  */
-function useInterval(
+export function useInterval(
   fn: () => void,
   ms: number,
   paused: boolean,
@@ -68,14 +68,14 @@ function useInterval(
  *
 
  */
-function useInterval(
+export function useInterval(
   fn: () => void,
   ms: number,
   paused: boolean,
   runImmediately: boolean,
 ): { setPause: StateFunction<boolean> }
 
-function useInterval(
+export function useInterval(
   fn: () => void,
   ms: number,
   paused: boolean = false,
@@ -109,5 +109,3 @@ function useInterval(
 
   return { setPause }
 }
-
-export default useInterval

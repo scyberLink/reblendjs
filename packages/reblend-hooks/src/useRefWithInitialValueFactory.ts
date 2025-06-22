@@ -14,7 +14,7 @@ const dft: unique symbol = Symbol('default value sigil')
  * @param initialValueFactory A factory function returning the ref's default value
  * @category refs
  */
-export default function useRefWithInitialValueFactory<T>(
+export function useRefWithInitialValueFactory<T>(
   initialValueFactory: () => T,
 ) {
   const ref = useRef<T>(dft as T)

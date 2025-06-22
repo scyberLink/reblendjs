@@ -1,6 +1,6 @@
 import { renderHook, act } from 'reblend-testing-library'
 
-import useInterval from '../cjs/useInterval'
+import { useInterval } from '..'
 import Reblend from 'reblendjs'
 
 describe('useTimeout', () => {

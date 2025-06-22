@@ -1,6 +1,6 @@
 import { useState, useEffect, StateFunction } from 'reblendjs'
 
-type State<T = any> = {
+export type ImageState<T = any> = {
   image: HTMLImageElement | null
   error: unknown | null
   setImageOrUrl: StateFunction<T>
@@ -31,12 +31,12 @@ type State<T = any> = {
  *   </>
  * ```
  */
-export default function useImage(
+export function useImage(
   imageOrUrl?: string | HTMLImageElement | null | undefined,
   crossOrigin?: 'anonymous' | 'use-credentials' | string,
 ) {
   const [_imageOrUrl, setImageOrUrl] = useState<typeof imageOrUrl>(null)
-  const [imageState, setImageState] = useState<State<typeof imageOrUrl>>({
+  const [imageState, setImageState] = useState<ImageState<typeof imageOrUrl>>({
     image: null,
     error: null,
     setImageOrUrl,

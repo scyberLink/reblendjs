@@ -17,8 +17,6 @@ import { useEffect, StateEffectiveFunction } from 'reblendjs'
  *
  *  @category effects
  */
-function useMountEffect<T>(effect: StateEffectiveFunction<T>) {
+export function useMountEffect<T>(effect: StateEffectiveFunction<T>) {
   useEffect(effect, [] as any)
 }
-
-export default useMountEffect

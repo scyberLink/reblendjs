@@ -1,7 +1,7 @@
 import Reblend, { useEffect } from 'reblendjs'
 
-import useCallbackRef from '../cjs/useCallbackRef'
-import useMergedRefs from '../cjs/useMergedRefs'
+import { useCallbackRef } from '..'
+import { useMergedRefs } from '..'
 import { render } from 'reblend-testing-library'
 
 describe('useMergedRefs', () => {

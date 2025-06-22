@@ -1,6 +1,6 @@
 import { StateFunction, useEffect, useReducer, useState } from 'reblendjs'
 
-import useEventCallback from './useEventCallback'
+import { useEventCallback } from './useEventCallback'
 
 /**
  * Setup an [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) on
@@ -12,7 +12,7 @@ import useEventCallback from './useEventCallback'
  * and the hook will wait until it receives a non-null value to set up the observer.
  * This change allows for easier syncing of element and root values in a Reblend Context
  */
-function useIntersectionObserver<TElement extends Element>(
+export function useIntersectionObserver<TElement extends Element>(
   element: TElement | null | undefined,
   options?: IntersectionObserverInit,
 ): {
@@ -34,7 +34,7 @@ function useIntersectionObserver<TElement extends Element>(
  * context.
  *
  */
-function useIntersectionObserver<TElement extends Element>(
+export function useIntersectionObserver<TElement extends Element>(
   element: TElement | null | undefined,
   callback: IntersectionObserverCallback,
   options?: IntersectionObserverInit,
@@ -43,7 +43,7 @@ function useIntersectionObserver<TElement extends Element>(
   setElement: StateFunction<TElement | null | undefined>
   setRoot: StateFunction<TElement | null | undefined>
 }
-function useIntersectionObserver<TElement extends Element>(
+export function useIntersectionObserver<TElement extends Element>(
   element: TElement | null | undefined,
   callbackOrOptions?: IntersectionObserverCallback | IntersectionObserverInit,
   maybeOptions?: IntersectionObserverInit,
@@ -115,5 +115,3 @@ function useIntersectionObserver<TElement extends Element>(
 
   return useIntersectionObserverReturn
 }
-
-export default useIntersectionObserver

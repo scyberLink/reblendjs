@@ -1,7 +1,4 @@
-import useBreakpoint, {
-  DefaultBreakpointMap,
-  createBreakpointHook,
-} from '../cjs/useBreakpoint'
+import { useBreakpoint, DefaultBreakpointMap, createBreakpointHook } from '..'
 
 import { describe, it, expect, afterEach, beforeEach } from '@jest/globals'
 import { renderHook } from 'reblend-testing-library'

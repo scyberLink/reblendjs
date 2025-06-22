@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "main": "cjs/index.js",
   "module": "esm/index.js",
-  "types": "types/index.d.ts",
+  "types": "cjs/index.d.ts",
   "exports": {
     ".": {
       "import": "esm/index.js",
@@ -14,7 +14,6 @@
   "files": [
     "cjs",
     "esm",
-    "types",
     "CHANGELOG.md",
     "LICENSE",
     "HISTORY.md",

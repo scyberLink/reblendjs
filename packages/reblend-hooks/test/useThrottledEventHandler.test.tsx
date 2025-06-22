@@ -1,5 +1,5 @@
 import { renderHook } from './helpers'
-import useThrottledEventHandler from '../cjs/useThrottledEventHandler'
+import { useThrottledEventHandler } from '..'
 import { waitFor } from '@testing-library/dom'
 import Reblend from 'reblendjs'
 

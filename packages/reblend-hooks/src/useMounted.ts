@@ -20,7 +20,7 @@ import { useRef, useEffect } from 'reblendjs'
  * })
  * ```
  */
-export default function useMounted(): () => boolean {
+export function useMounted(): () => boolean {
   const mounted = useRef(false)
   const isMounted = useRef(() => mounted.current!)
   useEffect(() => {

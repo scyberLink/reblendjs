@@ -1,5 +1,5 @@
 import { StateFunction } from 'reblendjs'
-import useDebouncedState from './useDebouncedState'
+import { useDebouncedState } from './useDebouncedState'
 import { UseDebouncedCallbackOptions } from './useDebouncedCallback'
 
 const defaultIsEqual = (a: any, b: any) => a === b
@@ -17,7 +17,7 @@ export type UseDebouncedValueOptions = UseDebouncedCallbackOptions & {
  * @param waitOrOptions
  * @returns
  */
-function useDebouncedValue<TValue>(
+export function useDebouncedValue<TValue>(
   value: TValue,
   waitOrOptions: number | UseDebouncedValueOptions = 500,
 ): { state: TValue; setValue: StateFunction<TValue> } {
@@ -40,5 +40,3 @@ function useDebouncedValue<TValue>(
 
   return debounceState as any
 }
-
-export default useDebouncedValue

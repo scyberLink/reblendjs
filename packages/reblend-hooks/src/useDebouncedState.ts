@@ -1,5 +1,6 @@
 import { StateFunction, useReducer } from 'reblendjs'
-import useDebouncedCallback, {
+import {
+  useDebouncedCallback,
   UseDebouncedCallbackOptions,
 } from './useDebouncedCallback'
 
@@ -18,7 +19,7 @@ import useDebouncedCallback, {
  * @param initialState initial state value
  * @param delayOrOptions The milliseconds delay before a new value is set, or options object
  */
-export default function useDebouncedState<T>(
+export function useDebouncedState<T>(
   initialState: T | (() => T),
   delayOrOptions: number | UseDebouncedCallbackOptions,
 ): { state: T; debouncedSetState: StateFunction<T> } {

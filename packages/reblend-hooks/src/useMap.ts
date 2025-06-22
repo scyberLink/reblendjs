@@ -1,4 +1,4 @@
-import useForceUpdate from './useForceUpdate'
+import { useForceUpdate } from './useForceUpdate'
 import { useMemo } from 'reblendjs'
 
 export class ObservableMap<K, V> extends Map<K, V> {
@@ -55,11 +55,9 @@ export class ObservableMap<K, V> extends Map<K, V> {
  *
  * @param init initial Map entries
  */
-function useMap<K, V>(init?: Iterable<Readonly<[K, V]>>) {
+export function useMap<K, V>(init?: Iterable<Readonly<[K, V]>>) {
   const forceUpdate = useForceUpdate()
 
   const map = useMemo(() => new ObservableMap<K, V>(forceUpdate, init), [])
   return { map }
 }
-
-export default useMap

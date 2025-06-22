@@ -1,5 +1,5 @@
 import { Ref, useEffect, useRef, useState } from 'reblendjs'
-import useMounted from './useMounted'
+import { useMounted } from './useMounted'
 
 /*
  * Browsers including Internet Explorer, Chrome, Safari, and Firefox store the
@@ -47,7 +47,7 @@ type TimeoutState = {
  * );
  * ```
  */
-export default function useTimeout() {
+export function useTimeout() {
   const [useTimeoutState, setuseTimeoutState] = useState<TimeoutState | null>(
     null,
   )

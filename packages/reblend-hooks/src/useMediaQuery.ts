@@ -47,7 +47,7 @@ const getMatcher = (
  * @param query A media query
  * @param targetWindow The window to match against, uses the globally available one as a default.
  */
-export default function useMediaQuery(
+export function useMediaQuery(
   query: string | null,
   targetWindow: Window | undefined = typeof window === 'undefined'
     ? undefined

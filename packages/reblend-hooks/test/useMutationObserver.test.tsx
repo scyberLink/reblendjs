@@ -1,6 +1,6 @@
 import { act, render, waitFor } from 'reblend-testing-library'
-import useMutationObserver from '../cjs/useMutationObserver'
-import useCallbackRef from '../cjs/useCallbackRef'
+import { useMutationObserver } from '..'
+import { useCallbackRef } from '..'
 import Reblend, { useEffect, useProps } from 'reblendjs'
 
 describe('useMutationObserver', () => {
@@ -8,11 +8,11 @@ describe('useMutationObserver', () => {
   beforeEach(async () => {
     disconnentSpy = jest.spyOn(MutationObserver.prototype, 'disconnect')
   })
-  
+
   afterEach(async () => {
     disconnentSpy?.mockRestore()
   })
-  
+
   it('should add a mutation observer', async () => {
     const teardown = jest.fn()
     const spy = jest.fn(() => teardown)

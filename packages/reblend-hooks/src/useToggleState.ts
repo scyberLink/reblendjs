@@ -23,7 +23,7 @@ import { useEffect, useReducer } from 'reblendjs'
  *
  * ```
  */
-export default function useToggleState(initialState: boolean = false) {
+export function useToggleState(initialState: boolean = false) {
   const [show, toggleShow] = useReducer(
     (state: boolean, action?: boolean) => (action == null ? !state : action),
     initialState,

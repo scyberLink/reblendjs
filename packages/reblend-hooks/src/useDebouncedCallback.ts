@@ -1,4 +1,4 @@
-import useTimeout from './useTimeout'
+import { useTimeout } from './useTimeout'
 
 export interface UseDebouncedCallbackOptions {
   wait: number
@@ -24,7 +24,7 @@ const EMPTY: unique symbol = Symbol('EMPTY')
  * @param fn a function that will be debounced
  * @param waitOrOptions a wait in milliseconds or a debounce configuration
  */
-function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
+export function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
   fn: TCallback,
   options: UseDebouncedCallbackOptionsLeading,
 ): (...args: Parameters<TCallback>) => Promise<ReturnType<TCallback>>
@@ -39,12 +39,12 @@ function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
  * @param fn a function that will be debounced
  * @param waitOrOptions a wait in milliseconds or a debounce configuration
  */
-function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
+export function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
   fn: TCallback,
   waitOrOptions: number | UseDebouncedCallbackOptions,
 ): (...args: Parameters<TCallback>) => ReturnType<TCallback>
 
-function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
+export function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
   fn: TCallback,
   waitOrOptions: number | UseDebouncedCallbackOptions,
 ): (...args: Parameters<TCallback>) => ReturnType<TCallback> {
@@ -172,5 +172,3 @@ function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
     return returnValue === EMPTY ? undefined : returnValue
   }) as ReturnType<TCallback>
 }
-
-export default useDebouncedCallback

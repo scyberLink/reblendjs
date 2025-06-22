@@ -1,4 +1,4 @@
-import useTimeout from '../cjs/useTimeout'
+import { useTimeout } from '..'
 import { render, waitFor } from 'reblend-testing-library'
 import Reblend from 'reblendjs'
 

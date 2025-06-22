@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'reblendjs'
-import useMounted from './useMounted'
+import { useMounted } from './useMounted'
 
 export interface UseAnimationFrameReturn {
   cancel(): void
@@ -10,7 +10,7 @@ export interface UseAnimationFrameReturn {
    */
   request(callback: FrameRequestCallback): void
 }
-type AnimationFrameState = {
+export type AnimationFrameState = {
   fn: FrameRequestCallback
 }
 /**
@@ -38,7 +38,7 @@ type AnimationFrameState = {
  * )
  * ```
  */
-export default function useAnimationFrame(): UseAnimationFrameReturn {
+export function useAnimationFrame(): UseAnimationFrameReturn {
   const isMounted = useMounted()
 
   const [animationFrame, setAnimationFrameState] =

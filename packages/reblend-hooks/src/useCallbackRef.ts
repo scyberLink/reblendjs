@@ -24,7 +24,7 @@ import { useState } from 'reblendjs'
  *
  * @category refs
  */
-export default function useCallbackRef<TValue = unknown>(): {
+export function useCallbackRef<TValue = unknown>(): {
   item: TValue | null
   ref: (ref: TValue | null) => void
 } {

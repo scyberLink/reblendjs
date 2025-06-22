@@ -5,7 +5,7 @@ import { useEffectAfter, useRef } from 'reblendjs'
  *
  * This hook *must* be used before any effects that read it's value to be accurate.
  */
-export default function useIsInitialRenderRef() {
+export function useIsInitialRenderRef() {
   const effectCount = useRef(0)
   const isInitialRenderRef = useRef(true)
 

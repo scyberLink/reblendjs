@@ -1,6 +1,6 @@
 import { useRef, SyntheticEvent } from 'reblendjs'
-import useMounted from './useMounted'
-import useEventCallback from './useEventCallback'
+import { useMounted } from './useMounted'
+import { useEventCallback } from './useEventCallback'
 
 const isSyntheticEvent = (event: any): event is SyntheticEvent =>
   typeof event.persist === 'function'
@@ -38,7 +38,7 @@ export type ThrottledHandler<TEvent> = ((event: TEvent) => void) & {
  * @returns The event handler with a `clear` method attached for clearing any in-flight handler calls
  *
  */
-export default function useThrottledEventHandler<
+export function useThrottledEventHandler<
   TEvent extends object = SyntheticEvent,
 >(handler: (event: TEvent) => void): ThrottledHandler<TEvent> {
   const isMounted = useMounted()

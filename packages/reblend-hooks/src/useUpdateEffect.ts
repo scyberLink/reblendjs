@@ -20,7 +20,7 @@ import { StateEffectiveFunction, useEffect, useRef } from 'reblendjs'
  *
  * @category effects
  */
-function useUpdateEffect<T>(fn: StateEffectiveFunction<T>, deps: () => T) {
+export function useUpdateEffect<T>(fn: StateEffectiveFunction<T>, deps: () => T) {
   let isFirst = true
   useEffect<T>((meta) => {
     if (isFirst) {
@@ -30,5 +30,3 @@ function useUpdateEffect<T>(fn: StateEffectiveFunction<T>, deps: () => T) {
     return fn(meta)
   }, deps as any)
 }
-
-export default useUpdateEffect

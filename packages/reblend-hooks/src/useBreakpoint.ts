@@ -1,4 +1,4 @@
-import useMediaQuery from './useMediaQuery'
+import { useMediaQuery } from './useMediaQuery'
 import { StateFunction, useMemo, useReducer, useState } from 'reblendjs'
 
 export type BreakpointDirection = 'up' | 'down' | true
@@ -155,7 +155,7 @@ export function createBreakpointHook<TKey extends string>(
 export type DefaultBreakpoints = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 export type DefaultBreakpointMap = BreakpointMap<DefaultBreakpoints>
 
-const useBreakpoint = createBreakpointHook<DefaultBreakpoints>({
+export const useBreakpoint = createBreakpointHook<DefaultBreakpoints>({
   xs: 0,
   sm: 576,
   md: 768,
@@ -163,5 +163,3 @@ const useBreakpoint = createBreakpointHook<DefaultBreakpoints>({
   xl: 1200,
   xxl: 1400,
 })
-
-export default useBreakpoint

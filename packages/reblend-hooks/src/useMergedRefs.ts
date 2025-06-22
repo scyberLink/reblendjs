@@ -36,8 +36,6 @@ export function mergeRefs<T>(refA?: Ref<T> | null, refB?: Ref<T> | null) {
  * @param refB A Callback or mutable Ref
  * @category refs
  */
-function useMergedRefs<T>(refA?: Ref<T> | null, refB?: Ref<T> | null) {
+export function useMergedRefs<T>(refA?: Ref<T> | null, refB?: Ref<T> | null) {
   return mergeRefs(refA, refB)
 }
-
-export default useMergedRefs

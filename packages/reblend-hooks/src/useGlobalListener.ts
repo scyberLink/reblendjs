@@ -1,7 +1,7 @@
-import useEventListener from './useEventListener'
+import { useEventListener } from './useEventListener'
 import { useCallback } from 'reblendjs'
 
-type DocumentEventHandler<K extends keyof DocumentEventMap> = (
+export type DocumentEventHandler<K extends keyof DocumentEventMap> = (
   this: Document,
   ev: DocumentEventMap[K],
 ) => any
@@ -19,7 +19,7 @@ type DocumentEventHandler<K extends keyof DocumentEventMap> = (
  * @param handler An event handler
  * @param capture Whether or not to listen during the capture event phase
  */
-export default function useGlobalListener<K extends keyof DocumentEventMap>(
+export function useGlobalListener<K extends keyof DocumentEventMap>(
   event: K,
   handler: DocumentEventHandler<K>,
   capture: boolean | AddEventListenerOptions = false,

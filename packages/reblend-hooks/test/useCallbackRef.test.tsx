@@ -1,6 +1,6 @@
 import { useEffect } from 'reblendjs'
 import { render } from 'reblend-testing-library'
-import useCallbackRef from '../cjs/useCallbackRef'
+import { useCallbackRef } from '..'
 import Reblend from 'reblendjs'
 
 describe('useCallbackRef', () => {
