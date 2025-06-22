@@ -1,5 +1,5 @@
-import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react'
-import useMounted from './useMounted.js'
+import { Ref, useEffect, useRef, useState } from 'reblendjs'
+import useMounted from './useMounted'
 
 /*
  * Browsers including Internet Explorer, Chrome, Safari, and Firefox store the
@@ -12,7 +12,7 @@ import useMounted from './useMounted.js'
 const MAX_DELAY_MS = 2 ** 31 - 1
 
 function setChainedTimeout(
-  handleRef: MutableRefObject<any>,
+  handleRef: Ref<any>,
   fn: () => void,
   timeoutAtMs: number,
 ) {
@@ -48,22 +48,24 @@ type TimeoutState = {
  * ```
  */
 export default function useTimeout() {
-  const [timeout, setTimeoutState] = useState<TimeoutState | null>(null)
+  const [useTimeoutState, setuseTimeoutState] = useState<TimeoutState | null>(
+    null,
+  )
   const isMounted = useMounted()
 
   // types are confused between node and web here IDK
   const handleRef = useRef<any>(null)
 
   useEffect(() => {
-    if (!timeout) {
+    if (!useTimeoutState) {
       return
     }
 
-    const { fn, delayMs } = timeout
+    const { fn, delayMs } = useTimeoutState
 
-    function task() {
+    const task = () => {
       if (isMounted()) {
-        setTimeoutState(null)
+        setuseTimeoutState(null)
       }
       fn()
     }
@@ -86,22 +88,18 @@ export default function useTimeout() {
       clearTimeout(handleRef.current)
       handleRef.current === null
     }
-  }, [timeout])
+  }, [useTimeoutState])
 
-  const isPending = !!timeout
-
-  return useMemo(() => {
-    return {
-      set(fn: () => void, delayMs = 0): void {
-        if (!isMounted()) return
-
-        setTimeoutState({ fn, delayMs })
-      },
-      clear() {
-        setTimeoutState(null)
-      },
-      isPending,
-      handleRef,
-    }
-  }, [isPending, setTimeoutState, handleRef, isMounted])
+  return {
+    set: async (fn: () => void, delayMs = 0): Promise<void> => {
+      if (!isMounted()) return
+      await setuseTimeoutState({ fn, delayMs })
+    },
+    clear: async () => {
+      clearTimeout(handleRef.current)
+      await setuseTimeoutState(null)
+    },
+    isPending: () => !!useTimeoutState,
+    handleRef,
+  }
 }

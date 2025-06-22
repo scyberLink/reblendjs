@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, StateFunction } from 'reblendjs'
 
-type State = {
+type State<T = any> = {
   image: HTMLImageElement | null
   error: unknown | null
+  setImageOrUrl: StateFunction<T>
 }
 
 /**
@@ -12,16 +13,16 @@ type State = {
  * @param crossOrigin The `crossorigin` attribute to set
  *
  * ```ts
- * const { image, error } = useImage('/static/kittens.png')
+ * const {imageState} = useImage('/static/kittens.png')
  * const ref = useRef<HTMLCanvasElement>()
  *
  * useEffect(() => {
  *   const ctx = ref.current.getContext('2d')
  *
- *   if (image) {
- *     ctx.drawImage(image, 0, 0)
+ *   if (imageState.image) {
+ *     ctx.drawImage(imageState.image, 0, 0)
  *   }
- * }, [ref, image])
+ * }, [ref, imageState.image])
  *
  * return (
  *   <>
@@ -34,9 +35,11 @@ export default function useImage(
   imageOrUrl?: string | HTMLImageElement | null | undefined,
   crossOrigin?: 'anonymous' | 'use-credentials' | string,
 ) {
-  const [state, setState] = useState<State>({
+  const [_imageOrUrl, setImageOrUrl] = useState<typeof imageOrUrl>(null)
+  const [imageState, setImageState] = useState<State<typeof imageOrUrl>>({
     image: null,
     error: null,
+    setImageOrUrl,
   })
 
   useEffect(() => {
@@ -52,17 +55,17 @@ export default function useImage(
       image = imageOrUrl
 
       if (image.complete && image.naturalHeight > 0) {
-        setState({ image, error: null })
+        setImageState({ image, error: null, setImageOrUrl })
         return
       }
     }
 
-    function onLoad() {
-      setState({ image, error: null })
+    const onLoad=() =>{
+      setImageState({ image, error: null, setImageOrUrl })
     }
 
-    function onError(error: ErrorEvent) {
-      setState({ image, error })
+    const onError = (error: ErrorEvent)=> {
+      setImageState({ image, error, setImageOrUrl })
     }
 
     image.addEventListener('load', onLoad)
@@ -72,7 +75,7 @@ export default function useImage(
       image.removeEventListener('load', onLoad)
       image.removeEventListener('error', onError)
     }
-  }, [imageOrUrl, crossOrigin])
+  }, [_imageOrUrl, crossOrigin])
 
-  return state
+  return { imageState, setImageOrUrl }
 }

@@ -1,23 +1,25 @@
-import { describe, it, vi, expect } from 'vitest'
-import useToggleState from '../src/useToggleState.js'
-import { act, renderHook } from '@testing-library/react'
+import useToggleState from '../lib/useToggleState'
+import { act, renderHook } from 'reblend-testing-library'
+import Reblend from 'reblendjs'
 
 describe('useToggleState', () => {
-  it('should toggle', () => {
-    let { result } = renderHook(() => useToggleState(false))
+  it('should toggle', async () => {
+    let { result } = await renderHook(useToggleState, {
+      initialProps: false,
+    })
 
-    expect(result.current![0]).toEqual(false)
+    expect(result.current.show).toEqual(false)
 
-    act(() => result.current[1]())
+    await act(() => result.current.toggleShow())
 
-    expect(result.current![0]).toEqual(true)
+    expect(result.current.show).toEqual(true)
 
-    act(() => result.current[1](true))
+    await act(() => result.current.toggleShow(true))
 
-    expect(result.current![0]).toEqual(true)
+    expect(result.current.show).toEqual(true)
 
-    act(() => result.current[1]())
+    await act(() => result.current.toggleShow())
 
-    expect(result.current![0]).toEqual(false)
+    expect(result.current.show).toEqual(false)
   })
 })

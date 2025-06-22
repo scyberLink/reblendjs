@@ -1,5 +1,4 @@
-import useEffect from './useIsomorphicEffect.js'
-import { useState } from 'react'
+import { StateFunction, useEffect, useReducer, useState } from 'reblendjs'
 
 interface RefCountedMediaQueryList extends MediaQueryList {
   refCount: number
@@ -36,9 +35,9 @@ const getMatcher = (
  *
  * ```tsx
  * function Page() {
- *   const isWide = useMediaQuery('min-width: 1000px')
+ *   const {matches} = useMediaQuery('min-width: 1000px')
  *
- *   return isWide ? "very wide" : 'not so wide'
+ *   return matches ? "very wide" : 'not so wide'
  * }
  * ```
  *
@@ -54,36 +53,53 @@ export default function useMediaQuery(
     ? undefined
     : window,
 ) {
-  const mql = getMatcher(query, targetWindow)
+  let handleChange: any
+  let mql: any = null
+  let matchers: any = null
+  const [matches, setMatches] = useState(false)
+  const useMediaQueryReturnObject: {
+    matches: boolean
+    setQuery: StateFunction<typeof query>
+  } = { matches } as any
 
-  const [matches, setMatches] = useState(() => (mql ? mql.matches : false))
+  const [_query, setQuery] = useReducer<typeof query, typeof query>(
+    (state, action) => {
+      let m = getMatcher(action, targetWindow)
+      if (!m) {
+        return setMatches(false)
+      }
+      mql = m
+      matchers = matchersByWindow.get(targetWindow!)
+
+      handleChange = () => {
+        setMatches(mql.matches)
+        useMediaQueryReturnObject.matches = mql.matches
+      }
+
+      mql.refCount++
+      mql.addListener(handleChange)
+
+      handleChange()
+
+      return action as any
+    },
+    null,
+  )
+  useMediaQueryReturnObject.setQuery = setQuery
+
+  setQuery(query)
 
   useEffect(() => {
-    let mql = getMatcher(query, targetWindow)
-    if (!mql) {
-      return setMatches(false)
-    }
-
-    let matchers = matchersByWindow.get(targetWindow!)
-
-    const handleChange = () => {
-      setMatches(mql!.matches)
-    }
-
-    mql.refCount++
-    mql.addListener(handleChange)
-
-    handleChange()
-
     return () => {
-      mql!.removeListener(handleChange)
-      mql!.refCount--
-      if (mql!.refCount <= 0) {
-        matchers?.delete(mql!.media)
+      if (!mql) return
+      mql.removeListener(handleChange)
+      mql.refCount--
+      if (mql.refCount <= 0) {
+        matchers.delete(mql.media)
       }
       mql = undefined
     }
-  }, [query])
+  }, [_query])
 
-  return matches
+  return useMediaQueryReturnObject
 }

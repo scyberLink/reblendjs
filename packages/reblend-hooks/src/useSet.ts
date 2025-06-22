@@ -1,5 +1,5 @@
-import useForceUpdate from './useForceUpdate.js'
-import useStableMemo from './useStableMemo.js'
+import useForceUpdate from './useForceUpdate'
+import { useMemo } from 'reblendjs'
 
 export class ObservableSet<V> extends Set<V> {
   private readonly listener: (map: ObservableSet<V>) => void
@@ -34,13 +34,13 @@ export class ObservableSet<V> extends Set<V> {
  * Create and return a [Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set) that triggers rerenders when it's updated.
  *
  * ```ts
- * const ids = useSet<number>([1,2,3,4]);
+ * const {set} = useSet<number>([1,2,3,4]);
  *
  * return (
  *  <>
- *    {Array.from(ids, id => (
+ *    {Array.from(set, id => (
  *      <div>
- *        id: {id}. <button onClick={() => ids.delete(id)}>X</button>
+ *        id: {id}. <button onClick={() => set.delete(id)}>X</button>
  *      </div>
  *    )}
  *  </>
@@ -49,9 +49,10 @@ export class ObservableSet<V> extends Set<V> {
  *
  * @param init initial Set values
  */
-function useSet<V>(init?: Iterable<V>): ObservableSet<V> {
+function useSet<V>(init?: Iterable<V>): { set: ObservableSet<V> } {
   const forceUpdate = useForceUpdate()
-  return useStableMemo(() => new ObservableSet<V>(forceUpdate, init), [])
+  const set = useMemo(() => new ObservableSet<V>(forceUpdate, init), [])
+  return { set }
 }
 
 export default useSet

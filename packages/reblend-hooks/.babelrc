@@ -1,5 +1,5 @@
 {
-  "presets": ["@4c", "@babel/typescript"],
+  "presets": ["@4c", "babel-preset-reblend"],
   "env": {
     "esm": {
       "presets": [
@@ -13,7 +13,7 @@
       ]
     },
     "test": {
-      "presets": [["@4c", { "development": true }],  "@babel/typescript"]
+      "presets": [["@4c", { "development": true }],  "babel-preset-reblend"]
     }
   }
 }

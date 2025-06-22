@@ -1,4 +1,4 @@
-import { useReducer } from 'react'
+import { useReducer } from 'reblendjs'
 
 /**
  * Returns a function that triggers a component update. the hook equivalent to
@@ -17,8 +17,8 @@ import { useReducer } from 'react'
  * ```
  */
 export default function useForceUpdate(): () => void {
-  // The toggling state value is designed to defeat React optimizations for skipping
+  // The toggling state value is designed to defeat Reblend optimizations for skipping
   // updates when they are strictly equal to the last state value
   const [, dispatch] = useReducer((revision) => revision + 1, 0)
-  return dispatch as () => void
+  return dispatch as any
 }

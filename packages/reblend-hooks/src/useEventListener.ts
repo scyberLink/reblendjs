@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect } from 'reblendjs'
 
-import useEventCallback from './useEventCallback.js'
+import useEventCallback from './useEventCallback'
 
 type EventHandler<T, K extends keyof DocumentEventMap> = (
   this: T,
@@ -34,4 +34,6 @@ export default function useEventListener<
     target.addEventListener(event, handler, capture)
     return () => target.removeEventListener(event, handler, capture)
   }, [eventTarget])
+
+  return handler
 }

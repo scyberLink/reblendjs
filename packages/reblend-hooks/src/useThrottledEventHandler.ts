@@ -1,6 +1,6 @@
-import { useRef, SyntheticEvent } from 'react'
-import useMounted from './useMounted.js'
-import useEventCallback from './useEventCallback.js'
+import { useRef, SyntheticEvent } from 'reblendjs'
+import useMounted from './useMounted'
+import useEventCallback from './useEventCallback'
 
 const isSyntheticEvent = (event: any): event is SyntheticEvent =>
   typeof event.persist === 'function'
@@ -11,12 +11,12 @@ export type ThrottledHandler<TEvent> = ((event: TEvent) => void) & {
 
 /**
  * Creates a event handler function throttled by `requestAnimationFrame` that
- * returns the **most recent** event. Useful for noisy events that update react state.
+ * returns the **most recent** event. Useful for noisy events that update reblend state.
  *
  * ```tsx
  * function Component() {
  *   const [position, setPosition] = useState();
- *   const handleMove = useThrottledEventHandler<React.PointerEvent>(
+ *   const handleMove = useThrottledEventHandler<Reblend.PointerEvent>(
  *     (event) => {
  *       setPosition({
  *         top: event.clientX,
@@ -75,7 +75,7 @@ export default function useThrottledEventHandler<
     if (isSyntheticEvent(event)) {
       event.persist()
     }
-    // Special handling for a React.Konva event which reuses the
+    // Special handling for a Reblend.Konva event which reuses the
     // event object as it bubbles, setting target
     else if ('evt' in event) {
       event = { ...event }

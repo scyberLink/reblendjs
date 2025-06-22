@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef } from 'reblendjs'
 
 /**
  * Returns a ref that is immediately updated with the new value

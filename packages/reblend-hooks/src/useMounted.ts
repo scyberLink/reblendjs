@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect } from 'reblendjs'
 
 /**
  * Track whether a component is current mounted. Generally less preferable than
@@ -21,13 +21,13 @@ import { useRef, useEffect } from 'react'
  * ```
  */
 export default function useMounted(): () => boolean {
-  const mounted = useRef(true)
-  const isMounted = useRef(() => mounted.current)
+  const mounted = useRef(false)
+  const isMounted = useRef(() => mounted.current!)
   useEffect(() => {
     mounted.current = true
     return () => {
       mounted.current = false
     }
   }, [])
-  return isMounted.current
+  return isMounted.current!
 }

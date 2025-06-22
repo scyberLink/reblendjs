@@ -1,6 +1,6 @@
-import { useEffect, useDebugValue, useRef } from 'react'
-import useDebouncedState from './useDebouncedState.js'
-import { UseDebouncedCallbackOptions } from './useDebouncedCallback.js'
+import { StateFunction } from 'reblendjs'
+import useDebouncedState from './useDebouncedState'
+import { UseDebouncedCallbackOptions } from './useDebouncedCallback'
 
 const defaultIsEqual = (a: any, b: any) => a === b
 
@@ -20,29 +20,25 @@ export type UseDebouncedValueOptions = UseDebouncedCallbackOptions & {
 function useDebouncedValue<TValue>(
   value: TValue,
   waitOrOptions: number | UseDebouncedValueOptions = 500,
-): TValue {
-  const previousValueRef = useRef<TValue | null>(value)
+): { state: TValue; setValue: StateFunction<TValue> } {
+  let previousValue: TValue | null = value
+
+  const debounceState = useDebouncedState(value, waitOrOptions)
 
   const isEqual =
     typeof waitOrOptions === 'object'
       ? waitOrOptions.isEqual || defaultIsEqual
       : defaultIsEqual
 
-  const [debouncedValue, setDebouncedValue] = useDebouncedState(
-    value,
-    waitOrOptions,
-  )
-
-  useDebugValue(debouncedValue)
-
-  useEffect(() => {
-    if (!isEqual || !isEqual(previousValueRef.current, value)) {
-      previousValueRef.current = value
-      setDebouncedValue(value)
+  ;(debounceState as any).setValue = async (val: TValue) => {
+    if (!isEqual || !isEqual(previousValue, val)) {
+      previousValue = val
+      await debounceState.debouncedSetState(val)
     }
-  })
+  }
+  ;(debounceState as any).setValue(value)
 
-  return debouncedValue
+  return debounceState as any
 }
 
 export default useDebouncedValue

@@ -1,12 +1,12 @@
-import { describe, it, vi, expect } from 'vitest'
-import { render, act } from '@testing-library/react'
+import { render, act, waitFor } from 'reblend-testing-library'
 
-import useSet, { ObservableSet } from '../src/useSet.js'
+import useSet, { ObservableSet } from '../lib/useSet'
+import Reblend from 'reblendjs'
 
 describe('useSet', () => {
   describe('ObservableSet', () => {
-    it('should implement a Set', () => {
-      const set = new ObservableSet(() => {}, ['baz'])
+    it('should implement a Set', async () => {
+      const set = new ObservableSet(async () => {}, ['baz'])
 
       expect(set.size).toEqual(1)
 
@@ -38,8 +38,8 @@ describe('useSet', () => {
       expect(set.size).toEqual(0)
     })
 
-    it('should be observable', () => {
-      const spy = vi.fn()
+    it('should be observable', async () => {
+      const spy = jest.fn()
       const set = new ObservableSet(spy)
 
       set.add('foo')
@@ -56,31 +56,31 @@ describe('useSet', () => {
     })
   })
 
-  it('should rerender when the set is updated', () => {
-    let set
+  it('should rerender when the set is updated', async () => {
+    let setObj
     function Wrapper() {
-      set = useSet()
-      return <span>{JSON.stringify(Array.from(set))}</span>
+      setObj = useSet()
+      return <span>{JSON.stringify(Array.from(setObj.set))}</span>
     }
 
-    const wrapper = render(<Wrapper />)
+    const wrapper = await render(<Wrapper />)
 
-    act(() => {
-      set.add('foo')
+    await act(async () => {
+      setObj.set.add('foo')
     })
 
-    expect(wrapper.getByText('["foo"]')).toBeTruthy()
+    await waitFor(() => expect(wrapper.getByText('["foo"]')).toBeTruthy())
 
-    act(() => {
-      set.add('bar')
+    await act(async () => {
+      setObj.set.add('bar')
     })
 
-    expect(wrapper.getByText('["foo","bar"]')).toBeTruthy()
+    await waitFor(() => expect(wrapper.getByText('["foo","bar"]')).toBeTruthy())
 
-    act(() => {
-      set.clear()
+    await act(async () => {
+      setObj.set.clear()
     })
 
-    expect(wrapper.getByText('[]')).toBeTruthy()
+    await waitFor(() => expect(wrapper.getByText('[]')).toBeTruthy())
   })
 })

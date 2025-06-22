@@ -1,7 +1,7 @@
-import { useLayoutEffect, EffectCallback, DependencyList, useRef } from 'react'
+import { StateEffectiveFunction, useEffectAfter, useRef } from 'reblendjs'
 
 /**
- * Runs a layout effect only when the dependencies have changed, skipping the
+ * Runs after effect only when the dependencies have changed, skipping the
  * initial "on mount" run. Caution, if the dependency list never changes,
  * the effect is **never run**
  *
@@ -9,7 +9,7 @@ import { useLayoutEffect, EffectCallback, DependencyList, useRef } from 'react'
  *  const ref = useRef<HTMLInput>(null);
  *
  *  // focuses an element only if the focus changes, and not on mount
- *  useUpdateLayoutEffect(() => {
+ *  useUpdateEffectAfter(() => {
  *    const element = ref.current?.children[focusedIdx] as HTMLElement
  *
  *    element?.focus()
@@ -20,15 +20,15 @@ import { useLayoutEffect, EffectCallback, DependencyList, useRef } from 'react'
  *
  * @category effects
  */
-function useUpdateLayoutEffect(fn: EffectCallback, deps: DependencyList) {
+function useUpdateEffectAfter<T>(fn: StateEffectiveFunction<T>, deps: () => T) {
   const isFirst = useRef(true)
-  useLayoutEffect(() => {
+  useEffectAfter((meta) => {
     if (isFirst.current) {
       isFirst.current = false
       return
     }
-    return fn()
-  }, deps)
+    return fn(meta)
+  }, deps as any)
 }
 
-export default useUpdateLayoutEffect
+export default useUpdateEffectAfter

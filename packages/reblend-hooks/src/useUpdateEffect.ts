@@ -1,4 +1,4 @@
-import { useEffect, EffectCallback, DependencyList, useRef } from 'react'
+import { StateEffectiveFunction, useEffect, useRef } from 'reblendjs'
 
 /**
  * Runs an effect only when the dependencies have changed, skipping the
@@ -14,21 +14,21 @@ import { useEffect, EffectCallback, DependencyList, useRef } from 'react'
  *
  *    element?.focus()
  *
- *  }, [focusedIndex])
+ *  }, () => [focusedIndex])
  * ```
  * @param effect An effect to run on mount
  *
  * @category effects
  */
-function useUpdateEffect(fn: EffectCallback, deps: DependencyList) {
-  const isFirst = useRef(true)
-  useEffect(() => {
-    if (isFirst.current) {
-      isFirst.current = false
+function useUpdateEffect<T>(fn: StateEffectiveFunction<T>, deps: () => T) {
+  let isFirst = true
+  useEffect<T>((meta) => {
+    if (isFirst) {
+      isFirst = false
       return
     }
-    return fn()
-  }, deps)
+    return fn(meta)
+  }, deps as any)
 }
 
 export default useUpdateEffect

@@ -1,6 +1,4 @@
-import { useMemo, useRef } from 'react'
-import useTimeout from './useTimeout.js'
-import useEventCallback from './useEventCallback.js'
+import useTimeout from './useTimeout'
 
 export interface UseDebouncedCallbackOptions {
   wait: number
@@ -29,7 +27,7 @@ const EMPTY: unique symbol = Symbol('EMPTY')
 function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
   fn: TCallback,
   options: UseDebouncedCallbackOptionsLeading,
-): (...args: Parameters<TCallback>) => ReturnType<TCallback>
+): (...args: Parameters<TCallback>) => Promise<ReturnType<TCallback>>
 
 /**
  * Creates a debounced function that will invoke the input function after the
@@ -44,20 +42,18 @@ function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
 function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
   fn: TCallback,
   waitOrOptions: number | UseDebouncedCallbackOptions,
-): (...args: Parameters<TCallback>) => ReturnType<TCallback> | undefined
+): (...args: Parameters<TCallback>) => ReturnType<TCallback>
 
 function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
   fn: TCallback,
   waitOrOptions: number | UseDebouncedCallbackOptions,
-): (...args: Parameters<TCallback>) => ReturnType<TCallback> | undefined {
-  const lastCallTimeRef = useRef<number | null>(null)
-  const lastInvokeTimeRef = useRef(0)
-  const returnValueRef = useRef<ReturnType<TCallback> | typeof EMPTY>(EMPTY)
+): (...args: Parameters<TCallback>) => ReturnType<TCallback> {
+  let lastCallTime: number | null = null
+  let lastInvokeTime = 0
+  let returnValue: ReturnType<TCallback> | typeof EMPTY = EMPTY
 
-  const isTimerSetRef = useRef(false)
-  const lastArgsRef = useRef<unknown[] | null>(null)
-
-  const handleCallback = useEventCallback(fn)
+  let isTimerSet = false
+  let lastArgs: unknown[] | null = null
 
   const {
     wait,
@@ -70,119 +66,111 @@ function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
 
   const timeout = useTimeout()
 
-  return useMemo(() => {
-    const hasMaxWait = !!maxWait
+  const hasMaxWait = !!maxWait
 
-    function leadingEdge(time: number) {
-      // Reset any `maxWait` timer.
-      lastInvokeTimeRef.current = time
+  const leadingEdge = async (time: number) => {
+    // Reset any `maxWait` timer.
+    lastInvokeTime = time
 
-      // Start the timer for the trailing edge.
-      isTimerSetRef.current = true
-      timeout.set(timerExpired, wait)
+    // Start the timer for the trailing edge.
+    isTimerSet = true
+    await timeout.set(timerExpired, wait)
 
-      if (!leading) {
-        return returnValueRef.current === EMPTY
-          ? undefined
-          : returnValueRef.current
+    if (!leading) {
+      return returnValue === EMPTY ? undefined : returnValue
+    }
+
+    return await invokeFunc(time)
+  }
+
+  const trailingEdge = async (time: number) => {
+    isTimerSet = false
+
+    // Only invoke if we have `lastArgs` which means `func` has been
+    // debounced at least once.
+    if (trailing && lastArgs) {
+      return await invokeFunc(time)
+    }
+
+    lastArgs = null
+    return returnValue === EMPTY ? undefined : returnValue
+  }
+
+  const timerExpired = async () => {
+    var time = Date.now()
+
+    if (shouldInvoke(time)) {
+      return await trailingEdge(time)
+    }
+
+    const timeSinceLastCall = time - (lastCallTime ?? 0)
+    const timeSinceLastInvoke = time - lastInvokeTime!
+    const timeWaiting = wait - timeSinceLastCall
+
+    // console.log('g', Math.min(timeWaiting, maxWait - timeSinceLastInvoke))
+
+    // Restart the timer.
+    await timeout.set(
+      timerExpired,
+      hasMaxWait
+        ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke)
+        : timeWaiting,
+    )
+  }
+
+  const invokeFunc = async (time: number) => {
+    const args = lastArgs ?? []
+
+    lastArgs = null
+    lastInvokeTime = time
+
+    const retValue = await fn(...args)
+    returnValue = retValue
+    return retValue
+  }
+
+  const shouldInvoke = (time: number) => {
+    const timeSinceLastCall = time - (lastCallTime ?? 0)
+    const timeSinceLastInvoke = time - lastInvokeTime!
+
+    // Either this is the first call, activity has stopped and we're at the
+    // trailing edge, the system time has gone backwards and we're treating
+    // it as the trailing edge, or we've hit the `maxWait` limit.
+    return (
+      lastCallTime === null ||
+      timeSinceLastCall >= wait ||
+      timeSinceLastCall < 0 ||
+      (hasMaxWait && timeSinceLastInvoke >= maxWait)
+    )
+  }
+
+  return (async (...args: any[]) => {
+    const time = Date.now()
+    const isInvoking = shouldInvoke(time)
+
+    lastArgs = args
+    lastCallTime = time
+
+    if (isInvoking) {
+      if (!isTimerSet) {
+        return await leadingEdge(lastCallTime)
       }
 
-      return invokeFunc(time)
-    }
-
-    function trailingEdge(time: number) {
-      isTimerSetRef.current = false
-
-      // Only invoke if we have `lastArgs` which means `func` has been
-      // debounced at least once.
-      if (trailing && lastArgsRef.current) {
-        return invokeFunc(time)
+      if (hasMaxWait) {
+        // Handle invocations in a tight loop.
+        isTimerSet = true
+        await timeout.set(timerExpired, wait)
+        return await invokeFunc(lastCallTime)
       }
-
-      lastArgsRef.current = null
-      return returnValueRef.current === EMPTY
-        ? undefined
-        : returnValueRef.current
     }
 
-    function timerExpired() {
-      var time = Date.now()
-
-      if (shouldInvoke(time)) {
-        return trailingEdge(time)
-      }
-
-      const timeSinceLastCall = time - (lastCallTimeRef.current ?? 0)
-      const timeSinceLastInvoke = time - lastInvokeTimeRef.current
-      const timeWaiting = wait - timeSinceLastCall
-
-      // console.log('g', Math.min(timeWaiting, maxWait - timeSinceLastInvoke))
-
-      // Restart the timer.
-      timeout.set(
-        timerExpired,
-        hasMaxWait
-          ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke)
-          : timeWaiting,
-      )
+    if (!isTimerSet) {
+      isTimerSet = true
+      await timeout.set(timerExpired, wait)
     }
 
-    function invokeFunc(time: number) {
-      const args = lastArgsRef.current ?? []
-
-      lastArgsRef.current = null
-      lastInvokeTimeRef.current = time
-
-      const retValue = handleCallback(...args)
-      returnValueRef.current = retValue
-      return retValue
-    }
-
-    function shouldInvoke(time: number) {
-      const timeSinceLastCall = time - (lastCallTimeRef.current ?? 0)
-      const timeSinceLastInvoke = time - lastInvokeTimeRef.current
-
-      // Either this is the first call, activity has stopped and we're at the
-      // trailing edge, the system time has gone backwards and we're treating
-      // it as the trailing edge, or we've hit the `maxWait` limit.
-      return (
-        lastCallTimeRef.current === null ||
-        timeSinceLastCall >= wait ||
-        timeSinceLastCall < 0 ||
-        (hasMaxWait && timeSinceLastInvoke >= maxWait)
-      )
-    }
-
-    return (...args: any[]) => {
-      const time = Date.now()
-      const isInvoking = shouldInvoke(time)
-
-      lastArgsRef.current = args
-      lastCallTimeRef.current = time
-
-      if (isInvoking) {
-        if (!isTimerSetRef.current) {
-          return leadingEdge(lastCallTimeRef.current)
-        }
-
-        if (hasMaxWait) {
-          // Handle invocations in a tight loop.
-          isTimerSetRef.current = true
-          timeout.set(timerExpired, wait)
-          return invokeFunc(lastCallTimeRef.current)
-        }
-      }
-
-      if (!isTimerSetRef.current) {
-        isTimerSetRef.current = true
-        timeout.set(timerExpired, wait)
-      }
-
-      return returnValueRef.current === EMPTY
-        ? undefined
-        : returnValueRef.current
-    }
-  }, [handleCallback, wait, maxWait, leading, trailing])
+    return returnValue === EMPTY ? undefined : returnValue
+  }) as ReturnType<TCallback>
 }
 
 export default useDebouncedCallback

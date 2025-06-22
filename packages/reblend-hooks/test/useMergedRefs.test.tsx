@@ -1,26 +1,29 @@
-import React from 'react'
-import { describe, it, expect } from 'vitest'
-import useCallbackRef from '../src/useCallbackRef.js'
-import useMergedRefs from '../src/useMergedRefs.js'
-import { render } from '@testing-library/react'
+import Reblend, { useEffect } from 'reblendjs'
+
+import useCallbackRef from '../lib/useCallbackRef'
+import useMergedRefs from '../lib/useMergedRefs'
+import { render } from 'reblend-testing-library'
 
 describe('useMergedRefs', () => {
-  it('should return a function that returns mount state', () => {
+  it('should return a function that returns mount state', async () => {
     let innerRef: HTMLButtonElement
-    const outerRef = React.createRef<HTMLButtonElement>()
+    const outerRef = Reblend.createRef<HTMLButtonElement>()
 
-    const Button = React.forwardRef<HTMLButtonElement, any>((props, ref) => {
-      const [buttonEl, attachRef] = useCallbackRef<HTMLButtonElement>()
-      innerRef = buttonEl!
+    const Button = (props) => {
+      const { item, ref } = useCallbackRef<HTMLButtonElement>()
 
-      const mergedRef = useMergedRefs(ref, attachRef)
+      useEffect(({ current: curr }) => {
+        innerRef = curr!
+      }, item)
 
-      return <button ref={mergedRef} {...props} />
-    })
+      const mergedRef = useMergedRefs(props.ref, ref)
 
-    const result = render(<Button ref={outerRef} />)
+      return <button {...{ ...props, ref: mergedRef }} />
+    }
+
+    const result = await render(<Button ref={outerRef} />)
 
     expect(innerRef!.tagName).toEqual('BUTTON')
-    expect(outerRef.current!.tagName).toEqual('BUTTON')
+    expect((outerRef.current as any)!.tagName).toEqual('BUTTON')
   })
 })

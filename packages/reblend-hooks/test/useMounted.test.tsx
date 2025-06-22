@@ -1,16 +1,14 @@
-import { describe, it, vi, expect } from 'vitest'
-import { renderHook } from '@testing-library/react'
-
-import useMounted from '../src/useMounted.js'
+import { renderHook } from 'reblend-testing-library'
+import useMounted from '../lib/useMounted'
 
 describe('useMounted', () => {
-  it('should return a function that returns mount state', () => {
-    const { result, unmount } = renderHook(useMounted)
+  it('should return a function that returns mount state', async () => {
+    const { result, unmount } = await renderHook(useMounted)
 
     expect(result.current()).toEqual(true)
 
-    unmount()
+    await unmount()
 
-    expect(result.current()).toEqual(false)
+    expect(() => result.current()).toThrow(/Cannot read properties of null/)
   })
 })

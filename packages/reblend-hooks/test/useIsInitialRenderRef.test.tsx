@@ -1,17 +1,17 @@
-import { renderHook } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
-import useIsInitialRenderRef from '../src/useIsInitialRenderRef.js'
-import { useLayoutEffect } from 'react'
+import { renderHook } from 'reblend-testing-library'
+
+import useIsInitialRenderRef from '../lib/useIsInitialRenderRef'
+import Reblend, { useEffectAfter } from 'reblendjs'
 
 describe('useIsInitialRenderRef', () => {
-  it('should not be true until the second committed render', () => {
+  it('should not be true until the second committed render', async () => {
     let count = 0
 
     // TODO: test with strict mode
-    const { rerender } = renderHook(() => {
+    const { rerender } = await renderHook(function useIsInitial() {
       const ref = useIsInitialRenderRef()
 
-      useLayoutEffect(() => {
+      useEffectAfter(async () => {
         if (ref.current) return
 
         count++
@@ -20,7 +20,7 @@ describe('useIsInitialRenderRef', () => {
 
     expect(count).toEqual(0)
 
-    rerender()
+    await rerender(null)
 
     expect(count).toEqual(1)
   })

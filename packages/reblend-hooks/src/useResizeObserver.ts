@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import useEffect from './useIsomorphicEffect.js'
+import { StateFunction, useEffect, useState } from 'reblendjs'
 
 export interface Rect {
   width: number
@@ -45,7 +44,8 @@ function getResizeObserver() {
  */
 export default function useResizeObserver<TElement extends Element>(
   element: TElement | null | undefined,
-): Rect | null {
+): { rect: Rect | null; setElement: StateFunction<TElement> } {
+  const [_element, setElement] = useState<TElement>(element!)
   const [rect, setRect] = useState<Rect | null>(null)
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function useResizeObserver<TElement extends Element>(
     return () => {
       targetMap.delete(element)
     }
-  }, [element])
+  }, [_element])
 
-  return rect
+  return { rect, setElement }
 }

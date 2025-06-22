@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState } from 'reblendjs'
 
 type Updater<TState> = (state: TState) => Partial<TState> | null
 
@@ -25,24 +25,23 @@ export type MergeStateSetter<TState> = (
  * @param initialState The initial state object
  */
 export default function useMergeState<TState extends {}>(
-  initialState: TState | (() =>  TState),
-): [TState, MergeStateSetter<TState>] {
-  const [state, setState] = useState<TState>(initialState)
+  initialState: TState | (() => TState),
+): { mergedState: TState; updater: MergeStateSetter<TState> } {
+  const [mergedState, setMergedState] = useState<TState>(initialState as any)
 
   const updater = useCallback(
     (update: Updater<TState> | Partial<TState> | null) => {
       if (update === null) return
       if (typeof update === 'function') {
-        setState(state => {
+        setMergedState((state) => {
           const nextState = update(state)
           return nextState == null ? state : { ...state, ...nextState }
         })
       } else {
-        setState(state => ({ ...state, ...update }))
+        setMergedState((state) => ({ ...state, ...update }))
       }
     },
-    [setState],
   )
 
-  return [state, updater]
+  return { mergedState, updater }
 }

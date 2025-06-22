@@ -1,5 +1,5 @@
-import useEventListener from './useEventListener.js'
-import { useCallback } from 'react'
+import useEventListener from './useEventListener'
+import { useCallback } from 'reblendjs'
 
 type DocumentEventHandler<K extends keyof DocumentEventMap> = (
   this: Document,
@@ -7,8 +7,7 @@ type DocumentEventHandler<K extends keyof DocumentEventMap> = (
 ) => any
 
 /**
- * Attaches an event handler outside directly to the `document`,
- * bypassing the react synthetic event system.
+ * Attaches an event handler outside directly to the `document`
  *
  * ```ts
  * useGlobalListener('keydown', (event) => {
@@ -25,7 +24,7 @@ export default function useGlobalListener<K extends keyof DocumentEventMap>(
   handler: DocumentEventHandler<K>,
   capture: boolean | AddEventListenerOptions = false,
 ) {
-  const documentTarget = useCallback(() => document, [])
+  const documentTarget = useCallback(() => document)
 
   return useEventListener(documentTarget, event, handler, capture)
 }

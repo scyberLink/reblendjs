@@ -1,22 +1,24 @@
-import { renderHook as baseRenderHook } from '@testing-library/react'
+import { renderHook as baseRenderHook } from 'reblend-testing-library'
 
-type ReactWrapper<P> = {
-  setProps(props: Partial<P>): void
-  unmount(): void
+type ReblendWrapper<P> = {
+  setProps(props: Partial<P>): Promise<void>
+  unmount(): Promise<void>
 }
 
-export function renderHook<T extends (props: P) => any, P = any>(
+export async function renderHook<T extends (props: P) => any, P = any>(
   fn: T,
   initialProps?: P,
-): [ReturnType<T>, ReactWrapper<P>] {
-  const { rerender, result, unmount } = baseRenderHook(fn, { initialProps })
+): Promise<[ReturnType<T>, ReblendWrapper<P>]> {
+  const { rerender, result, unmount } = await baseRenderHook(fn, {
+    initialProps,
+  })
 
   return [
-    result.current,
+    result.current as any,
     {
       unmount,
-      setProps(props: P) {
-        rerender({ ...initialProps, ...props })
+      async setProps(props: P) {
+        await rerender({ ...initialProps, ...props })
       },
     },
   ]

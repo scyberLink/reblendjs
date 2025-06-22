@@ -1,10 +1,11 @@
 import useBreakpoint, {
   DefaultBreakpointMap,
   createBreakpointHook,
-} from '../src/useBreakpoint.js'
+} from '../lib/useBreakpoint'
 
-import { describe, it, vi, expect, afterEach, beforeEach } from 'vitest'
-import { renderHook } from '@testing-library/react'
+import { describe, it, expect, afterEach, beforeEach } from '@jest/globals'
+import { renderHook } from 'reblend-testing-library'
+import Reblend from 'reblendjs'
 
 interface Props {
   breakpoint: DefaultBreakpointMap
@@ -13,12 +14,12 @@ interface Props {
 describe('useBreakpoint', () => {
   let matchMediaSpy
 
-  beforeEach(() => {
-    matchMediaSpy = vi.spyOn(window, 'matchMedia')
+  beforeEach(async () => {
+    matchMediaSpy = jest.spyOn(window, 'matchMedia')
     window.resizeTo(1024, window.innerHeight)
   })
 
-  afterEach(() => {
+  afterEach(async () => {
     matchMediaSpy.mockRestore()
   })
 
@@ -40,24 +41,28 @@ describe('useBreakpoint', () => {
     ${0}    | ${true}  | ${{ xs: 'up' }}
   `(
     'should match: $expected with config: $config at window width: $width',
-    ({ width, expected, config }) => {
+    async ({ width, expected, config }) => {
       window.resizeTo(width, window.innerHeight)
 
-      const { result, unmount } = renderHook(() => useBreakpoint(config))
+      const { result, unmount } = await renderHook(function useBreakp() {
+        return useBreakpoint(config)
+      })
 
-      expect(result.current).toEqual(expected)
-      unmount()
+      expect(result.current.matches).toEqual(expected)
+      await unmount()
     },
   )
 
-  it('should assume pixels for number values', () => {
+  it('should assume pixels for number values', async () => {
     const useCustomBreakpoint = createBreakpointHook({
       xs: 0,
       sm: 400,
       md: 700,
     })
 
-    renderHook(() => useCustomBreakpoint('sm'))
+    await renderHook(function useCustomBreakp() {
+      return useCustomBreakpoint('sm')
+    })
 
     expect(matchMediaSpy).toBeCalled()
     expect(matchMediaSpy.mock.calls[0][0]).toEqual(
@@ -65,14 +70,16 @@ describe('useBreakpoint', () => {
     )
   })
 
-  it('should use calc for string values', () => {
+  it('should use calc for string values', async () => {
     const useCustomBreakpoint = createBreakpointHook({
       xs: 0,
       sm: '40rem',
       md: '70rem',
     })
 
-    renderHook(() => useCustomBreakpoint('sm'))
+    await renderHook(function useCustomBreakp() {
+      return useCustomBreakpoint('sm')
+    })
 
     expect(matchMediaSpy).toBeCalled()
     expect(matchMediaSpy.mock.calls[0][0]).toEqual(
@@ -80,14 +87,15 @@ describe('useBreakpoint', () => {
     )
   })
 
-  it('should flatten media', () => {
+  it('should flatten media', async () => {
     const useCustomBreakpoint = createBreakpointHook({
       sm: 400,
       md: 400,
     })
 
-    renderHook(() => useCustomBreakpoint({ sm: 'up', md: 'up' }))
-
+    await renderHook(function useCustomBreakp() {
+      return useCustomBreakpoint({ sm: 'up', md: 'up' })
+    })
     expect(matchMediaSpy.mock.calls[0][0]).toEqual('(min-width: 400px)')
   })
 })

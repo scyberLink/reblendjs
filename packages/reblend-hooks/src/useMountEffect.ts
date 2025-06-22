@@ -1,4 +1,4 @@
-import { useEffect, EffectCallback } from 'react'
+import { useEffect, StateEffectiveFunction } from 'reblendjs'
 
 /**
  * Run's an effect on mount, and is cleaned up on unmount. Generally
@@ -17,8 +17,8 @@ import { useEffect, EffectCallback } from 'react'
  *
  *  @category effects
  */
-function useMountEffect(effect: EffectCallback) {
-  return useEffect(effect, [])
+function useMountEffect<T>(effect: StateEffectiveFunction<T>) {
+  useEffect(effect, [] as any)
 }
 
 export default useMountEffect

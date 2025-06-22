@@ -1,35 +1,68 @@
-import useMediaQuery from '../src/useMediaQuery.js'
-import { describe, it, expect } from 'vitest'
-import { renderHook, act } from '@testing-library/react'
+import useMediaQuery from '../lib/useMediaQuery'
+
+import { renderHook, act } from 'reblend-testing-library'
+import Reblend, { useProps } from 'reblendjs'
 
 describe('useMediaQuery', () => {
-  it('should match immediately if possible', () => {
-    const wrapper = renderHook(useMediaQuery, {
-      initialProps: 'min-width: 100px',
-    })
+  it('should match immediately if possible', async () => {
+    const wrapper = await renderHook(
+      function useMediaQ({ query }) {
+        const obj = useMediaQuery(query)
+        useProps<any>(
+          ({
+            current: {
+              initialProps: { query },
+            },
+            initial,
+          }) => {
+            !initial && obj.setQuery(query)
+          },
+        )
+        return obj
+      },
+      {
+        initialProps: { query: 'min-width: 100px' },
+      },
+    )
 
     expect(window.innerWidth).toBeGreaterThanOrEqual(100)
-    expect(wrapper.result.current).toEqual(true)
+    expect(wrapper.result.current.matches).toEqual(true)
 
-    act(() => {
-      wrapper.rerender('min-width: 2000px')
+    await act(async () => {
+      await wrapper.rerender({ query: 'min-width: 2000px' })
     })
 
     expect(window.innerWidth).toBeLessThanOrEqual(2000)
-    expect(wrapper.result.current).toEqual(false)
+    expect(wrapper.result.current.matches).toEqual(false)
   })
 
-  it('should clear if no media is passed', () => {
-    const wrapper = renderHook(useMediaQuery, {
-      initialProps: null as string | null,
+  it('should clear if no media is passed', async () => {
+    const wrapper = await renderHook(
+      function useMediaQ({ query }) {
+        const obj = useMediaQuery(query)
+        useProps<any>(
+          ({
+            current: {
+              initialProps: { query },
+            },
+            initial,
+          }) => {
+            !initial && obj.setQuery(query)
+          },
+        )
+        return obj
+      },
+      {
+        initialProps: { query: null },
+      },
+    )
+
+    expect(wrapper.result.current.matches).toEqual(false)
+
+    await act(async () => {
+      await wrapper.rerender('')
     })
 
-    expect(wrapper.result.current).toEqual(false)
-
-    act(() => {
-      wrapper.rerender('')
-    })
-
-    expect(wrapper.result.current).toEqual(false)
+    expect(wrapper.result.current.matches).toEqual(false)
   })
 })

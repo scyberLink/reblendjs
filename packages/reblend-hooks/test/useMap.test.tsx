@@ -1,11 +1,12 @@
-import { act, render } from '@testing-library/react'
-import { describe, it, vi, expect } from 'vitest'
-import useMap, { ObservableMap } from '../src/useMap.js'
+import { act, render, waitFor } from 'reblend-testing-library'
+
+import useMap, { ObservableMap } from '../lib/useMap'
+import Reblend from 'reblendjs'
 
 describe('useMap', () => {
   describe('ObservableMap', () => {
-    it('should implement a Map', () => {
-      const map = new ObservableMap(() => {}, [['baz', false]])
+    it('should implement a Map', async () => {
+      const map = new ObservableMap(async () => {}, [['baz', false]])
 
       expect(map.size).toEqual(1)
 
@@ -38,8 +39,8 @@ describe('useMap', () => {
       expect(map.size).toEqual(0)
     })
 
-    it('should be observable', () => {
-      const spy = vi.fn()
+    it('should be observable', async () => {
+      const spy = jest.fn()
       const map = new ObservableMap(spy)
 
       map.set('foo', true)
@@ -56,31 +57,35 @@ describe('useMap', () => {
     })
   })
 
-  it('should rerender when the map is updated', () => {
-    let map
+  it('should rerender when the map is updated', async () => {
+    let mapObj
     function Wrapper() {
-      map = useMap()
-      return <span>{JSON.stringify(Array.from(map.entries()))}</span>
+      mapObj = useMap()
+      return <span>{JSON.stringify(Array.from(mapObj.map.entries()))}</span>
     }
 
-    const wrapper = render(<Wrapper />)
+    const wrapper = await render(<Wrapper />)
 
-    act(() => {
-      map.set('foo', true)
+    await act(async () => {
+      mapObj.map.set('foo', true)
     })
 
-    expect(wrapper.getByText('[["foo",true]]')).toBeTruthy()
+    await waitFor(() =>
+      expect(wrapper.getByText('[["foo",true]]')).toBeTruthy(),
+    )
 
-    act(() => {
-      map.set('bar', true)
+    await act(async () => {
+      mapObj.map.set('bar', true)
     })
 
-    expect(wrapper.getByText('[["foo",true],["bar",true]]')).toBeTruthy()
+    await waitFor(() =>
+      expect(wrapper.getByText('[["foo",true],["bar",true]]')).toBeTruthy(),
+    )
 
-    act(() => {
-      map.clear()
+    await act(async () => {
+      mapObj.map.clear()
     })
 
-    expect(wrapper.getByText('[]')).toBeTruthy()
+    await waitFor(() => expect(wrapper.getByText('[]')).toBeTruthy())
   })
 })

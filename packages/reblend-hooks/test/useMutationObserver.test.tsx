@@ -1,33 +1,57 @@
-import { act, render } from '@testing-library/react'
-import { describe, it, Mock, MockInstance, vi, expect, afterEach } from 'vitest'
-
-import useMutationObserver from '../src/useMutationObserver.js'
-import useCallbackRef from '../src/useCallbackRef.js'
+import { act, render, waitFor } from 'reblend-testing-library'
+import useMutationObserver from '../lib/useMutationObserver'
+import useCallbackRef from '../lib/useCallbackRef'
+import Reblend, { useEffect, useProps } from 'reblendjs'
 
 describe('useMutationObserver', () => {
+  let disconnentSpy: any
+  beforeEach(async () => {
+    disconnentSpy = jest.spyOn(MutationObserver.prototype, 'disconnect')
+  })
+  
+  afterEach(async () => {
+    disconnentSpy?.mockRestore()
+  })
+  
   it('should add a mutation observer', async () => {
-    const teardown = vi.fn()
-    const spy = vi.fn(() => teardown)
+    const teardown = jest.fn()
+    const spy = jest.fn(() => teardown)
 
     function Wrapper(props) {
-      const [el, attachRef] = useCallbackRef<HTMLElement>()
+      const { item, ref } = useCallbackRef<HTMLElement>()
 
-      useMutationObserver(el, { attributes: true }, spy)
+      const { setElement } = useMutationObserver(
+        item,
+        { attributes: true },
+        spy,
+      )
 
-      return <div ref={attachRef} {...props} />
+      useEffect(() => {
+        if (item) {
+          setElement(item)
+        }
+      }, [item])
+
+      return <div ref={ref} {...props} />
     }
 
-    const wrapper = render(<Wrapper />)
+    const wrapper = await render(<Wrapper />)
 
     expect(spy).toHaveBeenCalledTimes(0)
-
-    act(() => {
-      wrapper.rerender(<Wrapper role="button" />)
-    })
-
+    await wrapper.rerender(<Wrapper role="button" />)
     await Promise.resolve()
-
-    expect(spy).toHaveBeenCalledTimes(1)
+    await waitFor(() => {
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy).toHaveBeenCalledWith(
+        [
+          expect.objectContaining({
+            type: 'attributes',
+            attributeName: 'role',
+          }),
+        ],
+        expect.anything(),
+      )
+    })
 
     expect(spy).toHaveBeenCalledWith(
       [
@@ -39,31 +63,34 @@ describe('useMutationObserver', () => {
       expect.anything(),
     )
     // coverage on the teardown
-    wrapper.unmount()
-  })
-
-  let disconnentSpy: MockInstance<() => void>
-  afterEach(() => {
-    disconnentSpy?.mockRestore()
+    await wrapper.unmount()
   })
 
   it('should update config', async () => {
-    const teardown = vi.fn()
-    const spy = vi.fn(() => teardown)
-
-    disconnentSpy = vi.spyOn(MutationObserver.prototype, 'disconnect')
+    const teardown = jest.fn()
+    const spy = jest.fn(() => teardown)
 
     function Wrapper({ attributeFilter, ...props }: any) {
-      const [el, attachRef] = useCallbackRef<HTMLElement>()
+      const { item, ref } = useCallbackRef<HTMLElement>()
 
-      useMutationObserver(el, { attributes: true, attributeFilter }, spy)
+      const { setConfig, setElement } = useMutationObserver(
+        item,
+        { attributes: true, attributeFilter },
+        spy,
+      )
 
-      return <div ref={attachRef} {...props} />
+      useEffect(() => setElement(item), item)
+
+      useProps<any>(({ current: { attributeFilter }, initial }) => {
+        !initial && setConfig({ attributes: true, attributeFilter })
+      })
+
+      return <div ref={ref} {...props} />
     }
 
-    const wrapper = render(<Wrapper attributeFilter={['data-name']} />)
+    const wrapper = await render(<Wrapper attributeFilter={['data-name']} />)
 
-    wrapper.rerender(
+    await wrapper.rerender(
       <Wrapper attributeFilter={['data-name']} role="presentation" />,
     )
 
@@ -71,25 +98,25 @@ describe('useMutationObserver', () => {
 
     expect(spy).toHaveBeenCalledTimes(0)
 
-    wrapper.rerender(<Wrapper role="button" />)
+    await wrapper.rerender(<Wrapper role="button" />)
 
     await Promise.resolve()
+    await waitFor(() => {
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy).toHaveBeenCalledWith(
+        [
+          expect.objectContaining({
+            type: 'attributes',
+            attributeName: 'role',
+          }),
+        ],
+        expect.anything(),
+      )
+      expect(disconnentSpy).toBeCalledTimes(1)
+    })
 
-    expect(spy).toHaveBeenCalledTimes(1)
+    await wrapper.unmount()
 
-    expect(spy).toHaveBeenCalledWith(
-      [
-        expect.objectContaining({
-          type: 'attributes',
-          attributeName: 'role',
-        }),
-      ],
-      expect.anything(),
-    )
-    expect(disconnentSpy).toBeCalledTimes(1)
-
-    wrapper.unmount()
-
-    expect(disconnentSpy).toBeCalledTimes(2)
+    expect(disconnentSpy).toBeCalledTimes(3)
   })
 })

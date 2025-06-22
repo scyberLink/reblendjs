@@ -1,5 +1,5 @@
-import useMediaQuery from './useMediaQuery.js'
-import { useMemo } from 'react'
+import useMediaQuery from './useMediaQuery'
+import { StateFunction, useMemo, useReducer, useState } from 'reblendjs'
 
 export type BreakpointDirection = 'up' | 'down' | true
 
@@ -68,9 +68,9 @@ export function createBreakpointHook<TKey extends string>(
    *
    * ```tsx
    * const MidSizeOnly = () => {
-   *   const isMid = useBreakpoint({ lg: 'down', sm: 'up' });
+   *   const {matches} = useBreakpoint({ lg: 'down', sm: 'up' });
    *
-   *   if (isMid) return <div>On a Reasonable sized Screen!</div>
+   *   if (matches) return <div>On a Reasonable sized Screen!</div>
    *   return null;
    * }
    * ```
@@ -81,15 +81,18 @@ export function createBreakpointHook<TKey extends string>(
   function useBreakpoint(
     breakpointMap: BreakpointMap<TKey>,
     window?: Window,
-  ): boolean
+  ): {
+    matches: boolean
+    setQuery: StateFunction<string | null>
+  }
   /**
    * Match a single breakpoint exactly, up, or down.
    *
    * ```tsx
    * const PhoneOnly = () => {
-   *   const isSmall = useBreakpoint('sm', 'down');
+   *   const {matches} = useBreakpoint('sm', 'down');
    *
-   *   if (isSmall) return <div>On a Small Screen!</div>
+   *   if ({matches}) return <div>On a Small Screen!</div>
    *   return null;
    * }
    * ```
@@ -102,12 +105,18 @@ export function createBreakpointHook<TKey extends string>(
     breakpoint: TKey,
     direction?: BreakpointDirection,
     window?: Window,
-  ): boolean
+  ): {
+    matches: boolean
+    setQuery: StateFunction<string | null>
+  }
   function useBreakpoint(
     breakpointOrMap: TKey | BreakpointMap<TKey>,
     direction?: BreakpointDirection | Window,
     window?: Window,
-  ): boolean {
+  ): {
+    matches: boolean
+    setQuery: StateFunction<string | null>
+  } {
     let breakpointMap: BreakpointMap<TKey>
 
     if (typeof breakpointOrMap === 'object') {
@@ -122,24 +131,22 @@ export function createBreakpointHook<TKey extends string>(
       >
     }
 
-    let query = useMemo(
-      () =>
-        Object.entries(breakpointMap).reduce((query, entry) => {
-          const [key, direction] = entry as [TKey, BreakpointDirection]
+    let query = Object.entries(breakpointMap).reduce((query, entry) => {
+      const [key, direction] = entry as [TKey, BreakpointDirection]
 
-          if (direction === 'up' || direction === true) {
-            query = and(query, getMinQuery(key))
-          }
-          if (direction === 'down' || direction === true) {
-            query = and(query, getMaxQuery(key))
-          }
+      if (direction === 'up' || direction === true) {
+        query = and(query, getMinQuery(key))
+      }
+      if (direction === 'down' || direction === true) {
+        query = and(query, getMaxQuery(key))
+      }
 
-          return query
-        }, ''),
-      [JSON.stringify(breakpointMap)],
-    )
+      return query
+    }, '')
 
-    return useMediaQuery(query, window)
+    const { matches, setQuery } = useMediaQuery(query, window)
+
+    return { matches, setQuery } as any
   }
 
   return useBreakpoint

@@ -1,23 +1,23 @@
-import { useCallback, useMemo, useRef } from 'react'
-import useEventCallback from './useEventCallback.js'
-import useMounted from './useMounted.js'
+import { useCallback, useMemo, useRef } from 'reblendjs'
+import useEventCallback from './useEventCallback'
+import useMounted from './useMounted'
 
 export interface FocusManagerOptions {
   /**
    * A callback fired when focus shifts. returning `false` will prevent
    * handling the focus event
    */
-  willHandle?(focused: boolean, event: React.FocusEvent): boolean | void
+  willHandle?(focused: boolean, event: Reblend.FocusEvent): boolean | void
 
   /**
    * A callback fired after focus is handled but before onChange is called
    */
-  didHandle?(focused: boolean, event: React.FocusEvent): void
+  didHandle?(focused: boolean, event: Reblend.FocusEvent): void
 
   /**
    * A callback fired after focus has changed
    */
-  onChange?(focused: boolean, event: React.FocusEvent): void
+  onChange?(focused: boolean, event: Reblend.FocusEvent): void
 
   /**
    * When true, the event handlers will not report focus changes
@@ -68,7 +68,7 @@ export default function useFocusManager(
   const isDisabled = useEventCallback(opts.isDisabled)
 
   const handleChange = useCallback(
-    (focused: boolean, event: React.FocusEvent) => {
+    (focused: boolean, event: Reblend.FocusEvent) => {
       if (focused !== lastFocused.current) {
         didHandle?.(focused, event)
 
@@ -79,11 +79,10 @@ export default function useFocusManager(
         }
       }
     },
-    [isMounted, didHandle, onChange, lastFocused],
   )
 
   const handleFocusChange = useCallback(
-    (focused: boolean, event: React.FocusEvent) => {
+    (focused: boolean, event: Reblend.FocusEvent) => {
       if (isDisabled()) return
       if (event && event.persist) event.persist()
 
@@ -98,18 +97,14 @@ export default function useFocusManager(
         handle.current = window.setTimeout(() => handleChange(focused, event))
       }
     },
-    [willHandle, handleChange],
   )
 
-  return useMemo(
-    () => ({
-      onBlur: (event: React.FocusEvent) => {
-        handleFocusChange(false, event)
-      },
-      onFocus: (event: React.FocusEvent) => {
-        handleFocusChange(true, event)
-      },
-    }),
-    [handleFocusChange],
-  )
+  return {
+    onBlur: (event: Reblend.FocusEvent) => {
+      handleFocusChange(false, event)
+    },
+    onFocus: (event: Reblend.FocusEvent) => {
+      handleFocusChange(true, event)
+    },
+  }
 }

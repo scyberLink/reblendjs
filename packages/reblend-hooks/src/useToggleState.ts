@@ -1,4 +1,4 @@
-import { useReducer, Reducer } from 'react'
+import { useEffect, useReducer } from 'reblendjs'
 
 /**
  * Create a state setter pair for a boolean value that can be "switched".
@@ -9,7 +9,7 @@ import { useReducer, Reducer } from 'react'
  * @returns A tuple of the current state and a setter
  *
  * ```jsx
- * const [show, toggleShow] = useToggleState(false)
+ * const {show, toggleShow} = useToggleState(false)
  *
  * return (
  *   <>
@@ -24,8 +24,19 @@ import { useReducer, Reducer } from 'react'
  * ```
  */
 export default function useToggleState(initialState: boolean = false) {
-  return useReducer(
+  const [show, toggleShow] = useReducer(
     (state: boolean, action?: boolean) => (action == null ? !state : action),
     initialState,
   ) as unknown as [boolean, (value?: boolean) => void]
+
+  const toggleState = {
+    show,
+    toggleShow,
+  }
+
+  useEffect(() => {
+    toggleState.show = show
+  }, [show])
+
+  return toggleState
 }

@@ -1,8 +1,6 @@
-import { useState } from 'react'
+import { StateFunction, useEffect, useReducer, useState } from 'reblendjs'
 
-import useStableMemo from './useStableMemo.js'
-import useEffect from './useIsomorphicEffect.js'
-import useEventCallback from './useEventCallback.js'
+import useEventCallback from './useEventCallback'
 
 /**
  * Setup an [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) on
@@ -12,13 +10,16 @@ import useEventCallback from './useEventCallback.js'
  * @param init IntersectionObserver options with a notable change,
  * unlike a plain IntersectionObserver `root: null` means "not provided YET",
  * and the hook will wait until it receives a non-null value to set up the observer.
- * This change allows for easier syncing of element and root values in a React
- * context.
+ * This change allows for easier syncing of element and root values in a Reblend Context
  */
 function useIntersectionObserver<TElement extends Element>(
   element: TElement | null | undefined,
   options?: IntersectionObserverInit,
-): IntersectionObserverEntry[]
+): {
+  entries: undefined | IntersectionObserverEntry[] | null
+  setElement: StateFunction<TElement | null | undefined>
+  setRoot: StateFunction<TElement | null | undefined>
+}
 /**
  * Setup an [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) on
  * a DOM Element. This overload does not trigger component updates when receiving new
@@ -37,50 +38,82 @@ function useIntersectionObserver<TElement extends Element>(
   element: TElement | null | undefined,
   callback: IntersectionObserverCallback,
   options?: IntersectionObserverInit,
-): void
+): {
+  entries: undefined | IntersectionObserverEntry[] | null
+  setElement: StateFunction<TElement | null | undefined>
+  setRoot: StateFunction<TElement | null | undefined>
+}
 function useIntersectionObserver<TElement extends Element>(
   element: TElement | null | undefined,
   callbackOrOptions?: IntersectionObserverCallback | IntersectionObserverInit,
   maybeOptions?: IntersectionObserverInit,
-): void | IntersectionObserverEntry[] {
+): {
+  entries: undefined | IntersectionObserverEntry[] | null
+  setElement: StateFunction<TElement | null | undefined>
+  setRoot: StateFunction<TElement | null | undefined>
+} {
   let callback: IntersectionObserverCallback | undefined
   let options: IntersectionObserverInit
+  const [entries, setEntry] = useState<IntersectionObserverEntry[] | null>(null)
+
   if (typeof callbackOrOptions === 'function') {
     callback = callbackOrOptions
     options = maybeOptions || {}
   } else {
     options = callbackOrOptions || {}
   }
-  const { threshold, root, rootMargin } = options
-  const [entries, setEntry] = useState<IntersectionObserverEntry[] | null>(null)
-
   const handler = useEventCallback(callback || setEntry)
+  const { threshold, root, rootMargin } = options
 
-  // We wait for element to exist before constructing
-  const observer = useStableMemo(
-    () =>
-      root !== null &&
-      typeof IntersectionObserver !== 'undefined' &&
-      new IntersectionObserver(handler, {
-        threshold,
-        root,
-        rootMargin,
-      }),
+  let observer: any = null
 
-    [handler, root, rootMargin, threshold && JSON.stringify(threshold)],
+  const [_root, setRoot] = useReducer<typeof element, typeof element>(
+    //@ts-ignore
+    (state, newRoot) => {
+      observer =
+        newRoot !== null &&
+        typeof IntersectionObserver !== 'undefined' &&
+        new IntersectionObserver(handler as any, {
+          threshold,
+          root: newRoot,
+          rootMargin,
+        })
+      if (observer && _element) {
+        setElement(_element)
+      }
+      return newRoot
+    },
+    null,
+  )
+  setRoot(root as any)
+
+  const [_element, setElement] = useReducer<typeof element, typeof element>(
+    (state, newElement) => {
+      if (!newElement || !observer) return newElement
+
+      observer.observe(newElement!)
+
+      return newElement
+    },
+    null,
   )
 
+  setElement(element)
+
+  const useIntersectionObserverReturn = {
+    entries: callback ? undefined : entries || [],
+    setElement,
+    setRoot,
+  }
+
   useEffect(() => {
-    if (!element || !observer) return
-
-    observer.observe(element)
-
+    useIntersectionObserverReturn.entries = callback ? undefined : entries || []
     return () => {
-      observer.unobserve(element)
+      observer && observer.unobserve(_element!)
     }
-  }, [observer, element])
+  }, [observer, _element, entries])
 
-  return callback ? undefined : entries || []
+  return useIntersectionObserverReturn
 }
 
 export default useIntersectionObserver

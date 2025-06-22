@@ -1,18 +1,21 @@
-import { act, renderHook } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
-import useForceUpdate from '../src/useForceUpdate.js'
+import { act, renderHook } from 'reblend-testing-library'
+
+import useForceUpdate from '../lib/useForceUpdate'
+import Reblend, { useEffect } from 'reblendjs'
 
 describe('useForceUpdate', () => {
-  it('should return a function that returns mount state', () => {
+  it('should return a function that returns mount state', async () => {
     let count = 0
 
-    const { result } = renderHook(() => {
-      count++
+    const { result } = await renderHook(function useForce() {
+      useEffect(() => {
+        count++
+      })
       return useForceUpdate()
     })
 
     expect(count).toEqual(1)
-    act(() => {
+    await act(async () => {
       result.current()
     })
 

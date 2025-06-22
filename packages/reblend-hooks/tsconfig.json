@@ -4,8 +4,8 @@
     "skipLibCheck": true,
     "lib": ["esnext", "dom"],
     "target": "esnext",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "commonjs",
+    "moduleResolution": "node",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
@@ -17,7 +17,7 @@
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "strict": true,
-    "jsx": "react-jsx"
+    "jsx": "preserve",
   },
   "include": ["src"]
 }

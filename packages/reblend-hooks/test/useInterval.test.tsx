@@ -1,12 +1,13 @@
-import { renderHook, act } from '@testing-library/react'
-import { describe, it, vi, expect } from 'vitest'
-import useInterval from '../src/useInterval.js'
+import { renderHook, act } from 'reblend-testing-library'
+
+import useInterval from '../lib/useInterval'
+import Reblend from 'reblendjs'
 
 describe('useTimeout', () => {
-  it('should set an interval', () => {
-    vi.useFakeTimers()
+  it('should set an interval', async () => {
+    jest.useFakeTimers()
 
-    let spy = vi.fn()
+    let spy = jest.fn()
 
     function Wrapper() {
       useInterval(spy, 100)
@@ -14,47 +15,55 @@ describe('useTimeout', () => {
       return <span />
     }
 
-    renderHook(() => useInterval(spy, 100))
+    await renderHook(function useInt() {
+      return useInterval(spy, 100)
+    })
 
     expect(spy).not.toHaveBeenCalled()
-    act(() => {
-      vi.runOnlyPendingTimers()
+    await act(async () => {
+      jest.runOnlyPendingTimers()
     })
     expect(spy).toHaveBeenCalledTimes(1)
-    act(() => {
-      vi.runOnlyPendingTimers()
+    await act(async () => {
+      jest.runOnlyPendingTimers()
     })
     expect(spy).toHaveBeenCalledTimes(2)
   })
 
-  it('should run immediately when argument is set', () => {
-    vi.useFakeTimers()
-    let spy = vi.fn()
+  it('should run immediately when argument is set', async () => {
+    jest.useFakeTimers()
+    let spy = jest.fn()
 
-    renderHook(() => useInterval(spy, 100, false, true))
+    await renderHook(function useInt() {
+      return useInterval(spy, 100, false, true)
+    })
 
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
-  it('should not run when paused', () => {
-    vi.useFakeTimers()
-    let spy = vi.fn()
+  it('should not run when paused', async () => {
+    jest.useFakeTimers()
+    let spy = jest.fn()
 
-    renderHook(() => useInterval(spy, 100, true))
+    await renderHook(function useInt() {
+      return useInterval(spy, 100, true)
+    })
 
-    vi.runOnlyPendingTimers()
+    jest.runOnlyPendingTimers()
     expect(spy).not.toHaveBeenCalled()
   })
 
-  it('should stop running on unmount', () => {
-    vi.useFakeTimers()
-    let spy = vi.fn()
+  it('should stop running on unmount', async () => {
+    jest.useFakeTimers()
+    let spy = jest.fn()
 
-    const { unmount } = renderHook(() => useInterval(spy, 100))
+    const { unmount } = await renderHook(function useInt() {
+      return useInterval(spy, 100)
+    })
 
-    unmount()
+    await unmount()
 
-    vi.runOnlyPendingTimers()
+    jest.runOnlyPendingTimers()
     expect(spy).not.toHaveBeenCalled()
   })
 })

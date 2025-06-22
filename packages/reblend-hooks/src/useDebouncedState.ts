@@ -1,7 +1,7 @@
-import { useState, Dispatch, SetStateAction } from 'react'
+import { StateFunction, useReducer } from 'reblendjs'
 import useDebouncedCallback, {
   UseDebouncedCallbackOptions,
-} from './useDebouncedCallback.js'
+} from './useDebouncedCallback'
 
 /**
  * Similar to `useState`, except the setter function is debounced by
@@ -21,12 +21,25 @@ import useDebouncedCallback, {
 export default function useDebouncedState<T>(
   initialState: T | (() => T),
   delayOrOptions: number | UseDebouncedCallbackOptions,
-): [T, Dispatch<SetStateAction<T>>] {
-  const [state, setState] = useState(initialState)
+): { state: T; debouncedSetState: StateFunction<T> } {
+  const useDebouncedStateReturnObject: {
+    state: T
+    debouncedSetState: StateFunction<T>
+  } = {} as any
 
-  const debouncedSetState = useDebouncedCallback<Dispatch<SetStateAction<T>>>(
-    setState,
+  const [_useDebouncedStateState, setUseDebouncedStateState] = useReducer<T, T>(
+    (_prev, newState) => {
+      useDebouncedStateReturnObject.state = newState
+      return newState
+    },
+    null as any,
+  )
+
+  useDebouncedStateReturnObject.debouncedSetState = useDebouncedCallback(
+    setUseDebouncedStateState,
     delayOrOptions,
   )
-  return [state, debouncedSetState]
+  setUseDebouncedStateState(initialState)
+
+  return useDebouncedStateReturnObject
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from 'reblendjs'
 
 /**
  * A convenience hook around `useState` designed to be paired with
@@ -7,26 +7,31 @@ import { useState } from 'react'
  * instead of lazily accessing it in an effect.
  *
  * ```ts
- * const [element, attachRef] = useCallbackRef<HTMLDivElement>()
+ * const {item, ref} = useCallbackRef<HTMLDivElement>()
  *
  * useEffect(() => {
- *   if (!element) return
+ *   if (!item) return
  *
- *   const calendar = new FullCalendar.Calendar(element)
+ *   const calendar = new FullCalendar.Calendar(item)
  *
  *   return () => {
  *     calendar.destroy()
  *   }
- * }, [element])
+ * }, [item])
  *
  * return <div ref={attachRef} />
  * ```
  *
  * @category refs
  */
-export default function useCallbackRef<TValue = unknown>(): [
-  TValue | null,
-  (ref: TValue | null) => void,
-] {
-  return useState<TValue | null>(null)
+export default function useCallbackRef<TValue = unknown>(): {
+  item: TValue | null
+  ref: (ref: TValue | null) => void
+} {
+  const [item, ref] = useState<TValue | null>(null)
+
+  return { item, ref } as any as {
+    item: TValue | null
+    ref: (ref: TValue | null) => void
+  }
 }

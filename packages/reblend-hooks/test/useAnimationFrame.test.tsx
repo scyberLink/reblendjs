@@ -1,72 +1,72 @@
-import { renderHook, act } from '@testing-library/react'
-import useAnimationFrame from '../src/useAnimationFrame.js'
-import { describe, it, beforeAll, afterAll, vi, expect } from 'vitest'
+import { renderHook, act } from 'reblend-testing-library'
+import useAnimationFrame from '../lib/useAnimationFrame'
+import Reblend from 'reblendjs'
 
 describe('useAnimationFrame', () => {
   let rafSpy, rafCancelSpy
 
-  beforeAll(() => {
-    rafSpy = vi
+  beforeAll(async () => {
+    rafSpy = jest
       .spyOn(window, 'requestAnimationFrame')
       .mockImplementation((cb) => {
         return setTimeout(() => cb(1)) as any
       })
 
-    rafCancelSpy = vi
+    rafCancelSpy = jest
       .spyOn(window, 'cancelAnimationFrame')
       .mockImplementation((handle) => {
         clearTimeout(handle)
       })
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     rafSpy.mockRestore()
     rafCancelSpy.mockRestore()
   })
 
-  it('should requestAnimationFrame', () => {
-    vi.useFakeTimers()
+  it('should requestAnimationFrame', async () => {
+    jest.useFakeTimers()
 
-    let spy = vi.fn()
+    let spy = jest.fn()
 
-    const { result } = renderHook(useAnimationFrame)
+    const { result } = await renderHook(useAnimationFrame)
 
-    act(() => result.current!.request(spy))
+    await act(() => result.current!.request(spy))
 
     expect(spy).not.toHaveBeenCalled()
 
-    vi.runAllTimers()
+    jest.runAllTimers()
 
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
-  it('should cancel a request', () => {
-    vi.useFakeTimers()
+  it('should cancel a request', async () => {
+    jest.useFakeTimers()
 
-    let spy = vi.fn()
-    const { result } = renderHook(useAnimationFrame)
+    let spy = jest.fn()
+    const { result } = await renderHook(useAnimationFrame)
 
-    act(() => {
+    await act(async () => {
       result.current.request(spy)
 
       result.current.cancel()
     })
-    vi.runAllTimers()
+    jest.runAllTimers()
 
     expect(spy).toHaveBeenCalledTimes(0)
   })
 
-  it('should cancel a request on unmount', () => {
-    vi.useFakeTimers()
+  it('should cancel a request on unmount', async () => {
+    jest.useFakeTimers()
 
-    let spy = vi.fn()
-    const { result, unmount } = renderHook(useAnimationFrame)
+    let spy = jest.fn()
+    const { result, unmount } = await renderHook(useAnimationFrame)
 
-    act(() => result.current!.request(spy))
+    await act(() => result.current!.request(spy))
 
-    unmount()
+    await unmount()
 
-    vi.runAllTimers()
+    jest.runAllTimers()
 
     expect(spy).toHaveBeenCalledTimes(0)
   })

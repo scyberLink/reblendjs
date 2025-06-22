@@ -1,13 +1,13 @@
-import { describe, it, vi, expect } from 'vitest'
-import { renderHook } from './helpers.js'
-import useRefWithInitialValueFactory from '../src/useRefWithInitialValueFactory.js'
+import { renderHook } from './helpers'
+import useRefWithInitialValueFactory from '../lib/useRefWithInitialValueFactory'
+import Reblend from 'reblendjs'
 
 describe('useRefWithInitialValueFactory', () => {
-  it('should set a ref value using factory once', () => {
-    const spy = vi.fn((v: number) => v)
+  it('should set a ref value using factory once', async () => {
+    const spy = jest.fn((v: number) => v)
 
-    const [ref, wrapper] = renderHook(
-      ({ value }) => {
+    const [ref, wrapper] = await renderHook(
+      function useRefWithInitialValueF({ value }) {
         return useRefWithInitialValueFactory(() => spy(value))
       },
       { value: 2 },

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import useMounted from './useMounted.js'
+import { useEffect, useState } from 'reblendjs'
+import useMounted from './useMounted'
 
 export interface UseAnimationFrameReturn {
   cancel(): void
@@ -56,16 +56,14 @@ export default function useAnimationFrame(): UseAnimationFrameReturn {
     }
   }, [animationFrame])
 
-  const [returnValue] = useState(() => ({
-    request(callback: FrameRequestCallback) {
+  return {
+    request: (callback: FrameRequestCallback) => {
       if (!isMounted()) return
-      setAnimationFrameState({ fn: callback })
+      setAnimationFrameState({ fn: callback } as any)
     },
     cancel: () => {
       if (!isMounted()) return
-      setAnimationFrameState(null)
+      setAnimationFrameState(null as any)
     },
-  }))
-
-  return returnValue
+  }
 }
