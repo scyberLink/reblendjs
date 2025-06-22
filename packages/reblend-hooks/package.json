@@ -3,17 +3,18 @@
   "version": "1.0.1",
   "main": "cjs/index.js",
   "module": "esm/index.js",
-  "types": "cjs/index.d.ts",
+  "types": "src/index.ts",
   "exports": {
     ".": {
       "import": "esm/index.js",
       "require": "cjs/index.js",
-      "types": "types/index.d.ts"
+      "types": "src/index.ts"
     }
   },
   "files": [
     "cjs",
     "esm",
+    "src",
     "CHANGELOG.md",
     "LICENSE",
     "HISTORY.md",
@@ -36,7 +37,7 @@
     "bootstrap": "yarn && yarn --cwd www",
     "test": "jest --coverage",
     "tdd": "jest --watch",
-    "build": "rimraf esm cjs types && npm run build:types && concurrently 'npm run build:esm' 'npm run build:cjs'",
+    "build": "rimraf esm cjs types && concurrently 'npm run build:esm' 'npm run build:cjs'",
     "build:esm": "babel src --out-dir esm --extensions '.tsx,.ts,.js' --no-babelrc --presets=reblend",
     "build:cjs": "babel src --out-dir cjs --extensions '.tsx,.ts,.js'",
     "build:types": "tsc -p tsconfig.types.json",

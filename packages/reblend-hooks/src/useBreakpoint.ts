@@ -1,5 +1,5 @@
 import { useMediaQuery } from './useMediaQuery'
-import { StateFunction, useMemo, useReducer, useState } from 'reblendjs'
+import { StateFunction } from 'reblendjs'
 
 export type BreakpointDirection = 'up' | 'down' | true
 
