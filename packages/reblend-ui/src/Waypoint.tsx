@@ -1,5 +1,5 @@
-import useCallbackRef from '@restart/hooks/useCallbackRef';
-import * as React from 'react';
+import { useCallbackRef } from 'reblend-hooks';
+import * as Reblend from 'reblendjs';
 
 import useWaypoint, {
   WaypointOptions,
@@ -10,12 +10,12 @@ import useWaypoint, {
 export { Position };
 export type { WaypointEvent };
 
-const defaultRenderComponent = (ref: React.RefCallback<any>) => (
+const defaultRenderComponent = (ref: Reblend.RefCallback<any>) => (
   <span ref={ref} style={{ fontSize: 0 }} />
 );
 
 export interface WaypointProps extends WaypointOptions {
-  renderComponent?: (ref: React.RefCallback<any>) => React.ReactElement;
+  renderComponent?: (ref: Reblend.RefCallback<any>) => Reblend.ReactElement;
 
   /**
    * The callback fired when a waypoint's position is updated. This generally

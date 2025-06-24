@@ -72,15 +72,15 @@ describe('useIntersectionObserver', () => {
 
     expect(result.current.entries).toEqual([])
 
-    expect(observers[0].observe).not.toBeCalled()
+    expect(observers[0].observe).not.toHaveBeenCalled()
 
     await rerender({ element })
 
-    expect(observers[0].observe).toBeCalledTimes(1)
+    expect(observers[0].observe).toHaveBeenCalledTimes(1)
 
     await unmount()
 
-    expect(observers[0].unobserve).toBeCalledTimes(1)
+    expect(observers[0].unobserve).toHaveBeenCalledTimes(1)
   })
 
   it('should wait for root to set up observer', async () => {
@@ -110,7 +110,7 @@ describe('useIntersectionObserver', () => {
     await rerender({ root })
 
     expect(observers).toHaveLength(1)
-    expect(observers[0].observe).toBeCalledTimes(1)
+    expect(observers[0].observe).toHaveBeenCalledTimes(1)
   })
 
   it('should accept a callback', async () => {
@@ -128,7 +128,7 @@ describe('useIntersectionObserver', () => {
       observers[0].args[0]([entry, observers[0]])
     })
 
-    expect(spy).toBeCalledTimes(1)
+    expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenLastCalledWith([entry, observers[0]])
   })
 })

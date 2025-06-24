@@ -1,6 +1,6 @@
 import * as Reblend from 'reblendjs';
-import { describe, expect, it } from 'vitest';
-import { useImperativeHandle } from 'react';
+import { describe, expect, it } from '@jest/globals';
+import { useImperativeHandle } from 'reblendjs';
 import { render } from 'reblend-testing-library';
 import { Offset } from '@restart/ui/usePopper';
 import Popover from '../src/Popover';
@@ -23,10 +23,10 @@ describe('useOverlayOffset', () => {
     });
   });
 
-  it('should have offset of [0, 8] for Popovers', () => {
+  it('should have offset of [0, 8] for Popovers', async () => {
     const ref = Reblend.createRef<any>();
 
-    render(
+    await render(
       <Wrapper ref={ref}>
         <Popover id="test-popover" />
       </Wrapper>,
@@ -36,10 +36,10 @@ describe('useOverlayOffset', () => {
     expect(offset).toEqual([0, 8]);
   });
 
-  it('should apply custom offset', () => {
+  it('should apply custom offset', async () => {
     const ref = Reblend.createRef<any>();
 
-    render(
+    await render(
       <Wrapper ref={ref} customOffset={[200, 200]}>
         <Popover id="test-popover" />
       </Wrapper>,
@@ -49,10 +49,10 @@ describe('useOverlayOffset', () => {
     expect(offset).toEqual([200, 200]);
   });
 
-  it('should have offset of [0, 6] for Tooltips', () => {
+  it('should have offset of [0, 6] for Tooltips', async () => {
     const ref = Reblend.createRef<any>();
 
-    render(
+    await render(
       <Wrapper ref={ref}>
         <Tooltip id="test-tooltip" />
       </Wrapper>,
@@ -62,10 +62,10 @@ describe('useOverlayOffset', () => {
     expect(offset).toEqual([0, 6]);
   });
 
-  it('should have offset of [0, 0] for any overlay', () => {
+  it('should have offset of [0, 0] for any overlay', async () => {
     const ref = Reblend.createRef<any>();
 
-    render(
+    await render(
       <Wrapper ref={ref}>
         <div>test</div>
       </Wrapper>,

@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'reblendjs';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import Feedback, { type FeedbackType } from './Feedback';
 import FormCheckInput from './FormCheckInput';

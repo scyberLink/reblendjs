@@ -1,6 +1,6 @@
-import { useContext, useRef } from 'react';
-import * as React from 'react';
-import useCallbackRef from '@restart/hooks/useCallbackRef';
+import { useContext, useRef } from 'reblendjs';
+import * as Reblend from 'reblendjs';
+import { useCallbackRef } from 'reblend-hooks';
 import DropdownContext, { DropdownContextValue } from './DropdownContext';
 import usePopper, {
   UsePopperOptions,
@@ -70,14 +70,14 @@ export interface UseDropdownMenuOptions {
 }
 
 export type UserDropdownMenuProps = Record<string, any> & {
-  ref: React.RefCallback<HTMLElement>;
-  style?: React.CSSProperties;
+  ref: Reblend.RefCallback<HTMLElement>;
+  style?: Reblend.CSSProperties;
   'aria-labelledby'?: string;
 };
 
 export type UserDropdownMenuArrowProps = Record<string, any> & {
-  ref: React.RefCallback<HTMLElement>;
-  style: React.CSSProperties;
+  ref: Reblend.RefCallback<HTMLElement>;
+  style: Reblend.CSSProperties;
 };
 
 export interface UseDropdownMenuMetadata {
@@ -125,7 +125,7 @@ export function useDropdownMenu(options: UseDropdownMenuOptions = {}) {
     hasShownRef.current = true;
   }
 
-  const handleClose = (e: React.SyntheticEvent | Event) => {
+  const handleClose = (e: Reblend.SyntheticEvent | Event) => {
     context?.toggle(false, e as any);
   };
 
@@ -196,12 +196,12 @@ export interface DropdownMenuProps extends UseDropdownMenuOptions {
    *     ref: (?HTMLElement) => void,
    *     style: { [string]: string | number },
    *   },
-   * }) => React.Element}
+   * }) => Reblend.Element}
    */
   children: (
     props: UserDropdownMenuProps,
     meta: UseDropdownMenuMetadata,
-  ) => React.ReactNode;
+  ) => Reblend.ReactNode;
 }
 
 /**

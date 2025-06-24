@@ -10,3 +10,4 @@ node_modules/
 # Exclude lib directories at any level
 **/lib/
 .npmrc
+packages/reblend-hooks/cjs-test/

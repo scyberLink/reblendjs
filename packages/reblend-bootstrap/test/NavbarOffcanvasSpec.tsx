@@ -1,11 +1,11 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen } from 'reblend-testing-library';
 import Navbar from '../src/Navbar';
 import Offcanvas from '../src/Offcanvas';
 
 describe('<NavbarOffcanvas>', () => {
-  it('should should open the offcanvas', () => {
-    render(
+  it('should should open the offcanvas', async () => {
+    await render(
       <Navbar>
         <Navbar.Toggle data-testid="toggle" />
         <Navbar.Offcanvas data-testid="offcanvas">hello</Navbar.Offcanvas>
@@ -16,9 +16,9 @@ describe('<NavbarOffcanvas>', () => {
     expect(screen.getByTestId('offcanvas').classList).toContain('show');
   });
 
-  it('should close the offcanvas on header close button click', () => {
-    const onToggleSpy = vi.fn();
-    render(
+  it('should close the offcanvas on header close button click', async () => {
+    const onToggleSpy = jest.fn();
+    await render(
       <Navbar onToggle={onToggleSpy} expanded>
         <Navbar.Toggle data-testid="toggle" />
         <Navbar.Offcanvas data-testid="offcanvas">
@@ -31,8 +31,8 @@ describe('<NavbarOffcanvas>', () => {
     expect(onToggleSpy).toHaveBeenCalledWith(false);
   });
 
-  it('should render nav items with expand prop', () => {
-    render(
+  it('should render nav items with expand prop', async () => {
+    await render(
       <Navbar expand="sm">
         <Navbar.Toggle data-testid="toggle" />
         <Navbar.Offcanvas data-testid="offcanvas">hello</Navbar.Offcanvas>

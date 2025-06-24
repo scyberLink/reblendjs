@@ -1,11 +1,11 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen, waitFor } from 'reblend-testing-library';
 import Nav from '../src/Nav';
 import Navbar from '../src/Navbar';
 
 describe('<Navbar>', () => {
-  it('Should create nav element', () => {
-    render(<Navbar data-testid="test" />);
+  it('Should create nav element', async () => {
+    await render(<Navbar data-testid="test" />);
     const navbarElem = screen.getByTestId('test');
 
     expect(navbarElem.classList).toContain('navbar');
@@ -13,37 +13,37 @@ describe('<Navbar>', () => {
     expect(navbarElem.classList).toContain('navbar-light');
   });
 
-  it('Should add "navigation" role when not using a `<nav>`', () => {
-    render(<Navbar as="div" data-testid="test" />);
+  it('Should add "navigation" role when not using a `<nav>`', async () => {
+    await render(<Navbar as="div" data-testid="test" />);
     const navbarElem = screen.getByTestId('test');
 
     expect(navbarElem.tagName).toEqual('DIV');
     expect(navbarElem.getAttribute('role')).toEqual('navigation');
   });
 
-  it('Should add fixed=top|bottom variation', () => {
-    render(<Navbar fixed="top" data-testid="test1" />);
+  it('Should add fixed=top|bottom variation', async () => {
+    await render(<Navbar fixed="top" data-testid="test1" />);
     const firstNavbarElem = screen.getByTestId('test1');
     expect(firstNavbarElem.classList).toContain('fixed-top');
 
-    render(<Navbar fixed="bottom" data-testid="test2" />);
+    await render(<Navbar fixed="bottom" data-testid="test2" />);
 
     const navbarElem = screen.getByTestId('test2');
     expect(navbarElem.classList).toContain('fixed-bottom');
   });
 
-  it('Should variant=dark', () => {
-    render(<Navbar variant="dark" data-testid="test" />);
+  it('Should variant=dark', async () => {
+    await render(<Navbar variant="dark" data-testid="test" />);
     expect(screen.getByTestId('test').classList).toContain('navbar-dark');
   });
 
-  it('Should override role attribute', () => {
-    render(<Navbar role="banner" data-testid="test" />);
+  it('Should override role attribute', async () => {
+    await render(<Navbar role="banner" data-testid="test" />);
     expect(screen.getByTestId('test').getAttribute('role')).toEqual('banner');
   });
 
-  it('Should pass navbar context to navs', () => {
-    render(
+  it('Should pass navbar context to navs', async () => {
+    await render(
       <Navbar>
         <Nav data-testid="test" />
       </Navbar>,
@@ -52,8 +52,8 @@ describe('<Navbar>', () => {
     expect(navElem.classList).toContain('navbar-nav');
   });
 
-  it('Should add custom toggle', () => {
-    render(
+  it('Should add custom toggle', async () => {
+    await render(
       <Navbar>
         <Navbar.Toggle as="p" data-testid="test">
           hi
@@ -66,9 +66,9 @@ describe('<Navbar>', () => {
     expect(navToggleElem.tagName).toEqual('P');
   });
 
-  it('Should trigger onToggle', () => {
-    const onToggleSpy = vi.fn();
-    render(
+  it('Should trigger onToggle', async () => {
+    const onToggleSpy = jest.fn();
+    await render(
       <Navbar onToggle={onToggleSpy}>
         <Navbar.Toggle data-testid="test" />
       </Navbar>,
@@ -76,14 +76,14 @@ describe('<Navbar>', () => {
     const toggleElem = screen.getByTestId('test');
     fireEvent.click(toggleElem);
 
-    expect(onToggleSpy).toHaveBeenCalledOnce();
+    expect(onToggleSpy).toHaveBeenCalledTimes(1);
     expect(onToggleSpy).toHaveBeenCalledWith(true);
   });
 
-  it('Should not swallow onClick', () => {
-    const onClickSpy = vi.fn();
+  it('Should not swallow onClick', async () => {
+    const onClickSpy = jest.fn();
 
-    render(
+    await render(
       <Navbar>
         <Navbar.Toggle onClick={onClickSpy} data-testid="test" />
       </Navbar>,
@@ -91,11 +91,11 @@ describe('<Navbar>', () => {
     const toggleElem = screen.getByTestId('test');
     fireEvent.click(toggleElem);
 
-    expect(onClickSpy).toHaveBeenCalledOnce();
+    expect(onClickSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('Should render collapse', () => {
-    render(
+  it('Should render collapse', async () => {
+    await render(
       <Navbar>
         <Navbar.Collapse data-testid="test">hello</Navbar.Collapse>
       </Navbar>,
@@ -103,8 +103,8 @@ describe('<Navbar>', () => {
     expect(screen.getByTestId('test').classList).toContain('navbar-collapse');
   });
 
-  it('Should pass expanded to Collapse', () => {
-    render(
+  it('Should pass expanded to Collapse', async () => {
+    await render(
       <Navbar expanded>
         <Navbar.Collapse data-testid="test">hello</Navbar.Collapse>
       </Navbar>,
@@ -114,7 +114,7 @@ describe('<Navbar>', () => {
   });
 
   it('Should wire the toggle to the collapse', async () => {
-    render(
+    await render(
       <Navbar>
         <Navbar.Toggle data-testid="toggler" />
         <Navbar.Collapse data-testid="collapse">hello</Navbar.Collapse>
@@ -134,13 +134,13 @@ describe('<Navbar>', () => {
     expect(toggleElem.classList).not.toContain('collapsed');
   });
 
-  it('Should open external href link in collapseOnSelect', () => {
-    const onClickSpy = vi.fn((e) => {
+  it('Should open external href link in collapseOnSelect', async () => {
+    const onClickSpy = jest.fn((e) => {
       // prevent actual redirect
       e.persist();
       e.preventDefault();
     });
-    render(
+    await render(
       <Navbar>
         <Navbar.Toggle />
         <Navbar.Collapse>
@@ -156,19 +156,19 @@ describe('<Navbar>', () => {
     );
     const linkItem = screen.getByTestId('test');
     fireEvent.click(linkItem);
-    expect(onClickSpy).toHaveBeenCalledOnce();
+    expect(onClickSpy).toHaveBeenCalledTimes(1);
     expect(screen.getByTestId('test').getAttribute('href')).toEqual(
       'https://www.google.com',
     );
   });
 
   it('Should fire external href click', async () => {
-    const onClickSpy = vi.fn((e) => {
+    const onClickSpy = jest.fn((e) => {
       // prevent actual redirect
       e.persist();
       e.preventDefault();
     });
-    render(
+    await render(
       <Navbar expanded>
         <Navbar.Toggle />
         <Navbar.Collapse>
@@ -185,13 +185,13 @@ describe('<Navbar>', () => {
     const innerLinkItem = screen.getByTestId('test');
     fireEvent.click(innerLinkItem);
 
-    await waitFor(() => expect(onClickSpy).toHaveBeenCalledOnce());
+    await waitFor(() => expect(onClickSpy).toHaveBeenCalledTimes(1));
   });
 
-  it('Should collapseOnSelect & fire Nav subcomponent onSelect event if expanded', () => {
-    const onToggleSpy = vi.fn();
-    const onClickSpy = vi.fn();
-    render(
+  it('Should collapseOnSelect & fire Nav subcomponent onSelect event if expanded', async () => {
+    const onToggleSpy = jest.fn();
+    const onClickSpy = jest.fn();
+    await render(
       <Navbar collapseOnSelect onToggle={onToggleSpy} expanded>
         <Navbar.Toggle />
         <Navbar.Collapse>
@@ -208,16 +208,16 @@ describe('<Navbar>', () => {
     const innerLinkElem = screen.getByTestId('test');
     fireEvent.click(innerLinkElem);
 
-    expect(onClickSpy).toHaveBeenCalledOnce();
-    expect(onToggleSpy).toHaveBeenCalledOnce();
+    expect(onClickSpy).toHaveBeenCalledTimes(1);
+    expect(onToggleSpy).toHaveBeenCalledTimes(1);
     expect(onToggleSpy).toHaveBeenCalledWith(false);
   });
 
-  it('Should fire onSelect with eventKey for nav children', () => {
-    const onSelectSpy = vi.fn();
-    const onClickSpy = vi.fn();
+  it('Should fire onSelect with eventKey for nav children', async () => {
+    const onSelectSpy = jest.fn();
+    const onClickSpy = jest.fn();
 
-    render(
+    await render(
       <Navbar onSelect={onSelectSpy}>
         <Navbar.Toggle />
         <Navbar.Collapse>
@@ -234,35 +234,35 @@ describe('<Navbar>', () => {
     const innerLinkElem = screen.getByTestId('test');
     fireEvent.click(innerLinkElem);
 
-    expect(onClickSpy).toHaveBeenCalledOnce();
-    expect(onSelectSpy).toHaveBeenCalledOnce();
+    expect(onClickSpy).toHaveBeenCalledTimes(1);
+    expect(onSelectSpy).toHaveBeenCalledTimes(1);
     expect(onSelectSpy).toHaveBeenCalledWith('#home', expect.anything());
   });
 
-  it('Should have nav as default component', () => {
-    render(<Navbar data-testid="test" />);
+  it('Should have nav as default component', async () => {
+    await render(<Navbar data-testid="test" />);
     expect(screen.getByTestId('test').tagName).toEqual('NAV');
   });
 
-  it('Should render correctly when expand is a string', () => {
-    render(<Navbar expand="sm" data-testid="test" />);
+  it('Should render correctly when expand is a string', async () => {
+    await render(<Navbar expand="sm" data-testid="test" />);
     expect(screen.getByTestId('test').classList).toContain('navbar-expand-sm');
   });
 
-  it('should allow custom breakpoints for expand', () => {
-    render(<Navbar expand="custom" data-testid="test" />);
+  it('should allow custom breakpoints for expand', async () => {
+    await render(<Navbar expand="custom" data-testid="test" />);
     expect(screen.getByTestId('test').classList).toContain(
       'navbar-expand-custom',
     );
   });
 
-  it('Should render correctly when bg is set', () => {
-    render(<Navbar bg="light" data-testid="test" />);
+  it('Should render correctly when bg is set', async () => {
+    await render(<Navbar bg="light" data-testid="test" />);
     expect(screen.getByTestId('test').classList).toContain('bg-light');
   });
 
-  it('Should render correctly when sticky is set', () => {
-    render(<Navbar sticky="top" data-testid="test" />);
+  it('Should render correctly when sticky is set', async () => {
+    await render(<Navbar sticky="top" data-testid="test" />);
     expect(screen.getByTestId('test').classList).toContain('sticky-top');
   });
 });

@@ -1,7 +1,7 @@
-import { render } from '@testing-library/react';
-import { expect, describe, it, vi } from 'vitest';
+import { render } from 'reblend-testing-library';
+import { expect, describe, it, jest } from '@jest/globals';
 
-import React, { useRef } from 'react';
+import React, { useRef } from 'reblendjs';
 
 import useWaitForDOMRef from '../src/useWaitForDOMRef';
 
@@ -16,19 +16,19 @@ describe('useWaitForDOMRef', () => {
       return null;
     }
 
-    const onResolved = vi.fn((resolved) => {
-      expect(resolved).to.equal(container);
+    const onResolved = jest.fn((resolved) => {
+      expect(resolved).toEqual(container);
     });
 
     render(<Test container={container} onResolved={onResolved} />);
 
     expect(renderCount).toEqual(1);
-    expect(onResolved).toHaveBeenCalledOnce();
+    expect(onResolved).toHaveBeenCalledTimes(1);
   });
 
   it('should resolve on first render if possible (ref)', () => {
     let renderCount = 0;
-    const container = React.createRef();
+    const container = Reblend.createRef();
 
     (container as any).current = document.createElement('div');
 
@@ -38,14 +38,14 @@ describe('useWaitForDOMRef', () => {
       return null;
     }
 
-    const onResolved = vi.fn((resolved) => {
+    const onResolved = jest.fn((resolved) => {
       expect(resolved).toEqual(container.current);
     });
 
     render(<Test container={container} onResolved={onResolved} />);
 
     expect(renderCount).toEqual(1);
-    expect(onResolved).toHaveBeenCalledOnce();
+    expect(onResolved).toHaveBeenCalledTimes(1);
   });
 
   it('should resolve on first render if possible (function)', () => {
@@ -59,14 +59,14 @@ describe('useWaitForDOMRef', () => {
       return null;
     }
 
-    const onResolved = vi.fn((resolved) => {
-      expect(resolved).to.equal(div);
+    const onResolved = jest.fn((resolved) => {
+      expect(resolved).toEqual(div);
     });
 
     render(<Test container={container} onResolved={onResolved} />);
 
     expect(renderCount).toEqual(1);
-    expect(onResolved).toHaveBeenCalledOnce();
+    expect(onResolved).toHaveBeenCalledTimes(1);
   });
 
   it('should resolve after if required', () => {
@@ -78,8 +78,8 @@ describe('useWaitForDOMRef', () => {
       return null;
     }
 
-    const onResolved = vi.fn((resolved) => {
-      expect(resolved.tagName).to.equal('DIV');
+    const onResolved = jest.fn((resolved) => {
+      expect(resolved.tagName).toEqual('DIV');
     });
 
     function Wrapper() {
@@ -96,6 +96,6 @@ describe('useWaitForDOMRef', () => {
     render(<Wrapper />);
 
     expect(renderCount).toEqual(2);
-    expect(onResolved).toHaveBeenCalledOnce();
+    expect(onResolved).toHaveBeenCalledTimes(1);
   });
 });

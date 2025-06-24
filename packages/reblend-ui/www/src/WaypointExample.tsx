@@ -1,8 +1,8 @@
-import useCallbackRef from '@restart/hooks/useCallbackRef';
-import useIsomorphicEffect from '@restart/hooks/useIsomorphicEffect';
+import { useCallbackRef } from 'reblend-hooks';
+
 import Waypoint, { Position } from '@restart/ui/Waypoint';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React, { useState } from 'reblendjs';
 
 interface Props {
   horizontal?: boolean;

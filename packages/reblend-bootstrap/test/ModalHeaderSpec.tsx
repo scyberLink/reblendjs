@@ -1,10 +1,10 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen } from 'reblend-testing-library';
 import ModalHeader from '../src/ModalHeader';
 
 describe('ModalHeader', () => {
-  it('uses "div" by default', () => {
-    render(
+  it('uses "div" by default', async () => {
+    await render(
       <ModalHeader data-testid="test-modal" className="custom-class">
         <strong>Content</strong>
       </ModalHeader>,
@@ -22,8 +22,8 @@ describe('ModalHeader', () => {
     ).toEqual('Content');
   });
 
-  it('has closeButton without a containing Modal and renders', () => {
-    render(<ModalHeader data-testid="test-modal" closeButton />);
+  it('has closeButton without a containing Modal and renders', async () => {
+    await render(<ModalHeader data-testid="test-modal" closeButton />);
 
     expect(screen.getByTestId('test-modal').tagName).toEqual('DIV');
     expect(
@@ -31,18 +31,18 @@ describe('ModalHeader', () => {
     ).toBeDefined();
   });
 
-  it('Should trigger onHide when modal is closed', () => {
-    const onHideSpy = vi.fn();
-    render(
+  it('Should trigger onHide when modal is closed', async () => {
+    const onHideSpy = jest.fn();
+    await render(
       <ModalHeader data-testid="test-modal" closeButton onHide={onHideSpy} />,
     );
 
     fireEvent.click(screen.getByTestId('test-modal').querySelector('button')!);
-    expect(onHideSpy).toHaveBeenCalledOnce();
+    expect(onHideSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should render close button variant', () => {
-    render(
+  it('should render close button variant', async () => {
+    await render(
       <ModalHeader data-testid="test-modal" closeButton closeVariant="white" />,
     );
 

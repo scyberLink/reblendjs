@@ -1,7 +1,7 @@
 import * as Reblend from 'reblendjs';
-import { useEffect, useMemo, useRef, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useCallback } from 'reblendjs';
 import clsx from 'clsx';
-import useTimeout from '@restart/hooks/useTimeout';
+import useTimeout from 'reblend-hooks/useTimeout';
 import type {
   DynamicRefForwardingComponent,
   TransitionComponent,

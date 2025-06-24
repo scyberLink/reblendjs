@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
 import warning from 'warning';
-import useEventCallback from '@restart/hooks/useEventCallback';
+import { useEventCallback } from 'reblend-hooks';
 import { useNavItem } from '@restart/ui/NavItem';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import { makeEventKey } from '@restart/ui/SelectableContext';

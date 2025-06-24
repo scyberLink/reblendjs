@@ -1,9 +1,9 @@
 import contains from 'dom-helpers/contains';
 import listen from 'dom-helpers/listen';
 import ownerDocument from 'dom-helpers/ownerDocument';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'reblendjs';
 
-import useEventCallback from '@restart/hooks/useEventCallback';
+import { useEventCallback } from 'reblend-hooks';
 import warning from 'warning';
 
 const noop = () => {};
@@ -23,7 +23,7 @@ function isModifiedEvent(event: MouseEvent) {
 }
 
 export const getRefTarget = (
-  ref: React.RefObject<Element> | Element | null | undefined,
+  ref: Reblend.RefObject<Element> | Element | null | undefined,
 ) => ref && ('current' in ref ? ref.current : ref);
 
 export interface ClickOutsideOptions {
@@ -48,7 +48,7 @@ const InitialTriggerEvents: Partial<Record<MouseEvents, MouseEvents>> = {
  * @param {string=}  options.clickTrigger The DOM event name (click, mousedown, etc) to attach listeners on
  */
 function useClickOutside(
-  ref: React.RefObject<Element> | Element | null | undefined,
+  ref: Reblend.RefObject<Element> | Element | null | undefined,
   onClickOutside: (e: Event) => void = noop,
   { disabled, clickTrigger = 'click' }: ClickOutsideOptions = {},
 ) {

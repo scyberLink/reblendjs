@@ -1,6 +1,6 @@
-import useEventCallback from '@restart/hooks/useEventCallback';
-import useIntersectionObserver from '@restart/hooks/useIntersectionObserver';
-import { useMemo, useRef } from 'react';
+import { useEventCallback } from 'reblend-hooks';
+import useIntersectionObserver from 'reblend-hooks/useIntersectionObserver';
+import { useMemo, useRef } from 'reblendjs';
 import getScrollParent from 'dom-helpers/scrollParent';
 
 export interface WaypointEvent {

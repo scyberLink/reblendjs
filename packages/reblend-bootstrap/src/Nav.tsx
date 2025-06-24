@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { useContext } from 'react';
+import { useContext } from 'reblendjs';
 import { useUncontrolled } from 'uncontrollable';
 import BaseNav from '@restart/ui/Nav';
 import { DynamicRefForwardingComponent, EventKey } from '@restart/ui/types';

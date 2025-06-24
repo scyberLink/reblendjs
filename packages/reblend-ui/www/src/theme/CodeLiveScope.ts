@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as Reblend from 'reblendjs';
 import ReactDOM from 'react-dom';
 
 // Add react-live imports you need here

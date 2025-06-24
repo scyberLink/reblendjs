@@ -1,13 +1,13 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { useContext } from 'react';
+import { useContext } from 'reblendjs';
 import {
   useDropdownMenu,
   UseDropdownMenuOptions,
 } from '@restart/ui/DropdownMenu';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
-import useIsomorphicEffect from '@restart/hooks/useIsomorphicEffect';
-import useMergedRefs from '@restart/hooks/useMergedRefs';
+
+import { useMergedRefs } from 'reblend-hooks';
 import warning from 'warning';
 import DropdownContext, { type DropDirection } from './DropdownContext';
 import InputGroupContext from './InputGroupContext';

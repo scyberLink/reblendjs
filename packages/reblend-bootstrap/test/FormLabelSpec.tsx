@@ -1,12 +1,12 @@
 import * as Reblend from 'reblendjs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import FormLabel from '../src/FormLabel';
 import FormGroup from '../src/FormGroup';
 
 describe('<FormLabel>', () => {
-  it('should render correctly', () => {
-    render(
+  it('should render correctly', async () => {
+    await render(
       <FormLabel
         id="foo"
         htmlFor="bar"
@@ -24,8 +24,8 @@ describe('<FormLabel>', () => {
     expect(element.getAttribute('for')).not.toBeNull();
   });
 
-  it('should use controlId for htmlFor', () => {
-    render(
+  it('should use controlId for htmlFor', async () => {
+    await render(
       <FormGroup controlId="foo">
         <FormLabel data-testid="test-id" />
       </FormGroup>,
@@ -35,8 +35,8 @@ describe('<FormLabel>', () => {
     expect(element.getAttribute('for')).toEqual('foo');
   });
 
-  it('should render as a Col', () => {
-    render(
+  it('should render as a Col', async () => {
+    await render(
       <FormLabel column sm={4} data-testid="test-id">
         Label
       </FormLabel>,
@@ -49,8 +49,8 @@ describe('<FormLabel>', () => {
     expect(element.classList).toContain('col-sm-4');
   });
 
-  it('should use controlId for htmlFor when render as Col', () => {
-    render(
+  it('should use controlId for htmlFor when render as Col', async () => {
+    await render(
       <FormGroup controlId="foo">
         <FormLabel column sm={4} data-testid="test-id" />
       </FormGroup>,
@@ -64,8 +64,8 @@ describe('<FormLabel>', () => {
     expect(element.getAttribute('for')).toEqual('foo');
   });
 
-  it('should respect visuallyHidden', () => {
-    render(
+  it('should respect visuallyHidden', async () => {
+    await render(
       <FormLabel visuallyHidden data-testid="test-id">
         Label
       </FormLabel>,
@@ -76,8 +76,8 @@ describe('<FormLabel>', () => {
     expect(element.classList).toContain('visually-hidden');
   });
 
-  it('should prefer explicit htmlFor', () => {
-    render(
+  it('should prefer explicit htmlFor', async () => {
+    await render(
       <FormGroup controlId="foo">
         <FormLabel htmlFor="bar" data-testid="test-id" />
       </FormGroup>,
@@ -87,10 +87,10 @@ describe('<FormLabel>', () => {
     expect(element.getAttribute('for')).toEqual('bar');
   });
 
-  it('should support ref forwarding', () => {
+  it('should support ref forwarding', async () => {
     let input;
     class Container extends Reblend.Component {
-      render() {
+      await render() {
         return (
           <FormGroup controlId="foo">
             <FormLabel
@@ -103,14 +103,14 @@ describe('<FormLabel>', () => {
       }
     }
 
-    render(<Container />);
+    await render(<Container />);
     expect(input.tagName).toEqual('LABEL');
   });
 
-  it('should support ref forwarding when rendered as a Col', () => {
+  it('should support ref forwarding when rendered as a Col', async () => {
     let input;
     class Container extends Reblend.Component {
-      render() {
+      await render() {
         return (
           <FormGroup controlId="foo">
             <FormLabel
@@ -124,12 +124,12 @@ describe('<FormLabel>', () => {
       }
     }
 
-    render(<Container />);
+    await render(<Container />);
     expect(input.tagName).toEqual('LABEL');
   });
 
-  it('accepts as prop', () => {
-    render(
+  it('accepts as prop', async () => {
+    await render(
       <FormLabel as="legend" data-testid="test-id">
         body
       </FormLabel>,
@@ -138,8 +138,8 @@ describe('<FormLabel>', () => {
     expect(screen.getByTestId('test-id').tagName).toEqual('LEGEND');
   });
 
-  it('should properly size itself when rendered as a Col', () => {
-    render(
+  it('should properly size itself when rendered as a Col', async () => {
+    await render(
       <div>
         <FormLabel column="sm" data-testid="test-1">
           Label

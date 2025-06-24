@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import * as Reblend from 'reblendjs';
+import { render, fireEvent } from 'reblend-testing-library';
 
-import { vi, expect, describe, it } from 'vitest';
+import { expect, describe, it } from '@jest/globals';
 import DropdownItem from '../src/DropdownItem';
 import SelectableContext from '../src/SelectableContext';
 
@@ -13,7 +13,7 @@ describe('<DropdownItem>', () => {
   });
 
   it('should trigger onClick', () => {
-    const onClickSpy = vi.fn();
+    const onClickSpy = jest.fn();
     const { getByText } = render(
       <DropdownItem onClick={onClickSpy}>test</DropdownItem>,
     );
@@ -23,7 +23,7 @@ describe('<DropdownItem>', () => {
   });
 
   it('should not trigger onClick if disabled', () => {
-    const onClickSpy = vi.fn();
+    const onClickSpy = jest.fn();
     const { getByText } = render(
       <DropdownItem onClick={onClickSpy} disabled>
         test
@@ -34,7 +34,7 @@ describe('<DropdownItem>', () => {
   });
 
   it('should call onSelect if a key is defined', () => {
-    const onSelect = vi.fn();
+    const onSelect = jest.fn();
     const { getByText } = render(
       <SelectableContext.Provider value={onSelect}>
         <DropdownItem eventKey="abc">test</DropdownItem>
@@ -46,8 +46,8 @@ describe('<DropdownItem>', () => {
   });
 
   it('should not call onSelect onClick stopPropagation called', () => {
-    const onSelect = vi.fn();
-    const handleClick = (e: React.MouseEvent) => {
+    const onSelect = jest.fn();
+    const handleClick = (e: Reblend.MouseEvent) => {
       e.stopPropagation();
     };
     const { getByText } = render(

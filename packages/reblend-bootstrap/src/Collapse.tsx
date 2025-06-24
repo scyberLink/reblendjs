@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import css from 'dom-helpers/css';
-import React, { useMemo } from 'react';
+import React, { useMemo } from 'reblendjs';
 import Transition, {
   type TransitionStatus,
   ENTERED,

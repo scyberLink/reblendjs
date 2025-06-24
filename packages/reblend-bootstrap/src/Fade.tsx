@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { useCallback } from 'react';
+import { useCallback } from 'reblendjs';
 import Transition, {
   TransitionStatus,
   ENTERED,

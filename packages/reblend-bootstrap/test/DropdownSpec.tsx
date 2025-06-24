@@ -1,5 +1,5 @@
 import * as Reblend from 'reblendjs';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen } from 'reblend-testing-library';
 import Dropdown from '../src/Dropdown';
 import { DropDirection } from '../src/DropdownContext';
@@ -20,13 +20,13 @@ describe('<Dropdown>', () => {
 
   const simpleDropdown = <Dropdown>{dropdownChildren}</Dropdown>;
 
-  it('renders div with dropdown class', () => {
+  it('renders div with dropdown class', async () => {
     const { container } = render(simpleDropdown);
     expect(container.firstElementChild!.classList).toContain('dropdown');
   });
 
   ['up', 'end', 'start'].forEach((dir) => {
-    it(`renders div with drop${dir} class`, () => {
+    it(`renders div with drop${dir} class`, async () => {
       const { container } = render(
         <Dropdown title="Dropup" drop={dir as DropDirection}>
           {dropdownChildren}
@@ -38,7 +38,7 @@ describe('<Dropdown>', () => {
     });
   });
 
-  it('renders div with drop=down-centered', () => {
+  it('renders div with drop=down-centered', async () => {
     const { container } = render(
       <Dropdown title="Drop" drop="down-centered">
         {dropdownChildren}
@@ -49,7 +49,7 @@ describe('<Dropdown>', () => {
     expect(container.firstElementChild!.classList).toContain('dropdown-center');
   });
 
-  it('renders div with drop=up-centered', () => {
+  it('renders div with drop=up-centered', async () => {
     const { container } = render(
       <Dropdown title="Drop" drop="up-centered">
         {dropdownChildren}
@@ -61,14 +61,14 @@ describe('<Dropdown>', () => {
     expect(container.firstElementChild!.classList).toContain('dropup');
   });
 
-  it('renders toggle with Dropdown.Toggle', () => {
-    render(simpleDropdown);
+  it('renders toggle with Dropdown.Toggle', async () => {
+    await render(simpleDropdown);
 
     const toggle = screen.getByText('Child Title');
     expect(toggle.getAttribute('aria-expanded')).toEqual('false');
   });
 
-  it('forwards align="end" to menu', () => {
+  it('forwards align="end" to menu', async () => {
     const Menu = (
       ({ show: _, close: _1, align, ...props }) => (
         <div {...props} data-align={align} ref={ref} />
@@ -90,7 +90,7 @@ describe('<Dropdown>', () => {
     expect(container.querySelector('[data-align="end"]')).toBeDefined();
   });
 
-  it('toggles open/closed when clicked', () => {
+  it('toggles open/closed when clicked', async () => {
     const { container } = render(simpleDropdown);
     const dropdown = container.firstElementChild!;
     const toggle = screen.getByText('Child Title');
@@ -107,8 +107,8 @@ describe('<Dropdown>', () => {
     expect(toggle.getAttribute('aria-expanded')).toEqual('false');
   });
 
-  it('closes when child Dropdown.Item is selected', () => {
-    const onToggleSpy = vi.fn();
+  it('closes when child Dropdown.Item is selected', async () => {
+    const onToggleSpy = jest.fn();
 
     const { container } = render(
       <Dropdown show onToggle={onToggleSpy}>
@@ -130,8 +130,8 @@ describe('<Dropdown>', () => {
     expect(onToggleSpy).toHaveBeenCalledWith(false, expect.anything());
   });
 
-  it('has aria-labelledby same id as toggle button', () => {
-    render(
+  it('has aria-labelledby same id as toggle button', async () => {
+    await render(
       <Dropdown show>
         <Dropdown.Toggle data-testid="toggle">Toggle</Dropdown.Toggle>
         <Dropdown.Menu data-testid="menu" key="menu">
@@ -146,24 +146,24 @@ describe('<Dropdown>', () => {
   });
 
   describe('DOM event and source passed to onToggle', () => {
-    it('passes open, event, and source correctly when opened with click', () => {
-      const onToggleSpy = vi.fn();
-      render(<Dropdown onToggle={onToggleSpy}>{dropdownChildren}</Dropdown>);
+    it('passes open, event, and source correctly when opened with click', async () => {
+      const onToggleSpy = jest.fn();
+      await render(<Dropdown onToggle={onToggleSpy}>{dropdownChildren}</Dropdown>);
 
       expect(onToggleSpy).not.toHaveBeenCalled();
 
       fireEvent.click(screen.getByText('Child Title'));
 
-      expect(onToggleSpy).toHaveBeenCalledOnce();
+      expect(onToggleSpy).toHaveBeenCalledTimes(1);
       expect(onToggleSpy).toHaveBeenCalledWith(
         true,
         expect.objectContaining({ source: 'click' }),
       );
     });
 
-    it('passes open, event, and source correctly when closed with click', () => {
-      const onToggleSpy = vi.fn();
-      render(
+    it('passes open, event, and source correctly when closed with click', async () => {
+      const onToggleSpy = jest.fn();
+      await render(
         <Dropdown show onToggle={onToggleSpy}>
           {dropdownChildren}
         </Dropdown>,
@@ -181,9 +181,9 @@ describe('<Dropdown>', () => {
       );
     });
 
-    it('passes open, event, and source correctly when child selected', () => {
-      const onToggleSpy = vi.fn();
-      render(
+    it('passes open, event, and source correctly when child selected', async () => {
+      const onToggleSpy = jest.fn();
+      await render(
         <Dropdown onToggle={onToggleSpy}>
           <Dropdown.Toggle data-testid="toggle">Toggle</Dropdown.Toggle>
           <Dropdown.Menu>
@@ -196,7 +196,7 @@ describe('<Dropdown>', () => {
 
       fireEvent.click(screen.getByTestId('toggle'));
 
-      expect(onToggleSpy).toHaveBeenCalledOnce();
+      expect(onToggleSpy).toHaveBeenCalledTimes(1);
 
       fireEvent.click(screen.getByTestId('item1'));
 
@@ -207,9 +207,9 @@ describe('<Dropdown>', () => {
       );
     });
 
-    it('passes open, event, and source correctly when opened with keydown', () => {
-      const onToggleSpy = vi.fn();
-      render(
+    it('passes open, event, and source correctly when opened with keydown', async () => {
+      const onToggleSpy = jest.fn();
+      await render(
         <Dropdown onToggle={onToggleSpy}>
           <Dropdown.Toggle data-testid="toggle">Toggle</Dropdown.Toggle>
           <Dropdown.Menu>
@@ -222,21 +222,21 @@ describe('<Dropdown>', () => {
 
       fireEvent.keyDown(screen.getByTestId('toggle'), { key: 'ArrowDown' });
 
-      expect(onToggleSpy).toHaveBeenCalledOnce();
+      expect(onToggleSpy).toHaveBeenCalledTimes(1);
       expect(onToggleSpy).toHaveBeenCalledWith(
         true,
         expect.objectContaining({ source: 'keydown' }),
       );
     });
 
-    it('Should render .show on the dropdown toggle when outside an InputGroup', () => {
-      render(<Dropdown show>{dropdownChildren}</Dropdown>);
+    it('Should render .show on the dropdown toggle when outside an InputGroup', async () => {
+      await render(<Dropdown show>{dropdownChildren}</Dropdown>);
       expect(screen.getByText('Child Title').classList).toContain('show');
     });
   });
 
-  it('should use each components bsPrefix', () => {
-    render(
+  it('should use each components bsPrefix', async () => {
+    await render(
       <Dropdown defaultShow bsPrefix="my-dropdown" data-testid="dropdown">
         <Dropdown.Toggle data-testid="toggle" bsPrefix="my-toggle">
           Child Title
@@ -253,8 +253,8 @@ describe('<Dropdown>', () => {
     expect(screen.getByTestId('menu').classList).toContain('my-menu');
   });
 
-  it('Should have div as default component', () => {
-    render(
+  it('Should have div as default component', async () => {
+    await render(
       <Dropdown defaultShow bsPrefix="my-dropdown" data-testid="dropdown">
         <Dropdown.Toggle data-testid="toggle" bsPrefix="my-toggle">
           Child Title
@@ -268,7 +268,7 @@ describe('<Dropdown>', () => {
     expect(screen.getByTestId('dropdown').tagName).toEqual('DIV');
   });
 
-  it('Should also accept a custom component', () => {
+  it('Should also accept a custom component', async () => {
     const customComponent = (
       (
         {
@@ -281,7 +281,7 @@ describe('<Dropdown>', () => {
         ref,
       ) => <div ref={ref} id="custom-component" {...props} />,
     );
-    render(
+    await render(
       <Dropdown.Menu data-testid="menu" show as={customComponent}>
         <Dropdown.Item>Example Item</Dropdown.Item>
       </Dropdown.Menu>,
@@ -291,8 +291,8 @@ describe('<Dropdown>', () => {
   });
 
   describe('InputGroup Dropdowns', () => {
-    it('should not render a .dropdown element when inside input group', () => {
-      render(
+    it('should not render a .dropdown element when inside input group', async () => {
+      await render(
         <InputGroup>
           <Dropdown data-testid="dropdown">{dropdownChildren}</Dropdown>
         </InputGroup>,
@@ -301,8 +301,8 @@ describe('<Dropdown>', () => {
       expect(screen.queryByTestId('dropdown')).toBeNull();
     });
 
-    it('should render .show on the dropdown toggle', () => {
-      render(
+    it('should render .show on the dropdown toggle', async () => {
+      await render(
         <InputGroup>
           <Dropdown show>{dropdownChildren}</Dropdown>
         </InputGroup>,
@@ -314,10 +314,10 @@ describe('<Dropdown>', () => {
 
   describe('autoClose behaviour', () => {
     describe('autoClose="true"', () => {
-      it('should close on outer click', () => {
-        const onToggleSpy = vi.fn();
+      it('should close on outer click', async () => {
+        const onToggleSpy = jest.fn();
 
-        render(
+        await render(
           <Dropdown defaultShow onToggle={onToggleSpy} autoClose>
             <Dropdown.Toggle>Toggle</Dropdown.Toggle>
             <Dropdown.Menu>
@@ -333,10 +333,10 @@ describe('<Dropdown>', () => {
     });
 
     describe('autoClose="inside"', () => {
-      it('should close on child selection', () => {
-        const onToggleSpy = vi.fn();
+      it('should close on child selection', async () => {
+        const onToggleSpy = jest.fn();
 
-        render(
+        await render(
           <Dropdown defaultShow onToggle={onToggleSpy} autoClose="inside">
             <Dropdown.Toggle>Toggle</Dropdown.Toggle>
             <Dropdown.Menu>
@@ -350,10 +350,10 @@ describe('<Dropdown>', () => {
         expect(onToggleSpy).toHaveBeenCalledWith(false, expect.anything());
       });
 
-      it('should not close on outer click', () => {
-        const onToggleSpy = vi.fn();
+      it('should not close on outer click', async () => {
+        const onToggleSpy = jest.fn();
 
-        render(
+        await render(
           <Dropdown defaultShow onToggle={onToggleSpy} autoClose="inside">
             <Dropdown.Toggle>Toggle</Dropdown.Toggle>
             <Dropdown.Menu>
@@ -369,10 +369,10 @@ describe('<Dropdown>', () => {
     });
 
     describe('autoClose="outside"', () => {
-      it('should not close on child selection', () => {
-        const onToggleSpy = vi.fn();
+      it('should not close on child selection', async () => {
+        const onToggleSpy = jest.fn();
 
-        render(
+        await render(
           <Dropdown defaultShow onToggle={onToggleSpy} autoClose="outside">
             <Dropdown.Toggle>Toggle</Dropdown.Toggle>
             <Dropdown.Menu>
@@ -386,10 +386,10 @@ describe('<Dropdown>', () => {
         expect(onToggleSpy).not.toHaveBeenCalled();
       });
 
-      it('should close on outer click', () => {
-        const onToggleSpy = vi.fn();
+      it('should close on outer click', async () => {
+        const onToggleSpy = jest.fn();
 
-        render(
+        await render(
           <Dropdown defaultShow onToggle={onToggleSpy} autoClose="outside">
             <Dropdown.Toggle>Toggle</Dropdown.Toggle>
             <Dropdown.Menu>
@@ -405,10 +405,10 @@ describe('<Dropdown>', () => {
     });
 
     describe('autoClose="false"', () => {
-      it('should not close on child selection', () => {
-        const onToggleSpy = vi.fn();
+      it('should not close on child selection', async () => {
+        const onToggleSpy = jest.fn();
 
-        render(
+        await render(
           <Dropdown defaultShow onToggle={onToggleSpy} autoClose={false}>
             <Dropdown.Toggle>Toggle</Dropdown.Toggle>
             <Dropdown.Menu>
@@ -422,10 +422,10 @@ describe('<Dropdown>', () => {
         expect(onToggleSpy).not.toHaveBeenCalled();
       });
 
-      it('should not close on outer click', () => {
-        const onToggleSpy = vi.fn();
+      it('should not close on outer click', async () => {
+        const onToggleSpy = jest.fn();
 
-        render(
+        await render(
           <Dropdown defaultShow onToggle={onToggleSpy} autoClose={false}>
             <Dropdown.Toggle>Toggle</Dropdown.Toggle>
             <Dropdown.Menu>

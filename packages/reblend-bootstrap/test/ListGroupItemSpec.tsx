@@ -1,71 +1,71 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen } from 'reblend-testing-library';
 import ListGroupItem from '../src/ListGroupItem';
 
 describe('<ListGroupItem>', () => {
-  it('should output a div', () => {
-    render(<ListGroupItem data-testid="test" />);
+  it('should output a div', async () => {
+    await render(<ListGroupItem data-testid="test" />);
 
     const item = screen.getByTestId('test');
     expect(item.tagName).toEqual('DIV');
     expect(item.classList).toContain('list-group-item');
   });
 
-  it('accepts variants', () => {
-    render(<ListGroupItem variant="success" data-testid="test" />);
+  it('accepts variants', async () => {
+    await render(<ListGroupItem variant="success" data-testid="test" />);
 
     const item = screen.getByTestId('test');
     expect(item.classList).toContain('list-group-item');
     expect(item.classList).toContain('list-group-item-success');
   });
 
-  it('accepts active', () => {
-    render(<ListGroupItem active data-testid="test" />);
+  it('accepts active', async () => {
+    await render(<ListGroupItem active data-testid="test" />);
 
     const item = screen.getByTestId('test');
     expect(item.classList).toContain('list-group-item');
     expect(item.classList).toContain('active');
   });
 
-  it('accepts disabled', () => {
-    render(<ListGroupItem disabled data-testid="test" />);
+  it('accepts disabled', async () => {
+    await render(<ListGroupItem disabled data-testid="test" />);
 
     const item = screen.getByTestId('test');
     expect(item.classList).toContain('list-group-item');
     expect(item.classList).toContain('disabled');
   });
 
-  it('accepts as prop', () => {
-    render(<ListGroupItem as="span" data-testid="test" />);
+  it('accepts as prop', async () => {
+    await render(<ListGroupItem as="span" data-testid="test" />);
 
     const item = screen.getByTestId('test');
     expect(item.tagName).toEqual('SPAN');
     expect(item.classList).toContain('list-group-item');
   });
 
-  it('should not be focusable when disabled', () => {
-    render(<ListGroupItem disabled data-testid="test" />);
+  it('should not be focusable when disabled', async () => {
+    await render(<ListGroupItem disabled data-testid="test" />);
 
     expect(screen.getByTestId('test').getAttribute('tabindex')).toEqual('-1');
   });
 
-  it('should respect user-specified tabIndex', () => {
-    render(<ListGroupItem disabled tabIndex={4} data-testid="test" />);
+  it('should respect user-specified tabIndex', async () => {
+    await render(<ListGroupItem disabled tabIndex={4} data-testid="test" />);
 
     expect(screen.getByTestId('test').getAttribute('tabindex')).toEqual('4');
   });
 
   describe('actions', () => {
-    it('renders a button', () => {
-      render(<ListGroupItem action data-testid="test" />);
+    it('renders a button', async () => {
+      await render(<ListGroupItem action data-testid="test" />);
 
       const item = screen.getByTestId('test');
       expect(item.tagName).toEqual('BUTTON');
       expect(item.classList).toContain('list-group-item-action');
     });
 
-    it('renders an anchor', () => {
-      render(<ListGroupItem action href="/foo" data-testid="test" />);
+    it('renders an anchor', async () => {
+      await render(<ListGroupItem action href="/foo" data-testid="test" />);
 
       const item = screen.getByTestId('test');
       expect(item.tagName).toEqual('A');
@@ -73,8 +73,8 @@ describe('<ListGroupItem>', () => {
       expect(item.getAttribute('href')).to.be.equal('/foo');
     });
 
-    it('renders a div and show warning', () => {
-      render(<ListGroupItem action={false} href="/foo" data-testid="test" />);
+    it('renders a div and show warning', async () => {
+      await render(<ListGroupItem action={false} href="/foo" data-testid="test" />);
 
       const item = screen.getByTestId('test');
       expect(item.tagName).toEqual('DIV');
@@ -82,8 +82,8 @@ describe('<ListGroupItem>', () => {
       expect(item.getAttribute('href')).toEqual('/foo');
     });
 
-    it('passes href to custom as components', () => {
-      render(
+    it('passes href to custom as components', async () => {
+      await render(
         <ListGroupItem
           as="div"
           action={false}
@@ -99,19 +99,19 @@ describe('<ListGroupItem>', () => {
   });
 
   describe('onClick', () => {
-    it('Should call on click', () => {
-      const onClickSpy = vi.fn();
+    it('Should call on click', async () => {
+      const onClickSpy = jest.fn();
 
-      render(<ListGroupItem onClick={onClickSpy} data-testid="test" />);
+      await render(<ListGroupItem onClick={onClickSpy} data-testid="test" />);
 
       fireEvent.click(screen.getByTestId('test'));
-      expect(onClickSpy).toHaveBeenCalledOnce();
+      expect(onClickSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('Should not call if disabled', () => {
-      const onClickSpy = vi.fn();
+    it('Should not call if disabled', async () => {
+      const onClickSpy = jest.fn();
 
-      render(
+      await render(
         <ListGroupItem onClick={onClickSpy} disabled data-testid="test" />,
       );
 

@@ -13,6 +13,7 @@ export * as utils from './common/utils'
 export { SharedConfig } from './common/SharedConfig'
 export { ERROR_EVENTNAME } from 'reblend-typing'
 export { TryCatchError } from './exceptions/components/TryCatchError'
+export { deepEqualIterative } from 'reblend-deep-equal-iterative'
 export * from 'reblend-typing'
 export {
   useState,

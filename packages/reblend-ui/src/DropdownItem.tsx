@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { useContext } from 'react';
-import useEventCallback from '@restart/hooks/useEventCallback';
+import Reblend, { ComponentRef, MouseEventHandler } from 'reblendjs';
+import { useContext } from 'reblendjs';
+import { useEventCallback } from 'reblend-hooks';
 
 import SelectableContext, { makeEventKey } from './SelectableContext';
 import NavContext from './NavContext';
@@ -9,11 +9,11 @@ import { EventKey, DynamicRefForwardingComponent } from './types';
 import Button from './Button';
 import { dataAttr } from './DataKey';
 
-export interface DropdownItemProps extends React.HTMLAttributes<HTMLElement> {
+export interface DropdownItemProps extends Reblend.HTMLAttributes<HTMLElement> {
   /**
    * Element used to render the component.
    */
-  as?: React.ElementType;
+  as?: Reblend.ElementType;
 
   /**
    * Highlight the menu item as active.
@@ -34,6 +34,8 @@ export interface DropdownItemProps extends React.HTMLAttributes<HTMLElement> {
    * HTML `href` attribute corresponding to `a.href`.
    */
   href?: string;
+
+  ref?: ComponentRef;
 }
 
 interface UseDropdownItemOptions {
@@ -41,7 +43,7 @@ interface UseDropdownItemOptions {
   href?: string;
   active?: boolean;
   disabled?: boolean;
-  onClick?: React.MouseEventHandler;
+  onClick?: MouseEventHandler;
 }
 
 /**
@@ -55,8 +57,8 @@ export function useDropdownItem({
   disabled,
   onClick,
 }: UseDropdownItemOptions) {
-  const onSelectCtx = useContext(SelectableContext);
-  const navContext = useContext(NavContext);
+  const [onSelectCtx] = useContext(SelectableContext);
+  const [navContext] = useContext(NavContext);
 
   const { activeKey } = navContext || {};
   const eventKey = makeEventKey(key, href);
@@ -90,29 +92,25 @@ export function useDropdownItem({
 const DropdownItem: DynamicRefForwardingComponent<
   typeof Button,
   DropdownItemProps
-> = React.forwardRef(
-  (
-    {
-      eventKey,
-      disabled,
-      onClick,
-      active,
-      as: Component = Button,
-      ...props
-    }: DropdownItemProps,
-    ref,
-  ) => {
-    const [dropdownItemProps] = useDropdownItem({
-      key: eventKey,
-      href: props.href,
-      disabled,
-      onClick,
-      active,
-    });
+> = ({
+  eventKey,
+  disabled,
+  onClick,
+  active,
+  as: Component = Button,
+  ref,
+  ...props
+}: DropdownItemProps) => {
+  const [dropdownItemProps] = useDropdownItem({
+    key: eventKey,
+    href: props.href,
+    disabled,
+    onClick,
+    active,
+  });
 
-    return <Component {...props} ref={ref} {...dropdownItemProps} />;
-  },
-);
+  return <Component {...props} ref={ref} {...dropdownItemProps} />;
+};
 
 DropdownItem.displayName = 'DropdownItem';
 

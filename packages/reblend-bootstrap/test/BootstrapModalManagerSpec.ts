@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import ModalManager from '@restart/ui/ModalManager';
 import { injectCss } from './helpers';
 import BootstrapModalManager, {
@@ -7,7 +7,7 @@ import BootstrapModalManager, {
 
 const SCROLLBAR_SIZE = 10;
 
-vi.spyOn(ModalManager.prototype, 'getScrollbarWidth').mockImplementation(
+jest.spyOn(ModalManager.prototype, 'getScrollbarWidth').mockImplementation(
   () => SCROLLBAR_SIZE,
 );
 
@@ -16,7 +16,7 @@ const createModal = () => ({ dialog: null, backdrop: null });
 describe('BootstrapModalManager', () => {
   let container, manager;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     manager?.reset();
     manager = new BootstrapModalManager();
     container = document.createElement('div');
@@ -35,14 +35,14 @@ describe('BootstrapModalManager', () => {
     document.body.appendChild(container);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     manager?.reset();
     document.body.removeChild(container);
     container = null;
     manager = null;
   });
 
-  it('should add Modal', () => {
+  it('should add Modal', async () => {
     const modal = createModal();
 
     manager.add(modal);
@@ -59,12 +59,12 @@ describe('BootstrapModalManager', () => {
     });
   });
 
-  it('should return a shared modal manager', () => {
+  it('should return a shared modal manager', async () => {
     const localManager = getSharedManager();
     expect(localManager).toBeDefined();
   });
 
-  it('should return a same modal manager if called twice', () => {
+  it('should return a same modal manager if called twice', async () => {
     let localManager = getSharedManager();
     expect(localManager).toBeDefined();
 
@@ -79,7 +79,7 @@ describe('BootstrapModalManager', () => {
   });
 
   describe('container styles', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       injectCss(`
         body {
           padding-right: 20px;
@@ -95,7 +95,7 @@ describe('BootstrapModalManager', () => {
 
     afterEach(() => injectCss.reset());
 
-    it('should set padding to right side', () => {
+    it('should set padding to right side', async () => {
       const modal = createModal();
       manager.add(modal);
 
@@ -104,7 +104,7 @@ describe('BootstrapModalManager', () => {
       );
     });
 
-    it('should set padding to left side if RTL', () => {
+    it('should set padding to left side if RTL', async () => {
       const modal = createModal();
 
       new BootstrapModalManager({ isRTL: true }).add(modal as any);
@@ -114,7 +114,7 @@ describe('BootstrapModalManager', () => {
       );
     });
 
-    it('should restore container overflow style', () => {
+    it('should restore container overflow style', async () => {
       const modal = createModal();
 
       document.body.style.overflow = 'scroll';
@@ -128,7 +128,7 @@ describe('BootstrapModalManager', () => {
       document.body.style.overflow = '';
     });
 
-    it('should restore container overflow style for RTL', () => {
+    it('should restore container overflow style for RTL', async () => {
       const modal = createModal();
 
       document.body.style.overflow = 'scroll';

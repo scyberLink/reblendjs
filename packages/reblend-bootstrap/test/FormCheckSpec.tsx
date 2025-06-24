@@ -1,11 +1,11 @@
 import * as Reblend from 'reblendjs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import FormCheck from '../src/FormCheck';
 import Switch from '../src/Switch';
 
 describe('<FormCheck>', () => {
-  it('should render correctly', () => {
+  it('should render correctly', async () => {
     const { container } = render(
       <FormCheck
         id="foo"
@@ -41,7 +41,7 @@ describe('<FormCheck>', () => {
     expect(label.innerText).toEqual('My label');
   });
 
-  it('should render radio correctly', () => {
+  it('should render radio correctly', async () => {
     const { container } = render(
       <FormCheck
         id="foo"
@@ -78,7 +78,7 @@ describe('<FormCheck>', () => {
     expect(label.innerText).toEqual('My label');
   });
 
-  it('should support inline', () => {
+  it('should support inline', async () => {
     const {
       container: { firstElementChild: element },
     } = render(<FormCheck inline label="My label" />);
@@ -87,7 +87,7 @@ describe('<FormCheck>', () => {
     expect(element!.classList).toContain('form-check-inline');
   });
 
-  it('should support in reverse', () => {
+  it('should support in reverse', async () => {
     const {
       container: { firstElementChild: element },
     } = render(<FormCheck reverse label="My label" />);
@@ -96,26 +96,26 @@ describe('<FormCheck>', () => {
     expect(element!.classList).toContain('form-check-reverse');
   });
 
-  it('should support isValid', () => {
-    render(<FormCheck isValid data-testid="test-id" />);
+  it('should support isValid', async () => {
+    await render(<FormCheck isValid data-testid="test-id" />);
 
     const element = screen.getByTestId('test-id');
     expect(element!.classList).toHaveLength(2);
     expect(element.classList).toContain('is-valid');
   });
 
-  it('should support isInvalid', () => {
-    render(<FormCheck isInvalid data-testid="test-id" />);
+  it('should support isInvalid', async () => {
+    await render(<FormCheck isInvalid data-testid="test-id" />);
 
     const element = screen.getByTestId('test-id');
     expect(element!.classList).toHaveLength(2);
     expect(element.classList).toContain('is-invalid');
   });
 
-  it('should support ref forwarding', () => {
+  it('should support ref forwarding', async () => {
     let input;
     class Container extends Reblend.Component {
-      render() {
+      await render() {
         return (
           <FormCheck
             ref={(ref) => {
@@ -126,11 +126,11 @@ describe('<FormCheck>', () => {
       }
     }
 
-    render(<Container />);
+    await render(<Container />);
     expect(input.tagName).toEqual('INPUT');
   });
 
-  it('should not render bsPrefix if no label is specified', () => {
+  it('should not render bsPrefix if no label is specified', async () => {
     const { container } = render(
       <FormCheck id="foo" name="foo" value="foo" type="radio" />,
     );
@@ -138,7 +138,7 @@ describe('<FormCheck>', () => {
     expect(container.getElementsByClassName('form-check')).toHaveLength(0);
   });
 
-  it('should support type switch', () => {
+  it('should support type switch', async () => {
     const { container } = render(
       <FormCheck
         type="switch"
@@ -169,7 +169,7 @@ describe('<FormCheck>', () => {
     expect(label.innerText).toEqual('My label');
   });
 
-  it('should support Switch', () => {
+  it('should support Switch', async () => {
     const { container } = render(
       <Switch label="My label" id="switch-id" data-testid="test-id" />,
     );
@@ -195,18 +195,18 @@ describe('<FormCheck>', () => {
     expect(label.innerText).toEqual('My label');
   });
 
-  it('should support "as"', () => {
+  it('should support "as"', async () => {
     const Surrogate = ({ className = '', ...rest }) => (
       <input className={`extraClass ${className}'`} {...rest} />
     );
-    render(<FormCheck as={Surrogate} data-testid="test-id" />);
+    await render(<FormCheck as={Surrogate} data-testid="test-id" />);
 
     const element = screen.getByTestId('test-id');
     expect(element.classList).toHaveLength(2);
     expect(element.classList).toContain('extraClass');
   });
 
-  it('Should render valid feedback properly', () => {
+  it('Should render valid feedback properly', async () => {
     const { container } = render(
       <FormCheck label="My label" feedbackType="valid" feedback="test" />,
     );
@@ -216,7 +216,7 @@ describe('<FormCheck>', () => {
     expect(feedbacks[0].textContent!).toEqual('test');
   });
 
-  it('Should render invalid feedback properly', () => {
+  it('Should render invalid feedback properly', async () => {
     const { container } = render(
       <FormCheck label="My label" feedbackType="invalid" feedback="test" />,
     );
@@ -226,7 +226,7 @@ describe('<FormCheck>', () => {
     expect(feedbacks[0].textContent).toEqual('test');
   });
 
-  it('Should render valid feedback tooltip properly', () => {
+  it('Should render valid feedback tooltip properly', async () => {
     const { container } = render(
       <FormCheck
         label="My label"
@@ -241,7 +241,7 @@ describe('<FormCheck>', () => {
     expect(feedbacks[0].textContent).toEqual('test');
   });
 
-  it('Should render invalid feedback tooltip properly', () => {
+  it('Should render invalid feedback tooltip properly', async () => {
     const { container } = render(
       <FormCheck
         label="My label"

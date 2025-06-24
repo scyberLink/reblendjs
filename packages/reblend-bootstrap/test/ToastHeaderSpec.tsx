@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render } from 'reblend-testing-library';
 import Toast from '../src/Toast';
 
 describe('Toast.Header', () => {
-  it('will pass all props to the created div and renders its children', () => {
+  it('will pass all props to the created div and renders its children', async () => {
     const { container } = render(
       <Toast.Header>
         <strong>content</strong>
@@ -18,7 +18,7 @@ describe('Toast.Header', () => {
     expect(container.firstElementChild!.classList).toContain('toast-header');
   });
 
-  it('should render close button variant', () => {
+  it('should render close button variant', async () => {
     const { container } = render(
       <Toast.Header closeButton closeVariant="white">
         <strong>content</strong>

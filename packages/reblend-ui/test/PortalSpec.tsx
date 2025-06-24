@@ -1,6 +1,6 @@
-import { render } from '@testing-library/react';
-import { expect, describe, it } from 'vitest';
-import React from 'react';
+import { render } from 'reblend-testing-library';
+import { expect, describe, it } from '@jest/globals';
+import Reblend from 'reblendjs';
 import { Portal } from '../src';
 
 describe('Portal', () => {
@@ -28,8 +28,8 @@ describe('Portal', () => {
   });
 
   it('should render overlay into container (ReactComponent)', () => {
-    class Container extends React.Component {
-      container = React.createRef<any>();
+    class Container extends Reblend.Component {
+      container = Reblend.createRef<any>();
 
       render() {
         return (
@@ -48,8 +48,8 @@ describe('Portal', () => {
   });
 
   it('should not fail to render a null overlay', () => {
-    class Container extends React.Component {
-      container = React.createRef<any>();
+    class Container extends Reblend.Component {
+      container = Reblend.createRef<any>();
 
       render() {
         return (

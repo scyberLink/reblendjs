@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { useContext } from 'react';
+import { useContext } from 'reblendjs';
 import { useBootstrapPrefix } from './ThemeProvider';
 import FormContext from './FormContext';
 

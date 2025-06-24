@@ -1,11 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import FloatingLabel from '../src/FloatingLabel';
 import Form from '../src/Form';
 
 describe('<FloatingLabel>', () => {
-  it('should render correctly', () => {
-    render(
+  it('should render correctly', async () => {
+    await render(
       <FloatingLabel label="MyLabel" data-testid="test">
         <Form.Control type="text" />
       </FloatingLabel>,
@@ -16,8 +16,8 @@ describe('<FloatingLabel>', () => {
     expect(screen.getByRole('textbox')).toBeDefined();
   });
 
-  it('should pass controlId to input and label', () => {
-    render(
+  it('should pass controlId to input and label', async () => {
+    await render(
       <FloatingLabel label="MyLabel" controlId="MyId">
         <Form.Control type="text" />
       </FloatingLabel>,
@@ -27,8 +27,8 @@ describe('<FloatingLabel>', () => {
     expect(screen.getByText('MyLabel').getAttribute('for')).toEqual('MyId');
   });
 
-  it('should support "as"', () => {
-    render(
+  it('should support "as"', async () => {
+    await render(
       <FloatingLabel label="MyLabel" as="span" data-testid="test">
         <Form.Control type="text" />
       </FloatingLabel>,

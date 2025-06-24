@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext } from 'reblendjs';
 import canUseDOM from 'dom-helpers/canUseDOM';
 
 const Context = createContext(canUseDOM ? window : undefined);

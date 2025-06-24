@@ -1,5 +1,5 @@
-import { renderHook, waitFor } from '@testing-library/react';
-import { expect, describe, it, beforeEach, afterEach } from 'vitest';
+import { renderHook, waitFor } from 'reblend-testing-library';
+import { expect, describe, it, beforeEach, afterEach } from '@jest/globals';
 import usePopper from '../src/usePopper';
 
 describe('usePopper', () => {
@@ -20,7 +20,7 @@ describe('usePopper', () => {
   });
 
   it('should return state', async () => {
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       usePopper(elements.reference, elements.popper),
     );
 
@@ -35,7 +35,7 @@ describe('usePopper', () => {
     elements.popper.setAttribute('role', 'tooltip');
     elements.popper.setAttribute('id', 'example123');
 
-    const { unmount } = renderHook(() =>
+    const { unmount } = await renderHook(() =>
       usePopper(elements.reference, elements.popper),
     );
 
@@ -45,7 +45,7 @@ describe('usePopper', () => {
       ),
     );
 
-    unmount();
+    await unmount();
 
     expect(document.querySelector('[aria-describedby="example123"]')).toEqual(
       null,
@@ -57,7 +57,7 @@ describe('usePopper', () => {
     elements.popper.setAttribute('id', 'example123');
     elements.reference.setAttribute('aria-describedby', 'foo, bar , baz ');
 
-    const { unmount } = renderHook(() =>
+    const { unmount } = await renderHook(() =>
       usePopper(elements.reference, elements.popper),
     );
 
@@ -69,7 +69,7 @@ describe('usePopper', () => {
       ).toEqual(elements.reference),
     );
 
-    unmount();
+    await unmount();
 
     expect(
       document.querySelector('[aria-describedby="foo, bar , baz "]'),
@@ -77,7 +77,7 @@ describe('usePopper', () => {
   });
 
   it('should not aria-describedBy any other role', async () => {
-    renderHook(() => usePopper(elements.reference, elements.popper));
+    await renderHook(() => usePopper(elements.reference, elements.popper));
 
     await waitFor(() => {
       expect(document.querySelector('[aria-describedby="example123"]')).toEqual(
@@ -91,7 +91,7 @@ describe('usePopper', () => {
     elements.popper.setAttribute('id', 'example123');
     elements.reference.setAttribute('aria-describedby', 'foo');
 
-    const result = renderHook(() =>
+    const result = await renderHook(() =>
       usePopper(elements.reference, elements.popper),
     );
 

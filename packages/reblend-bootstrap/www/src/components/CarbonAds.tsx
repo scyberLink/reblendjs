@@ -1,5 +1,5 @@
 import * as Reblend from 'reblendjs';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'reblendjs';
 
 const CarbonAds = (props) => {
   const ref = useRef<HTMLDivElement>(null);

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen } from 'reblend-testing-library';
 import CardHeader from '../src/CardHeader';
 import Nav from '../src/Nav';
@@ -6,13 +6,13 @@ import Navbar from '../src/Navbar';
 import NavDropdown from '../src/NavDropdown';
 
 describe('<Nav>', () => {
-  it('should have div as default component', () => {
-    render(<Nav data-testid="test" />);
+  it('should have div as default component', async () => {
+    await render(<Nav data-testid="test" />);
     expect(screen.getByTestId('test').tagName).toEqual('DIV');
   });
 
-  it('should set the correct item active', () => {
-    render(
+  it('should set the correct item active', async () => {
+    await render(
       <Nav variant="pills" defaultActiveKey={1} data-testid="test">
         <Nav.Link eventKey={1}>Pill 1 content</Nav.Link>
         <Nav.Link eventKey={2}>Pill 2 content</Nav.Link>
@@ -24,8 +24,8 @@ describe('<Nav>', () => {
     expect(navLinks[1].classList).not.toContain('active');
   });
 
-  it('should add variant class', () => {
-    render(
+  it('should add variant class', async () => {
+    await render(
       <Nav variant="tabs" data-testid="test">
         <Nav.Link eventKey={1}>Pill 1 content</Nav.Link>
         <Nav.Link eventKey={2}>Pill 2 content</Nav.Link>
@@ -36,8 +36,8 @@ describe('<Nav>', () => {
     expect(navElem.classList).toContain('nav');
   });
 
-  it('should add justified class', () => {
-    render(
+  it('should add justified class', async () => {
+    await render(
       <Nav justify data-testid="test">
         <Nav.Link eventKey={1}>Pill 1 content</Nav.Link>
         <Nav.Link eventKey={2}>Pill 2 content</Nav.Link>
@@ -47,8 +47,8 @@ describe('<Nav>', () => {
     expect(navElem.classList).toContain('nav-justified');
   });
 
-  it('should add fill class', () => {
-    render(
+  it('should add fill class', async () => {
+    await render(
       <Nav fill data-testid="test">
         <Nav.Link eventKey={1}>Pill 1 content</Nav.Link>
         <Nav.Link eventKey={2}>Pill 2 content</Nav.Link>
@@ -58,8 +58,8 @@ describe('<Nav>', () => {
     expect(navElem.classList).toContain('nav-fill');
   });
 
-  it('should be navbar aware', () => {
-    render(
+  it('should be navbar aware', async () => {
+    await render(
       <Navbar>
         <Nav data-testid="test">
           <Nav.Link eventKey={1}>Pill 1 content</Nav.Link>
@@ -71,8 +71,8 @@ describe('<Nav>', () => {
     expect(navItem.classList).toContain('navbar-nav');
   });
 
-  it('should handle navbarScroll if within navbar', () => {
-    render(
+  it('should handle navbarScroll if within navbar', async () => {
+    await render(
       <Navbar>
         <Nav navbarScroll data-testid="test" />
       </Navbar>,
@@ -81,15 +81,15 @@ describe('<Nav>', () => {
     expect(navItem.classList).toContain('navbar-nav-scroll');
   });
 
-  it('should not add navbarScroll when not within navbar', () => {
-    render(<Nav navbarScroll data-testid="test" />);
+  it('should not add navbarScroll when not within navbar', async () => {
+    await render(<Nav navbarScroll data-testid="test" />);
 
     const navItem = screen.getByTestId('test');
     expect(navItem.classList).not.toContain('navbar-nav-scroll');
   });
 
-  it('should be card header aware', () => {
-    render(
+  it('should be card header aware', async () => {
+    await render(
       <CardHeader>
         <Nav variant="pills" data-testid="test">
           <Nav.Link eventKey={1}>Pill 1 content</Nav.Link>
@@ -101,10 +101,10 @@ describe('<Nav>', () => {
     expect(navItem.classList).toContain('card-header-pills');
   });
 
-  it('should call onSelect when a Nav.Link is selected', () => {
-    const onSelectSpy = vi.fn();
+  it('should call onSelect when a Nav.Link is selected', async () => {
+    const onSelectSpy = jest.fn();
 
-    render(
+    await render(
       <Nav onSelect={onSelectSpy} data-testid="test">
         <Nav.Link eventKey={1}>Tab 1 content</Nav.Link>
         <Nav.Link eventKey={2}>
@@ -117,10 +117,10 @@ describe('<Nav>', () => {
     expect(onSelectSpy).toHaveBeenCalledWith('2', expect.anything());
   });
 
-  it('should call onSelect when a NavDropdown.Item is selected', () => {
-    const onSelectSpy = vi.fn();
+  it('should call onSelect when a NavDropdown.Item is selected', async () => {
+    const onSelectSpy = jest.fn();
 
-    render(
+    await render(
       <Nav onSelect={onSelectSpy}>
         <NavDropdown title="Dropdown" id="nav-dropdown-test" renderMenuOnMount>
           <NavDropdown.Item eventKey={1} data-testid="test">
@@ -132,11 +132,11 @@ describe('<Nav>', () => {
     const dropdownItem = screen.getByTestId('test');
     fireEvent.click(dropdownItem!);
 
-    expect(onSelectSpy).toHaveBeenCalledOnce();
+    expect(onSelectSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should set the correct item active by href', () => {
-    render(
+  it('should set the correct item active by href', async () => {
+    await render(
       <Nav defaultActiveKey="#item1" data-testid="test">
         <Nav.Link href="#item1" className="test-selected">
           Pill 1 content
@@ -148,8 +148,8 @@ describe('<Nav>', () => {
     expect(navItem.firstElementChild!.classList).toContain('active');
   });
 
-  describe('Web Accessibility', () => {
-    it('should have tablist and tab roles', () => {
+  describe('Web Accessibility', async () => {
+    it('should have tablist and tab roles', async () => {
       const Component = (props) => (
         <Nav data-testid="test" {...props}>
           <Nav.Link key={1}>Tab 1 content</Nav.Link>

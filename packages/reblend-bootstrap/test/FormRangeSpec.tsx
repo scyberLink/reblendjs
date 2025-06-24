@@ -1,11 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import FormRange from '../src/FormRange';
 import FormGroup from '../src/FormGroup';
 
 describe('<FormRange>', () => {
-  it('should render correctly', () => {
-    render(
+  it('should render correctly', async () => {
+    await render(
       <FormRange
         id="foo"
         name="bar"
@@ -23,8 +23,8 @@ describe('<FormRange>', () => {
     expect(element.getAttribute('type')).toEqual('range');
   });
 
-  it('should render controlId as id correctly', () => {
-    render(
+  it('should render controlId as id correctly', async () => {
+    await render(
       <FormGroup controlId="control-id">
         <FormRange data-testid="test-id" />
       </FormGroup>,
@@ -33,8 +33,8 @@ describe('<FormRange>', () => {
     expect(element.id).toEqual('control-id');
   });
 
-  it('should override controlId correctly', () => {
-    render(
+  it('should override controlId correctly', async () => {
+    await render(
       <FormGroup controlId="control-id">
         <FormRange id="overridden-id" data-testid="test-id" />
       </FormGroup>,

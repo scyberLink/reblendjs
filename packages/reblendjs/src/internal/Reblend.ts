@@ -9,7 +9,7 @@ import * as ReblendTyping from 'reblend-typing'
 
 declare global {
   export namespace Reblend.JSX {
-    type ElementType = string | ReblendTyping.JSXElementConstructor<any> | typeof BaseComponent<any, any>
+    type ElementType = any
     type Element = ReblendTyping.ReblendElement
     // eslint-disable-next-line @typescript-eslint/ban-types
     interface ElementClass<P = {}, S = {}> extends ReblendTyping.Component<P, S> {

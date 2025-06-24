@@ -1,16 +1,16 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen } from 'reblend-testing-library';
 import Button from '../src/Button';
 import Dropdown from '../src/Dropdown';
 
 describe('<Dropdown.Item>', () => {
-  it('renders divider', () => {
-    render(<Dropdown.Divider />);
+  it('renders divider', async () => {
+    await render(<Dropdown.Divider />);
     screen.getByRole('separator');
   });
 
-  it('renders divider className and style', () => {
-    render(
+  it('renders divider className and style', async () => {
+    await render(
       <Dropdown.Divider className="foo bar" style={{ height: '100px' }} />,
     );
 
@@ -19,14 +19,14 @@ describe('<Dropdown.Item>', () => {
     expect(node.style.height).toEqual('100px');
   });
 
-  it('renders header', () => {
-    render(<Dropdown.Header>Header text</Dropdown.Header>);
+  it('renders header', async () => {
+    await render(<Dropdown.Header>Header text</Dropdown.Header>);
 
     expect(screen.getByRole('heading').textContent).toEqual('Header text');
   });
 
-  it('renders header className and style', () => {
-    render(
+  it('renders header className and style', async () => {
+    await render(
       <Dropdown.Header className="foo bar" style={{ height: '100px' }}>
         Header text
       </Dropdown.Header>,
@@ -36,14 +36,14 @@ describe('<Dropdown.Item>', () => {
     expect(node.className).toMatch(/\bfoo bar dropdown-header\b/);
   });
 
-  it('renders Dropdown.ItemText', () => {
-    render(<Dropdown.ItemText>My text</Dropdown.ItemText>);
+  it('renders Dropdown.ItemText', async () => {
+    await render(<Dropdown.ItemText>My text</Dropdown.ItemText>);
 
     expect(screen.getByText('My text').className).toEqual('dropdown-item-text');
   });
 
-  it('renders Dropdown.ItemText className and style', () => {
-    render(
+  it('renders Dropdown.ItemText className and style', async () => {
+    await render(
       <Dropdown.ItemText className="foo bar" style={{ height: '100px' }}>
         My text
       </Dropdown.ItemText>,
@@ -54,10 +54,10 @@ describe('<Dropdown.Item>', () => {
     expect(node.style.height).toEqual('100px');
   });
 
-  it('renders menu item link', () => {
-    const onKeyDownSpy = vi.fn();
+  it('renders menu item link', async () => {
+    const onKeyDownSpy = jest.fn();
 
-    render(
+    await render(
       <Dropdown.Item onKeyDown={onKeyDownSpy} href="/herpa-derpa">
         Item
       </Dropdown.Item>,
@@ -70,7 +70,7 @@ describe('<Dropdown.Item>', () => {
     expect(onKeyDownSpy).toHaveBeenCalled();
   });
 
-  it('should render as a button when set', () => {
+  it('should render as a button when set', async () => {
     const { getByTestId } = render(
       <Dropdown.Item as={Button} variant="success" data-testid="item" />,
     );
@@ -80,8 +80,8 @@ describe('<Dropdown.Item>', () => {
     expect(getByTestId('item').classList).toContain('btn-success');
   });
 
-  it('should pass through props', () => {
-    render(
+  it('should pass through props', async () => {
+    await render(
       <Dropdown.Item
         className="test-class"
         href="#hi-mom!"
@@ -99,8 +99,8 @@ describe('<Dropdown.Item>', () => {
     expect(node.getAttribute('title')).toEqual('hi mom!');
   });
 
-  it('Should set target attribute on anchor', () => {
-    render(<Dropdown.Item target="_blank">Title</Dropdown.Item>);
+  it('Should set target attribute on anchor', async () => {
+    await render(<Dropdown.Item target="_blank">Title</Dropdown.Item>);
     expect(screen.getByText('Title').getAttribute('target')).toEqual('_blank');
   });
 });

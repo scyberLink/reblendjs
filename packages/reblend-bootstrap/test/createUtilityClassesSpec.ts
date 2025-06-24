@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import createUtilityClasses from '../src/createUtilityClasses';
 
 describe('createUtilityClassName', () => {
-  it('should not create a class when value is not defined', () => {
+  it('should not create a class when value is not defined', async () => {
     const classList = createUtilityClasses({
       gap: undefined,
     });
@@ -10,7 +10,7 @@ describe('createUtilityClassName', () => {
     expect(classList).toHaveLength(0);
   });
 
-  it('should handle falsy values', () => {
+  it('should handle falsy values', async () => {
     const classList = createUtilityClasses({
       gap: 0,
     });
@@ -19,7 +19,7 @@ describe('createUtilityClassName', () => {
     expect(classList).toEqual(expect.arrayContaining(['gap-0']));
   });
 
-  it('should handle responsive falsy values', () => {
+  it('should handle responsive falsy values', async () => {
     const classList = createUtilityClasses({
       gap: { xs: 0, md: 0 },
     });
@@ -28,7 +28,7 @@ describe('createUtilityClassName', () => {
     expect(classList).toEqual(expect.arrayContaining(['gap-0', 'gap-md-0']));
   });
 
-  it('should return `utilityName-value` when value is a primitive', () => {
+  it('should return `utilityName-value` when value is a primitive', async () => {
     const classList = createUtilityClasses({
       gap: 2,
     });
@@ -37,7 +37,7 @@ describe('createUtilityClassName', () => {
     expect(classList).toEqual(expect.arrayContaining(['gap-2']));
   });
 
-  it('should return responsive class when value is a responsive type', () => {
+  it('should return responsive class when value is a responsive type', async () => {
     const classList = createUtilityClasses({
       gap: { xs: 2, lg: 3, xxl: 4 },
     });
@@ -48,7 +48,7 @@ describe('createUtilityClassName', () => {
     );
   });
 
-  it('should return multiple classes', () => {
+  it('should return multiple classes', async () => {
     const classList = createUtilityClasses({
       gap: { xs: 2, lg: 3, xxl: 4 },
       text: { xs: 'start', md: 'end', xl: 'start' },
@@ -67,7 +67,7 @@ describe('createUtilityClassName', () => {
     );
   });
 
-  it('should handle custom breakpoints', () => {
+  it('should handle custom breakpoints', async () => {
     const classList = createUtilityClasses(
       {
         gap: { xs: 2, custom: 3 },

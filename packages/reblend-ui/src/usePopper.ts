@@ -1,7 +1,6 @@
 import * as Popper from '@popperjs/core';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'reblendjs';
 import { dequal } from 'dequal';
-import useSafeState from '@restart/hooks/useSafeState';
 import { createPopper } from './popper';
 
 const disabledApplyStylesModifier = {
@@ -129,26 +128,24 @@ function usePopper(
 
   const update = useCallback(() => {
     popperInstanceRef.current?.update();
-  }, []);
+  });
 
   const forceUpdate = useCallback(() => {
     popperInstanceRef.current?.forceUpdate();
-  }, []);
+  });
 
-  const [popperState, setState] = useSafeState(
-    useState<UsePopperState>({
-      placement,
-      update,
-      forceUpdate,
-      attributes: {},
-      styles: {
-        popper: {},
-        arrow: {},
-      },
-    }),
-  );
+  const [popperState, setState] = useState<UsePopperState>({
+    placement,
+    update,
+    forceUpdate,
+    attributes: {},
+    styles: {
+      popper: {},
+      arrow: {},
+    },
+  });
 
-  const updateModifier = useMemo<Modifier<'updateStateModifier', any>>(
+  const updateModifier = useMemo<Modifier<'updateStateModifier', any>, []>(
     () => ({
       name: 'updateStateModifier',
       enabled: true,
@@ -173,7 +170,7 @@ function usePopper(
         });
       },
     }),
-    [update, forceUpdate, setState],
+    [],
   );
 
   const nextModifiers = useMemo(() => {

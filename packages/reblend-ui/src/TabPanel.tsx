@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useContext } from 'react';
+import * as Reblend from 'reblendjs';
+import { useContext } from 'reblendjs';
 
 import TabContext from './TabContext';
 import SelectableContext, { makeEventKey } from './SelectableContext';
@@ -13,11 +13,11 @@ import NoopTransition from './NoopTransition';
 
 export interface TabPanelProps
   extends TransitionCallbacks,
-    React.HTMLAttributes<HTMLElement> {
+    Reblend.HTMLAttributes<HTMLElement> {
   /**
    * Element used to render the component.
    */
-  as?: React.ElementType;
+  as?: Reblend.ElementType;
 
   /**
    * A key that associates the `TabPanel` with it's controlling `NavLink`.
@@ -69,7 +69,7 @@ export function useTabPanel({
   onExited,
   ...props
 }: TabPanelProps): [any, TabPanelMetadata] {
-  const context = useContext(TabContext);
+  const [context] = useContext(TabContext);
 
   if (!context)
     return [
@@ -122,52 +122,50 @@ export function useTabPanel({
 }
 
 const TabPanel: DynamicRefForwardingComponent<'div', TabPanelProps> =
-  React.forwardRef<HTMLElement, TabPanelProps>(
-    // Need to define the default "as" during prop destructuring to be compatible with styled-components github.com/react-bootstrap/react-bootstrap/issues/3595
-    ({ as: Component = 'div', ...props }, ref) => {
-      const [
-        tabPanelProps,
-        {
-          isActive,
-          onEnter,
-          onEntering,
-          onEntered,
-          onExit,
-          onExiting,
-          onExited,
-          mountOnEnter,
-          unmountOnExit,
-          transition: Transition = NoopTransition,
-        },
-      ] = useTabPanel(props);
-      // We provide an empty the TabContext so `<Nav>`s in `<TabPanel>`s don't
-      // conflict with the top level one.
-      return (
-        <TabContext.Provider value={null}>
-          <SelectableContext.Provider value={null}>
-            <Transition
-              in={isActive}
-              onEnter={onEnter}
-              onEntering={onEntering}
-              onEntered={onEntered}
-              onExit={onExit}
-              onExiting={onExiting}
-              onExited={onExited}
-              mountOnEnter={mountOnEnter}
-              unmountOnExit={unmountOnExit}
-            >
-              <Component
-                {...tabPanelProps}
-                ref={ref}
-                hidden={!isActive}
-                aria-hidden={!isActive}
-              />
-            </Transition>
-          </SelectableContext.Provider>
-        </TabContext.Provider>
-      );
-    },
-  );
+  // Need to define the default "as" during prop destructuring to be compatible with styled-components github.com/react-bootstrap/react-bootstrap/issues/3595
+  ({ as: Component = 'div', ref, ...props }) => {
+    const [
+      tabPanelProps,
+      {
+        isActive,
+        onEnter,
+        onEntering,
+        onEntered,
+        onExit,
+        onExiting,
+        onExited,
+        mountOnEnter,
+        unmountOnExit,
+        transition: Transition = NoopTransition,
+      },
+    ] = useTabPanel(props);
+    // We provide an empty the TabContext so `<Nav>`s in `<TabPanel>`s don't
+    // conflict with the top level one.
+    return (
+      <TabContext.Provider value={null}>
+        <SelectableContext.Provider value={null}>
+          <Transition
+            in={isActive}
+            onEnter={onEnter}
+            onEntering={onEntering}
+            onEntered={onEntered}
+            onExit={onExit}
+            onExiting={onExiting}
+            onExited={onExited}
+            mountOnEnter={mountOnEnter}
+            unmountOnExit={unmountOnExit}
+          >
+            <Component
+              {...tabPanelProps}
+              ref={ref}
+              hidden={!isActive}
+              aria-hidden={!isActive}
+            />
+          </Transition>
+        </SelectableContext.Provider>
+      </TabContext.Provider>
+    );
+  };
 
 TabPanel.displayName = 'TabPanel';
 

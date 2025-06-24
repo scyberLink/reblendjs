@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'reblendjs';
 import PROPS_OVERRIDE from './propsOverride';
 
 interface ComponentData {

@@ -1,5 +1,5 @@
 import * as Reblend from 'reblendjs';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { render, screen, waitFor } from 'reblend-testing-library';
 
 import Fade, { FadeProps } from '../src/Fade';
@@ -8,7 +8,7 @@ describe('Fade', () => {
   class Component extends Reblend.Component<
     Reblend.PropsWithChildren<Omit<FadeProps, 'children'>>
   > {
-    render() {
+    await render() {
       const { children, ...props } = this.props;
 
       return (
@@ -22,24 +22,24 @@ describe('Fade', () => {
     }
   }
 
-  it('should not throw an error with StrictMode', () => {
-    render(
+  it('should not throw an error with StrictMode', async () => {
+    await render(
       <Reblend.StrictMode>
         <Component in>Panel content</Component>
       </Reblend.StrictMode>,
     );
   });
 
-  it('should work with a class component as children', () => {
-    const onEnteringSpy = vi.fn();
+  it('should work with a class component as children', async () => {
+    const onEnteringSpy = jest.fn();
 
     class InnerComponent extends Reblend.Component {
-      render() {
+      await render() {
         return <div {...this.props}>test</div>;
       }
     }
 
-    render(
+    await render(
       <Fade in onEntering={onEnteringSpy} data-testid="test">
         <InnerComponent />
       </Fade>,
@@ -50,21 +50,21 @@ describe('Fade', () => {
     expect(node.classList).toContain('show');
   });
 
-  it('Should default to hidden', () => {
-    render(<Component>Panel content</Component>);
+  it('Should default to hidden', async () => {
+    await render(<Component>Panel content</Component>);
 
     expect(screen.getByTestId('status-hide')).toBeDefined();
   });
 
-  it('Should always have the "fade" class', () => {
-    render(<Component>Panel content</Component>);
+  it('Should always have the "fade" class', async () => {
+    await render(<Component>Panel content</Component>);
 
     expect(screen.getByTestId('status-hide')).toBeDefined();
     expect(screen.getByTestId('fade-component').classList).toContain('fade');
   });
 
-  it('Should add "in" class when entering', () => {
-    const onEnteringSpy = vi.fn();
+  it('Should add "in" class when entering', async () => {
+    const onEnteringSpy = jest.fn();
 
     const { rerender } = render(<Component>Panel content</Component>);
 
@@ -73,7 +73,7 @@ describe('Fade', () => {
     rerender(
       <Component
         in
-        onEntering={() => {
+        onEntering={async () => {
           const node = screen.getByTestId('fade-component');
           expect(node.classList).toContain('fade');
           expect(node.classList).toContain('show');
@@ -87,8 +87,8 @@ describe('Fade', () => {
     waitFor(() => expect(onEnteringSpy).toHaveBeenCalled());
   });
 
-  it('Should remove "in" class when exiting', () => {
-    const onEnteringSpy = vi.fn();
+  it('Should remove "in" class when exiting', async () => {
+    const onEnteringSpy = jest.fn();
 
     const { rerender } = render(<Component in>Panel content</Component>);
 
@@ -99,7 +99,7 @@ describe('Fade', () => {
     rerender(
       <Component
         in={false}
-        onExiting={() => {
+        onExiting={async () => {
           expect(node.classList).toContain('fade');
           expect(node.classList).not.toContain('show');
           onEnteringSpy();

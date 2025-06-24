@@ -1,9 +1,9 @@
 import clsx from 'clsx';
-import useDebouncedCallback from '@restart/hooks/useDebouncedCallback';
-import useEventCallback from '@restart/hooks/useEventCallback';
-import useEventListener from '@restart/hooks/useEventListener';
+import useDebouncedCallback from 'reblend-hooks/useDebouncedCallback';
+import { useEventCallback } from 'reblend-hooks';
+import { useEventListener } from 'reblend-hooks';
 import * as Reblend from 'reblendjs';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'reblendjs';
 import BaseModal, { type ModalHandle } from '@restart/ui/Modal';
 import Fade from './Fade';
 import OffcanvasBody from './OffcanvasBody';

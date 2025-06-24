@@ -1,9 +1,9 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen } from 'reblend-testing-library';
 import ToggleButtonGroup from '../src/ToggleButtonGroup';
 
 describe('ToggleButtonGroup', () => {
-  it('should render checkboxes', () => {
+  it('should render checkboxes', async () => {
     const { container } = render(
       <ToggleButtonGroup type="checkbox">
         <ToggleButtonGroup.Button id="id1" value={1}>
@@ -32,7 +32,7 @@ describe('ToggleButtonGroup', () => {
     );
   });
 
-  it('should render checkboxes vertically', () => {
+  it('should render checkboxes vertically', async () => {
     const { container } = render(
       <ToggleButtonGroup type="checkbox" vertical>
         <ToggleButtonGroup.Button id="id1" value={1}>
@@ -53,7 +53,7 @@ describe('ToggleButtonGroup', () => {
     );
   });
 
-  it('should render checkboxes vertically and small', () => {
+  it('should render checkboxes vertically and small', async () => {
     const { container } = render(
       <ToggleButtonGroup type="checkbox" vertical size="sm">
         <ToggleButtonGroup.Button id="id1" value={1}>
@@ -75,7 +75,7 @@ describe('ToggleButtonGroup', () => {
     expect(container.firstElementChild!.classList).toContain('btn-group-sm');
   });
 
-  it('should render checkboxes vertically and large', () => {
+  it('should render checkboxes vertically and large', async () => {
     const { container } = render(
       <ToggleButtonGroup type="checkbox" vertical size="lg">
         <ToggleButtonGroup.Button id="id1" value={1}>
@@ -97,7 +97,7 @@ describe('ToggleButtonGroup', () => {
     expect(container.firstElementChild!.classList).toContain('btn-group-lg');
   });
 
-  it('should render radios', () => {
+  it('should render radios', async () => {
     const { container } = render(
       <ToggleButtonGroup type="radio" name="items">
         <ToggleButtonGroup.Button id="id1" value={1}>
@@ -126,7 +126,7 @@ describe('ToggleButtonGroup', () => {
     );
   });
 
-  it('should render radios vertically', () => {
+  it('should render radios vertically', async () => {
     const { container } = render(
       <ToggleButtonGroup type="radio" name="items" vertical>
         <ToggleButtonGroup.Button id="id1" value={1}>
@@ -147,7 +147,7 @@ describe('ToggleButtonGroup', () => {
     );
   });
 
-  it('should render radios vertically and small', () => {
+  it('should render radios vertically and small', async () => {
     const { container } = render(
       <ToggleButtonGroup type="radio" name="items" vertical size="sm">
         <ToggleButtonGroup.Button id="id1" value={1}>
@@ -169,7 +169,7 @@ describe('ToggleButtonGroup', () => {
     expect(container.firstElementChild!.classList).toContain('btn-group-sm');
   });
 
-  it('should render radios vertically and large', () => {
+  it('should render radios vertically and large', async () => {
     const { container } = render(
       <ToggleButtonGroup type="radio" name="items" vertical size="lg">
         <ToggleButtonGroup.Button id="id1" value={1}>
@@ -191,8 +191,8 @@ describe('ToggleButtonGroup', () => {
     expect(container.firstElementChild!.classList).toContain('btn-group-lg');
   });
 
-  it('should select initial values', () => {
-    render(
+  it('should select initial values', async () => {
+    await render(
       <ToggleButtonGroup type="checkbox" defaultValue={[1, 3]}>
         <ToggleButtonGroup.Button id="id1" data-testid="id1" value={1}>
           Option 1
@@ -217,8 +217,8 @@ describe('ToggleButtonGroup', () => {
     ).toEqual(true);
   });
 
-  it('should disable radios', () => {
-    render(
+  it('should disable radios', async () => {
+    await render(
       <ToggleButtonGroup type="radio" name="items">
         <ToggleButtonGroup.Button id="id1" value={1} disabled>
           Option 1
@@ -248,9 +248,9 @@ describe('ToggleButtonGroup', () => {
     expect(screen.getByText('Option 3').classList).not.toContain('disabled');
   });
 
-  it('should return an array of values', () => {
-    const spy = vi.fn();
-    render(
+  it('should return an array of values', async () => {
+    const spy = jest.fn();
+    await render(
       <ToggleButtonGroup type="checkbox" onChange={spy}>
         <ToggleButtonGroup.Button id="id1" value={1}>
           Option 1
@@ -268,9 +268,9 @@ describe('ToggleButtonGroup', () => {
     expect(spy).toHaveBeenCalledWith([2], expect.anything());
   });
 
-  it('should return a single value', () => {
-    const spy = vi.fn();
-    render(
+  it('should return a single value', async () => {
+    const spy = jest.fn();
+    await render(
       <ToggleButtonGroup type="radio" name="items" onChange={spy}>
         <ToggleButtonGroup.Button id="id1" value={1}>
           Option 1
@@ -288,9 +288,9 @@ describe('ToggleButtonGroup', () => {
     expect(spy).toHaveBeenCalledWith(2, expect.anything());
   });
 
-  it('should filter out value when deselected', () => {
-    const spy = vi.fn();
-    render(
+  it('should filter out value when deselected', async () => {
+    const spy = jest.fn();
+    await render(
       <ToggleButtonGroup
         type="checkbox"
         name="items"

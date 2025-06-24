@@ -26,8 +26,8 @@ import { WindowProvider } from "useWindow";
 function Iframe({
   children,
   ...props
-}: React.ComponentPropsWithoutRef<"iframe">) {
-  const [contentRef, setContentRef] = React.useState(null);
+}: Reblend.ComponentPropsWithoutRef<"iframe">) {
+  const [contentRef, setContentRef] = Reblend.useState(null);
   const mountNode = contentRef?.contentWindow.document.body;
 
   return (

@@ -1,29 +1,29 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import CardImg from '../src/CardImg';
 
 describe('<CardImg>', () => {
-  it('should output an img', () => {
-    render(<CardImg src="#" />);
+  it('should output an img', async () => {
+    await render(<CardImg src="#" />);
 
     expect(screen.getByRole('img')).toBeTruthy();
   });
 
-  it('should pass down src to img', () => {
+  it('should pass down src to img', async () => {
     const url = 'http://fakeurl.com/pic.jpg';
-    render(<CardImg src={url} />);
+    await render(<CardImg src={url} />);
 
     expect(screen.getByRole('img').getAttribute('src')).to.be.equal(url);
   });
 
-  it('Should have img as default component', () => {
-    render(<CardImg />);
+  it('Should have img as default component', async () => {
+    await render(<CardImg />);
 
     expect(screen.getByRole('img')).toBeTruthy();
   });
 
-  it('accepts as prop', () => {
-    render(<CardImg as="figure">img</CardImg>);
+  it('accepts as prop', async () => {
+    await render(<CardImg as="figure">img</CardImg>);
 
     const card = screen.getByRole('figure');
     expect(card.tagName).toEqual('FIGURE');
@@ -31,20 +31,20 @@ describe('<CardImg>', () => {
   });
 
   describe('variants', () => {
-    it('null', () => {
-      render(<CardImg />);
+    it('null', async () => {
+      await render(<CardImg />);
 
       expect(screen.getByRole('img').classList).toContain('card-img');
     });
 
-    it('top', () => {
-      render(<CardImg variant="top" />);
+    it('top', async () => {
+      await render(<CardImg variant="top" />);
 
       expect(screen.getByRole('img').classList).toContain('card-img-top');
     });
 
-    it('bottom', () => {
-      render(<CardImg variant="bottom" />);
+    it('bottom', async () => {
+      await render(<CardImg variant="bottom" />);
 
       expect(screen.getByRole('img').classList).toContain('card-img-bottom');
     });

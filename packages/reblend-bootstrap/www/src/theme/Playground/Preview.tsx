@@ -1,10 +1,10 @@
 import * as Reblend from 'reblendjs';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'reblendjs';
 import { LiveContext, LivePreview } from 'react-live';
 import qsa from 'dom-helpers/querySelectorAll';
-import useIsomorphicEffect from '@restart/hooks/useIsomorphicEffect';
-import useMutationObserver from '@restart/hooks/useMutationObserver';
-import useEventCallback from '@restart/hooks/useEventCallback';
+
+import useMutationObserver from 'reblend-hooks/useMutationObserver';
+import { useEventCallback } from 'reblend-hooks';
 
 export interface PreviewProps {
   className?: string | undefined;

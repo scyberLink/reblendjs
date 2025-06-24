@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'reblendjs';
 import SelectableContext from '@restart/ui/SelectableContext';
 import {
   DynamicRefForwardingComponent,

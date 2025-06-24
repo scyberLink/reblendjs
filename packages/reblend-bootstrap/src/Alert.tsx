@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
 import { useUncontrolled } from 'uncontrollable';
-import useEventCallback from '@restart/hooks/useEventCallback';
+import {useEventCallback} from 'reblend-hooks';
 import { useBootstrapPrefix } from './ThemeProvider';
 import AlertHeading from './AlertHeading';
 import AlertLink from './AlertLink';

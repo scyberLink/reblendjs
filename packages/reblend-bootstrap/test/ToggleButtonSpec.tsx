@@ -1,12 +1,12 @@
 import * as Reblend from 'reblendjs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import ToggleButton from '../src/ToggleButton';
 
 describe('ToggleButton', () => {
-  it('should forward refs to the label', () => {
+  it('should forward refs to the label', async () => {
     const ref = Reblend.createRef<HTMLLabelElement>();
-    render(
+    await render(
       <ToggleButton id="id" ref={ref} value={1}>
         Option
       </ToggleButton>,
@@ -15,9 +15,9 @@ describe('ToggleButton', () => {
     expect(ref.current!.tagName).toEqual('LABEL');
   });
 
-  it('should add an inputRef', () => {
+  it('should add an inputRef', async () => {
     const ref = Reblend.createRef<HTMLInputElement>();
-    render(
+    await render(
       <ToggleButton id="id" inputRef={ref} value={1}>
         Option
       </ToggleButton>,
@@ -26,8 +26,8 @@ describe('ToggleButton', () => {
     expect(ref.current!.tagName).toEqual('INPUT');
   });
 
-  it('should not have a role on the label button', () => {
-    render(
+  it('should not have a role on the label button', async () => {
+    await render(
       <ToggleButton id="id" value={1}>
         Option
       </ToggleButton>,

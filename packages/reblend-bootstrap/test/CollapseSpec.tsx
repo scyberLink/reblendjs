@@ -1,5 +1,5 @@
 import * as Reblend from 'reblendjs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { render, screen, RenderResult, waitFor } from 'reblend-testing-library';
 import Collapse, { CollapseProps } from '../src/Collapse';
 
@@ -7,7 +7,7 @@ describe('<Collapse>', () => {
   class Component extends Reblend.Component<
     Reblend.PropsWithChildren<Omit<CollapseProps, 'children'>>
   > {
-    render() {
+    await render() {
       const { children, ...props } = this.props;
 
       return (
@@ -26,23 +26,23 @@ describe('<Collapse>', () => {
     }
   }
 
-  it('should not throw an error with StrictMode', () => {
-    render(
+  it('should not throw an error with StrictMode', async () => {
+    await render(
       <Reblend.StrictMode>
         <Component in>Panel content</Component>
       </Reblend.StrictMode>,
     );
   });
 
-  it('Should default to collapsed', () => {
-    render(<Component data-testid="test">Panel content</Component>);
+  it('Should default to collapsed', async () => {
+    await render(<Component data-testid="test">Panel content</Component>);
 
     expect(screen.getByTestId('test').classList).not.toContain('show');
     expect(screen.getByTestId('status-hide')).toBeDefined();
   });
 
-  it('Should have collapse class', () => {
-    render(<Component>Panel content</Component>);
+  it('Should have collapse class', async () => {
+    await render(<Component>Panel content</Component>);
 
     expect(screen.getByTestId('collapse-component').classList).toContain(
       'collapse',
@@ -52,11 +52,11 @@ describe('<Collapse>', () => {
   describe('from collapsed to expanded', () => {
     let renderResult: RenderResult;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       renderResult = render(<Component>Panel content</Component>);
     });
 
-    it('Should have collapsing class', () => {
+    it('Should have collapsing class', async () => {
       renderResult.rerender(<Component in>Panel content</Component>);
 
       expect(screen.getByTestId('collapse-component').classList).toContain(
@@ -65,7 +65,7 @@ describe('<Collapse>', () => {
     });
 
     it('Should set initial 0px height', async () => {
-      const onEnterSpy = vi.fn();
+      const onEnterSpy = jest.fn();
       const node = screen.getByTestId('collapse-component');
 
       expect(node.style.height).toEqual('');
@@ -73,7 +73,7 @@ describe('<Collapse>', () => {
       renderResult.rerender(
         <Component
           in
-          onEnter={() => {
+          onEnter={async () => {
             expect(node.style.height).toEqual('0px');
             onEnterSpy();
           }}
@@ -85,7 +85,7 @@ describe('<Collapse>', () => {
       await waitFor(() => expect(onEnterSpy).toHaveBeenCalled());
     });
 
-    it('Should set node to height', () => {
+    it('Should set node to height', async () => {
       const node = screen.getByTestId('collapse-component');
 
       expect(node.style.height).toEqual('');
@@ -122,11 +122,11 @@ describe('<Collapse>', () => {
   describe('from expanded to collapsed', () => {
     let renderResult: RenderResult;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       renderResult = render(<Component in>Panel content</Component>);
     });
 
-    it('Should have collapsing class', () => {
+    it('Should have collapsing class', async () => {
       renderResult.rerender(<Component in={false}>Panel content</Component>);
 
       const node = screen.getByTestId('collapse-component');
@@ -134,7 +134,7 @@ describe('<Collapse>', () => {
     });
 
     it('Should set initial height', async () => {
-      const onExitSpy = vi.fn();
+      const onExitSpy = jest.fn();
       const node = screen.getByTestId('collapse-component');
 
       expect(node.style.height).toEqual('');
@@ -142,7 +142,7 @@ describe('<Collapse>', () => {
       renderResult.rerender(
         <Component
           in={false}
-          onExit={() => {
+          onExit={async () => {
             expect(node.style.height).toEqual('15px');
             onExitSpy();
           }}
@@ -154,7 +154,7 @@ describe('<Collapse>', () => {
       await waitFor(() => expect(onExitSpy).toHaveBeenCalled());
     });
 
-    it('Should set node to height', () => {
+    it('Should set node to height', async () => {
       const node = screen.getByTestId('collapse-component');
 
       expect(node.style.height).toEqual('');
@@ -186,8 +186,8 @@ describe('<Collapse>', () => {
   });
 
   describe('expanded', () => {
-    it('Should have collapse and in class', () => {
-      render(<Component in>Panel content</Component>);
+    it('Should have collapse and in class', async () => {
+      await render(<Component in>Panel content</Component>);
 
       const node = screen.getByTestId('collapse-component');
       expect(node.classList).toContain('collapse');
@@ -196,15 +196,15 @@ describe('<Collapse>', () => {
   });
 
   describe('dimension', () => {
-    it('Should not have width in class', () => {
-      render(<Component>Panel content</Component>);
+    it('Should not have width in class', async () => {
+      await render(<Component>Panel content</Component>);
 
       const node = screen.getByTestId('collapse-component');
       expect(node.className.includes('width')).toEqual(false);
     });
 
-    it('Should have collapse-horizontal in class', () => {
-      render(<Component dimension={() => 'width'}>Panel content</Component>);
+    it('Should have collapse-horizontal in class', async () => {
+      await render(<Component dimension={() => 'width'}>Panel content</Component>);
 
       const node = screen.getByTestId('collapse-component');
       expect(node.classList).toContain('collapse-horizontal');
@@ -212,7 +212,7 @@ describe('<Collapse>', () => {
   });
 
   describe('with a role', () => {
-    it('sets aria-expanded true when expanded', () => {
+    it('sets aria-expanded true when expanded', async () => {
       const { getByRole } = render(
         <Component role="menuitem" in>
           Panel content
@@ -222,7 +222,7 @@ describe('<Collapse>', () => {
       expect(getByRole('menuitem', { expanded: true })).toBeDefined();
     });
 
-    it('sets aria-expanded false when collapsed', () => {
+    it('sets aria-expanded false when collapsed', async () => {
       const { getByRole } = render(
         <Component role="menuitem" in={false}>
           Panel content

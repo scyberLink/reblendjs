@@ -1,9 +1,9 @@
-import * as React from 'react';
+import * as Reblend from 'reblendjs';
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from 'reblend-testing-library';
 import userEvent from '@testing-library/user-event';
 
-import { expect, vi, describe, it, beforeEach, afterEach } from 'vitest';
+import { expect, describe, it, beforeEach, afterEach } from '@jest/globals';
 import Modal, { ModalHandle } from '../src/Modal';
 import { OPEN_DATA_ATTRIBUTE } from '../src/ModalManager';
 
@@ -33,10 +33,10 @@ describe('<Modal>', () => {
   });
 
   it('should disable scrolling on the modal container while open', async () => {
-    const modal = React.createRef<ModalHandle>();
+    const modal = Reblend.createRef<ModalHandle>();
 
     function Container() {
-      const [isOpen, setIsOpen] = React.useState(true);
+      const [isOpen, setIsOpen] = Reblend.useState(true);
       return (
         <Modal
           ref={modal}
@@ -67,8 +67,8 @@ describe('<Modal>', () => {
   });
 
   it('should fire backdrop click callback', async () => {
-    const onClickSpy = vi.fn();
-    const modal = React.createRef<ModalHandle>();
+    const onClickSpy = jest.fn();
+    const modal = Reblend.createRef<ModalHandle>();
 
     render(
       <Modal show onBackdropClick={onClickSpy} ref={modal}>
@@ -79,12 +79,12 @@ describe('<Modal>', () => {
 
     await userEvent.click(modal.current!.backdrop!);
 
-    expect(onClickSpy).toHaveBeenCalledOnce();
+    expect(onClickSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should close the modal when the backdrop is clicked', async () => {
-    const spy = vi.fn();
-    const modal = React.createRef<ModalHandle>();
+    const spy = jest.fn();
+    const modal = Reblend.createRef<ModalHandle>();
 
     render(
       <Modal show onHide={spy} ref={modal}>
@@ -95,12 +95,12 @@ describe('<Modal>', () => {
 
     await userEvent.click(modal.current!.backdrop!);
 
-    expect(spy).toHaveBeenCalledOnce();
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('should not close the modal when the "static" backdrop is clicked', async () => {
-    const spy = vi.fn();
-    const modal = React.createRef<ModalHandle>();
+    const spy = jest.fn();
+    const modal = Reblend.createRef<ModalHandle>();
 
     render(
       <Modal show onHide={spy} backdrop="static" ref={modal}>
@@ -115,7 +115,7 @@ describe('<Modal>', () => {
   });
 
   it('should close the modal when the esc key is pressed', () => {
-    const spy = vi.fn();
+    const spy = jest.fn();
 
     render(
       <Modal show onHide={spy}>
@@ -129,8 +129,8 @@ describe('<Modal>', () => {
   });
 
   it('should not trigger onHide if e.preventDefault() called', () => {
-    const spy = vi.fn();
-    const modal = React.createRef<ModalHandle>();
+    const spy = jest.fn();
+    const modal = Reblend.createRef<ModalHandle>();
     const onEscapeKeyDown = (e: any) => {
       e.preventDefault();
     };
@@ -193,7 +193,7 @@ describe('<Modal>', () => {
   });
 
   it('should fire show callback on mount', () => {
-    const onShowSpy = vi.fn();
+    const onShowSpy = jest.fn();
 
     render(
       <Modal show onShow={onShowSpy}>
@@ -202,11 +202,11 @@ describe('<Modal>', () => {
       { container: attachTo },
     );
 
-    expect(onShowSpy).toBeCalledTimes(1);
+    expect(onShowSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should fire show callback on update', () => {
-    const onShowSpy = vi.fn();
+    const onShowSpy = jest.fn();
     const { rerender } = render(
       <Modal onShow={onShowSpy}>
         <strong>Message</strong>
@@ -220,7 +220,7 @@ describe('<Modal>', () => {
       </Modal>,
     );
 
-    expect(onShowSpy).toBeCalledTimes(1);
+    expect(onShowSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should accept role on the Modal', () => {

@@ -1,19 +1,19 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import createChainedFunction from '../src/createChainedFunction';
 
 describe('createChainedFunction', () => {
-  it('returns null with no arguments', () => {
+  it('returns null with no arguments', async () => {
     expect(createChainedFunction()).toEqual(null);
   });
 
-  it('returns original function when single function is provided', () => {
-    const func1 = vi.fn();
+  it('returns original function when single function is provided', async () => {
+    const func1 = jest.fn();
     expect(createChainedFunction(func1)).toEqual(func1);
   });
 
-  it('wraps two functions with another that invokes both when called', () => {
-    const func1 = vi.fn();
-    const func2 = vi.fn();
+  it('wraps two functions with another that invokes both when called', async () => {
+    const func1 = jest.fn();
+    const func2 = jest.fn();
     const chained = createChainedFunction(func1, func2);
 
     expect(chained).not.toEqual(func1);
@@ -24,11 +24,11 @@ describe('createChainedFunction', () => {
 
     chained();
 
-    expect(func1).toHaveBeenCalledOnce();
-    expect(func2).toHaveBeenCalledOnce();
+    expect(func1).toHaveBeenCalledTimes(1);
+    expect(func2).toHaveBeenCalledTimes(1);
   });
 
-  it('wraps multiple functions and invokes them in the order provided', () => {
+  it('wraps multiple functions and invokes them in the order provided', async () => {
     const results: number[] = [];
     const func1 = () => results.push(1);
     const func2 = () => results.push(2);
@@ -38,7 +38,7 @@ describe('createChainedFunction', () => {
     expect(results).toEqual([1, 2, 3]);
   });
 
-  it('forwards arguments to all chained functions', () => {
+  it('forwards arguments to all chained functions', async () => {
     const in1 = 'herpa derpa';
     const in2 = {
       herpa: 'derpa',
@@ -53,13 +53,13 @@ describe('createChainedFunction', () => {
     chained(in1, in2);
   });
 
-  it('throws when func is not provided', () => {
-    expect(() => {
+  it('throws when func is not provided', async () => {
+    expect(async () => {
       createChainedFunction({ herpa: 'derpa' });
     }).toThrow(/Invalid Argument Type/);
   });
 
-  it('works with new Function call', () => {
+  it('works with new Function call', async () => {
     const results = [];
     const func1 = new Function('results', 'results.push(1);');
     const func2 = new Function('results', 'results.push(2);');

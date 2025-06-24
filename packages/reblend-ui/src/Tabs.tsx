@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useId, useMemo } from 'react';
+import * as Reblend from 'reblendjs';
+import { useId, useMemo } from 'reblendjs';
 import { useUncontrolledProp } from 'uncontrollable';
 
 import TabContext, { TabContextType } from './TabContext';
@@ -8,7 +8,7 @@ import { EventKey, SelectCallback, TransitionComponent } from './types';
 import TabPanel, { TabPanelProps } from './TabPanel';
 
 export type { TabPanelProps };
-export interface TabsProps extends React.PropsWithChildren<unknown> {
+export interface TabsProps extends Reblend.PropsWithChildren<unknown> {
   id?: string;
 
   /**

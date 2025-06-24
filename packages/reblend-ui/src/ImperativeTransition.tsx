@@ -1,7 +1,6 @@
-import useMergedRefs from '@restart/hooks/useMergedRefs';
-import useEventCallback from '@restart/hooks/useEventCallback';
-import useIsomorphicEffect from '@restart/hooks/useIsomorphicEffect';
-import { useRef, cloneElement, useState } from 'react';
+import { useMergedRefs } from 'reblend-hooks';
+import { useEventCallback } from 'reblend-hooks';
+import { useRef, cloneElement, useState } from 'reblendjs';
 import { TransitionComponent, TransitionProps } from './types';
 import NoopTransition from './NoopTransition';
 import RTGTransition from './RTGTransition';

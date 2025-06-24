@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as Reblend from 'reblendjs';
 import { EventKey, SelectCallback, TransitionComponent } from './types';
 
 export interface TabContextType {
@@ -11,6 +11,6 @@ export interface TabContextType {
   getControllerId: (key: EventKey) => any;
 }
 
-const TabContext = React.createContext<TabContextType | null>(null);
+const TabContext = Reblend.createContext<TabContextType | null>(null);
 
 export default TabContext;

@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { expect, describe, it, vi } from 'vitest';
+import * as Reblend from 'reblendjs';
+import { render, fireEvent } from 'reblend-testing-library';
+import { expect, describe, it, jest } from '@jest/globals';
 
 import NavContext from '../src/NavContext';
 import NavItem from '../src/NavItem';
@@ -24,8 +24,8 @@ describe('<NavItem>', () => {
         value={{
           role: 'tablist',
           activeKey: 'key',
-          getControlledId: vi.fn(),
-          getControllerId: vi.fn(),
+          getControlledId: jest.fn(),
+          getControllerId: jest.fn(),
         }}
       >
         <NavItem>test</NavItem>
@@ -41,8 +41,8 @@ describe('<NavItem>', () => {
         value={{
           role: 'tablist',
           activeKey: 'key',
-          getControlledId: vi.fn(),
-          getControllerId: vi.fn(),
+          getControlledId: jest.fn(),
+          getControllerId: jest.fn(),
         }}
       >
         <NavItem role="abc">test</NavItem>
@@ -58,15 +58,15 @@ describe('<NavItem>', () => {
         value={{
           role: 'tablist',
           activeKey: 'key',
-          getControlledId: vi.fn(),
-          getControllerId: vi.fn(),
+          getControlledId: jest.fn(),
+          getControllerId: jest.fn(),
         }}
       >
         <NavItem eventKey="key">test</NavItem>
       </NavContext.Provider>,
     );
 
-    expect(getByText('test').getAttribute('data-rr-ui-active')).to.equal(
+    expect(getByText('test').getAttribute('data-rr-ui-active')).toEqual(
       'true',
     );
   });
@@ -78,19 +78,19 @@ describe('<NavItem>', () => {
       </NavItem>,
     );
     const node = getByText('test');
-    expect(node.getAttribute('aria-disabled')).to.equal('true');
+    expect(node.getAttribute('aria-disabled')).toEqual('true');
     expect(node.tabIndex).toEqual(-1);
   });
 
   it('should trigger onClick', () => {
-    const onClickSpy = vi.fn();
+    const onClickSpy = jest.fn();
     const { getByText } = render(<NavItem onClick={onClickSpy}>test</NavItem>);
     fireEvent.click(getByText('test'));
     expect(onClickSpy).toHaveBeenCalled();
   });
 
   it('should not trigger onClick if disabled', () => {
-    const onClickSpy = vi.fn();
+    const onClickSpy = jest.fn();
     const { getByText } = render(
       // Render as div because onClick won't get triggered with Button when disabled.
       <NavItem as="div" onClick={onClickSpy} disabled>
@@ -102,7 +102,7 @@ describe('<NavItem>', () => {
   });
 
   it('should call onSelect if a key is defined', () => {
-    const onSelect = vi.fn();
+    const onSelect = jest.fn();
     const { getByText } = render(
       <SelectableContext.Provider value={onSelect}>
         <NavItem eventKey="abc">test</NavItem>
@@ -114,8 +114,8 @@ describe('<NavItem>', () => {
   });
 
   it('should not call onSelect onClick stopPropagation called', () => {
-    const onSelect = vi.fn();
-    const handleClick = (e: React.MouseEvent) => {
+    const onSelect = jest.fn();
+    const handleClick = (e: Reblend.MouseEvent) => {
       e.stopPropagation();
     };
     const { getByText } = render(

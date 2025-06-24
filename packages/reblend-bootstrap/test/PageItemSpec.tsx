@@ -1,11 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import PageItem, { First } from '../src/PageItem';
 
 describe('<PageItem>', () => {
-  describe('<First>', () => {
-    it('should have expected default innerText', () => {
-      render(<First data-testid="test" />);
+  describe('<First>', async () => {
+    it('should have expected default innerText', async () => {
+      await render(<First data-testid="test" />);
       const firstElem = screen.getByTestId('test');
 
       expect(firstElem.classList).toContain('page-link');
@@ -16,15 +16,15 @@ describe('<PageItem>', () => {
       );
       expect(firstElem.firstElementChild!.textContent).toEqual('«');
     });
-    it('should have expected custom innerText', () => {
+    it('should have expected custom innerText', async () => {
       const innerHTML = 'custom';
-      render(<First data-testid="test">{innerHTML}</First>);
+      await render(<First data-testid="test">{innerHTML}</First>);
       const firstElem = screen.getByTestId('test');
 
       expect(firstElem.firstElementChild!.textContent).toEqual(innerHTML);
     });
 
-    it('should render a nested span if active is true', () => {
+    it('should render a nested span if active is true', async () => {
       const { container } = render(<PageItem active />);
       const pageItemElem = container.firstElementChild!;
       const pageItemInnerElem = pageItemElem.firstElementChild!;
@@ -36,7 +36,7 @@ describe('<PageItem>', () => {
       expect(pageItemInnerElem.firstElementChild!.tagName).toEqual('SPAN');
     });
 
-    it('should render a span if disabled is true', () => {
+    it('should render a span if disabled is true', async () => {
       const { container } = render(<PageItem disabled />);
       const pageItemElem = container.firstElementChild!;
       const pageItemInnerElem = pageItemElem.firstElementChild!;
@@ -45,7 +45,7 @@ describe('<PageItem>', () => {
       expect(pageItemInnerElem.classList).toContain('page-link');
     });
 
-    it('should apply className to the inner component if linkClassName is set', () => {
+    it('should apply className to the inner component if linkClassName is set', async () => {
       const { container } = render(
         <PageItem linkClassName="custom-class-name" />,
       );
@@ -55,7 +55,7 @@ describe('<PageItem>', () => {
       expect(pageItemInnerElem.classList).toContain('custom-class-name');
     });
 
-    it('should apply style to the inner component if linkStyle is set', () => {
+    it('should apply style to the inner component if linkStyle is set', async () => {
       const { container } = render(<PageItem linkStyle={{ color: 'red' }} />);
       const pageItemElem = container.firstElementChild!;
       const pageItemInnerElem = pageItemElem.firstElementChild!;
@@ -63,7 +63,7 @@ describe('<PageItem>', () => {
       expect(pageItemInnerElem.getAttribute('style')).toEqual('color: red;');
     });
 
-    it('should support custom anchor element', () => {
+    it('should support custom anchor element', async () => {
       const Component = ({ children, ...props }) => (
         <a {...props} data-anchor="custom">
           {children}

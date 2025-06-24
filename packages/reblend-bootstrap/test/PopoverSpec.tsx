@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import Popover from '../src/Popover';
 
 describe('Popover', () => {
-  it('Should output a popover title and content', () => {
-    render(
+  it('Should output a popover title and content', async () => {
+    await render(
       <Popover data-testid="test" id="test-popover">
         <Popover.Header>Popover title</Popover.Header>
         <Popover.Body>

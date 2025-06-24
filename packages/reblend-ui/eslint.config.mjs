@@ -10,8 +10,8 @@ export default tseslint.config(
   tseslint.configs.recommended,
 
   prettierPlugin,
-  react.configs.flat.recommended,
-  react.configs.flat['jsx-runtime'],
+  Reblend.configs.flat.recommended,
+  Reblend.configs.flat['jsx-runtime'],
 
   {
     plugins: {

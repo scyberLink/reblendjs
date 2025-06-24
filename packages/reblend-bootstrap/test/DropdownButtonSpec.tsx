@@ -1,11 +1,11 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen } from 'reblend-testing-library';
 import DropdownButton from '../src/DropdownButton';
 import DropdownItem from '../src/DropdownItem';
 
 describe('<DropdownButton>', () => {
-  it('renders a toggle with the title prop', () => {
-    render(
+  it('renders a toggle with the title prop', async () => {
+    await render(
       <DropdownButton title="Simple Dropdown" data-testid="test-id">
         <DropdownItem>Item 1</DropdownItem>
         <DropdownItem>Item 2</DropdownItem>
@@ -18,7 +18,7 @@ describe('<DropdownButton>', () => {
     );
   });
 
-  it('renders single DropdownItem child', () => {
+  it('renders single DropdownItem child', async () => {
     const { getByText } = render(
       <DropdownButton defaultShow title="Single child">
         <DropdownItem>Item 1</DropdownItem>
@@ -27,7 +27,7 @@ describe('<DropdownButton>', () => {
     expect(getByText('Item 1')).toBeDefined();
   });
 
-  it('forwards align="end" to the Dropdown', () => {
+  it('forwards align="end" to the Dropdown', async () => {
     const { container } = render(
       <DropdownButton defaultShow align="end" title="blah">
         <DropdownItem>Item 1</DropdownItem>
@@ -38,8 +38,8 @@ describe('<DropdownButton>', () => {
     expect(menu!.classList).toContain('dropdown-menu-end');
   });
 
-  it('passes variant and size to the toggle', () => {
-    render(
+  it('passes variant and size to the toggle', async () => {
+    await render(
       <DropdownButton
         title="blah"
         size="sm"
@@ -55,7 +55,7 @@ describe('<DropdownButton>', () => {
     expect(button.classList).toContain('btn-sm');
   });
 
-  it('passes menuVariant to dropdown menu', () => {
+  it('passes menuVariant to dropdown menu', async () => {
     const { container } = render(
       <DropdownButton defaultShow title="blah" menuVariant="dark">
         <DropdownItem>Item 1</DropdownItem>
@@ -66,10 +66,10 @@ describe('<DropdownButton>', () => {
     expect(menu!.classList).toContain('dropdown-menu-dark');
   });
 
-  it('forwards onSelect handler to DropdownItems', () => {
-    const onSelectSpy = vi.fn();
+  it('forwards onSelect handler to DropdownItems', async () => {
+    const onSelectSpy = jest.fn();
 
-    render(
+    await render(
       <DropdownButton
         defaultShow
         title="Simple Dropdown"
@@ -94,11 +94,11 @@ describe('<DropdownButton>', () => {
     fireEvent.click(screen.getByTestId('key3'));
     expect(onSelectSpy).toHaveBeenCalledWith('3', expect.anything());
 
-    expect(onSelectSpy).toBeCalledTimes(3);
+    expect(onSelectSpy).toHaveBeenCalledTimes(3);
   });
 
-  it('does not close when onToggle is controlled', () => {
-    const onSelectSpy = vi.fn();
+  it('does not close when onToggle is controlled', async () => {
+    const onSelectSpy = jest.fn();
 
     const { container } = render(
       <DropdownButton
@@ -121,7 +121,7 @@ describe('<DropdownButton>', () => {
     expect(menu).toBeDefined();
   });
 
-  it('Should pass disabled to button', () => {
+  it('Should pass disabled to button', async () => {
     const { container } = render(
       <DropdownButton disabled title="Title">
         <DropdownItem eventKey="1">Item 1</DropdownItem>
@@ -132,8 +132,8 @@ describe('<DropdownButton>', () => {
     expect(container.querySelector('button[disabled]')).toBeDefined();
   });
 
-  it('should pass bsPrefix to the button', () => {
-    render(
+  it('should pass bsPrefix to the button', async () => {
+    await render(
       <DropdownButton title="title" data-testid="test-id" bsPrefix="my-button">
         <DropdownItem eventKey="1">Item 1</DropdownItem>
       </DropdownButton>,

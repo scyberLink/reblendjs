@@ -1,9 +1,9 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from 'reblendjs';
 import Transition, {
   type TransitionProps,
   type TransitionStatus,
 } from 'react-transition-group/Transition';
-import useMergedRefs from '@restart/hooks/useMergedRefs';
+import { useMergedRefs } from 'reblend-hooks';
 
 export type TransitionWrapperProps = TransitionProps & {
   childRef?: Reblend.Ref<unknown>;

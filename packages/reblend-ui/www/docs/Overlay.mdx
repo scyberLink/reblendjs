@@ -105,7 +105,7 @@ function Fade({ children, ...props }) {
       }}
     >
       {(status, innerProps) =>
-        React.cloneElement(children, {
+        Reblend.cloneElement(children, {
           ...innerProps,
           className: clsx(
             "transition-opacity duration-300",

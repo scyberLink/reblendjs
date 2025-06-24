@@ -1,5 +1,5 @@
 import * as Reblend from 'reblendjs';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import {
   act,
   fireEvent,
@@ -28,8 +28,8 @@ describe('<OverlayTrigger>', () => {
     ),
   );
 
-  it('should not throw an error with StrictMode', () => {
-    render(
+  it('should not throw an error with StrictMode', async () => {
+    await render(
       <Reblend.StrictMode>
         <OverlayTrigger overlay={<TemplateDiv>test</TemplateDiv>}>
           <button type="button" data-testid="test-button">
@@ -42,8 +42,8 @@ describe('<OverlayTrigger>', () => {
     fireEvent.click(buttonElem);
   });
 
-  it('Should render OverlayTrigger element', () => {
-    render(
+  it('Should render OverlayTrigger element', async () => {
+    await render(
       <OverlayTrigger overlay={<TemplateDiv>test</TemplateDiv>}>
         <button type="button" data-testid="test-button">
           button
@@ -54,8 +54,8 @@ describe('<OverlayTrigger>', () => {
     expect(buttonElem).toBeDefined();
   });
 
-  it('Should show after click trigger', () => {
-    render(
+  it('Should show after click trigger', async () => {
+    await render(
       <OverlayTrigger trigger="click" overlay={<TemplateDiv />}>
         <button type="button" data-testid="test-button">
           button
@@ -72,9 +72,9 @@ describe('<OverlayTrigger>', () => {
     expect(overlayElem).not.toBeNull();
   });
 
-  it('Should accept a function as an overlay render prop', () => {
+  it('Should accept a function as an overlay render prop', async () => {
     const overlay = () => <TemplateDiv />;
-    render(
+    await render(
       <OverlayTrigger trigger="click" overlay={overlay}>
         <button type="button" data-testid="test-button">
           button
@@ -92,11 +92,11 @@ describe('<OverlayTrigger>', () => {
     expect(overlayElem).not.toBeNull();
   });
 
-  it('Should show the tooltip when transitions are disabled', () => {
+  it('Should show the tooltip when transitions are disabled', async () => {
     const overlay = ({ className }: any) => (
       <TemplateDiv className={`${className} test`} />
     );
-    render(
+    await render(
       <OverlayTrigger
         transition={false}
         trigger={['hover', 'focus']}
@@ -120,10 +120,10 @@ describe('<OverlayTrigger>', () => {
     expect(overlayElem!.classList).toContain('show');
   });
 
-  it('Should call OverlayTrigger onClick prop to child', () => {
-    const callback = vi.fn();
+  it('Should call OverlayTrigger onClick prop to child', async () => {
+    const callback = jest.fn();
 
-    render(
+    await render(
       <OverlayTrigger overlay={<TemplateDiv>test</TemplateDiv>} trigger="click">
         <button type="button" onClick={callback} data-testid="test-button">
           button
@@ -136,10 +136,10 @@ describe('<OverlayTrigger>', () => {
     expect(callback).toHaveBeenCalled();
   });
 
-  it('Should be controllable', () => {
-    const callback = vi.fn();
+  it('Should be controllable', async () => {
+    const callback = jest.fn();
 
-    render(
+    await render(
       <OverlayTrigger
         show
         trigger="click"
@@ -157,12 +157,12 @@ describe('<OverlayTrigger>', () => {
     expect(overlayElem.classList).toContain('show');
     fireEvent.click(buttonElem);
 
-    expect(callback).toHaveBeenCalledOnce();
+    expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith(false);
   });
 
   it('Should show after mouseover trigger', async () => {
-    render(
+    await render(
       <OverlayTrigger overlay={<TemplateDiv />}>
         <span data-testid="test-hover">hover me</span>
       </OverlayTrigger>,
@@ -185,8 +185,8 @@ describe('<OverlayTrigger>', () => {
     );
   });
 
-  it('Should not set aria-describedby if the state is not show', () => {
-    render(
+  it('Should not set aria-describedby if the state is not show', async () => {
+    await render(
       <OverlayTrigger trigger="click" overlay={<TemplateDiv />}>
         <button type="button" data-testid="test-button">
           button
@@ -199,7 +199,7 @@ describe('<OverlayTrigger>', () => {
   });
 
   it('Should set aria-describedby for tooltips if the state is show', async () => {
-    render(
+    await render(
       <OverlayTrigger trigger="click" overlay={<TemplateDiv />}>
         <button type="button" data-testid="test-button">
           button
@@ -218,9 +218,9 @@ describe('<OverlayTrigger>', () => {
     expect(buttonElem.getAttribute('aria-describedby')).toEqual('test-tooltip');
   });
 
-  it('Should keep trigger handlers', () => {
-    const onClickSpy = vi.fn();
-    render(
+  it('Should keep trigger handlers', async () => {
+    const onClickSpy = jest.fn();
+    await render(
       <div>
         <OverlayTrigger
           trigger="click"
@@ -239,8 +239,8 @@ describe('<OverlayTrigger>', () => {
     expect(onClickSpy).toHaveBeenCalled();
   });
 
-  it('Should maintain overlay classname', () => {
-    render(
+  it('Should maintain overlay classname', async () => {
+    await render(
       <OverlayTrigger
         trigger="click"
         overlay={<TemplateDiv className="test-overlay">test</TemplateDiv>}
@@ -259,11 +259,11 @@ describe('<OverlayTrigger>', () => {
   });
 
   it('Should pass transition callbacks to Transition', async () => {
-    const increment = vi.fn();
-    const onEnteredSpy = vi.fn();
-    const onExitedSpy = vi.fn();
+    const increment = jest.fn();
+    const onEnteredSpy = jest.fn();
+    const onExitedSpy = jest.fn();
 
-    render(
+    await render(
       <OverlayTrigger
         trigger="click"
         overlay={<TemplateDiv>test</TemplateDiv>}
@@ -284,18 +284,18 @@ describe('<OverlayTrigger>', () => {
 
     await screen.findByTestId('test-overlay');
 
-    await waitFor(() => expect(onEnteredSpy).toHaveBeenCalledOnce());
+    await waitFor(() => expect(onEnteredSpy).toHaveBeenCalledTimes(1));
 
     fireEvent.click(screen.getByTestId('test-button'));
 
     await waitForElementToBeRemoved(() => screen.getByTestId('test-overlay'));
 
-    await waitFor(() => expect(onExitedSpy).toHaveBeenCalledOnce());
+    await waitFor(() => expect(onExitedSpy).toHaveBeenCalledTimes(1));
     expect(increment).toHaveBeenCalledTimes(4);
   });
 
   it('Should handle popover trigger without warnings', async () => {
-    render(
+    await render(
       <OverlayTrigger
         trigger="click"
         overlay={
@@ -318,7 +318,7 @@ describe('<OverlayTrigger>', () => {
   });
 
   it('Should handle tooltip trigger without warnings', async () => {
-    render(
+    await render(
       <OverlayTrigger
         trigger="click"
         overlay={
@@ -340,7 +340,7 @@ describe('<OverlayTrigger>', () => {
     expect(overlay).toBeDefined();
   });
 
-  describe('rootClose', () => {
+  describe('rootClose', async () => {
     [
       {
         label: 'true',
@@ -353,9 +353,9 @@ describe('<OverlayTrigger>', () => {
         shownAfterClick: true,
       },
     ].forEach((testCase) => {
-      describe(testCase.label, () => {
-        it('Should have correct show state', () => {
-          render(
+      describe(testCase.label, async () => {
+        it('Should have correct show state', async () => {
+          await render(
             <OverlayTrigger
               overlay={<TemplateDiv>test</TemplateDiv>}
               trigger="click"
@@ -372,7 +372,7 @@ describe('<OverlayTrigger>', () => {
           expect(overlayElem.classList).toContain('show');
 
           // Need to click this way for it to propagate to document element.
-          act(() => {
+          await act(async () => {
             document.documentElement.click();
           });
 
@@ -383,8 +383,8 @@ describe('<OverlayTrigger>', () => {
       });
     });
 
-    it('should hide after clicking on trigger', () => {
-      render(
+    it('should hide after clicking on trigger', async () => {
+      await render(
         <OverlayTrigger
           overlay={<TemplateDiv>test</TemplateDiv>}
           trigger="click"
@@ -407,11 +407,11 @@ describe('<OverlayTrigger>', () => {
       expect(overlayElem.classList).not.toContain('show');
     });
 
-    it('Should still be show a replaced overlay', () => {
+    it('Should still be show a replaced overlay', async () => {
       const ReplacedOverlay = (
         ({ className = '' }: any, ref: any) => {
           const [state, setState] = Reblend.useState(false);
-          const handleClick = () => {
+          const handleClick = async () => {
             setState(true);
           };
 
@@ -439,7 +439,7 @@ describe('<OverlayTrigger>', () => {
         },
       );
 
-      render(
+      await render(
         <OverlayTrigger overlay={<ReplacedOverlay />} trigger="click" rootClose>
           <button type="button" data-testid="test-button">
             button

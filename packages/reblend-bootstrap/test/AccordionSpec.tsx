@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen, waitFor } from 'reblend-testing-library';
 import Accordion from '../src/Accordion';
 import AccordionCollapse from '../src/AccordionCollapse';
@@ -7,22 +7,22 @@ import ListGroup from '../src/ListGroup';
 import Nav from '../src/Nav';
 
 describe('<Accordion>', () => {
-  it('should output a div', () => {
-    render(<Accordion data-testid="test" />);
+  it('should output a div', async () => {
+    await render(<Accordion data-testid="test" />);
 
     expect(screen.getByTestId('test').tagName).toEqual('DIV');
   });
 
-  it('should render flush prop', () => {
-    render(<Accordion flush data-testid="test" />);
+  it('should render flush prop', async () => {
+    await render(<Accordion flush data-testid="test" />);
 
     const node = screen.getByTestId('test');
     expect(node.classList).toContain('accordion');
     expect(node.classList).toContain('accordion-flush');
   });
 
-  it('should output a h1', () => {
-    render(
+  it('should output a h1', async () => {
+    await render(
       <Accordion>
         <Accordion.Button>Hi</Accordion.Button>
         <AccordionCollapse as="h1" eventKey="0" data-testid="test-collapse">
@@ -34,8 +34,8 @@ describe('<Accordion>', () => {
     expect(screen.getByTestId('test-collapse').tagName).toEqual('H1');
   });
 
-  it('should only have second item collapsed', () => {
-    render(
+  it('should only have second item collapsed', async () => {
+    await render(
       <Accordion defaultActiveKey="0">
         <Accordion.Item eventKey="0" data-testid="item-0">
           <Accordion.Header />
@@ -55,9 +55,9 @@ describe('<Accordion>', () => {
   });
 
   it('should expand next item and collapse current item on click', async () => {
-    const onClickSpy = vi.fn();
+    const onClickSpy = jest.fn();
 
-    render(
+    await render(
       <Accordion>
         <Accordion.Item eventKey="0" data-testid="item-0">
           <Accordion.Header onClick={onClickSpy} />
@@ -74,7 +74,7 @@ describe('<Accordion>', () => {
 
     fireEvent.click(screen.getByText('Button item 1'));
 
-    expect(onClickSpy).toBeCalledTimes(1);
+    expect(onClickSpy).toHaveBeenCalledTimes(1);
 
     expect(
       screen.getByTestId('item-0').querySelector('.collapse'),
@@ -89,9 +89,9 @@ describe('<Accordion>', () => {
   });
 
   it('should collapse current item on click', async () => {
-    const onClickSpy = vi.fn();
+    const onClickSpy = jest.fn();
 
-    render(
+    await render(
       <Accordion defaultActiveKey="0">
         <Accordion.Item eventKey="0" data-testid="item-0">
           <Accordion.Header onClick={onClickSpy}>
@@ -108,7 +108,7 @@ describe('<Accordion>', () => {
 
     fireEvent.click(screen.getByText('Button item 0'));
 
-    expect(onClickSpy).toBeCalledTimes(1);
+    expect(onClickSpy).toHaveBeenCalledTimes(1);
 
     expect(
       screen.getByTestId('item-1').querySelector('.collapse'),
@@ -122,8 +122,8 @@ describe('<Accordion>', () => {
   });
 
   // https://github.com/react-bootstrap/react-bootstrap/issues/4176
-  it('Should not close accordion when child dropdown clicked', () => {
-    render(
+  it('Should not close accordion when child dropdown clicked', async () => {
+    await render(
       <Accordion defaultActiveKey="0">
         <Accordion.Item eventKey="0" data-testid="item-0">
           <Accordion.Header />
@@ -148,8 +148,8 @@ describe('<Accordion>', () => {
     ).toBeTruthy();
   });
 
-  it('Should not close accordion when child ListGroup clicked', () => {
-    render(
+  it('Should not close accordion when child ListGroup clicked', async () => {
+    await render(
       <Accordion defaultActiveKey="0">
         <Accordion.Item eventKey="0" data-testid="item-0">
           <Accordion.Header />
@@ -171,8 +171,8 @@ describe('<Accordion>', () => {
     ).toBeTruthy();
   });
 
-  it('Should not close accordion when child Nav clicked', () => {
-    render(
+  it('Should not close accordion when child Nav clicked', async () => {
+    await render(
       <Accordion defaultActiveKey="0">
         <Accordion.Item eventKey="0" data-testid="item-0">
           <Accordion.Header />
@@ -194,10 +194,10 @@ describe('<Accordion>', () => {
     ).toBeTruthy();
   });
 
-  it('should allow multiple items to stay open', () => {
-    const onSelectSpy = vi.fn();
+  it('should allow multiple items to stay open', async () => {
+    const onSelectSpy = jest.fn();
 
-    render(
+    await render(
       <Accordion onSelect={onSelectSpy} alwaysOpen>
         <Accordion.Item eventKey="0">
           <Accordion.Header>header0</Accordion.Header>
@@ -216,8 +216,8 @@ describe('<Accordion>', () => {
     expect(onSelectSpy).toHaveBeenCalledWith(['0', '1'], expect.anything());
   });
 
-  it('should remove only one of the active indices', () => {
-    const onSelectSpy = vi.fn();
+  it('should remove only one of the active indices', async () => {
+    const onSelectSpy = jest.fn();
 
     const { getByText } = render(
       <Accordion
@@ -242,7 +242,7 @@ describe('<Accordion>', () => {
   });
 
   it('should pass transition callbacks to underlying AccordionCollapse', async () => {
-    const increment = vi.fn();
+    const increment = jest.fn();
 
     const { getByText } = render(
       <Accordion>
@@ -265,11 +265,11 @@ describe('<Accordion>', () => {
     fireEvent.click(getByText('header0'));
 
     // Wait for body to open.
-    await waitFor(() => expect(increment).toBeCalledTimes(3));
+    await waitFor(() => expect(increment).toHaveBeenCalledTimes(3));
 
     fireEvent.click(getByText('header0'));
 
     // Wait for body to close.
-    await waitFor(() => expect(increment).toBeCalledTimes(6));
+    await waitFor(() => expect(increment).toHaveBeenCalledTimes(6));
   });
 });

@@ -1,11 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import Form from '../src/Form';
 import FormGroup from '../src/FormGroup';
 
 describe('<Form>', () => {
-  it('should support custom `as`', () => {
-    render(
+  it('should support custom `as`', async () => {
+    await render(
       <Form as="fieldset" className="my-form" data-testid="test">
         <FormGroup />
       </Form>,
@@ -19,15 +19,15 @@ describe('<Form>', () => {
     expect(form.firstElementChild?.classList).toHaveLength(0);
   });
 
-  it('Should have form as default component', () => {
-    render(<Form data-testid="test" />);
+  it('Should have form as default component', async () => {
+    await render(<Form data-testid="test" />);
 
     const form = screen.getByTestId('test');
     expect(form.tagName).toEqual('FORM');
   });
 
-  it('should have form class `was-validated` if validated', () => {
-    render(<Form validated data-testid="test" />);
+  it('should have form class `was-validated` if validated', async () => {
+    await render(<Form validated data-testid="test" />);
 
     const form = screen.getByTestId('test');
     expect(form.classList).toHaveLength(1);

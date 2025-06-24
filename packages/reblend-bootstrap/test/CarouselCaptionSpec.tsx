@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import Carousel from '../src/Carousel';
 
 describe('<Carousel.Caption>', () => {
-  it('uses "div" by default', () => {
-    render(
+  it('uses "div" by default', async () => {
+    await render(
       <Carousel.Caption className="custom-class" data-testid="test">
         <strong>Children</strong>
       </Carousel.Caption>,
@@ -19,8 +19,8 @@ describe('<Carousel.Caption>', () => {
     expect(content.tagName).toEqual('STRONG');
   });
 
-  it('should allow custom elements instead of "div"', () => {
-    render(<Carousel.Caption as="section" data-testid="test" />);
+  it('should allow custom elements instead of "div"', async () => {
+    await render(<Carousel.Caption as="section" data-testid="test" />);
 
     const caption = screen.getByTestId('test');
     expect(caption.tagName).toEqual('SECTION');

@@ -4,21 +4,12 @@ import activeElement from 'dom-helpers/activeElement';
 import contains from 'dom-helpers/contains';
 import canUseDOM from 'dom-helpers/canUseDOM';
 import listen from 'dom-helpers/listen';
-import {
-  useState,
-  useRef,
-  useCallback,
-  useImperativeHandle,
-  forwardRef,
-  useEffect,
-} from 'react';
-import * as React from 'react';
+import { useState, useRef, useCallback, useEffect } from 'reblendjs';
+import * as Reblend from 'reblendjs';
 import ReactDOM from 'react-dom';
-import useMounted from '@restart/hooks/useMounted';
-import useWillUnmount from '@restart/hooks/useWillUnmount';
+import { useMounted } from 'reblend-hooks';
 
-import usePrevious from '@restart/hooks/usePrevious';
-import useEventCallback from '@restart/hooks/useEventCallback';
+import { useEventCallback } from 'reblend-hooks';
 import ModalManager from './ModalManager';
 import useWaitForDOMRef, { DOMContainer } from './useWaitForDOMRef';
 import { TransitionCallbacks, TransitionComponent } from './types';
@@ -32,24 +23,24 @@ export interface ModalTransitionProps extends TransitionCallbacks {
   in: boolean;
   appear?: boolean;
   unmountOnExit?: boolean;
-  children: React.ReactElement;
+  children: Reblend.ReblendNode;
 }
 
 export type ModalTransitionComponent =
-  React.ComponentType<ModalTransitionProps>;
+  Reblend.ComponentType<ModalTransitionProps>;
 
 export interface RenderModalDialogProps {
-  style: React.CSSProperties | undefined;
+  style: Reblend.CSSProperties | undefined;
   className: string | undefined;
   tabIndex: number;
   role: string | undefined;
-  ref: React.RefCallback<Element>;
+  ref: Reblend.Ref<(ele: Element) => void>;
   'aria-modal': boolean | undefined;
 }
 
 export interface RenderModalBackdropProps {
-  ref: React.RefCallback<Element>;
-  onClick: (event: React.SyntheticEvent) => void;
+  ref: Reblend.Ref<(ele: Element) => void>;
+  onClick: (event: Reblend.SyntheticEvent) => void;
 }
 
 /*
@@ -57,9 +48,9 @@ export interface RenderModalBackdropProps {
   This is due to Typescript not playing well with index signatures e.g. when using Omit
 */
 export interface BaseModalProps extends TransitionCallbacks {
-  children?: React.ReactElement<any>;
+  children?: Reblend.ReblendNode;
   role?: string;
-  style?: React.CSSProperties;
+  style?: Reblend.CSSProperties;
   className?: string;
 
   /**
@@ -103,7 +94,7 @@ export interface BaseModalProps extends TransitionCallbacks {
    * renderDialog={props => <MyDialog {...props} />}
    * ```
    */
-  renderDialog?: (props: RenderModalDialogProps) => React.ReactNode;
+  renderDialog?: (props: RenderModalDialogProps) => Reblend.ReactNode;
   /**
    * A function that returns a backdrop component. Useful for custom
    * backdrop rendering.
@@ -112,7 +103,7 @@ export interface BaseModalProps extends TransitionCallbacks {
    *  renderBackdrop={props => <MyBackdrop {...props} />}
    * ```
    */
-  renderBackdrop?: (props: RenderModalBackdropProps) => React.ReactNode;
+  renderBackdrop?: (props: RenderModalBackdropProps) => Reblend.ReactNode;
   /**
    * A callback fired when the escape key, if specified in `keyboard`, is pressed.
    *
@@ -122,7 +113,7 @@ export interface BaseModalProps extends TransitionCallbacks {
   /**
    * A callback fired when the backdrop, if specified, is clicked.
    */
-  onBackdropClick?: (e: React.SyntheticEvent) => void;
+  onBackdropClick?: (e: Reblend.SyntheticEvent) => void;
 
   /**
    * Close the modal when escape key is pressed
@@ -209,6 +200,7 @@ export interface BaseModalProps extends TransitionCallbacks {
 
 export interface ModalProps extends BaseModalProps {
   [other: string]: any;
+  ref?: Reblend.Ref<ModalHandle>;
 }
 
 function getManager(window?: Window) {
@@ -248,280 +240,265 @@ export interface ModalHandle {
   isTopModal: () => boolean;
 }
 
-const Modal: React.ForwardRefExoticComponent<
-  ModalProps & React.RefAttributes<ModalHandle>
-> = forwardRef(
-  (
-    {
-      show = false,
-      role = 'dialog',
-      className,
-      style,
-      children,
-      backdrop = true,
-      keyboard = true,
-      onBackdropClick,
-      onEscapeKeyDown,
-      transition,
-      runTransition,
+const Modal: Reblend.FC<ModalProps & Reblend.RefAttributes<ModalHandle>> = ({
+  show = false,
+  role = 'dialog',
+  className,
+  style,
+  children,
+  backdrop = true,
+  keyboard = true,
+  onBackdropClick,
+  onEscapeKeyDown,
+  transition,
+  runTransition,
 
-      backdropTransition,
-      runBackdropTransition,
+  backdropTransition,
+  runBackdropTransition,
 
-      autoFocus = true,
-      enforceFocus = true,
-      restoreFocus = true,
-      restoreFocusOptions,
-      mountDialogOnEnter = true,
-      unmountDialogOnExit = true,
-      portal = true,
-      renderDialog,
-      renderBackdrop = (props: RenderModalBackdropProps) => <div {...props} />,
-      manager: providedManager,
-      container: containerRef,
-      onShow,
-      onHide = () => {},
+  autoFocus = true,
+  enforceFocus = true,
+  restoreFocus = true,
+  restoreFocusOptions,
+  mountDialogOnEnter = true,
+  unmountDialogOnExit = true,
+  portal = true,
+  renderDialog,
+  renderBackdrop = (props: RenderModalBackdropProps) => <div {...props} />,
+  manager: providedManager,
+  container: containerRef,
+  onShow,
+  onHide = () => {},
 
-      onExit,
-      onExited,
-      onExiting,
-      onEnter,
-      onEntering,
-      onEntered,
+  onExit,
+  onExited,
+  onExiting,
+  onEnter,
+  onEntering,
+  onEntered,
 
-      ...rest
-    }: ModalProps,
-    ref: React.Ref<ModalHandle>,
-  ) => {
-    const ownerWindow = useWindow();
-    const container = useWaitForDOMRef(containerRef);
-    const modal = useModalManager(providedManager);
+  ...rest
+}: ModalProps) => {
+  const ownerWindow = useWindow();
+  const container = useWaitForDOMRef(containerRef);
+  const modal = useModalManager(providedManager);
 
-    const isMounted = useMounted();
-    const prevShow = usePrevious(show);
-    const [exited, setExited] = useState(!show);
-    const lastFocusRef = useRef<HTMLElement | null>(null);
+  const isMounted = useMounted();
+  const prevShow = Reblend.useMemo(({ previous }) => previous, show);
+  const [exited, setExited] = useState(!show);
+  const lastFocusRef = useRef<HTMLElement | null>(null);
 
-    useImperativeHandle(ref, () => modal, [modal]);
+  useImperativeHandle(ref, () => modal, [modal]);
 
-    if (canUseDOM && !prevShow && show) {
-      lastFocusRef.current = activeElement(
-        ownerWindow?.document,
+  if (canUseDOM && !prevShow && show) {
+    lastFocusRef.current = activeElement(
+      ownerWindow?.document,
+    ) as HTMLElement | null;
+  }
+
+  // TODO: I think this needs to be in an effect
+  if (show && exited) {
+    setExited(false);
+  }
+
+  const handleShow = useEventCallback(() => {
+    modal.add();
+
+    removeKeydownListenerRef.current = listen(
+      document as any,
+      'keydown',
+      handleDocumentKeyDown,
+    );
+
+    removeFocusListenerRef.current = listen(
+      document as any,
+      'focus',
+      // the timeout is necessary b/c this will run before the new modal is mounted
+      // and so steals focus from it
+      () => setTimeout(handleEnforceFocus),
+      true,
+    );
+
+    if (onShow) {
+      onShow();
+    }
+
+    // autofocus after onShow to not trigger a focus event for previous
+    // modals before this one is shown.
+    if (autoFocus) {
+      const currentActiveElement = activeElement(
+        modal.dialog?.ownerDocument ?? ownerWindow?.document,
       ) as HTMLElement | null;
-    }
-
-    // TODO: I think this needs to be in an effect
-    if (show && exited) {
-      setExited(false);
-    }
-
-    const handleShow = useEventCallback(() => {
-      modal.add();
-
-      removeKeydownListenerRef.current = listen(
-        document as any,
-        'keydown',
-        handleDocumentKeyDown,
-      );
-
-      removeFocusListenerRef.current = listen(
-        document as any,
-        'focus',
-        // the timeout is necessary b/c this will run before the new modal is mounted
-        // and so steals focus from it
-        () => setTimeout(handleEnforceFocus),
-        true,
-      );
-
-      if (onShow) {
-        onShow();
-      }
-
-      // autofocus after onShow to not trigger a focus event for previous
-      // modals before this one is shown.
-      if (autoFocus) {
-        const currentActiveElement = activeElement(
-          modal.dialog?.ownerDocument ?? ownerWindow?.document,
-        ) as HTMLElement | null;
-
-        if (
-          modal.dialog &&
-          currentActiveElement &&
-          !contains(modal.dialog, currentActiveElement)
-        ) {
-          lastFocusRef.current = currentActiveElement;
-          modal.dialog.focus();
-        }
-      }
-    });
-
-    const handleHide = useEventCallback(() => {
-      modal.remove();
-
-      removeKeydownListenerRef.current?.();
-      removeFocusListenerRef.current?.();
-
-      if (restoreFocus) {
-        // Support: <=IE11 doesn't support `focus()` on svg elements (RB: #917)
-        lastFocusRef.current?.focus?.(restoreFocusOptions);
-        lastFocusRef.current = null;
-      }
-    });
-
-    // TODO: try and combine these effects: https://github.com/react-bootstrap/react-overlays/pull/794#discussion_r409954120
-
-    // Show logic when:
-    //  - show is `true` _and_ `container` has resolved
-    useEffect(() => {
-      if (!show || (!container && portal)) return;
-
-      handleShow();
-    }, [show, container, portal, /* should never change: */ handleShow]);
-
-    // Hide cleanup logic when:
-    //  - `exited` switches to true
-    //  - component unmounts;
-    useEffect(() => {
-      if (!exited) return;
-
-      handleHide();
-    }, [exited, handleHide]);
-
-    useWillUnmount(() => {
-      handleHide();
-    });
-
-    // --------------------------------
-
-    const handleEnforceFocus = useEventCallback(() => {
-      if (!enforceFocus || !isMounted() || !modal.isTopModal()) {
-        return;
-      }
-
-      const currentActiveElement = activeElement(ownerWindow?.document);
 
       if (
         modal.dialog &&
         currentActiveElement &&
         !contains(modal.dialog, currentActiveElement)
       ) {
+        lastFocusRef.current = currentActiveElement;
         modal.dialog.focus();
       }
-    });
+    }
+  });
 
-    const handleBackdropClick = useEventCallback((e: React.SyntheticEvent) => {
-      if (e.target !== e.currentTarget) {
-        return;
-      }
+  const handleHide = useEventCallback(() => {
+    modal.remove();
 
-      onBackdropClick?.(e);
+    removeKeydownListenerRef.current?.();
+    removeFocusListenerRef.current?.();
 
-      if (backdrop === true) {
+    if (restoreFocus) {
+      // Support: <=IE11 doesn't support `focus()` on svg elements (RB: #917)
+      lastFocusRef.current?.focus?.(restoreFocusOptions);
+      lastFocusRef.current = null;
+    }
+  });
+
+  // TODO: try and combine these effects: https://github.com/react-bootstrap/react-overlays/pull/794#discussion_r409954120
+
+  // Show logic when:
+  //  - show is `true` _and_ `container` has resolved
+  useEffect(() => {
+    if (!show || (!container && portal)) return;
+
+    handleShow();
+  }, [show, container, portal, /* should never change: */ handleShow]);
+
+  // Hide cleanup logic when:
+  //  - `exited` switches to true
+  //  - component unmounts;
+  useEffect(() => {
+    if (!exited) return;
+
+    handleHide();
+  }, [exited, handleHide]);
+
+  useWillUnmount(() => {
+    handleHide();
+  });
+
+  // --------------------------------
+
+  const handleEnforceFocus = useEventCallback(() => {
+    if (!enforceFocus || !isMounted() || !modal.isTopModal()) {
+      return;
+    }
+
+    const currentActiveElement = activeElement(ownerWindow?.document);
+
+    if (
+      modal.dialog &&
+      currentActiveElement &&
+      !contains(modal.dialog, currentActiveElement)
+    ) {
+      modal.dialog.focus();
+    }
+  });
+
+  const handleBackdropClick = useEventCallback((e: Reblend.SyntheticEvent) => {
+    if (e.target !== e.currentTarget) {
+      return;
+    }
+
+    onBackdropClick?.(e);
+
+    if (backdrop === true) {
+      onHide();
+    }
+  });
+
+  const handleDocumentKeyDown = useEventCallback((e: KeyboardEvent) => {
+    if (keyboard && isEscKey(e) && modal.isTopModal()) {
+      onEscapeKeyDown?.(e);
+
+      if (!e.defaultPrevented) {
         onHide();
       }
-    });
-
-    const handleDocumentKeyDown = useEventCallback((e: KeyboardEvent) => {
-      if (keyboard && isEscKey(e) && modal.isTopModal()) {
-        onEscapeKeyDown?.(e);
-
-        if (!e.defaultPrevented) {
-          onHide();
-        }
-      }
-    });
-
-    const removeFocusListenerRef = useRef<ReturnType<typeof listen> | null>(
-      null,
-    );
-    const removeKeydownListenerRef = useRef<ReturnType<typeof listen> | null>(
-      null,
-    );
-
-    const handleHidden: TransitionCallbacks['onExited'] = (...args) => {
-      setExited(true);
-      onExited?.(...args);
-    };
-
-    if (!container && portal) {
-      return null;
     }
+  });
 
-    const dialogProps = {
-      role: show ? role : undefined,
-      ref: modal.setDialogRef,
-      // apparently only works on the dialog role element
-      'aria-modal': show && role === 'dialog' ? true : undefined,
-      ...rest,
-      style,
-      className,
-      tabIndex: -1,
-    };
+  const removeFocusListenerRef = useRef<ReturnType<typeof listen> | null>(null);
+  const removeKeydownListenerRef = useRef<ReturnType<typeof listen> | null>(
+    null,
+  );
 
-    let dialog = renderDialog ? (
-      renderDialog(dialogProps)
-    ) : (
-      <div {...dialogProps}>
-        {React.cloneElement(children!, { role: 'document' })}
-      </div>
-    );
+  const handleHidden: TransitionCallbacks['onExited'] = (...args) => {
+    setExited(true);
+    onExited?.(...args);
+  };
 
-    dialog = renderTransition(
-      transition as TransitionComponent,
-      runTransition,
+  if (!container && portal) {
+    return null;
+  }
+
+  const dialogProps = {
+    role: show ? role : undefined,
+    ref: modal.setDialogRef,
+    // apparently only works on the dialog role element
+    'aria-modal': show && role === 'dialog' ? true : undefined,
+    ...rest,
+    style,
+    className,
+    tabIndex: -1,
+  };
+
+  let dialog = renderDialog ? (
+    renderDialog(dialogProps)
+  ) : (
+    <div {...dialogProps}>
+      {Reblend.cloneElement(children!, { role: 'document' })}
+    </div>
+  );
+
+  dialog = renderTransition(transition as TransitionComponent, runTransition, {
+    unmountOnExit: unmountDialogOnExit,
+    mountOnEnter: mountDialogOnEnter,
+    appear: true,
+    in: !!show,
+    onExit,
+    onExiting,
+    onExited: handleHidden,
+    onEnter,
+    onEntering,
+    onEntered,
+    children: dialog as Reblend.ReactElement,
+  });
+
+  let backdropElement = null;
+  if (backdrop) {
+    backdropElement = renderBackdrop({
+      ref: modal.setBackdropRef,
+      onClick: handleBackdropClick,
+    });
+
+    backdropElement = renderTransition(
+      backdropTransition as TransitionComponent,
+      runBackdropTransition,
       {
-        unmountOnExit: unmountDialogOnExit,
-        mountOnEnter: mountDialogOnEnter,
-        appear: true,
         in: !!show,
-        onExit,
-        onExiting,
-        onExited: handleHidden,
-        onEnter,
-        onEntering,
-        onEntered,
-        children: dialog as React.ReactElement,
+        appear: true,
+        mountOnEnter: true,
+        unmountOnExit: true,
+        children: backdropElement as Reblend.ReactElement,
       },
     );
+  }
 
-    let backdropElement = null;
-    if (backdrop) {
-      backdropElement = renderBackdrop({
-        ref: modal.setBackdropRef,
-        onClick: handleBackdropClick,
-      });
-
-      backdropElement = renderTransition(
-        backdropTransition as TransitionComponent,
-        runBackdropTransition,
-        {
-          in: !!show,
-          appear: true,
-          mountOnEnter: true,
-          unmountOnExit: true,
-          children: backdropElement as React.ReactElement,
-        },
-      );
-    }
-
-    return portal && container ? (
-      ReactDOM.createPortal(
-        <>
-          {backdropElement}
-          {dialog}
-        </>,
-        container,
-      )
-    ) : (
+  return portal && container ? (
+    ReactDOM.createPortal(
       <>
         {backdropElement}
         {dialog}
-      </>
-    );
-  },
-);
-
-Modal.displayName = 'Modal';
+      </>,
+      container,
+    )
+  ) : (
+    <>
+      {backdropElement}
+      {dialog}
+    </>
+  );
+};
 
 export default Object.assign(Modal, {
   Manager: ModalManager,

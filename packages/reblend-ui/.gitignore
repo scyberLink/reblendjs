@@ -1,5 +1,7 @@
 lib/
+esm/
 cjs/
+cjs-test/
 .cache/
 www/public
 

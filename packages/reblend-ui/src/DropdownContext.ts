@@ -1,10 +1,10 @@
-import * as React from 'react';
+import * as Reblend from 'reblendjs';
 import type { Placement } from './usePopper';
 
 export type DropdownContextValue = {
   toggle: (
     nextShow: boolean,
-    event?: React.SyntheticEvent | KeyboardEvent | MouseEvent,
+    event?: Reblend.SyntheticEvent | KeyboardEvent | MouseEvent,
   ) => void;
   menuElement: HTMLElement | null;
   toggleElement: HTMLElement | null;
@@ -15,6 +15,6 @@ export type DropdownContextValue = {
   placement?: Placement;
 };
 
-const DropdownContext = React.createContext<DropdownContextValue | null>(null);
+const DropdownContext = Reblend.createContext<DropdownContextValue | null>(null);
 
 export default DropdownContext;

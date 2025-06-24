@@ -1,10 +1,10 @@
 import ReactDOM from 'react-dom';
 
-import * as React from 'react';
+import * as Reblend from 'reblendjs';
 import useWaitForDOMRef, { DOMContainer } from './useWaitForDOMRef';
 
 export interface PortalProps {
-  children: React.ReactElement;
+  children: Reblend.ReactElement;
 
   /**
    * A DOM element, Ref to an element, or function that returns either. The `container` will have the Portal children

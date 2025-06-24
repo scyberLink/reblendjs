@@ -1,10 +1,10 @@
 import contains from 'dom-helpers/contains';
 import * as Reblend from 'reblendjs';
-import { cloneElement, useCallback, useRef } from 'react';
-import useTimeout from '@restart/hooks/useTimeout';
+import { cloneElement, useCallback, useRef } from 'reblendjs';
+import useTimeout from 'reblend-hooks/useTimeout';
 import warning from 'warning';
 import { useUncontrolledProp } from 'uncontrollable';
-import useMergedRefs from '@restart/hooks/useMergedRefs';
+import { useMergedRefs } from 'reblend-hooks';
 import { getChildRef } from '@restart/ui/utils';
 import Overlay, { type OverlayChildren, type OverlayProps } from './Overlay';
 import type { Placement } from './types';

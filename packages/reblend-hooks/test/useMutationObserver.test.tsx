@@ -112,11 +112,11 @@ describe('useMutationObserver', () => {
         ],
         expect.anything(),
       )
-      expect(disconnentSpy).toBeCalledTimes(1)
+      expect(disconnentSpy).toHaveBeenCalledTimes(1)
     })
 
     await wrapper.unmount()
 
-    expect(disconnentSpy).toBeCalledTimes(3)
+    expect(disconnentSpy).toHaveBeenCalledTimes(3)
   })
 })

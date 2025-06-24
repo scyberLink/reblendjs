@@ -1,5 +1,5 @@
 import * as Reblend from 'reblendjs';
-import { useContext } from 'react';
+import { useContext } from 'reblendjs';
 import Collapse, { type CollapseProps } from './Collapse';
 import { useBootstrapPrefix } from './ThemeProvider';
 import NavbarContext from './NavbarContext';

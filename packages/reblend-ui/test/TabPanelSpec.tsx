@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
-import { expect, vi, describe, it } from 'vitest';
+import React, { useRef } from 'reblendjs';
+import { fireEvent, render, waitFor } from 'reblend-testing-library';
+import { expect, describe, it } from '@jest/globals';
 import Transition from 'react-transition-group/Transition';
 
 import TabContext from '../src/TabContext';
@@ -47,16 +47,16 @@ describe('<TabPanel>', () => {
   });
 
   it('should call getControlledId for id', () => {
-    const getControlledIdSpy = vi.fn();
+    const getControlledIdSpy = jest.fn();
 
     render(
       <TabContext.Provider
         value={{
-          onSelect: vi.fn(),
+          onSelect: jest.fn(),
           mountOnEnter: false,
           unmountOnExit: false,
           getControlledId: getControlledIdSpy,
-          getControllerId: vi.fn(),
+          getControllerId: jest.fn(),
         }}
       >
         <TabPanel active eventKey="mykey">
@@ -69,7 +69,7 @@ describe('<TabPanel>', () => {
   });
 
   it('should fire transition events', async () => {
-    const transitionSpy = vi.fn();
+    const transitionSpy = jest.fn();
 
     const FADE_DURATION = 200;
 
@@ -83,7 +83,7 @@ describe('<TabPanel>', () => {
       return (
         <Transition {...props} nodeRef={ref} timeout={FADE_DURATION}>
           {(status: keyof typeof fadeStyles, innerProps: any) =>
-            React.cloneElement(children, {
+            Reblend.cloneElement(children, {
               ...innerProps,
               ref: ref,
               className: `fade ${fadeStyles[status]} ${children.props.className}`,
@@ -136,11 +136,11 @@ describe('<TabPanel>', () => {
       <TabContext.Provider
         value={{
           activeKey: 'mykey',
-          onSelect: vi.fn(),
+          onSelect: jest.fn(),
           mountOnEnter: false,
           unmountOnExit: false,
-          getControlledId: vi.fn(),
-          getControllerId: vi.fn(),
+          getControlledId: jest.fn(),
+          getControllerId: jest.fn(),
         }}
       >
         <TabPanel eventKey="mykey">test</TabPanel>
@@ -149,7 +149,7 @@ describe('<TabPanel>', () => {
 
     const node = getByText('test');
     expect(node).toBeTruthy();
-    expect(node.getAttribute('aria-hidden')).to.equal('false');
+    expect(node.getAttribute('aria-hidden')).toEqual('false');
   });
 
   describe('useTabPanel', () => {
@@ -177,11 +177,11 @@ describe('<TabPanel>', () => {
       render(
         <TabContext.Provider
           value={{
-            onSelect: vi.fn(),
+            onSelect: jest.fn(),
             mountOnEnter: true,
             unmountOnExit: false,
-            getControlledId: vi.fn(),
-            getControllerId: vi.fn(),
+            getControlledId: jest.fn(),
+            getControllerId: jest.fn(),
           }}
         >
           <Wrapper />
@@ -202,11 +202,11 @@ describe('<TabPanel>', () => {
       render(
         <TabContext.Provider
           value={{
-            onSelect: vi.fn(),
+            onSelect: jest.fn(),
             mountOnEnter: true,
             unmountOnExit: false,
-            getControlledId: vi.fn(),
-            getControllerId: vi.fn(),
+            getControlledId: jest.fn(),
+            getControllerId: jest.fn(),
           }}
         >
           <Wrapper mountOnEnter={false} />
@@ -227,11 +227,11 @@ describe('<TabPanel>', () => {
       render(
         <TabContext.Provider
           value={{
-            onSelect: vi.fn(),
+            onSelect: jest.fn(),
             mountOnEnter: false,
             unmountOnExit: true,
-            getControlledId: vi.fn(),
-            getControllerId: vi.fn(),
+            getControlledId: jest.fn(),
+            getControllerId: jest.fn(),
           }}
         >
           <Wrapper unmountOnExit={false} />

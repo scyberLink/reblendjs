@@ -1,6 +1,6 @@
 import invariant from 'invariant';
-import { useCallback } from 'react';
-import useMergedRefs from '@restart/hooks/useMergedRefs';
+import { useCallback } from 'reblendjs';
+import { useMergedRefs } from 'reblend-hooks';
 
 export default function useWrappedRefWithWarning(ref, componentName) {
   // @ts-expect-error Ignore global __DEV__ variable

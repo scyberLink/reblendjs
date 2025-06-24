@@ -19,7 +19,7 @@ export function injectCss(rules: string) {
   style.innerHTML += `\n${rules}`;
 }
 
-injectCss.reset = () => {
+injectCss.reset = async () => {
   if (style) {
     document.head.removeChild(style);
   }

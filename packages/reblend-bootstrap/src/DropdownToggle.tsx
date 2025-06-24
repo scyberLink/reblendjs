@@ -1,10 +1,10 @@
-import useMergedRefs from '@restart/hooks/useMergedRefs';
+import { useMergedRefs } from 'reblend-hooks';
 import DropdownContext from '@restart/ui/DropdownContext';
 import { useDropdownToggle } from '@restart/ui/DropdownToggle';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { useContext } from 'react';
+import { useContext } from 'reblendjs';
 import Button, { type ButtonProps, type CommonButtonProps } from './Button';
 import { useBootstrapPrefix } from './ThemeProvider';
 import useWrappedRefWithWarning from './useWrappedRefWithWarning';

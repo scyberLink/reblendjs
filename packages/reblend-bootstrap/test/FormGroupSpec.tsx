@@ -1,12 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import FormControl from '../src/FormControl';
 import FormLabel from '../src/FormLabel';
 import FormGroup from '../src/FormGroup';
 
 describe('<FormGroup>', () => {
-  it('renders children', () => {
-    render(
+  it('renders children', async () => {
+    await render(
       <FormGroup data-testid="test-id">
         <span className="child1" />
         <span className="child2" />
@@ -27,8 +27,8 @@ describe('<FormGroup>', () => {
     expect(child2.classList).toContain('child2');
   });
 
-  it('provided controlId to label and control', () => {
-    render(
+  it('provided controlId to label and control', async () => {
+    await render(
       <FormGroup controlId="my-control" data-testid="test-id">
         <div>
           <FormLabel>label</FormLabel>
@@ -47,8 +47,8 @@ describe('<FormGroup>', () => {
     expect(input[0].id).toEqual('my-control');
   });
 
-  it('Should have div as default component', () => {
-    render(<FormGroup data-testid="test-id" />);
+  it('Should have div as default component', async () => {
+    await render(<FormGroup data-testid="test-id" />);
 
     const element = screen.getByTestId('test-id');
     expect(element.tagName).toEqual('DIV');

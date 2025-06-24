@@ -1,4 +1,4 @@
-import * as React from 'react';
+import Reblend, { AriaRole, FC, RefAttributes } from 'reblendjs';
 
 export type ButtonType = 'button' | 'reset' | 'submit';
 
@@ -11,10 +11,10 @@ export interface AnchorOptions {
 export interface UseButtonPropsOptions extends AnchorOptions {
   type?: ButtonType;
   disabled?: boolean;
-  onClick?: React.EventHandler<React.MouseEvent | React.KeyboardEvent>;
+  onClick?: Reblend.EventHandler<Reblend.MouseEvent | Reblend.KeyboardEvent>;
   tabIndex?: number;
-  tagName?: keyof React.JSX.IntrinsicElements;
-  role?: React.AriaRole | undefined;
+  tagName?: keyof JSX.IntrinsicElements;
+  role?: AriaRole | undefined;
 }
 
 export function isTrivialHref(href?: string) {
@@ -24,18 +24,18 @@ export function isTrivialHref(href?: string) {
 export interface AriaButtonProps {
   type?: ButtonType | undefined;
   disabled: boolean | undefined;
-  role?: React.AriaRole;
+  role?: Reblend.AriaRole;
   tabIndex?: number | undefined;
   href?: string | undefined;
   target?: string | undefined;
   rel?: string | undefined;
   'aria-disabled'?: true | undefined;
-  onClick?: (event: React.MouseEvent | React.KeyboardEvent) => void;
-  onKeyDown?: (event: React.KeyboardEvent) => void;
+  onClick?: (event: Reblend.MouseEvent | Reblend.KeyboardEvent) => void;
+  onKeyDown?: (event: Reblend.KeyboardEvent) => void;
 }
 
 export interface UseButtonPropsMetadata {
-  tagName: React.ElementType;
+  tagName: Reblend.ElementType;
 }
 
 export function useButtonProps({
@@ -62,7 +62,7 @@ export function useButtonProps({
     return [{ type: (type as any) || 'button', disabled }, meta];
   }
 
-  const handleClick = (event: React.MouseEvent | React.KeyboardEvent) => {
+  const handleClick = (event: Reblend.MouseEvent | Reblend.KeyboardEvent) => {
     if (disabled || (tagName === 'a' && isTrivialHref(href))) {
       event.preventDefault();
     }
@@ -75,7 +75,7 @@ export function useButtonProps({
     onClick?.(event);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: Reblend.KeyboardEvent) => {
     if (event.key === ' ') {
       event.preventDefault();
       handleClick(event);
@@ -113,7 +113,7 @@ export interface BaseButtonProps {
    * Control the underlying rendered element directly by passing in a valid
    * component type
    */
-  as?: keyof React.JSX.IntrinsicElements | undefined;
+  as?: keyof Reblend.JSX.IntrinsicElements | undefined;
 
   /** The disabled state of the button */
   disabled?: boolean | undefined;
@@ -125,23 +125,20 @@ export interface BaseButtonProps {
   target?: string | undefined;
 
   rel?: string | undefined;
+  ref?: RefAttributes<HTMLButtonElement>['ref'];
 }
 
-export interface ButtonProps
-  extends BaseButtonProps,
-    React.ComponentPropsWithoutRef<'button'> {}
+export interface ButtonProps extends BaseButtonProps {}
 
-const Button = React.forwardRef<HTMLElement, ButtonProps>(
-  ({ as: asProp, disabled, ...props }, ref) => {
-    const [buttonProps, { tagName: Component }] = useButtonProps({
-      tagName: asProp,
-      disabled,
-      ...props,
-    });
+const Button: FC<ButtonProps> = ({ as: asProp, disabled, ref, ...props }) => {
+  const [buttonProps, { tagName: Component }] = useButtonProps({
+    tagName: asProp,
+    disabled,
+    ...props,
+  });
 
-    return <Component {...props} {...buttonProps} ref={ref} />;
-  },
-);
+  return <Component {...props} {...buttonProps} ref={ref} />;
+};
 
 Button.displayName = 'Button';
 

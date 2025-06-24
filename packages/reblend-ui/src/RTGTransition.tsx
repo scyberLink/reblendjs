@@ -1,20 +1,18 @@
-import * as React from 'react';
+import * as Reblend from 'reblendjs';
 import useRTGTransitionProps, {
   TransitionProps,
 } from './useRTGTransitionProps';
 
 export type RTGTransitionProps = TransitionProps & {
-  component: React.ElementType;
+  component: Reblend.ElementType;
 };
 
 // Normalizes Transition callbacks when nodeRef is used.
-const RTGTransition = React.forwardRef<any, RTGTransitionProps>(
-  ({ component: Component, ...props }, ref) => {
-    const transitionProps = useRTGTransitionProps(props as any);
+const RTGTransition: Reblend.FC<RTGTransitionProps> = ({ component: Component, ref, ...props }) => {
+  const transitionProps = useRTGTransitionProps(props as any);
 
-    return <Component ref={ref} {...transitionProps} />;
-  },
-);
+  return <Component ref={ref} {...transitionProps} />;
+};
 
 RTGTransition.displayName = 'RTGTransition';
 

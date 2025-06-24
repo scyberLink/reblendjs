@@ -1,6 +1,6 @@
-import useIsomorphicEffect from '@restart/hooks/useIsomorphicEffect';
+
 import getScrollParent from 'dom-helpers/scrollParent';
-import { useState } from 'react';
+import { useState } from 'reblendjs';
 
 export default function useScrollParent(element: null | Element) {
   const [parent, setParent] = useState<Element | Document | null | undefined>(

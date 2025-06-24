@@ -32,7 +32,7 @@ const Fade = ({ children, ...props }) => (
   <Transition {...props} timeout={FADE_DURATION}>
     {(status, innerProps) => (
       console.log(status),
-      React.cloneElement(children, {
+      Reblend.cloneElement(children, {
         ...innerProps,
         className: clsx(
           "fade",

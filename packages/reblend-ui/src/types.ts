@@ -1,14 +1,14 @@
-import * as React from 'react';
+import * as Reblend from 'reblendjs';
 
 export type EventKey = string | number;
 
-export type IntrinsicElementTypes = keyof React.JSX.IntrinsicElements;
+export type IntrinsicElementTypes = keyof Reblend.JSX.IntrinsicElements;
 
 export type AssignPropsWithRef<
-  Inner extends string | React.ComponentType<any>,
+  Inner extends string | Reblend.ComponentType<any>,
   P,
 > = Omit<
-  React.ComponentPropsWithRef<Inner extends React.ElementType ? Inner : never>,
+  Reblend.ComponentPropsWithRef<Inner extends Reblend.ElementType ? Inner : never>,
   keyof P
 > &
   P;
@@ -16,24 +16,24 @@ export type AssignPropsWithRef<
 export type { AssignPropsWithRef as AssignProps };
 
 export type AssignPropsWithoutRef<
-  Inner extends string | React.ComponentType<any>,
+  Inner extends string | Reblend.ComponentType<any>,
   P,
 > = Omit<
-  React.ComponentPropsWithoutRef<
-    Inner extends React.ElementType ? Inner : never
+  Reblend.ComponentPropsWithoutRef<
+    Inner extends Reblend.ElementType ? Inner : never
   >,
   keyof P
 > &
   P;
 
 export interface DynamicRefForwardingComponent<
-  TInitial extends string | React.ComponentType<any>,
-  P = { children?: React.ReactNode },
+  TInitial extends string | Reblend.ComponentType<any>,
+  P = { children?: Reblend.ReactNode },
 > {
-  <As extends string | React.ComponentType<any> = TInitial>(
+  <As extends string | Reblend.ComponentType<any> = TInitial>(
     props: AssignPropsWithRef<As, { as?: As } & P>,
     context?: any,
-  ): React.ReactNode;
+  ): Reblend.ReactNode;
   propTypes?: any;
   contextTypes?: any;
   defaultProps?: Partial<P>;
@@ -41,13 +41,13 @@ export interface DynamicRefForwardingComponent<
 }
 
 export interface DynamicFunctionComponent<
-  TInitial extends string | React.ComponentType<any>,
-  P = { children?: React.ReactNode },
+  TInitial extends string | Reblend.ComponentType<any>,
+  P = { children?: Reblend.ReactNode },
 > {
-  <As extends string | React.ComponentType<any> = TInitial>(
+  <As extends string | Reblend.ComponentType<any> = TInitial>(
     props: AssignPropsWithoutRef<As, { as?: As } & P>,
     context?: any,
-  ): React.ReactNode;
+  ): Reblend.ReactNode;
   propTypes?: any;
   contextTypes?: any;
   defaultProps?: Partial<P>;
@@ -55,19 +55,19 @@ export interface DynamicFunctionComponent<
 }
 
 export class DynamicComponent<
-  As extends string | React.ComponentType<any>,
+  As extends string | Reblend.ComponentType<any>,
   P = unknown,
-> extends React.Component<AssignPropsWithRef<As, { as?: As } & P>> {}
+> extends Reblend.Component<AssignPropsWithRef<As, { as?: As } & P>> {}
 
 // Need to use this instead of typeof Component to get proper type checking.
 export type DynamicComponentClass<
-  As extends string | React.ComponentType<any>,
+  As extends string | Reblend.ComponentType<any>,
   P = unknown,
-> = React.ComponentClass<AssignPropsWithRef<As, { as?: As } & P>>;
+> = Reblend.ComponentClass<AssignPropsWithRef<As, { as?: As } & P>>;
 
 export type SelectCallback = (
   eventKey: string | null,
-  e: React.SyntheticEvent<any>,
+  e: Reblend.SyntheticEvent<any>,
 ) => void;
 
 export interface TransitionCallbacks {
@@ -100,9 +100,9 @@ export interface TransitionCallbacks {
 export interface TransitionProps extends TransitionCallbacks {
   in?: boolean;
   appear?: boolean;
-  children: React.ReactElement<any>;
+  children: Reblend.ReactElement<any>;
   mountOnEnter?: boolean;
   unmountOnExit?: boolean;
 }
 
-export type TransitionComponent = React.ComponentType<TransitionProps>;
+export type TransitionComponent = Reblend.ComponentType<TransitionProps>;

@@ -1,12 +1,11 @@
 import qsa from 'dom-helpers/querySelectorAll';
 import addEventListener from 'dom-helpers/addEventListener';
-import { useCallback, useRef, useEffect, useMemo, useContext } from 'react';
-import * as React from 'react';
+import { useCallback, useRef, useEffect, useMemo, useContext } from 'reblendjs';
+import * as Reblend from 'reblendjs';
 import { useUncontrolledProp } from 'uncontrollable';
-import usePrevious from '@restart/hooks/usePrevious';
-import useForceUpdate from '@restart/hooks/useForceUpdate';
-import useEventListener from '@restart/hooks/useEventListener';
-import useEventCallback from '@restart/hooks/useEventCallback';
+import { useForceUpdate } from 'reblend-hooks';
+import { useEventListener } from 'reblend-hooks';
+import { useEventCallback } from 'reblend-hooks';
 
 import DropdownContext from './DropdownContext';
 import DropdownMenu, {
@@ -36,10 +35,10 @@ export type {
 };
 
 export interface DropdownInjectedProps {
-  onKeyDown: React.KeyboardEventHandler;
+  onKeyDown: Reblend.KeyboardEventHandler;
 }
 
-export type ToggleEvent = React.SyntheticEvent | KeyboardEvent | MouseEvent;
+export type ToggleEvent = Reblend.SyntheticEvent | KeyboardEvent | MouseEvent;
 
 export interface ToggleMetadata {
   source: string | undefined;
@@ -115,9 +114,9 @@ export interface DropdownProps {
    *   props: {
    *     onKeyDown: (SyntheticEvent) => void,
    *   },
-   * }) => React.Element}
+   * }) => Reblend.Element}
    */
-  children: React.ReactNode;
+  children: Reblend.ReactNode;
 }
 
 function useRefWithUpdate() {
@@ -129,7 +128,6 @@ function useRefWithUpdate() {
       // ensure that a menu set triggers an update for consumers
       forceUpdate();
     },
-    [forceUpdate],
   );
   return [ref, attachRef] as const;
 }
@@ -148,7 +146,7 @@ function Dropdown({
   placement = 'bottom-start',
   children,
 }: DropdownProps) {
-  const window = useWindow();
+  const [window] = useWindow();
   const [show, onToggle] = useUncontrolledProp(
     rawShow,
     defaultShow!,
@@ -181,7 +179,7 @@ function Dropdown({
   );
 
   const handleSelect = useEventCallback(
-    (key: string | null, event: React.SyntheticEvent) => {
+    (key: string | null, event: Reblend.SyntheticEvent) => {
       onSelect?.(key, event);
       toggle(false, event, 'select');
 

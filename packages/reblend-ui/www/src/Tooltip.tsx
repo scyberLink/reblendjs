@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 
-const Tooltip = React.forwardRef(
+const Tooltip = (
   ({ children, arrowProps, popper, show: _, ...props }: any, ref: any) => (
     <div ref={ref} {...props} className={clsx(props.className, 'absolute')}>
       <div

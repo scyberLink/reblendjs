@@ -1,11 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { fireEvent, render, screen } from 'reblend-testing-library';
 import Dropdown from '../src/Dropdown';
 import DropdownItem from '../src/DropdownItem';
 import DropdownMenu, { getDropdownMenuPlacement } from '../src/DropdownMenu';
 
 describe('<Dropdown.Menu>', () => {
-  it('renders div with dropdown-menu class', () => {
+  it('renders div with dropdown-menu class', async () => {
     const { container } = render(
       <DropdownMenu show>
         <DropdownItem eventKey="1">Item 1</DropdownItem>
@@ -18,7 +18,7 @@ describe('<Dropdown.Menu>', () => {
     expect(container.firstElementChild!.classList).toContain('dropdown-menu');
   });
 
-  it('Should pass props to dropdown', () => {
+  it('Should pass props to dropdown', async () => {
     const { container } = render(
       <DropdownMenu show className="new-fancy-class">
         <DropdownItem eventKey="1">DropdownItem 1 content</DropdownItem>
@@ -28,7 +28,7 @@ describe('<Dropdown.Menu>', () => {
     expect(container.firstElementChild!.classList).toContain('new-fancy-class');
   });
 
-  it('applies align="end"', () => {
+  it('applies align="end"', async () => {
     const { container } = render(
       <DropdownMenu show align="end">
         <DropdownItem>Item</DropdownItem>
@@ -40,7 +40,7 @@ describe('<Dropdown.Menu>', () => {
     );
   });
 
-  it('renders on mount with prop', () => {
+  it('renders on mount with prop', async () => {
     const { container } = render(
       <DropdownMenu renderOnMount>
         <DropdownItem>Item</DropdownItem>
@@ -50,7 +50,7 @@ describe('<Dropdown.Menu>', () => {
     expect(container.firstElementChild!.classList).toContain('dropdown-menu');
   });
 
-  it('does not add any extra classes when align="start"', () => {
+  it('does not add any extra classes when align="start"', async () => {
     const { container } = render(
       <DropdownMenu show align="start">
         <DropdownItem>Item</DropdownItem>
@@ -62,7 +62,7 @@ describe('<Dropdown.Menu>', () => {
     );
   });
 
-  it('adds responsive start alignment classes', () => {
+  it('adds responsive start alignment classes', async () => {
     const { container } = render(
       <DropdownMenu show align={{ lg: 'start' }}>
         <DropdownItem>Item</DropdownItem>
@@ -76,7 +76,7 @@ describe('<Dropdown.Menu>', () => {
     );
   });
 
-  it('adds responsive end alignment classes', () => {
+  it('adds responsive end alignment classes', async () => {
     const { container } = render(
       <DropdownMenu show align={{ lg: 'end' }}>
         <DropdownItem>Item</DropdownItem>
@@ -90,7 +90,7 @@ describe('<Dropdown.Menu>', () => {
     expect(container.querySelector('[data-bs-popper="static"]')).toBeDefined();
   });
 
-  it('allows custom responsive alignment classes', () => {
+  it('allows custom responsive alignment classes', async () => {
     const { container } = render(
       <DropdownMenu show align={{ custom: 'end' }}>
         <DropdownItem>Item</DropdownItem>
@@ -102,7 +102,7 @@ describe('<Dropdown.Menu>', () => {
     );
   });
 
-  it('should render variant', () => {
+  it('should render variant', async () => {
     const { container } = render(
       <DropdownMenu show variant="dark">
         <DropdownItem>Item</DropdownItem>
@@ -114,7 +114,7 @@ describe('<Dropdown.Menu>', () => {
     );
   });
 
-  it('does not flicker when rootCloseEvent is set to "mousedown" and toggle button is clicked', () => {
+  it('does not flicker when rootCloseEvent is set to "mousedown" and toggle button is clicked', async () => {
     const { container } = render(
       <Dropdown>
         <Dropdown.Toggle id="dropdown-basic" data-testid="dropdown-toggle">
@@ -136,7 +136,7 @@ describe('<Dropdown.Menu>', () => {
   });
 
   describe('getDropdownMenuPlacement', () => {
-    it('should return top placement', () => {
+    it('should return top placement', async () => {
       expect(getDropdownMenuPlacement(false, 'up', false)).toEqual('top-start');
       expect(getDropdownMenuPlacement(true, 'up', false)).toEqual('top-end');
       expect(getDropdownMenuPlacement(true, 'up-centered', false)).toEqual(
@@ -144,7 +144,7 @@ describe('<Dropdown.Menu>', () => {
       );
     });
 
-    it('should return top placement for RTL', () => {
+    it('should return top placement for RTL', async () => {
       expect(getDropdownMenuPlacement(false, 'up', true)).toEqual('top-end');
       expect(getDropdownMenuPlacement(true, 'up', true)).toEqual('top-start');
       expect(getDropdownMenuPlacement(true, 'up-centered', true)).toEqual(
@@ -152,21 +152,21 @@ describe('<Dropdown.Menu>', () => {
       );
     });
 
-    it('should return end placement', () => {
+    it('should return end placement', async () => {
       expect(getDropdownMenuPlacement(false, 'end', false)).toEqual(
         'right-start',
       );
       expect(getDropdownMenuPlacement(true, 'end', false)).toEqual('right-end');
     });
 
-    it('should return end placement for RTL', () => {
+    it('should return end placement for RTL', async () => {
       expect(getDropdownMenuPlacement(false, 'end', true)).toEqual(
         'left-start',
       );
       expect(getDropdownMenuPlacement(true, 'end', true)).toEqual('left-end');
     });
 
-    it('should return bottom placement', () => {
+    it('should return bottom placement', async () => {
       expect(getDropdownMenuPlacement(false, 'down', false)).toEqual(
         'bottom-start',
       );
@@ -178,7 +178,7 @@ describe('<Dropdown.Menu>', () => {
       );
     });
 
-    it('should return bottom placement for RTL', () => {
+    it('should return bottom placement for RTL', async () => {
       expect(getDropdownMenuPlacement(false, 'down', true)).toEqual(
         'bottom-end',
       );
@@ -190,7 +190,7 @@ describe('<Dropdown.Menu>', () => {
       );
     });
 
-    it('should return start placement', () => {
+    it('should return start placement', async () => {
       expect(getDropdownMenuPlacement(false, 'start', false)).toEqual(
         'left-start',
       );
@@ -199,7 +199,7 @@ describe('<Dropdown.Menu>', () => {
       );
     });
 
-    it('should return start placement for RTL', () => {
+    it('should return start placement for RTL', async () => {
       expect(getDropdownMenuPlacement(false, 'start', true)).toEqual(
         'right-start',
       );

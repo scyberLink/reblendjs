@@ -1,5 +1,5 @@
 import * as Reblend from 'reblendjs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import ThemeProvider, { createBootstrapComponent } from '../src/ThemeProvider';
 import Button from '../src/Button';
@@ -8,7 +8,7 @@ describe('<ThemeProvider>', () => {
   const hocValue = 'foo';
   const Foo = createBootstrapComponent(
     class Foo extends Reblend.Component<{ bsPrefix: string }, any> {
-      render() {
+      await render() {
         return (
           <p className={`${this.props.bsPrefix} ${this.props.bsPrefix}-bar`}>
             foo val
@@ -19,8 +19,8 @@ describe('<ThemeProvider>', () => {
     hocValue,
   );
 
-  it('should use HOC value', () => {
-    render(
+  it('should use HOC value', async () => {
+    await render(
       <div>
         <Foo />
       </div>,
@@ -31,8 +31,8 @@ describe('<ThemeProvider>', () => {
     expect(fooElem.tagName).toEqual('P');
   });
 
-  it('should provide bsPrefix overrides', () => {
-    render(
+  it('should provide bsPrefix overrides', async () => {
+    await render(
       <ThemeProvider prefixes={{ btn: 'my-btn', foo: 'global-foo' }}>
         <div>
           <Button variant="primary">My label</Button>
@@ -50,8 +50,8 @@ describe('<ThemeProvider>', () => {
     expect(fooElem.classList).toContain('global-foo');
   });
 
-  it('should use prop bsPrefix first', () => {
-    render(
+  it('should use prop bsPrefix first', async () => {
+    await render(
       <ThemeProvider prefixes={{ foo: 'global-foo' }}>
         <div>
           <Foo bsPrefix="my-foo" />
@@ -63,9 +63,9 @@ describe('<ThemeProvider>', () => {
     expect(fooElem.classList).toContain('my-foo');
   });
 
-  it('should forward ref', () => {
+  it('should forward ref', async () => {
     let ref;
-    render(
+    await render(
       <div>
         <Foo bsPrefix="my-foo" ref={(r) => (ref = r)} />
       </div>,

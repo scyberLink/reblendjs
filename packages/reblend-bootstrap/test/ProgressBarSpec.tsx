@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import ProgressBar from '../src/ProgressBar';
 
 describe('<ProgressBar>', () => {
-  it('Should output a progress bar with wrapper', () => {
-    render(<ProgressBar data-testid="test" min={0} max={10} now={0} />);
+  it('Should output a progress bar with wrapper', async () => {
+    await render(<ProgressBar data-testid="test" min={0} max={10} now={0} />);
 
     const progressElem = screen.getByTestId('test');
     const innerProgressElem = progressElem.firstElementChild!;
@@ -15,8 +15,8 @@ describe('<ProgressBar>', () => {
   });
 
   ['success', 'warning', 'info', 'danger'].forEach((variant) => {
-    it(`Should have the variant="${variant}" class`, () => {
-      render(
+    it(`Should have the variant="${variant}" class`, async () => {
+      await render(
         <ProgressBar
           data-testid="test"
           min={0}
@@ -30,45 +30,45 @@ describe('<ProgressBar>', () => {
     });
   });
 
-  it('Should default to min:0, max:100', () => {
-    render(<ProgressBar data-testid="test" now={5} />);
+  it('Should default to min:0, max:100', async () => {
+    await render(<ProgressBar data-testid="test" now={5} />);
     const innerProgressElem = screen.getByTestId('test').firstElementChild!;
     expect(innerProgressElem.getAttribute('aria-valuemin')).toEqual('0');
     expect(innerProgressElem.getAttribute('aria-valuemax')).toEqual('100');
   });
 
-  it('Should have 0% computed width', () => {
-    render(<ProgressBar data-testid="test" min={0} max={10} now={0} />);
+  it('Should have 0% computed width', async () => {
+    await render(<ProgressBar data-testid="test" min={0} max={10} now={0} />);
     const innerProgressElem = screen.getByTestId('test').firstElementChild!;
     expect((innerProgressElem as HTMLElement).style.width).toEqual('0%');
   });
 
-  it('Should have 10% computed width', () => {
-    render(<ProgressBar data-testid="test" min={0} max={10} now={1} />);
+  it('Should have 10% computed width', async () => {
+    await render(<ProgressBar data-testid="test" min={0} max={10} now={1} />);
     const innerProgressElem = screen.getByTestId('test').firstElementChild!;
     expect((innerProgressElem as HTMLElement).style.width).toEqual('10%');
   });
 
-  it('Should have 100% computed width', () => {
-    render(<ProgressBar data-testid="test" min={0} max={10} now={10} />);
+  it('Should have 100% computed width', async () => {
+    await render(<ProgressBar data-testid="test" min={0} max={10} now={10} />);
     const innerProgressElem = screen.getByTestId('test').firstElementChild!;
     expect((innerProgressElem as HTMLElement).style.width).toEqual('100%');
   });
 
-  it('Should have 50% computed width with non-zero min', () => {
-    render(<ProgressBar data-testid="test" min={1} max={11} now={6} />);
+  it('Should have 50% computed width with non-zero min', async () => {
+    await render(<ProgressBar data-testid="test" min={1} max={11} now={6} />);
     const innerProgressElem = screen.getByTestId('test').firstElementChild!;
     expect((innerProgressElem as HTMLElement).style.width).toEqual('50%');
   });
 
-  it('Should not have label', () => {
-    render(<ProgressBar data-testid="test" min={0} max={10} now={5} />);
+  it('Should not have label', async () => {
+    await render(<ProgressBar data-testid="test" min={0} max={10} now={5} />);
     const innerProgressElem = screen.getByTestId('test').firstElementChild!;
     expect(innerProgressElem.textContent).toEqual('');
   });
 
-  it('Should have label', () => {
-    render(
+  it('Should have label', async () => {
+    await render(
       <ProgressBar
         data-testid="test"
         min={0}
@@ -82,8 +82,8 @@ describe('<ProgressBar>', () => {
     expect(innerProgressElem.textContent).toEqual('progress bar label');
   });
 
-  it('Should have screen reader only label', () => {
-    render(
+  it('Should have screen reader only label', async () => {
+    await render(
       <ProgressBar
         data-testid="test"
         min={0}
@@ -101,10 +101,10 @@ describe('<ProgressBar>', () => {
     expect(innerProgressElem.textContent).toEqual('progress bar label');
   });
 
-  it('Should have a label that is a React component', () => {
+  it('Should have a label that is a React component', async () => {
     const customLabel = <strong className="special-label">My label</strong>;
 
-    render(
+    await render(
       <ProgressBar
         data-testid="test"
         min={0}
@@ -119,10 +119,10 @@ describe('<ProgressBar>', () => {
     );
   });
 
-  it('Should have screen reader only label that wraps a React component', () => {
+  it('Should have screen reader only label that wraps a React component', async () => {
     const customLabel = <strong className="special-label">My label</strong>;
 
-    render(
+    await render(
       <ProgressBar
         data-testid="test"
         min={0}
@@ -141,14 +141,14 @@ describe('<ProgressBar>', () => {
     ).toContain('special-label');
   });
 
-  it('Should show striped bar', () => {
-    render(<ProgressBar data-testid="test" min={1} max={11} now={6} striped />);
+  it('Should show striped bar', async () => {
+    await render(<ProgressBar data-testid="test" min={1} max={11} now={6} striped />);
     const innerProgressElem = screen.getByTestId('test').firstElementChild!;
     expect(innerProgressElem.classList).toContain('progress-bar-striped');
   });
 
-  it('Should show animated striped bar', () => {
-    render(
+  it('Should show animated striped bar', async () => {
+    await render(
       <ProgressBar data-testid="test" min={1} max={11} now={6} animated />,
     );
     const innerProgressElem = screen.getByTestId('test').firstElementChild!;
@@ -156,8 +156,8 @@ describe('<ProgressBar>', () => {
     expect(innerProgressElem.classList).toContain('progress-bar-animated');
   });
 
-  it('Should show stacked bars', () => {
-    render(
+  it('Should show stacked bars', async () => {
+    await render(
       <ProgressBar data-testid="test">
         <ProgressBar key={1} now={50} />
         <ProgressBar key={2} now={30} />
@@ -175,8 +175,8 @@ describe('<ProgressBar>', () => {
     expect((bar2 as HTMLElement).style.width).toEqual('30%');
   });
 
-  it('Should render animated and striped children in stacked bar too', () => {
-    render(
+  it('Should render animated and striped children in stacked bar too', async () => {
+    await render(
       <ProgressBar data-testid="test">
         <ProgressBar animated key={1} now={50} />
         <ProgressBar striped key={2} now={30} />
@@ -196,8 +196,8 @@ describe('<ProgressBar>', () => {
     expect(bar2.classList).not.toContain('progress-bar-animated');
   });
 
-  it('Should forward className and style to nested bars', () => {
-    render(
+  it('Should forward className and style to nested bars', async () => {
+    await render(
       <ProgressBar data-testid="test">
         <ProgressBar now={1} className="bar1" />
         <ProgressBar now={2} style={{ minWidth: 10 }} />

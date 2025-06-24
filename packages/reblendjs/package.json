@@ -9,16 +9,16 @@
     "UI",
     "Library"
   ],
-  "main": "lib/index.cjs.js",
-  "module": "lib/esm/reblendjs.esm.js",
-  "browser": "lib/umd/reblendjs.umd.js",
-  "types": "types/index.d.ts",
+  "main": "./lib/index.cjs.js",
+  "module": "./lib/esm/reblendjs.esm.js",
+  "browser": "./lib/umd/reblendjs.umd.js",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
       "import": "./lib/esm/reblendjs.esm.js",
       "require": "./lib/index.cjs.js",
       "browser": "./lib/umd/reblendjs.umd.js",
-      "types": "./types/index.d.ts"
+      "types": "./src/index.ts"
     }
   },
   "files": [
@@ -26,7 +26,7 @@
     "HISTORY.md",
     "README.md",
     "lib",
-    "types"
+    "src"
   ],
   "repository": {
     "type": "git",
@@ -50,23 +50,6 @@
   },
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
-  "devDependencies": {
-    "@rollup/plugin-commonjs": "^28.0.3",
-    "@rollup/plugin-node-resolve": "^16.0.1",
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.1",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-config-standard-with-typescript": "^43.0.1",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-prettier": "^5.1.3",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-sort-class-members": "^1.20.0",
-    "prettier": "^3.2.5",
-    "rollup": "^4.41.1",
-    "rollup-plugin-terser": "^7.0.2"
-  },
   "dependencies": {
     "reblend-deep-equal-iterative": "^1.0.1",
     "reblend-typing": "^7.0.0"

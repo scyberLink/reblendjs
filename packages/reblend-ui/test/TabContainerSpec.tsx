@@ -1,5 +1,5 @@
-import { render, fireEvent } from '@testing-library/react';
-import { expect, vi, describe, it } from 'vitest';
+import { render, fireEvent } from 'reblend-testing-library';
+import { expect, describe, it } from '@jest/globals';
 import Nav from '../src/Nav';
 import NavItem from '../src/NavItem';
 import TabPanel from '../src/TabPanel';
@@ -7,7 +7,7 @@ import Tabs from '../src/Tabs';
 
 describe('<Tabs>', () => {
   it('should not propagate context past TabPanels', () => {
-    const onSelect = vi.fn();
+    const onSelect = jest.fn();
 
     const { getByText } = render(
       <Tabs id="custom-id" onSelect={onSelect}>
@@ -31,11 +31,11 @@ describe('<Tabs>', () => {
 
     const topNavItem = getByText('One');
     fireEvent.click(topNavItem);
-    expect(onSelect).toHaveBeenCalledOnce();
+    expect(onSelect).toHaveBeenCalledTimes(1);
   });
 
   it('should let generateChildId function create id', () => {
-    const generateChildIdSpy = vi.fn(() => 'test-id');
+    const generateChildIdSpy = jest.fn(() => 'test-id');
 
     const { getByRole } = render(
       <Tabs generateChildId={generateChildIdSpy}>
@@ -51,7 +51,7 @@ describe('<Tabs>', () => {
     );
 
     const navItem = getByRole('tab');
-    expect(navItem.getAttribute('id')).to.equal('test-id');
+    expect(navItem.getAttribute('id')).toEqual('test-id');
   });
 
   it('should match up ids', () => {
@@ -78,8 +78,8 @@ describe('<Tabs>', () => {
     expect(navItemID).to.exist;
     expect(tabPanelID).to.exist;
 
-    expect(tabPanel.getAttribute('aria-labelledby')).to.equal(navItemID);
-    expect(navItem.getAttribute('aria-controls')).to.equal(tabPanelID);
+    expect(tabPanel.getAttribute('aria-labelledby')).toEqual(navItemID);
+    expect(navItem.getAttribute('aria-controls')).toEqual(tabPanelID);
   });
 
   it('should default Nav role to tablist', () => {
@@ -94,7 +94,7 @@ describe('<Tabs>', () => {
     );
 
     expect(getByRole('tablist')).to.exist;
-    expect(getByText('One').getAttribute('role')).to.equal('tab');
+    expect(getByText('One').getAttribute('role')).toEqual('tab');
   });
 
   it('should use explicit Nav role', () => {
@@ -129,19 +129,19 @@ describe('<Tabs>', () => {
       </Tabs>,
     );
 
-    expect(getByText('Tab 1').getAttribute('aria-hidden')).to.equal('false');
-    expect(getByText('Tab 2').getAttribute('aria-hidden')).to.equal('true');
+    expect(getByText('Tab 1').getAttribute('aria-hidden')).toEqual('false');
+    expect(getByText('Tab 2').getAttribute('aria-hidden')).toEqual('true');
 
-    expect(getByText('One').getAttribute('aria-selected')).to.equal('true');
-    expect(getByText('Two').getAttribute('aria-selected')).to.equal('false');
+    expect(getByText('One').getAttribute('aria-selected')).toEqual('true');
+    expect(getByText('Two').getAttribute('aria-selected')).toEqual('false');
 
     fireEvent.click(getByText('Two'));
 
-    expect(getByText('Tab 1').getAttribute('aria-hidden')).to.equal('true');
-    expect(getByText('Tab 2').getAttribute('aria-hidden')).to.equal('false');
+    expect(getByText('Tab 1').getAttribute('aria-hidden')).toEqual('true');
+    expect(getByText('Tab 2').getAttribute('aria-hidden')).toEqual('false');
 
-    expect(getByText('One').getAttribute('aria-selected')).to.equal('false');
-    expect(getByText('Two').getAttribute('aria-selected')).to.equal('true');
+    expect(getByText('One').getAttribute('aria-selected')).toEqual('false');
+    expect(getByText('Two').getAttribute('aria-selected')).toEqual('true');
   });
 
   it('Should mount and unmount tabs when set', () => {

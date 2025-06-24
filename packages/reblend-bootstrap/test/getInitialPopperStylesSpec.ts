@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import getInitialPopperStyles from '../src/getInitialPopperStyles';
 
 describe('getInitialPopperStyles', () => {
-  it('defaults to absolute positioning when no strategy is provided', () => {
+  it('defaults to absolute positioning when no strategy is provided', async () => {
     expect(getInitialPopperStyles()).toEqual({
       position: 'absolute',
       top: '0',
@@ -12,7 +12,7 @@ describe('getInitialPopperStyles', () => {
     });
   });
 
-  it('sets the position to the provided strategy', () => {
+  it('sets the position to the provided strategy', async () => {
     expect(getInitialPopperStyles('fixed')).toEqual({
       position: 'fixed',
       top: '0',

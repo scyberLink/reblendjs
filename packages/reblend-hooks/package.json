@@ -1,20 +1,13 @@
 {
   "name": "reblend-hooks",
-  "version": "1.0.1",
-  "main": "cjs/index.js",
-  "module": "esm/index.js",
-  "types": "src/index.ts",
-  "exports": {
-    ".": {
-      "import": "esm/index.js",
-      "require": "cjs/index.js",
-      "types": "src/index.ts"
-    }
-  },
+  "version": "1.0.2",
+  "main": "./cjs/index.js",
+  "module": "./esm/index.js",
+  "types": "./types/index.d.ts",
   "files": [
     "cjs",
     "esm",
-    "src",
+    "types",
     "CHANGELOG.md",
     "LICENSE",
     "HISTORY.md",
@@ -37,10 +30,10 @@
     "bootstrap": "yarn && yarn --cwd www",
     "test": "jest --coverage",
     "tdd": "jest --watch",
-    "build": "rimraf esm cjs types && concurrently 'npm run build:esm' 'npm run build:cjs'",
+    "build": "rimraf esm cjs types && npm run types && concurrently 'npm run build:esm' 'npm run build:cjs'",
     "build:esm": "babel src --out-dir esm --extensions '.tsx,.ts,.js' --no-babelrc --presets=reblend",
     "build:cjs": "babel src --out-dir cjs --extensions '.tsx,.ts,.js'",
-    "build:types": "tsc -p tsconfig.types.json",
+    "types": "tsc --project tsconfig.types.json",
     "build:test": "concurrently \"npm run build:cjs\" \"babel test --out-dir cjs-test --extensions '.tsx,.js'  --ignore='**/*.d.ts'\"",
     "deploy-docs": "yarn --cwd www build --prefix-paths && gh-pages -d www/public",
     "typecheck": "tsc -p . --noEmit",
@@ -56,9 +49,5 @@
   },
   "peerDependencies": {
     "reblendjs": "12.0.0"
-  },
-  "devDependencies": {
-    "@types/lodash": "^4.14.195",
-    "gh-pages": "^3.1.0"
   }
 }

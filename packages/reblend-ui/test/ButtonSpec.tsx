@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import Reblend from 'reblendjs';
+import { render, fireEvent } from 'reblend-testing-library';
 
-import { vi, expect, describe, it } from 'vitest';
-import Button from '../src/Button';
+import { expect, describe, it } from '@jest/globals';
+import Button from '../cjs/Button';
 
 describe('<Button>', () => {
   it('Should output a button', () => {
@@ -46,7 +46,7 @@ describe('<Button>', () => {
   });
 
   it('should forward refs to the button', () => {
-    const ref = React.createRef<any>();
+    const ref = Reblend.createRef<any>();
     const { rerender } = render(
       <div>
         <Button ref={ref}>Yo</Button>
@@ -76,7 +76,7 @@ describe('<Button>', () => {
   });
 
   it('Should call onClick callback', async () => {
-    const spy = vi.fn();
+    const spy = jest.fn();
     const { container } = render(<Button onClick={spy}>Title</Button>);
 
     fireEvent.click(container.firstElementChild!);
@@ -91,7 +91,7 @@ describe('<Button>', () => {
   });
 
   it('Should be inferred disabled link', () => {
-    const clickSpy = vi.fn();
+    const clickSpy = jest.fn();
 
     const { container } = render(
       <Button disabled href="#foo" onClick={clickSpy}>
@@ -111,7 +111,7 @@ describe('<Button>', () => {
 
   ['#', ''].forEach((href) => {
     it(`should prevent default on trivial href="${href}" clicks`, () => {
-      const clickSpy = vi.fn();
+      const clickSpy = jest.fn();
 
       const { getByText } = render(
         <div onClick={clickSpy}>
@@ -125,15 +125,15 @@ describe('<Button>', () => {
 
       fireEvent.click(button);
 
-      expect(clickSpy).toHaveBeenCalledOnce();
+      expect(clickSpy).toHaveBeenCalledTimes(1);
       const event = clickSpy.mock.calls[0][0];
 
-      expect(event.defaultPrevented).to.equal(true);
+      expect(event.defaultPrevented).toEqual(true);
     });
   });
 
   it(`should not prevent default on button clicks`, () => {
-    const clickSpy = vi.fn();
+    const clickSpy = jest.fn();
 
     const { getByText } = render(
       <div onClick={clickSpy}>
@@ -147,14 +147,14 @@ describe('<Button>', () => {
 
     fireEvent.click(button);
 
-    expect(clickSpy).toHaveBeenCalledOnce();
+    expect(clickSpy).toHaveBeenCalledTimes(1);
     const event = clickSpy.mock.calls[0][0];
 
-    expect(event.defaultPrevented).to.equal(false);
+    expect(event.defaultPrevented).toEqual(false);
   });
 
   it('Should be disabled link', () => {
-    const clickSpy = vi.fn();
+    const clickSpy = jest.fn();
 
     const { container } = render(
       <Button disabled as="a" onClick={clickSpy}>

@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import Tooltip from '../src/Tooltip';
 
 describe('Tooltip', () => {
-  it('Should output a tooltip with content', () => {
-    render(
+  it('Should output a tooltip with content', async () => {
+    await render(
       <Tooltip data-testid="test-tooltip" placement="right">
         <strong>Tooltip Content</strong>
       </Tooltip>,

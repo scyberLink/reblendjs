@@ -17,29 +17,34 @@
   "devDependencies": {
     "@babel/cli": "^7.27.2",
     "@babel/core": "^7.27.4",
-    "@types/jest": "^29.5.14",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@types/jest": "latest",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
     "alex": "^8.2.0",
-    "babel-plugin-transform-reblend-function-to-class": "file:../reblend-babel-plugins/packages/babel-plugin-transform-reblend-function-to-class",
-    "babel-preset-reblend": "^11.0.3",
-    "eslint": "^8.3.0",
-    "husky": "^4.3.8",
-    "jest": "^27.5.1",
+    "babel-preset-reblend": "^11.2.2",
+    "concurrently": "^9.1.2",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-sort-class-members": "^1.20.0",
+    "globals": "^15.14.0",
+    "jest": "^30.0.2",
+    "jest-environment-jsdom": "^30.0.2",
+    "jsdom": "^26.1.0",
     "lerna": "^8.2.2",
     "lerna-changelog": "^2.2.0",
-    "lint-staged": "^12.1.2",
-    "prettier": "^2.5.0",
-    "reblend-testing-library": "^2.0.3",
+    "mq-polyfill": "^1.1.8",
+    "prettier": "^3.4.2",
+    "reblend-testing-library": "^2.0.4",
+    "rollup": "^4.41.1",
+    "rollup-plugin-terser": "^7.0.2",
     "typescript": "^5.8.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,json,yml,yaml,css,scss,ts,tsx,md}": [
-      "prettier --write"
-    ]
   },
   "browserslist": {
     "production": [

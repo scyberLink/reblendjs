@@ -1,5 +1,5 @@
-import { cloneElement, useCallback, useRef } from 'react';
-import useMergedRefs from '@restart/hooks/useMergedRefs';
+import { cloneElement, useCallback, useRef } from 'reblendjs';
+import { useMergedRefs } from 'reblend-hooks';
 import {
   TransitionProps as RTGTransitionProps,
   TransitionStatus,
@@ -8,11 +8,11 @@ import { getChildRef } from './utils';
 
 export type TransitionProps = RTGTransitionProps & {
   children:
-    | React.ReactElement
+    | Reblend.ReactElement
     | ((
         status: TransitionStatus,
         props: Record<string, unknown>,
-      ) => React.ReactNode);
+      ) => Reblend.ReactNode);
 };
 
 /**
@@ -71,7 +71,7 @@ export default function useRTGTransitionProps({
               ...innerProps,
               ref: mergedRef,
             })) as any)
-        : cloneElement(children as React.ReactElement<any>, {
+        : cloneElement(children as Reblend.ReactElement<any>, {
             ref: mergedRef,
           }),
   };

@@ -1,15 +1,15 @@
 import ownerDocument from 'dom-helpers/ownerDocument';
 import canUseDOM from 'dom-helpers/canUseDOM';
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'reblendjs';
 import useWindow from './useWindow';
 import { VirtualElement } from './usePopper';
 
 export type DOMContainer<T extends HTMLElement | VirtualElement = HTMLElement> =
 
     | T
-    | React.RefObject<T | null>
+    | Reblend.RefObject<T | null>
     | null
-    | (() => T | React.RefObject<T | null> | null);
+    | (() => T | Reblend.RefObject<T | null> | null);
 
 export const resolveContainerRef = <T extends HTMLElement | VirtualElement>(
   ref: DOMContainer<T> | undefined,

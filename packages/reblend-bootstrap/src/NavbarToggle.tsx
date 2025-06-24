@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { useContext } from 'react';
-import useEventCallback from '@restart/hooks/useEventCallback';
+import { useContext } from 'reblendjs';
+import { useEventCallback } from 'reblend-hooks';
 import { DynamicRefForwardingComponent } from '@restart/ui/types';
 import { useBootstrapPrefix } from './ThemeProvider';
 import NavbarContext from './NavbarContext';

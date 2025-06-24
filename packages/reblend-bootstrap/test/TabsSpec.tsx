@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen } from 'reblend-testing-library';
 import Tab from '../src/Tab';
 import Tabs from '../src/Tabs';
@@ -9,8 +9,8 @@ const checkEventKey = (elem: Element, eventKey: string | number) =>
   elem.getAttribute('aria-controls') === `test-pane-${eventKey}`;
 
 describe('<Tabs>', () => {
-  it('Should show the correct tab and assign correct eventKeys', () => {
-    render(
+  it('Should show the correct tab and assign correct eventKeys', async () => {
+    await render(
       <Tabs id="test" defaultActiveKey={1}>
         <Tab title="Tab 1 title" eventKey={1}>
           Tab 1 content
@@ -36,8 +36,8 @@ describe('<Tabs>', () => {
     expect(checkEventKey(secondTabButton, 2)).toEqual(true);
   });
 
-  it('should get defaultActiveKey (if null) from first child tab with eventKey', () => {
-    render(
+  it('should get defaultActiveKey (if null) from first child tab with eventKey', async () => {
+    await render(
       <Tabs id="test" data-testid="test-id">
         <Tab title="Tab 1 title" eventKey={1}>
           Tab 1 content
@@ -60,10 +60,10 @@ describe('<Tabs>', () => {
     expect(secondTabButton.tagName).toEqual('BUTTON');
   });
 
-  it('Should allow tab title to have React components', () => {
+  it('Should allow tab title to have React components', async () => {
     const tabTitle = <strong className="special-tab">React Tab 2</strong>;
 
-    render(
+    await render(
       <Tabs id="test" defaultActiveKey={2}>
         <Tab title="Tab 1" eventKey={1}>
           Tab 1 content
@@ -76,10 +76,10 @@ describe('<Tabs>', () => {
     expect(screen.getByText('React Tab 2').classList).toContain('special-tab');
   });
 
-  it('Should call onSelect when tab is selected', () => {
-    const onSelectSpy = vi.fn();
+  it('Should call onSelect when tab is selected', async () => {
+    const onSelectSpy = jest.fn();
 
-    render(
+    await render(
       <Tabs id="test" onSelect={onSelectSpy} activeKey={1}>
         <Tab title="Tab 1" eventKey="1">
           Tab 1 content
@@ -94,8 +94,8 @@ describe('<Tabs>', () => {
     expect(onSelectSpy).toHaveBeenCalledWith('2', expect.anything());
   });
 
-  it('Should have children with the correct DOM properties', () => {
-    render(
+  it('Should have children with the correct DOM properties', async () => {
+    await render(
       <Tabs id="test" defaultActiveKey={1}>
         <Tab title="Tab 1" className="custom" eventKey={1}>
           Tab 1 content
@@ -118,8 +118,8 @@ describe('<Tabs>', () => {
     expect(secondTabTitle.classList).toContain('tcustom');
   });
 
-  it('Should pass variant to Nav', () => {
-    render(
+  it('Should pass variant to Nav', async () => {
+    await render(
       <Tabs
         data-testid="test"
         variant="pills"
@@ -138,10 +138,10 @@ describe('<Tabs>', () => {
     expect(screen.getByTestId('test').classList).toContain('nav-pills');
   });
 
-  it('Should pass disabled to Nav', () => {
-    const onSelectSpy = vi.fn();
+  it('Should pass disabled to Nav', async () => {
+    const onSelectSpy = jest.fn();
 
-    render(
+    await render(
       <Tabs id="test" defaultActiveKey={1} onSelect={onSelectSpy}>
         <Tab title="Tab 1" eventKey={1}>
           Tab 1 content
@@ -157,8 +157,8 @@ describe('<Tabs>', () => {
     expect(onSelectSpy).not.toHaveBeenCalled();
   });
 
-  it('Should not render a Tab without a title', () => {
-    render(
+  it('Should not render a Tab without a title', async () => {
+    await render(
       <Tabs data-testid="testid" id="test" defaultActiveKey={1}>
         {/* @ts-expect-error test with no title */}
         <Tab eventKey={1}>Tab 1 content</Tab>
@@ -171,8 +171,8 @@ describe('<Tabs>', () => {
     expect(tabs.children).toHaveLength(1);
   });
 
-  it('Should render TabPane with role="tabpanel"', () => {
-    render(
+  it('Should render TabPane with role="tabpanel"', async () => {
+    await render(
       <Tabs data-testid="testid" id="test" defaultActiveKey={1}>
         <Tab title="Tab 1" eventKey={1}>
           Tab 1 content
@@ -183,7 +183,7 @@ describe('<Tabs>', () => {
     expect(screen.getAllByRole('tabpanel')).toHaveLength(1);
   });
 
-  it('should have fade animation by default', () => {
+  it('should have fade animation by default', async () => {
     const { getByRole } = render(
       <Tabs id="test" defaultActiveKey={1}>
         <Tab title="Tab 1" eventKey={1}>
@@ -194,8 +194,8 @@ describe('<Tabs>', () => {
     expect(getByRole('tabpanel').classList).toContain('fade');
   });
 
-  it('Should omit Transition in TabPane if prop is false ', () => {
-    render(
+  it('Should omit Transition in TabPane if prop is false ', async () => {
+    await render(
       <Tabs id="test" defaultActiveKey={1}>
         <Tab title="Tab 1" className="custom" eventKey={1} transition={false}>
           Tab 1 content
@@ -212,8 +212,8 @@ describe('<Tabs>', () => {
     expect(secondTabContent.classList).toContain('fade');
   });
 
-  it('Should pass fill to Nav', () => {
-    render(
+  it('Should pass fill to Nav', async () => {
+    await render(
       <Tabs data-testid="test" defaultActiveKey={1} transition={false} fill>
         <Tab title="Tab 1" eventKey={1}>
           Tab 1 content
@@ -227,8 +227,8 @@ describe('<Tabs>', () => {
     expect(screen.getByTestId('test').classList).toContain('nav-fill');
   });
 
-  it('Should pass justified to Nav', () => {
-    render(
+  it('Should pass justified to Nav', async () => {
+    await render(
       <Tabs data-testid="test" defaultActiveKey={1} transition={false} justify>
         <Tab title="Tab 1" eventKey={1}>
           Tab 1 content
@@ -244,9 +244,9 @@ describe('<Tabs>', () => {
 });
 
 describe('<Tab>', () => {
-  it('should throw error message on attempt to render', () => {
+  it('should throw error message on attempt to render', async () => {
     expect(() =>
-      render(
+      await render(
         <Tab title="Tab 1" eventKey={1}>
           Tab 1 content
         </Tab>,

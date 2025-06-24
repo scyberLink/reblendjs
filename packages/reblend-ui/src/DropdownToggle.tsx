@@ -1,5 +1,5 @@
-import { useContext, useCallback, useId } from 'react';
-import * as React from 'react';
+import { useContext, useCallback, useId } from 'reblendjs';
+import * as Reblend from 'reblendjs';
 import DropdownContext, { DropdownContextValue } from './DropdownContext';
 
 export const isRoleMenu = (el: HTMLElement) =>
@@ -8,7 +8,7 @@ export const isRoleMenu = (el: HTMLElement) =>
 export interface UseDropdownToggleProps {
   id: string;
   ref: DropdownContextValue['setToggle'];
-  onClick: React.MouseEventHandler;
+  onClick: Reblend.MouseEventHandler;
   'aria-expanded': boolean;
   'aria-haspopup'?: true;
 }
@@ -38,7 +38,7 @@ export function useDropdownToggle(): [
     menuElement,
   } = useContext(DropdownContext) || {};
   const handleClick = useCallback(
-    (e: Event | React.SyntheticEvent<Element, Event>) => {
+    (e: Event | Reblend.SyntheticEvent<Element, Event>) => {
       toggle(!show, e as any);
     },
     [show, toggle],
@@ -77,12 +77,12 @@ export interface DropdownToggleProps {
    *     show: boolean,
    *     toggle: (show: boolean) => void,
    *   }
-   * }) => React.Element}
+   * }) => Reblend.Element}
    */
   children: (
     props: UseDropdownToggleProps,
     meta: UseDropdownToggleMetadata,
-  ) => React.ReactNode;
+  ) => Reblend.ReactNode;
 }
 
 /**

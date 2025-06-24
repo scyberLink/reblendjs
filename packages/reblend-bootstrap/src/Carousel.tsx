@@ -1,7 +1,7 @@
-import useEventCallback from '@restart/hooks/useEventCallback';
-import useUpdateEffect from '@restart/hooks/useUpdateEffect';
-import useCommittedRef from '@restart/hooks/useCommittedRef';
-import useTimeout from '@restart/hooks/useTimeout';
+import { useEventCallback } from 'reblend-hooks';
+import useUpdateEffect from 'reblend-hooks/useUpdateEffect';
+import useCommittedRef from 'reblend-hooks/useCommittedRef';
+import useTimeout from 'reblend-hooks/useTimeout';
 import Anchor from '@restart/ui/Anchor';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import clsx from 'clsx';
@@ -14,7 +14,7 @@ import {
   useMemo,
   useRef,
   useState,
-} from 'react';
+} from 'reblendjs';
 import { useUncontrolled } from 'uncontrollable';
 import CarouselCaption from './CarouselCaption';
 import CarouselItem from './CarouselItem';

@@ -1,5 +1,5 @@
 import * as Reblend from 'reblendjs';
-import { useContext } from 'react';
+import { useContext } from 'reblendjs';
 import AccordionContext, { type AccordionEventKey } from './AccordionContext';
 
 type EventHandler = Reblend.EventHandler<Reblend.SyntheticEvent>;

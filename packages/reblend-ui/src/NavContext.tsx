@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as Reblend from 'reblendjs';
 import { EventKey } from './types';
 
 interface NavContextType {
@@ -8,7 +8,7 @@ interface NavContextType {
   getControllerId: (key: EventKey | null) => string;
 }
 
-const NavContext = React.createContext<NavContextType | null>(null);
+const NavContext = Reblend.createContext<NavContextType | null>(null);
 NavContext.displayName = 'NavContext';
 
 export default NavContext;

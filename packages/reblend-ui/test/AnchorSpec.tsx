@@ -1,70 +1,70 @@
-import { render, fireEvent } from '@testing-library/react';
-
-import { expect, describe, it, vi } from 'vitest';
-
-import Anchor from '../src/Anchor';
+import { render, fireEvent } from 'reblend-testing-library';
+import Anchor from '../cjs/Anchor';
+import Reblend from 'reblendjs';
 
 describe('Anchor', () => {
-  it('renders an anchor tag', () => {
-    const { container } = render(<Anchor data-testid="anchor" />);
+  it('renders an anchor tag', async () => {
+    const { container } = await render(<Anchor data-testid="anchor" />);
 
     expect(container.firstElementChild!.tagName).toEqual('A');
   });
 
-  it('forwards provided href', () => {
-    const { container } = render(<Anchor href="http://google.com" />);
+  it('forwards provided href', async () => {
+    const { container } = await render(<Anchor href="http://google.com" />);
 
-    expect(container.firstElementChild!.getAttribute('href')!).to.equal(
+    expect(container.firstElementChild!.getAttribute('href')!).toEqual(
       'http://google.com',
     );
   });
 
-  it('ensures that a href is a hash if none provided', () => {
-    const { container } = render(<Anchor />);
+  it('ensures that a href is a hash if none provided', async () => {
+    const { container } = await render(<Anchor />);
 
-    expect(container.firstElementChild!.getAttribute('href')!).to.equal('#');
+    expect(container.firstElementChild!.getAttribute('href')!).toEqual('#');
   });
 
-  it('forwards onClick handler', () => {
-    const handleClick = vi.fn();
+  it('forwards onClick handler', async () => {
+    const handleClick = jest.fn();
 
-    const { container } = render(<Anchor onClick={handleClick} />);
+    const { container } = await render(<Anchor onClick={handleClick} />);
 
     fireEvent.click(container.firstChild!);
 
-    expect(handleClick).toHaveBeenCalledOnce();
+    expect(handleClick).toHaveBeenCalled();
   });
 
-  it('provides onClick handler as onKeyDown handler for "space"', () => {
-    const handleClick = vi.fn();
+  it('provides onClick handler as onKeyDown handler for "space"', async () => {
+    const handleClick = jest.fn();
 
-    const { container } = render(<Anchor onClick={handleClick} />);
+    const { container } = await render(<Anchor onClick={handleClick} />);
 
     fireEvent.keyDown(container.firstChild!, { key: ' ' });
 
-    expect(handleClick).toHaveBeenCalledOnce();
+    expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it('should call onKeyDown handler when href is non-trivial', () => {
-    const onKeyDownSpy = vi.fn();
+  it('should call onKeyDown handler when href is non-trivial', async () => {
+    const onKeyDownSpy = jest.fn();
 
-    const { container } = render(
+    const { container } = await render(
       <Anchor href="http://google.com" onKeyDown={onKeyDownSpy} />,
     );
 
     fireEvent.keyDown(container.firstChild!, { key: ' ' });
 
-    expect(onKeyDownSpy).toHaveBeenCalledOnce();
+    expect(onKeyDownSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('prevents default when no href is provided', () => {
-    const handleClick = vi.fn();
+  it('prevents default when no href is provided', async () => {
+    const handleClick = jest.fn();
 
-    const { container, rerender } = render(<Anchor onClick={handleClick} />);
+    const { container, rerender } = await render(
+      <Anchor onClick={handleClick} />,
+    );
 
     fireEvent.click(container.firstChild!);
 
-    rerender(<Anchor onClick={handleClick} href="#" />);
+    await rerender(<Anchor onClick={handleClick} href="#" />);
 
     fireEvent.click(container.firstChild!);
 
@@ -73,41 +73,41 @@ describe('Anchor', () => {
     expect(handleClick.mock.calls[1][0].isDefaultPrevented()).toEqual(true);
   });
 
-  it('does not prevent default when href is provided', () => {
-    const handleClick = vi.fn();
+  it('does not prevent default when href is provided', async () => {
+    const handleClick = jest.fn();
 
     fireEvent.click(
-      render(<Anchor href="#foo" onClick={handleClick} />).container
+      await render(<Anchor href="#foo" onClick={handleClick} />).container
         .firstChild!,
     );
 
-    expect(handleClick).toHaveBeenCalledOnce();
+    expect(handleClick).toHaveBeenCalledTimes(1);
     expect(handleClick.mock.calls[0][0].isDefaultPrevented()).toEqual(false);
   });
 
-  it('forwards provided role', () => {
-    render(<Anchor role="dialog" />).getByRole('dialog');
+  it('forwards provided role', async () => {
+    await render(<Anchor role="dialog" />).getByRole('dialog');
   });
 
-  it('forwards provided role with href', () => {
-    render(<Anchor role="dialog" href="http://google.com" />).getByRole(
+  it('forwards provided role with href', async () => {
+    await render(<Anchor role="dialog" href="http://google.com" />).getByRole(
       'dialog',
     );
   });
 
-  it('set role=button with no provided href', () => {
-    const wrapper = render(<Anchor />);
+  it('set role=button with no provided href', async () => {
+    const wrapper = await render(<Anchor />);
 
     wrapper.getByRole('button');
 
-    wrapper.rerender(<Anchor href="#" />);
+    await wrapper.rerender(<Anchor href="#" />);
 
     wrapper.getByRole('button');
   });
 
-  it('sets no role with provided href', () => {
+  it('sets no role with provided href', async () => {
     expect(
-      render(
+      await render(
         <Anchor href="http://google.com" />,
       ).container.firstElementChild!.hasAttribute('role'),
     ).toEqual(false);

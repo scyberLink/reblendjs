@@ -1,11 +1,11 @@
 import * as Reblend from 'reblendjs';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'reblendjs';
 import clsx from 'clsx';
 import BaseOverlay, { OverlayArrowProps } from '@restart/ui/Overlay';
 import { State } from '@restart/ui/usePopper';
-import useEventCallback from '@restart/hooks/useEventCallback';
-import useIsomorphicEffect from '@restart/hooks/useIsomorphicEffect';
-import useMergedRefs from '@restart/hooks/useMergedRefs';
+import { useEventCallback } from 'reblend-hooks';
+
+import { useMergedRefs } from 'reblend-hooks';
 import useOverlayOffset from './useOverlayOffset';
 import Fade from './Fade';
 import type { TransitionType } from './helpers';

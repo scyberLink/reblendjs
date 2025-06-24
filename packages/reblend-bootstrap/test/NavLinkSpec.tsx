@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import NavLink from '../src/NavLink';
 
 describe('<NavLink>', () => {
-  it('renders correctly', () => {
-    render(
+  it('renders correctly', async () => {
+    await render(
       <NavLink
         className="custom-class"
         href="/some/unique-thing/"
@@ -22,8 +22,8 @@ describe('<NavLink>', () => {
     expect(navLinkElem.firstElementChild!.tagName).toEqual('STRONG');
   });
 
-  it('Should add active class', () => {
-    render(
+  it('Should add active class', async () => {
+    await render(
       <NavLink active data-testid="test">
         Item content
       </NavLink>,
@@ -32,8 +32,8 @@ describe('<NavLink>', () => {
     expect(navLinkElem.classList).toContain('active');
   });
 
-  it('Should add disabled class', () => {
-    render(
+  it('Should add disabled class', async () => {
+    await render(
       <NavLink disabled data-testid="test">
         Item content
       </NavLink>,
@@ -42,9 +42,9 @@ describe('<NavLink>', () => {
     expect(navLinkElem.classList).toContain('disabled');
   });
 
-  describe('Web Accessibility', () => {
-    it('Should add aria-selected to the link when role is "tab"', () => {
-      render(
+  describe('Web Accessibility', async () => {
+    it('Should add aria-selected to the link when role is "tab"', async () => {
+      await render(
         <NavLink role="tab" active data-testid="test">
           Item content
         </NavLink>,
@@ -54,8 +54,8 @@ describe('<NavLink>', () => {
       expect(navLinkElem.getAttribute('aria-selected')).toEqual('true');
     });
 
-    it('Should not add aria-selected to the link when role is not "tab"', () => {
-      render(
+    it('Should not add aria-selected to the link when role is not "tab"', async () => {
+      await render(
         <NavLink role="button" active data-testid="test">
           Item content
         </NavLink>,

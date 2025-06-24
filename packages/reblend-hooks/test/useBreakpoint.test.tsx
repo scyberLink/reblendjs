@@ -61,7 +61,7 @@ describe('useBreakpoint', () => {
       return useCustomBreakpoint('sm')
     })
 
-    expect(matchMediaSpy).toBeCalled()
+    expect(matchMediaSpy).toHaveBeenCalled()
     expect(matchMediaSpy.mock.calls[0][0]).toEqual(
       '(min-width: 400px) and (max-width: 699.8px)',
     )
@@ -78,7 +78,7 @@ describe('useBreakpoint', () => {
       return useCustomBreakpoint('sm')
     })
 
-    expect(matchMediaSpy).toBeCalled()
+    expect(matchMediaSpy).toHaveBeenCalled()
     expect(matchMediaSpy.mock.calls[0][0]).toEqual(
       '(min-width: 40rem) and (max-width: calc(70rem - 0.2px))',
     )

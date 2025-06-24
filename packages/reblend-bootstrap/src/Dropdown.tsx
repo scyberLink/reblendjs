@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'reblendjs';
 import BaseDropdown, { ToggleMetadata } from '@restart/ui/Dropdown';
 import { useUncontrolled } from 'uncontrollable';
-import useEventCallback from '@restart/hooks/useEventCallback';
+import { useEventCallback } from 'reblend-hooks';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import DropdownContext from './DropdownContext';
 import DropdownDivider from './DropdownDivider';

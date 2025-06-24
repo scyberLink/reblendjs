@@ -1,11 +1,11 @@
-import * as React from 'react';
+import * as Reblend from 'reblendjs';
 
 export function isEscKey(e: KeyboardEvent) {
   return e.code === 'Escape' || e.keyCode === 27;
 }
 
 export function getReactVersion() {
-  const parts = React.version.split('.');
+  const parts = Reblend.version.split('.');
   return {
     major: +parts[0],
     minor: +parts[1],
@@ -14,8 +14,8 @@ export function getReactVersion() {
 }
 
 export function getChildRef(
-  element?: React.ReactElement | ((...args: any[]) => React.ReactNode) | null,
-): React.Ref<any> | null {
+  element?: Reblend.ReactElement | ((...args: any[]) => Reblend.ReactNode) | null,
+): Reblend.Ref<any> | null {
   if (!element || typeof element === 'function') {
     return null;
   }

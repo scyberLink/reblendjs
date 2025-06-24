@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import ModalFooter from '../src/ModalFooter';
 
 describe('ModalFooter', () => {
-  it('uses "div" by default', () => {
-    render(
+  it('uses "div" by default', async () => {
+    await render(
       <ModalFooter data-testid="test-modal" className="custom-class">
         <strong>Content</strong>
       </ModalFooter>,
@@ -17,8 +17,8 @@ describe('ModalFooter', () => {
     expect(elem.querySelector('strong')!.textContent).toEqual('Content');
   });
 
-  it('should allow custom elements instead of "div"', () => {
-    render(
+  it('should allow custom elements instead of "div"', async () => {
+    await render(
       <ModalFooter data-testid="test-modal" as="section">
         <strong>Content</strong>
       </ModalFooter>,

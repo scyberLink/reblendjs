@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render } from 'reblend-testing-library';
 import ToastContainer, { ToastPosition } from '../src/ToastContainer';
 
@@ -15,12 +15,12 @@ const expectedClasses: Record<ToastPosition, Array<string>> = {
 };
 
 describe('ToastContainer', () => {
-  it('should render a basic toast container', () => {
+  it('should render a basic toast container', async () => {
     const { container } = render(<ToastContainer />);
     expect(container.firstElementChild!.classList).toContain('toast-container');
   });
 
-  it('should render the containerPosition', () => {
+  it('should render the containerPosition', async () => {
     const { container } = render(
       <ToastContainer containerPosition="relative" />,
     );
@@ -30,7 +30,7 @@ describe('ToastContainer', () => {
   });
 
   Object.keys(expectedClasses).forEach((position) => {
-    it(`should render position=${position}`, () => {
+    it(`should render position=${position}`, async () => {
       const { container } = render(
         <ToastContainer position={position as ToastPosition} />,
       );

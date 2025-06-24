@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { useContext } from 'react';
+import { useContext } from 'reblendjs';
 import warning from 'warning';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import Col, { type ColProps } from './Col';

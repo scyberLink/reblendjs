@@ -1,11 +1,11 @@
 import css from 'dom-helpers/css';
-import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest';
-import { waitFor } from '@testing-library/react';
+import { expect, describe, it, beforeEach, afterEach, jest } from '@jest/globals';
+import { waitFor } from 'reblend-testing-library';
 import ModalManager, { ModalInstance } from '../src/ModalManager';
 
 import { injectCss } from './helpers';
 
-vi.mock('../src/getScrollbarWidth', () => ({
+jest.mock('../src/getScrollbarWidth', () => ({
   default: () => 10,
 }));
 

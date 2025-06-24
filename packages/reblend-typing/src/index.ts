@@ -689,6 +689,8 @@ export interface EffectState {
   disconnectEffect?: () => void | Promise<void>;
 }
 
+export type ComponentRef<T = any> = RefAttributes<T>['ref'];
+
 /**
  * Represents a mutable reference object whose `current` property can hold a value of type `T` or an `HTMLElement`.
  *
@@ -850,7 +852,7 @@ export type ComponentType<P = {}> = ComponentClass<P> | FunctionComponent<P>;
  * @template P The props the component accepts.
  */
 export type JSXElementConstructor<P> =
-  | Primitive
+  | string
   | Promise<
       (
         props: P
@@ -941,7 +943,7 @@ export interface RefAttributes<T> extends Attributes {
    *
    * @see {@link https://reblend.dev/learn/referencing-values-with-refs#refs-and-the-dom Reblend Docs}
    */
-  ref?: Ref<T> | undefined;
+  ref?: ((arg: T) => void) | Ref<T> | undefined;
 }
 /**
  * Represents the built-in attributes available to class components.
@@ -1568,6 +1570,8 @@ export type FC<P = {}> = FunctionComponent<P>;
 export interface FunctionComponent<P = {}> {
   (props: P): ReblendNode;
   props?: Partial<P> | undefined;
+  displayName?: string;
+  ELEMENT_NAME?: string;
 }
 
 /**
@@ -1635,7 +1639,7 @@ type PropsWithChildren<P = unknown> = P & {
  * type MyComponentProps = Reblend.ComponentProps<typeof MyComponent>;
  * ```
  */
-type ComponentProps<
+export type ComponentProps<
   T extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>
 > = T extends JSXElementConstructor<infer P>
   ? P
@@ -1681,58 +1685,12 @@ type ComponentProps<
  * type MyComponentPropsWithRef = Reblend.CustomComponentPropsWithRef<typeof MyComponent>;
  * ```
  */
-type CustomComponentPropsWithRef<T extends ComponentType> = T extends new (
-  props: infer P
-) => Component<any, any>
-  ? PropsWithoutRef<P> & RefAttributes<InstanceType<T>>
-  : T extends (props: infer P) => ReblendNode
-  ? PropsWithRef<P>
-  : never;
-
-/**
- * The instruction passed to a {@link Dispatch} function in {@link useState}
- * to tell Reblend what the next value of the {@link useState} should be.
- *
- * Often found wrapped in {@link Dispatch}.
- *
- * @template S The type of the state.
- *
- * @example
- *
- * ```tsx
- * // This return type correctly represents the type of
- * // `setCount` in the example below.
- * const useCustomState = (): Dispatch<SetStateAction<number>> => {
- *   const [count, setCount] = useState(0);
- *
- *   return setCount;
- * }
- * ```
- */
-type SetStateAction<S> = S | ((prevState: S) => S);
-/**
- * A function that can be used to update the state of a {@link useState}
- * or {@link useReducer} hook.
- */
-type Dispatch<A> = (value: A) => void;
-/**
- * A {@link Dispatch} function can sometimes be called without any arguments.
- */
-type DispatchWithoutAction = () => void;
-type Reducer<S, A> = (prevState: S, action: A) => S;
-type ReducerWithoutAction<S> = (prevState: S) => S;
-type ReducerState<R extends Reducer<any, any>> = R extends Reducer<infer S, any>
-  ? S
-  : never;
-type ReducerAction<R extends Reducer<any, any>> = R extends Reducer<
-  any,
-  infer A
->
-  ? A
-  : never;
-type ReducerStateWithoutAction<R extends ReducerWithoutAction<any>> =
-  R extends ReducerWithoutAction<infer S> ? S : never;
-type DependencyList = readonly unknown[];
+export type CustomComponentPropsWithRef<T extends ComponentType> =
+  T extends new (props: infer P) => Component<any, any>
+    ? PropsWithoutRef<P> & RefAttributes<InstanceType<T>>
+    : T extends (props: infer P) => ReblendNode
+    ? PropsWithRef<P>
+    : never;
 export interface BaseSyntheticEvent<E = object, C = any, T = any> {
   nativeEvent: E;
   currentTarget: C;
@@ -1795,7 +1753,7 @@ export interface InvalidEvent<T = Element> extends SyntheticEvent<T> {
 export interface ChangeEvent<T = Element> extends SyntheticEvent<T> {
   target: EventTarget & T;
 }
-type ModifierKey =
+export type ModifierKey =
   | 'Alt'
   | 'AltGraph'
   | 'CapsLock'
@@ -2514,7 +2472,7 @@ export interface AriaAttributes {
   /** Defines the human readable text alternative of aria-valuenow for a range widget. */
   'aria-valuetext'?: string | undefined;
 }
-type AriaRole =
+export type AriaRole =
   | 'alert'
   | 'alertdialog'
   | 'application'

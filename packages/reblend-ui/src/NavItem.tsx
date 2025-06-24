@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { useContext } from 'react';
-import useEventCallback from '@restart/hooks/useEventCallback';
+import * as Reblend from 'reblendjs';
+import { useContext } from 'reblendjs';
+import { useEventCallback } from 'reblend-hooks';
 
 import NavContext from './NavContext';
 import SelectableContext, { makeEventKey } from './SelectableContext';
@@ -9,7 +9,7 @@ import Button from './Button';
 import { dataAttr } from './DataKey';
 import TabContext from './TabContext';
 
-export interface NavItemProps extends React.HTMLAttributes<HTMLElement> {
+export interface NavItemProps extends Reblend.HTMLAttributes<HTMLElement> {
   /**
    * Highlight the NavItem as active.
    */
@@ -18,7 +18,7 @@ export interface NavItemProps extends React.HTMLAttributes<HTMLElement> {
   /**
    * Element used to render the component.
    */
-  as?: React.ElementType;
+  as?: Reblend.ElementType;
 
   /**
    * Disable the NavItem, making it unselectable.
@@ -38,7 +38,7 @@ export interface NavItemProps extends React.HTMLAttributes<HTMLElement> {
 
 export interface UseNavItemOptions {
   key?: string | null;
-  onClick?: React.MouseEventHandler;
+  onClick?: Reblend.MouseEventHandler;
   active?: boolean;
   disabled?: boolean;
   id?: string;
@@ -53,9 +53,9 @@ export function useNavItem({
   role,
   disabled,
 }: UseNavItemOptions) {
-  const parentOnSelect = useContext(SelectableContext);
-  const navContext = useContext(NavContext);
-  const tabContext = useContext(TabContext);
+  const [parentOnSelect] = useContext(SelectableContext);
+  const [navContext] = useContext(NavContext);
+  const [tabContext] = useContext(TabContext);
 
   let isActive = active;
   const props = { role } as any;
@@ -99,7 +99,7 @@ export function useNavItem({
     }
   }
 
-  props.onClick = useEventCallback((e: React.MouseEvent) => {
+  props.onClick = useEventCallback((e: Reblend.MouseEvent) => {
     if (disabled) return;
 
     onClick?.(e);
@@ -116,20 +116,23 @@ export function useNavItem({
   return [props, { isActive }] as const;
 }
 
-const NavItem: DynamicRefForwardingComponent<typeof Button, NavItemProps> =
-  React.forwardRef<HTMLElement, NavItemProps>(
-    ({ as: Component = Button, active, eventKey, ...options }, ref) => {
-      const [props, meta] = useNavItem({
-        key: makeEventKey(eventKey, options.href),
-        active,
-        ...options,
-      });
+const NavItem: DynamicRefForwardingComponent<typeof Button, NavItemProps> = ({
+  as: Component = Button,
+  active,
+  eventKey,
+  ref,
+  ...options
+}) => {
+  const [props, meta] = useNavItem({
+    key: makeEventKey(eventKey, options.href),
+    active,
+    ...options,
+  });
 
-      props[dataAttr('active')] = meta.isActive;
+  props[dataAttr('active')] = meta.isActive;
 
-      return <Component {...options} {...props} ref={ref} />;
-    },
-  );
+  return <Component {...options} {...props} ref={ref} />;
+};
 
 NavItem.displayName = 'NavItem';
 

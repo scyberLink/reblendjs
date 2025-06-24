@@ -1,8 +1,8 @@
 import listen from 'dom-helpers/listen';
 import ownerDocument from 'dom-helpers/ownerDocument';
-import { useEffect } from 'react';
+import { useEffect } from 'reblendjs';
 
-import useEventCallback from '@restart/hooks/useEventCallback';
+import { useEventCallback } from 'reblend-hooks';
 import useClickOutside, {
   ClickOutsideOptions,
   getRefTarget,
@@ -28,7 +28,7 @@ export interface RootCloseOptions extends ClickOutsideOptions {
  * @param {string=}  options.clickTrigger The DOM event name (click, mousedown, etc) to attach listeners on
  */
 function useRootClose(
-  ref: React.RefObject<Element> | Element | null | undefined,
+  ref: Reblend.RefObject<Element> | Element | null | undefined,
   onRootClose: (e: Event) => void,
   { disabled, clickTrigger }: RootCloseOptions = {},
 ) {

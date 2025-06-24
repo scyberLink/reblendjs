@@ -1,5 +1,5 @@
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
-import { expect, describe, it, afterEach, beforeEach, vi } from 'vitest';
+import { render, fireEvent, screen, waitFor } from 'reblend-testing-library';
+import { expect, describe, it, afterEach, beforeEach, jest } from '@jest/globals';
 
 import userEvent from '@testing-library/user-event';
 import Dropdown from '../src/Dropdown';
@@ -107,7 +107,7 @@ describe('<Dropdown>', () => {
   });
 
   it('forwards placement to menu', () => {
-    const renderSpy = vi.fn((meta) => {
+    const renderSpy = jest.fn((meta) => {
       expect(meta.placement).toEqual('bottom-end');
     });
 
@@ -142,7 +142,7 @@ describe('<Dropdown>', () => {
   });
 
   it('closes when clicked outside', () => {
-    const closeSpy = vi.fn();
+    const closeSpy = jest.fn();
     const { container } = render(<SimpleDropdown onToggle={closeSpy} />);
 
     fireEvent.click(container.querySelector('.toggle')!);
@@ -151,11 +151,11 @@ describe('<Dropdown>', () => {
 
     expect(closeSpy).toHaveBeenCalledTimes(2);
 
-    expect(closeSpy.mock.calls.at(-1)![0]).to.equal(false);
+    expect(closeSpy.mock.calls.at(-1)![0]).toEqual(false);
   });
 
   it('closes when mousedown outside if rootCloseEvent set', () => {
-    const closeSpy = vi.fn();
+    const closeSpy = jest.fn();
 
     const { container } = render(
       <Dropdown onToggle={closeSpy}>
@@ -174,11 +174,11 @@ describe('<Dropdown>', () => {
     fireEvent.mouseDown(document.body);
 
     expect(closeSpy).toHaveBeenCalledTimes(2);
-    expect(closeSpy.mock.calls.at(-1)![0]).to.equal(false);
+    expect(closeSpy.mock.calls.at(-1)![0]).toEqual(false);
   });
 
   it('when focused and closed toggles open when the key "down" is pressed', () => {
-    const closeSpy = vi.fn();
+    const closeSpy = jest.fn();
     const { container } = render(<SimpleDropdown onToggle={closeSpy} />, {
       container: focusableContainer,
     });
@@ -187,12 +187,12 @@ describe('<Dropdown>', () => {
       key: 'ArrowDown',
     });
 
-    expect(closeSpy).toHaveBeenCalledOnce();
-    expect(closeSpy.mock.calls.at(-1)![0]).to.equal(true);
+    expect(closeSpy).toHaveBeenCalledTimes(1);
+    expect(closeSpy.mock.calls.at(-1)![0]).toEqual(true);
   });
 
   it('closes when item is clicked', () => {
-    const onToggle = vi.fn();
+    const onToggle = jest.fn();
 
     const root = render(<SimpleDropdown show onToggle={onToggle} />);
 
@@ -202,7 +202,7 @@ describe('<Dropdown>', () => {
   });
 
   it('does not close when onToggle is controlled', () => {
-    const onToggle = vi.fn();
+    const onToggle = jest.fn();
 
     const root = render(<SimpleDropdown show onToggle={onToggle} />);
 
@@ -218,7 +218,7 @@ describe('<Dropdown>', () => {
   it('has aria-labelledby same id as toggle button', () => {
     const root = render(<SimpleDropdown defaultShow />);
 
-    expect(root.getByText('Toggle').getAttribute('id')).to.equal(
+    expect(root.getByText('Toggle').getAttribute('id')).toEqual(
       root.container.querySelector('.menu')!.getAttribute('aria-labelledby'),
     );
   });
@@ -236,7 +236,7 @@ describe('<Dropdown>', () => {
       </Dropdown>,
     );
 
-    expect(root.getByText('Toggle').hasAttribute('aria-haspopup')).to.equal(
+    expect(root.getByText('Toggle').hasAttribute('aria-haspopup')).toEqual(
       true,
     );
     // doesn't really work across rerenders b/c the menu ref doesn't change
@@ -254,7 +254,7 @@ describe('<Dropdown>', () => {
       </Dropdown>,
     );
 
-    expect(root.getByText('Toggle').hasAttribute('aria-haspopup')).to.equal(
+    expect(root.getByText('Toggle').hasAttribute('aria-haspopup')).toEqual(
       false,
     );
   });
@@ -357,7 +357,7 @@ describe('<Dropdown>', () => {
     });
 
     it('when open and a search input is focused and the key "Escape" is pressed the menu stays open', () => {
-      const toggleSpy = vi.fn();
+      const toggleSpy = jest.fn();
       const root = render(
         <Dropdown defaultShow onToggle={toggleSpy}>
           <Toggle key="toggle">Toggle</Toggle>,
@@ -407,7 +407,7 @@ describe('<Dropdown>', () => {
   });
 
   it('should not call onToggle if the menu ref not defined and "tab" is pressed', () => {
-    const onToggleSpy = vi.fn();
+    const onToggleSpy = jest.fn();
     const root = render(
       <SimpleDropdown onToggle={onToggleSpy} renderMenuOnMount={false} />,
       {
@@ -425,7 +425,7 @@ describe('<Dropdown>', () => {
   });
 
   it('should not call onToggle if the menu is hidden and "tab" is pressed', () => {
-    const onToggleSpy = vi.fn();
+    const onToggleSpy = jest.fn();
     const root = render(<SimpleDropdown onToggle={onToggleSpy} />, {
       container: focusableContainer,
     });
@@ -441,7 +441,7 @@ describe('<Dropdown>', () => {
 
   describe('popper config', () => {
     it('can add modifiers', async () => {
-      const spy = vi.fn();
+      const spy = jest.fn();
       const popper = {
         modifiers: [
           {
@@ -465,7 +465,7 @@ describe('<Dropdown>', () => {
         </Dropdown>,
       );
 
-      await waitFor(() => expect(spy).toHaveBeenCalledOnce());
+      await waitFor(() => expect(spy).toHaveBeenCalledTimes(1));
     });
   });
 });

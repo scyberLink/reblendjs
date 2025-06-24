@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { cloneElement } from 'react';
+import { cloneElement } from 'reblendjs';
 import { useBootstrapPrefix } from './ThemeProvider';
 import { map } from './ElementChildren';
 

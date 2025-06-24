@@ -1,6 +1,6 @@
-import { useRef } from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { expect, describe, it, vi, beforeEach, afterEach } from 'vitest';
+import {Reblend, useRef } from 'reblendjs';
+import { render, fireEvent } from 'reblend-testing-library';
+import { expect, describe, it, beforeEach, afterEach } from '@jest/globals';
 
 import useRootClose from '../src/useRootClose';
 
@@ -47,7 +47,7 @@ describe('useRootClose', () => {
     }
 
     it('should close when clicked outside', () => {
-      const spy = vi.fn();
+      const spy = jest.fn();
 
       render(<Wrapper onRootClose={spy} />, { container: attachTo });
 
@@ -63,7 +63,7 @@ describe('useRootClose', () => {
     });
 
     it('should not close when right-clicked outside', () => {
-      const spy = vi.fn();
+      const spy = jest.fn();
       render(<Wrapper onRootClose={spy} />, { container: attachTo });
 
       fireEvent[eventName](document.getElementById('my-div')!, {
@@ -78,7 +78,7 @@ describe('useRootClose', () => {
     });
 
     it('should not close when disabled', () => {
-      const spy = vi.fn();
+      const spy = jest.fn();
       render(<Wrapper onRootClose={spy} disabled />, { container: attachTo });
 
       fireEvent[eventName](document.getElementById('my-div')!);
@@ -91,8 +91,8 @@ describe('useRootClose', () => {
     });
 
     it('should close when inside another RootCloseWrapper', () => {
-      const outerSpy = vi.fn();
-      const innerSpy = vi.fn();
+      const outerSpy = jest.fn();
+      const innerSpy = jest.fn();
 
       function Inner() {
         const ref = useRef<HTMLDivElement>(null);
@@ -147,7 +147,7 @@ describe('useRootClose', () => {
     }
 
     it('should close when escape keyup', () => {
-      const spy = vi.fn();
+      const spy = jest.fn();
       render(
         <Wrapper onRootClose={spy}>
           <div id="my-div">hello there</div>
@@ -165,8 +165,8 @@ describe('useRootClose', () => {
     });
 
     it('should close when inside another RootCloseWrapper', () => {
-      const outerSpy = vi.fn();
-      const innerSpy = vi.fn();
+      const outerSpy = jest.fn();
+      const innerSpy = jest.fn();
 
       render(
         <Wrapper onRootClose={outerSpy}>

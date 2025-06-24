@@ -1,15 +1,15 @@
 import * as Reblend from 'reblendjs';
-import { useEffect } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { useEffect } from 'reblendjs';
+import { describe, expect, it, jest } from '@jest/globals';
 import ModalManager from '@restart/ui/ModalManager';
 import { fireEvent, render, screen, waitFor } from 'reblend-testing-library';
 import Offcanvas from '../src/Offcanvas';
 
-const noop = () => {};
+const noop = async () => {};
 
 describe('<Offcanvas>', () => {
-  it('Should render the modal content', () => {
-    render(
+  it('Should render the modal content', async () => {
+    await render(
       <Offcanvas show onHide={noop}>
         <strong data-testid="test">Message</strong>
       </Offcanvas>,
@@ -19,8 +19,8 @@ describe('<Offcanvas>', () => {
     expect(strongElem.textContent).toEqual('Message');
   });
 
-  it('Should set `visibility: visible` to `offcanvas`', () => {
-    render(
+  it('Should set `visibility: visible` to `offcanvas`', async () => {
+    await render(
       <Offcanvas data-testid="test" show>
         <strong>Message</strong>
       </Offcanvas>,
@@ -33,9 +33,9 @@ describe('<Offcanvas>', () => {
   });
 
   it('Should close the offcanvas when the modal close button is clicked', async () => {
-    const onHideSpy = vi.fn();
+    const onHideSpy = jest.fn();
 
-    render(
+    await render(
       <Offcanvas show onHide={onHideSpy}>
         <Offcanvas.Header closeButton />
         <strong>Message</strong>
@@ -50,8 +50,8 @@ describe('<Offcanvas>', () => {
     await waitFor(() => expect(onHideSpy).toHaveBeenCalled());
   });
 
-  it('Should pass className to the offcanvas', () => {
-    render(
+  it('Should pass className to the offcanvas', async () => {
+    await render(
       <Offcanvas show className="myoffcanvas" onHide={noop} data-testid="test">
         <strong>Message</strong>
       </Offcanvas>,
@@ -60,8 +60,8 @@ describe('<Offcanvas>', () => {
     expect(offcanvasElem.classList).toContain('myoffcanvas');
   });
 
-  it('Should pass backdropClassName to the backdrop', () => {
-    render(
+  it('Should pass backdropClassName to the backdrop', async () => {
+    await render(
       <Offcanvas show backdropClassName="custom-backdrop" onHide={noop}>
         <strong>Message</strong>
       </Offcanvas>,
@@ -71,8 +71,8 @@ describe('<Offcanvas>', () => {
     expect(backdropElem.classList).toContain('custom-backdrop');
   });
 
-  it('Should pass style to the offcanvas', () => {
-    render(
+  it('Should pass style to the offcanvas', async () => {
+    await render(
       <Offcanvas show style={{ color: 'red' }} onHide={noop} data-testid="test">
         <strong>Message</strong>
       </Offcanvas>,
@@ -82,8 +82,8 @@ describe('<Offcanvas>', () => {
   });
 
   it('Should pass transition callbacks to Transition', async () => {
-    const increment = vi.fn();
-    const Elem = () => {
+    const increment = jest.fn();
+    const Elem = async () => {
       const [show, setShow] = Reblend.useState(true);
       return (
         <Offcanvas
@@ -94,7 +94,7 @@ describe('<Offcanvas>', () => {
           onExited={increment}
           onEnter={increment}
           onEntering={increment}
-          onEntered={() => {
+          onEntered={async () => {
             increment();
             setShow(false);
           }}
@@ -104,14 +104,14 @@ describe('<Offcanvas>', () => {
       );
     };
 
-    render(<Elem />);
+    await render(<Elem />);
 
     await waitFor(() => expect(increment).toHaveBeenCalledTimes(6));
   });
 
-  it('Should close when backdrop clicked', () => {
-    const onHideSpy = vi.fn();
-    render(
+  it('Should close when backdrop clicked', async () => {
+    const onHideSpy = jest.fn();
+    await render(
       <Offcanvas show onHide={onHideSpy}>
         <strong>Message</strong>
       </Offcanvas>,
@@ -124,9 +124,9 @@ describe('<Offcanvas>', () => {
     expect(onHideSpy).toHaveBeenCalled();
   });
 
-  it('should not close when static backdrop is clicked', () => {
-    const onHideSpy = vi.fn();
-    render(
+  it('should not close when static backdrop is clicked', async () => {
+    const onHideSpy = jest.fn();
+    await render(
       <Offcanvas show onHide={onHideSpy} backdrop="static">
         <strong>Message</strong>
       </Offcanvas>,
@@ -141,9 +141,9 @@ describe('<Offcanvas>', () => {
 
   // TODO: unsure if we need this, since it seems like Offcanvas is still undergoing some
   // changes upstream.
-  // it('Should close when anything outside offcanvas clicked and backdrop=false', () => {
-  //   const onHideSpy = vi.fn();
-  //   render(
+  // it('Should close when anything outside offcanvas clicked and backdrop=false', async () => {
+  //   const onHideSpy = jest.fn();
+  //   await render(
   //     <>
   //       <Offcanvas show onHide={onHideSpy} backdrop={false}>
   //         <strong>Message</strong>
@@ -159,9 +159,9 @@ describe('<Offcanvas>', () => {
   //   onHideSpy).toHaveBeenCalled()
   // });
 
-  it('Should not call onHide if the click target comes from inside the offcanvas', () => {
-    const onHideSpy = vi.fn();
-    render(
+  it('Should not call onHide if the click target comes from inside the offcanvas', async () => {
+    const onHideSpy = jest.fn();
+    await render(
       <>
         <Offcanvas show onHide={onHideSpy} data-testid="test">
           <strong>Message</strong>
@@ -175,8 +175,8 @@ describe('<Offcanvas>', () => {
     expect(onHideSpy).not.toHaveBeenCalled();
   });
 
-  it('Should set aria-labelledby to the role="dialog" element if aria-labelledby set', () => {
-    render(
+  it('Should set aria-labelledby to the role="dialog" element if aria-labelledby set', async () => {
+    await render(
       <Offcanvas
         show
         onHide={noop}
@@ -198,9 +198,9 @@ describe('<Offcanvas>', () => {
     );
   });
 
-  it('Should call onEscapeKeyDown when keyboard is true', () => {
-    const onEscapeKeyDownSpy = vi.fn();
-    render(
+  it('Should call onEscapeKeyDown when keyboard is true', async () => {
+    const onEscapeKeyDownSpy = jest.fn();
+    await render(
       <Offcanvas
         show
         onHide={noop}
@@ -215,9 +215,9 @@ describe('<Offcanvas>', () => {
     expect(onEscapeKeyDownSpy).toHaveBeenCalled();
   });
 
-  it('Should not call onEscapeKeyDown when keyboard is false', () => {
-    const onEscapeKeyDownSpy = vi.fn();
-    render(
+  it('Should not call onEscapeKeyDown when keyboard is false', async () => {
+    const onEscapeKeyDownSpy = jest.fn();
+    await render(
       <Offcanvas
         show
         onHide={noop}
@@ -233,7 +233,7 @@ describe('<Offcanvas>', () => {
   });
 
   it('Should use custom props manager if specified', async () => {
-    const addSpy = vi.fn();
+    const addSpy = jest.fn();
 
     class MyModalManager extends ModalManager {
       // @ts-expect-error test only method
@@ -245,7 +245,7 @@ describe('<Offcanvas>', () => {
     const managerRef = Reblend.createRef<any>();
     (managerRef as any).current = new MyModalManager();
 
-    render(
+    await render(
       <Offcanvas show onHide={noop} manager={managerRef.current}>
         <strong>Message</strong>
       </Offcanvas>,
@@ -254,10 +254,10 @@ describe('<Offcanvas>', () => {
     await waitFor(() => expect(addSpy).toHaveBeenCalled());
   });
 
-  it('should not change overflow style when scroll=true', () => {
+  it('should not change overflow style when scroll=true', async () => {
     const containerRef = Reblend.createRef<any>();
 
-    render(
+    await render(
       <div ref={containerRef} style={{ height: '2000px', overflow: 'scroll' }}>
         <Offcanvas show onHide={noop} container={containerRef} scroll>
           <strong>Message</strong>
@@ -268,8 +268,8 @@ describe('<Offcanvas>', () => {
     expect(containerRef.current.style.overflow).toEqual('scroll');
   });
 
-  it('should set responsive class', () => {
-    render(
+  it('should set responsive class', async () => {
+    await render(
       <Offcanvas data-testid="test" responsive="lg" show onHide={noop}>
         <strong>Message</strong>
       </Offcanvas>,
@@ -278,8 +278,8 @@ describe('<Offcanvas>', () => {
     expect(offcanvasElem.classList).toContain('offcanvas-lg');
   });
 
-  it('should render offcanvas when show=false', () => {
-    render(
+  it('should render offcanvas when show=false', async () => {
+    await render(
       <Offcanvas data-testid="test" responsive="lg" onHide={noop}>
         <strong>Message</strong>
       </Offcanvas>,
@@ -288,11 +288,11 @@ describe('<Offcanvas>', () => {
     expect(offcanvasElem.getAttribute('role')).to.not.exist;
   });
 
-  it('should not mount, unmount and mount content on show', () => {
+  it('should not mount, unmount and mount content on show', async () => {
     const InnerComponent = ({ onMount, onUnmount }) => {
-      useEffect(() => {
+      useEffect(async () => {
         onMount();
-        return () => {
+        return async () => {
           onUnmount();
         };
       }, []);
@@ -300,8 +300,8 @@ describe('<Offcanvas>', () => {
       return <div>Content</div>;
     };
 
-    const onMountSpy = vi.fn();
-    const onUnmountSpy = vi.fn();
+    const onMountSpy = jest.fn();
+    const onUnmountSpy = jest.fn();
 
     const { unmount } = render(
       <Offcanvas data-testid="test" onHide={noop} show>
@@ -309,10 +309,10 @@ describe('<Offcanvas>', () => {
       </Offcanvas>,
     );
 
-    expect(onMountSpy).toHaveBeenCalledOnce();
+    expect(onMountSpy).toHaveBeenCalledTimes(1);
 
-    unmount();
+    await unmount();
 
-    expect(onUnmountSpy).toHaveBeenCalledOnce();
+    expect(onUnmountSpy).toHaveBeenCalledTimes(1);
   });
 });

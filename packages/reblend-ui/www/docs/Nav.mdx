@@ -90,7 +90,7 @@ import {
 
 import Dropdown from "../src/Dropdown";
 
-const NavLink = React.forwardRef(
+const NavLink = (
   ({ href, disabled, children, onClick }, ref) => {
     const [navItemProps, meta] = useNavItem({
       key: href,

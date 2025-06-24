@@ -1,4 +1,4 @@
-import { cleanup } from '@testing-library/react';
-import { afterEach } from 'vitest';
+import { cleanup } from 'reblend-testing-library';
+import { afterEach } from '@jest/globals';
 
 afterEach(cleanup);

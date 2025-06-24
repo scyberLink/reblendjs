@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import * as Reblend from 'reblendjs';
-import { ReactNode } from 'react';
+import { ReactNode } from 'reblendjs';
 import Anchor from '@restart/ui/Anchor';
 import { DynamicRefForwardingComponent } from '@restart/ui/types';
 

@@ -1,6 +1,6 @@
-import useEventCallback from '@restart/hooks/useEventCallback';
-import useMergedRefs from '@restart/hooks/useMergedRefs';
-import { cloneElement, useEffect, useRef } from 'react';
+import { useEventCallback } from 'reblend-hooks';
+import { useMergedRefs } from 'reblend-hooks';
+import { Reblend, useEffect, useRef } from 'reblendjs';
 import { TransitionProps } from './types';
 import { getChildRef } from './utils';
 

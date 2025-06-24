@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen } from 'reblend-testing-library';
 import SplitButton from '../src/SplitButton';
 import DropdownItem from '../src/DropdownItem';
@@ -13,8 +13,8 @@ describe('<SplitButton>', () => {
     </SplitButton>
   );
 
-  it('should open the menu when dropdown button is clicked', () => {
-    render(simple);
+  it('should open the menu when dropdown button is clicked', async () => {
+    await render(simple);
     const splitButtonElem = screen.getByTestId('test-wrapper');
 
     expect(splitButtonElem.classList).not.toContain('show');
@@ -23,8 +23,8 @@ describe('<SplitButton>', () => {
     expect(splitButtonElem.classList).toContain('show');
   });
 
-  it('should not open the menu when other button is clicked', () => {
-    render(simple);
+  it('should not open the menu when other button is clicked', async () => {
+    await render(simple);
     const splitButtonElem = screen.getByTestId('test-wrapper');
 
     expect(splitButtonElem.classList).not.toContain('show');
@@ -32,10 +32,10 @@ describe('<SplitButton>', () => {
     expect(splitButtonElem.classList).not.toContain('show');
   });
 
-  it('should invoke onClick when SplitButton.Button is clicked (prop)', () => {
-    const onClickSpy = vi.fn();
+  it('should invoke onClick when SplitButton.Button is clicked (prop)', async () => {
+    const onClickSpy = jest.fn();
 
-    render(
+    await render(
       <SplitButton
         data-testid="test-wrapper"
         title="Title"
@@ -52,10 +52,10 @@ describe('<SplitButton>', () => {
     expect(onClickSpy).toHaveBeenCalled();
   });
 
-  it('should not invoke onClick when SplitButton.Toggle is clicked (prop)', () => {
-    const onClickSpy = vi.fn();
+  it('should not invoke onClick when SplitButton.Toggle is clicked (prop)', async () => {
+    const onClickSpy = jest.fn();
 
-    render(
+    await render(
       <SplitButton
         data-testid="test-wrapper"
         title="Title"
@@ -71,8 +71,8 @@ describe('<SplitButton>', () => {
     expect(onClickSpy).not.toHaveBeenCalled();
   });
 
-  it('Should pass disabled to both buttons', () => {
-    render(
+  it('Should pass disabled to both buttons', async () => {
+    await render(
       <SplitButton
         data-testid="test-wrapper"
         title="Title"
@@ -89,8 +89,8 @@ describe('<SplitButton>', () => {
     expect(splitButtonElem.children[1].getAttribute('disabled')).toBeDefined();
   });
 
-  it('Should set target attribute on anchor', () => {
-    render(
+  it('Should set target attribute on anchor', async () => {
+    await render(
       <SplitButton
         title="Title"
         id="test-id"
@@ -111,14 +111,14 @@ describe('<SplitButton>', () => {
     );
   });
 
-  it('should set accessible label on toggle', () => {
-    render(simple);
+  it('should set accessible label on toggle', async () => {
+    await render(simple);
     const toggleLabelElem = screen.getByText('Toggle dropdown');
     expect(toggleLabelElem.classList).toContain('visually-hidden');
   });
 
-  it('should set aria-label on toggle from toggleLabel', () => {
-    render(
+  it('should set aria-label on toggle from toggleLabel', async () => {
+    await render(
       <SplitButton title="Title" id="test-id" toggleLabel="Label">
         <DropdownItem>Item 1</DropdownItem>
       </SplitButton>,
@@ -127,8 +127,8 @@ describe('<SplitButton>', () => {
     expect(labelElem.classList).toContain('visually-hidden');
   });
 
-  it('should set type attribute from type', () => {
-    render(
+  it('should set type attribute from type', async () => {
+    await render(
       <SplitButton
         data-testid="test-wrapper"
         title="Title"

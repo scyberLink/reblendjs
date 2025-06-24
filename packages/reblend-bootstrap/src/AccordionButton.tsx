@@ -1,5 +1,5 @@
 import * as Reblend from 'reblendjs';
-import { useContext } from 'react';
+import { useContext } from 'reblendjs';
 import clsx from 'clsx';
 import type { DynamicRefForwardingComponent } from '@restart/ui/types';
 import AccordionContext, { isAccordionItemSelected } from './AccordionContext';

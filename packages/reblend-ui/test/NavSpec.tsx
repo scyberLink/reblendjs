@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { expect, describe, beforeEach, afterEach, it } from 'vitest';
+import { fireEvent, render, screen } from 'reblend-testing-library';
+import { expect, describe, beforeEach, afterEach, it } from '@jest/globals';
 import Tabs from '../src/Tabs';
 import Nav from '../src/Nav';
 import NavItem from '../src/NavItem';

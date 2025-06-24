@@ -1,5 +1,5 @@
 import * as Reblend from 'reblendjs';
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'reblendjs';
 
 export const DEFAULT_BREAKPOINTS = ['xxl', 'xl', 'lg', 'md', 'sm', 'xs'];
 export const DEFAULT_MIN_BREAKPOINT = 'xs';

@@ -1,4 +1,4 @@
-import React, { type ReactNode } from 'react';
+import React, { type ReactNode } from 'reblendjs';
 import Alert from 'react-bootstrap/Alert';
 // import clsx from 'clsx';
 // import { ThemeClassNames } from '@docusaurus/theme-common';

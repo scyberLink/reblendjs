@@ -522,6 +522,9 @@ export class BaseComponent<
   }
 
   async applyEffects(type: EffectType) {
+    if (this.hasDisconnected) {
+      return
+    }
     for (const state of this.effectsState.values() || []) {
       if (state.type !== type) {
         continue

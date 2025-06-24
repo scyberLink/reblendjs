@@ -1,15 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from 'reblend-testing-library';
 import Spinner from '../src/Spinner';
 
 describe('<Spinner>', () => {
-  it('Should render a basic spinner correctly', () => {
-    render(<Spinner data-testid="test" animation="border" />);
+  it('Should render a basic spinner correctly', async () => {
+    await render(<Spinner data-testid="test" animation="border" />);
     expect(screen.getByTestId('test').classList).toContain('spinner-border');
   });
 
-  it('Should render a spinner with a custom element, variant and size ', () => {
-    render(
+  it('Should render a spinner with a custom element, variant and size ', async () => {
+    await render(
       <Spinner
         data-testid="test"
         as="span"
@@ -26,16 +26,16 @@ describe('<Spinner>', () => {
     expect(spinnerElem.classList).toContain('text-primary');
   });
 
-  it('Should render a spinner with other properties', () => {
-    render(<Spinner data-testid="test" animation="grow" role="status" />);
+  it('Should render a spinner with other properties', async () => {
+    await render(<Spinner data-testid="test" animation="grow" role="status" />);
     const spinnerElem = screen.getByTestId('test');
 
     expect(spinnerElem.classList).toContain('spinner-grow');
     expect(spinnerElem.getAttribute('role')!).toEqual('status');
   });
 
-  it('Should render child elements', () => {
-    render(
+  it('Should render child elements', async () => {
+    await render(
       <Spinner data-testid="test" animation="grow">
         <span id="testChild" />
       </Spinner>,
@@ -44,8 +44,8 @@ describe('<Spinner>', () => {
     expect(spinnerElem.children.length).toEqual(1);
   });
 
-  it('Should have div as default component', () => {
-    render(<Spinner data-testid="test" animation="border" />);
+  it('Should have div as default component', async () => {
+    await render(<Spinner data-testid="test" animation="border" />);
     const spinnerElem = screen.getByTestId('test');
     expect(spinnerElem.tagName).toEqual('DIV');
   });
