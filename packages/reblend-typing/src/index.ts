@@ -701,6 +701,17 @@ export type ComponentRef<T = any> = RefAttributes<T>['ref'];
 export type Ref<T> = {
   current: T;
 };
+
+/**
+ * Represents a mutable reference object whose `current` property can hold a value of type `T` or an `HTMLElement`.
+ *
+ * @template T
+ * @typedef {Object} Ref
+ * @property {T | HTMLElement} [current] - The current value held by the reference, which can be of type `T` or an `HTMLElement`.
+ */
+export type RefCallback<T> = {
+  (current: T): void;
+};
 /**
  * A function that updates the state based on the provided value. It accepts a value or a function that returns a new value based on the previous state.
  *

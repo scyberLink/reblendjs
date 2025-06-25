@@ -321,9 +321,9 @@ export class BaseComponent<
    * @returns {ReblendTyping.Ref<T>} - Returns a reference object with the current value.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static createRef<T>(_initial?: T) {
+  static createRef<T>(_initial?: T): ReblendTyping.Ref<T> {
     // eslint-disable-next-line prefer-rest-params
-    return BaseComponent.prototype.useRef.call(null, ...arguments)
+    return BaseComponent.prototype.useRef.call(null, ...arguments) as any
   }
   async createInnerHtmlElements() {
     let htmlVNodes = await this.html()

@@ -39,6 +39,9 @@ export async function setProps<P, S, ExpectedReturn = any>(
         if (_attributeName === 'style') {
           to.addStyle(propValue)
         } else {
+          if (propValue === undefined || propValue === null) {
+            continue
+          }
           const _shouldUseSetAttribute = shouldUseSetAttribute(_attributeName)
           try {
             if (_shouldUseSetAttribute) {

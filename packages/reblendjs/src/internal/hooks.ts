@@ -66,7 +66,7 @@ export type Context<T> = {
   reset: () => void
   getValue: () => T
   isEqual: (value: T) => boolean
-  update(updateValue: ReblendTyping.StateFunctionValue<T>, force?: boolean): Promise<boolean>
+  update(updateValue: T, force?: boolean): Promise<boolean>
   [contextSubscribe](subscriber: ContextSubriber): void
 }
 
@@ -163,8 +163,7 @@ export function useMemo<T, E>(fn: ReblendTyping.StateEffectiveMemoFunction<T, E>
 export function useRef<T>(initial?: T): ReblendTyping.Ref<T> {
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   return !this
-    ? //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
-      BaseComponent.createRef(...arguments)
+    ? BaseComponent.createRef(...arguments)
     : //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
       this.useRef(...arguments)
 }
@@ -187,11 +186,11 @@ export function useCallback<T extends (...args: any[]) => any>(fn: T): T {
  * @template T - The type of the context value.
  * @param {Context<T>} context - The context to subscribe to.
  * @param {string} stateKey - State key.
- * @returns {[T, ReblendTyping.StateFunction<T>]} - Returns the current context value and a function to update it.
+ * @returns {[T, (arg: T) => Promise<void>]} - Returns the current context value and a function to update it.
  * @throws Will throw an error if the context is invalid
  * @Note State key is optional because this function is assume to be called in a functional component which is meant to be transpile
  */
-export function useContext<T>(context: Context<T>, stateKey?: string): [T, ReblendTyping.StateFunction<T>] {
+export function useContext<T>(context: Context<T>, stateKey?: string): [T, (arg: T) => Promise<boolean>] {
   if (
     !(
       contextValue in context &&
@@ -214,7 +213,7 @@ export function useContext<T>(context: Context<T>, stateKey?: string): [T, Reble
   }
   //@ts-expect-error `this` refers to Reblend Component in which this hook is bound to
   context[contextSubscribe]({ component: this, stateKey: stateKey })
-  return [context[contextValue], context.update as any]
+  return [context[contextValue], context.update]
 }
 
 /**
@@ -271,15 +270,9 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
     get [contextValue]() {
       return context[contextInnerValue]
     },
-    async update(updateValue: ReblendTyping.StateFunctionValue<T>, force = false) {
-      let newValue: T = updateValue as T
-      if (typeof updateValue === 'function') {
-        newValue = await (updateValue as (v: T) => T)(context[contextValue])
-      } else if (updateValue instanceof Promise) {
-        newValue = await updateValue
-      }
-      if (force || newValue !== context[contextValue]) {
-        context[contextValue] = newValue
+    async update(updateValue: T, force = false) {
+      if (force || updateValue !== context[contextValue]) {
+        context[contextValue] = updateValue
         const updateId = rand(123456789, 987654321)
         context[contextSubscriberModificationTracker].unshift(updateId)
         for (const { component, stateKey } of context[contextSubscribers]) {
