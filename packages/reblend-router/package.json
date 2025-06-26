@@ -17,7 +17,7 @@
     "reblend-routing": "^7.1.2"
   },
   "peerDependencies": {
-    "reblendjs": "12.0.0"
+    "reblendjs": "12.1.0"
   },
   "scripts": {
     "build": "rm -rf dist; rm -rf lib; tsc && babel dist --out-dir lib"
