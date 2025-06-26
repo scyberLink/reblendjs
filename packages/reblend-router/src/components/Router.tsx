@@ -40,7 +40,7 @@ function Router<T>({ routes }: { routes: { [key: string]: RouterProps<T> } }) {
     if (!routes) {
       console.warn('List of routes is empty');
     } else {
-      setRoutesContext(() => {
+      setRoutesContext((() => {
         const map = new Map();
         Object.values(routes).forEach(route => {
           map.set(route.path, {
@@ -49,7 +49,7 @@ function Router<T>({ routes }: { routes: { [key: string]: RouterProps<T> } }) {
           });
         });
         return map;
-      });
+      })());
     }
   }, [routes]);
 

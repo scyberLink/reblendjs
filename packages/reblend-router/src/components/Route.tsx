@@ -16,14 +16,12 @@ export function Route<T>(props: {
   path: string;
 }) {
   useEffect(() => {
-    Routes.update(prev => {
-      prev.set(props.path, {
-        Component: props.Component,
-        element: props.element,
-        path: props.path,
-      });
-      return prev;
-    }, true);
+    Routes.getValue().set(props.path, {
+      Component: props.Component,
+      element: props.element,
+      path: props.path,
+    });
+    Routes.update(Routes.getValue(), true);
   }, [props.path]);
 
   return <>{null}</>;

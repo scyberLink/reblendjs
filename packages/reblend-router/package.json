@@ -1,6 +1,6 @@
 {
   "name": "reblend-router",
-  "version": "4.0.6",
+  "version": "4.0.7",
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "main": "lib/index.js",
