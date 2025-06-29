@@ -1,6 +1,6 @@
 {
   "name": "reblendjs",
-  "version": "12.1.0",
+  "version": "12.2.0",
   "codename": "infant",
   "description": "ReblendJs uses Reactjs pradigm to build UI components, with isolated state for each components.",
   "keywords": [
@@ -51,7 +51,7 @@
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "reblend-deep-equal-iterative": "^1.0.1",
+    "reblend-deep-equal-iterative": "^2.0.0",
     "reblend-typing": "^7.0.0"
   },
   "gitHead": "79a3e22f73913a686e76631559ba7830f7eb2e98"

@@ -196,7 +196,7 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
     'mountOn' in tempComponent &&
     'createInnerHtmlElements' in tempComponent.prototype
   ) {
-    return (await createChildren(BaseComponent.construct(tempComponent, {}) as any)) as any
+    return (await createChildren(BaseComponent.construct(tempComponent as any, {}) as any)) as any
   }
 
   let { displayName } = ui as ReblendTyping.VNode
@@ -334,8 +334,10 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
     if ((ui as ReblendTyping.VNode).props.ref) {
       const ref = (ui as ReblendTyping.VNode).props.ref
       if (typeof ref === 'function') {
+        ref(null)
         ref(element)
       } else {
+        ref.current = null
         ref.current = element
       }
       element.ref = ref

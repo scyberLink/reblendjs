@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChildrenPropsUpdateType, PatchTypeAndOrder } from 'reblend-typing'
@@ -155,17 +156,29 @@ export function diffCreateOrRemove<P, S>(
 /**
  * Diffs oldNode and newNode to generate patches that represent the changes between them.
  *
- * @param {ReblendTyping.Component<P, S>} parent - The parent node.
+ * @param {ReblendTyping.Componennt<P, S>} origin - The rerendering origin node.
+ * @param {number} circleId - The rerendering circle id.
  * @param {ReblendTyping.DomNodeChild} oldNode - The old node.
  * @param {ReblendTyping.VNodeChild} newNode - The new node.
  * @returns {ReblendTyping.Patch[]} - The array of patches.
  */
-export function diff<P, S>(
+export async function diff<P, S>(
+  origin: ReblendTyping.Component<P, S>,
+  circleId: number,
   parent: ReblendTyping.Component<P, S>,
   oldNode: ReblendTyping.DomNodeChild<P, S>,
   newNode: ReblendTyping.VNodeChild,
-): ReblendTyping.Patch<P, S>[] {
+): Promise<ReblendTyping.Patch<P, S>[]> {
   const patches: ReblendTyping.Patch<P, S>[] = []
+
+  if (!origin.renderingCycleTracker.isCurrentCycle(circleId)) {
+    return patches
+  }
+
+  if (isCallable(newNode)) {
+    newNode = await (newNode as any)()
+  }
+
   if (isCallable(newNode)) {
     patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
     return patches
@@ -198,6 +211,11 @@ export function diff<P, S>(
   } else if ('displayName' in oldNode && 'displayName' in (newNode as any)) {
     const oldNodeTag = (oldNode.displayName as string).toLowerCase()
     let newNodeTag = ''
+
+    if (isCallable((newNode as any).displayName)) {
+      ;(newNode as any).displayName = await (newNode as any).displayName()
+    }
+
     if (isPrimitive((newNode as any).displayName)) {
       newNodeTag = (newNode as ReblendTyping.VNode).displayName as string
     } else if ((newNode as any).displayName.ELEMENT_NAME) {
@@ -217,8 +235,13 @@ export function diff<P, S>(
           patches: propsDiff,
         })
       }
+
+      if (!origin.renderingCycleTracker.isCurrentCycle(circleId)) {
+        return patches
+      }
+
       if (oldNode.childrenInitialize) {
-        patches.push(...diffChildren(oldNode, oldNode, newNode as ReblendTyping.VNode))
+        patches.push(...(await diffChildren(origin, circleId, oldNode, oldNode, newNode as ReblendTyping.VNode)))
       }
     }
   }
@@ -238,7 +261,14 @@ export function diffProps<P, S>(newNode: ReblendTyping.VNode, oldNode: ReblendTy
 
   const patches: ReblendTyping.PropPatch<P, S>[] = []
   const oldProps: ReblendTyping.IAny = oldNode?.props || {}
-  const newProps: ReblendTyping.IAny = { /* ...oldProps,  */ ...(newNode?.props || {}) }
+
+  // Hack to get formatted props incase of alias name
+  // start hack
+  const dummyComponent: { props?: any } = {}
+  oldNode.initProps.call(dummyComponent, (newNode?.props || {}) as any)
+  const newProps: ReblendTyping.IAny = dummyComponent.props || {}
+  // end hack
+
   const isReblendNode = isReblendRenderedNode(oldNode)
   const diffConfig = getConfig().diffConfig || undefined
   for (const key in newProps) {
@@ -286,12 +316,16 @@ export function diffProps<P, S>(newNode: ReblendTyping.VNode, oldNode: ReblendTy
 /**
  * Diffs the children of the old and new virtual nodes and returns the patches required to update them.
  *
+ * @param {ReblendTyping.Component<P, S>} origin - The rerendering origin.
+ * @param {number} circleId - The rerendering circle id.
  * @param {ReblendTyping.Component<P, S>} parent - The parent component containing the children.
  * @param {ReblendTyping.Component<P, S>} oldNode - The old component node.
  * @param {VNode} newNode - The new virtual node.
  * @returns {Patch[]} - An array of patches representing the differences between the old and new children.
  */
-export function diffChildren<P, S>(
+export async function diffChildren<P, S>(
+  origin: ReblendTyping.Component<P, S>,
+  circleId: number,
   parent: ReblendTyping.Component<P, S>,
   oldNode: ReblendTyping.Component<P, S>,
   newNode: ReblendTyping.VNode,
@@ -314,7 +348,7 @@ export function diffChildren<P, S>(
     if (oldChild === undefined || newChild === undefined) {
       patches.push(...diffCreateOrRemove(parent, oldChild, newChild))
     } else {
-      patches.push(...diff(parent, oldChild, newChild))
+      patches.push(...(await diff(origin, circleId, parent, oldChild, newChild)))
     }
   }
 
@@ -383,12 +417,14 @@ export async function applyPatches<P, S>(patches: ReblendTyping.Patch<P, S>[]) {
       }
       case PatchTypeAndOrder.REMOVE: {
         if (patch.oldNode) {
+          removeRef(patch.oldNode)
           nodesToRemove.push(patch.oldNode)
         }
         break
       }
       case PatchTypeAndOrder.REPLACE: {
         if (patch.oldNode) {
+          removeRef(patch.oldNode)
           const newNodeElements = await createElement(patch.newNode as ReblendTyping.VNode)
           newNodeElements.forEach((element) => (element.directParent = patch.oldNode?.directParent as any))
           replaceOps.push({ oldNode: patch.oldNode, newNodeElements })
@@ -554,6 +590,16 @@ export async function replaceOperation<P, S>(
         detach(oldNode)
       }),
     )
+  }
+}
+
+export function removeRef(node: ReblendTyping.Component<any, any>) {
+  if (node.ref) {
+    if (typeof node.ref === 'function') {
+      node.ref(null as any)
+    } else if (node.ref.current) {
+      node.ref.current = null as any
+    }
   }
 }
 

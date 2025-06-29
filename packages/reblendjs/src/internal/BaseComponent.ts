@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getConfig, isCallable, rand } from '../common/utils'
 import { IAny } from '../interface/IAny'
@@ -27,10 +28,10 @@ import { flattenVNodeChildren } from './DiffUtil'
 import { connected, detach, connectedCallback, diff, applyPatches, disconnectedCallback } from './NodeOperationUtil'
 import { ConfigUtil, IReblendAppConfig } from './ConfigUtil'
 import deepEqualIterative from 'reblend-deep-equal-iterative'
+import { RenderingCycleTracker } from './RenderingCycleTracker'
 
 export interface BaseComponent<P, S> extends HTMLElement {
   nearestStandardParent?: HTMLElement
-  onStateChangeRunning: boolean | undefined
   elementChildren: Set<ReblendTyping.Component<P, S>> | null
   reactElementChildrenWrapper: ReblendTyping.Component<any, any> | null
   directParent: ReblendTyping.Component<any, any>
@@ -58,6 +59,7 @@ export interface BaseComponent<P, S> extends HTMLElement {
   htmlElements: ReblendTyping.Component<P, S>[]
   childrenPropsUpdate: Set<ChildrenPropsUpdateType>
   numAwaitingUpdates: number
+  renderingCycleTracker: ReblendTyping.RenderingCycleTracker
   stateEffectRunning: boolean
   forceEffects: boolean
   mountingEffects: boolean
@@ -521,7 +523,7 @@ export class BaseComponent<
     this.onStateChange()
   }
 
-  async applyEffects(type: EffectType) {
+  async applyEffects(circleId: number, type: EffectType) {
     if (this.hasDisconnected) {
       return
     }
@@ -533,6 +535,10 @@ export class BaseComponent<
       const disconnectEffect = state.effect && (await state.effect())
       if (typeof disconnectEffect === 'function') {
         state.disconnectEffect = disconnectEffect
+      }
+
+      if (!this.mountingEffects && !this.mountingAfterEffects && !this.renderingCycleTracker.isCurrentCycle(circleId)) {
+        break
       }
     }
   }
@@ -555,27 +561,43 @@ export class BaseComponent<
     if (!this.attached || this.hasDisconnected) {
       return
     }
+
     if (isStandard(this) && !this.isRootComponent) {
       return
     }
-    if (this.stateEffectRunning) {
-      //this.cacheEffectDependencies()
+
+    if (this.mountingEffects || this.initStateRunning) {
+      this.awaitingReRender = true
       return
     }
-    if (this.onStateChangeRunning || this.initStateRunning || this.numAwaitingUpdates) {
-      this.numAwaitingUpdates++
+
+    const circleId = this.renderingCycleTracker.startCircle()
+    if (this.renderingCycleTracker.hasPreviousCirle()) {
       return
     }
+
+    const configs = getConfig()
+    const rerender = async () => {
+      this.renderingCycleTracker.resetCircle()
+      if (configs.noDefering) {
+        await this.onStateChange()
+      } else {
+        this.onStateChange()
+      }
+    }
+
     const patches: ReblendTyping.Patch<P, S>[] = []
     let newVNodes: ReblendTyping.ReblendNode
     try {
       this.stateEffectRunning = true
-      await this.applyEffects(EffectType.BEFORE)
+      await this.applyEffects(circleId, EffectType.BEFORE)
       this.stateEffectRunning = false
+      if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+        return await rerender()
+      }
       this.forceEffects = false
-      this.onStateChangeRunning = true
       if (this.childrenInitialize) {
-        newVNodes = await this.html()
+        newVNodes = await (this.html as any)()
         if (isCallable(newVNodes)) {
           newVNodes = (newVNodes as any)(this.props)
         }
@@ -589,28 +611,34 @@ export class BaseComponent<
         for (let i = 0; i < maxLength; i++) {
           const newVNode: ReblendTyping.VNodeChild = newVNodes![i]
           const currentVNode = oldNodes[i]
-          patches.push(...(diff(this as any, currentVNode as any, newVNode) as any))
+          if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+            return await rerender()
+          }
+          patches.push(...((await diff(this, circleId, this as any, currentVNode as any, newVNode)) as any))
+          if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+            return await rerender()
+          }
         }
       } else {
         this.awaitingReRender = true
       }
     } catch (error) {
       this.handleError(error as Error)
-    } finally {
-      await applyPatches(patches)
-      await this.applyEffects(EffectType.AFTER)
-      this.onStateChangeRunning = false
-      if (this.numAwaitingUpdates) {
-        this.numAwaitingUpdates = 0
-        const configs = getConfig()
-        if (configs.noDefering) {
-          await this.onStateChange()
-        } else {
-          setTimeout(() => this.onStateChange(), configs.deferTimeout)
-        }
-      }
-      newVNodes = null as any
     }
+
+    if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+      return await rerender()
+    }
+    await applyPatches(patches)
+    if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+      return await rerender()
+    }
+    await this.applyEffects(circleId, EffectType.AFTER)
+    if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+      return await rerender()
+    }
+    newVNodes = null as any
+    this.renderingCycleTracker.resetCircle()
   }
 
   async html(): Promise<ReblendTyping.ReblendNode> {
@@ -621,7 +649,7 @@ export class BaseComponent<
     this.stateEffectRunning = true
     if (!isReblendPrimitiveElement(this)) {
       this.mountingEffects = true
-      await this.applyEffects(EffectType.BEFORE)
+      await this.applyEffects(0, EffectType.BEFORE)
       this.mountingEffects = false
     }
     this.stateEffectRunning = false
@@ -631,7 +659,7 @@ export class BaseComponent<
     if (!isStandard(this) && !isReactToReblendRenderedNode(this)) {
       await this.populateHtmlElements()
       this.mountingAfterEffects = true
-      await this.applyEffects(EffectType.AFTER)
+      await this.applyEffects(0, EffectType.AFTER)
       this.mountingAfterEffects = false
     }
   }
@@ -874,5 +902,6 @@ export class BaseComponent<
     this.numAwaitingUpdates = 0
     this.effectsState = new Map()
     this.hasDisconnected = false
+    this.renderingCycleTracker = new RenderingCycleTracker()
   }
 }

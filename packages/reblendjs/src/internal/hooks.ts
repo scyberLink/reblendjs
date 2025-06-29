@@ -9,6 +9,7 @@ import { isPrimitive } from './NodeUtil'
 import deepEqualIterative from 'reblend-deep-equal-iterative'
 
 const contextValue = Symbol('Reblend.contextValue')
+const contextReducer = Symbol('Reblend.contextReducer')
 const contextInnerValue = Symbol('Reblend.contextInnerValue')
 const contextValueInitial = Symbol('Reblend.contextValueInitial')
 const contextSubscribers = Symbol('Reblend.contextSubscribers')
@@ -25,6 +26,15 @@ export enum CacheType {
 }
 
 /**
+ * Options for configuring behavior for a context.
+ *
+ * @typedef {object} Cache
+ * @property {CacheOption} cache - The caching option
+ * @property {ReblendTyping.StateFunction} updater - The reducer for the context
+ */
+type Config<S = any, A = any> = { cache: CacheOption; reducer: ReblendTyping.StateReducerFunction<S, A> }
+
+/**
  * Options for configuring caching behavior for a context.
  *
  * @typedef {object} CacheOption
@@ -36,9 +46,10 @@ type CacheOption = {
   key: string
 }
 
-type ContextSubriber = {
+type ContextSubscriber<S = any, A = any> = {
   component: BaseComponent
   stateKey: string
+  reducer?: Config<S, A>['reducer']
 }
 
 /**
@@ -46,10 +57,11 @@ type ContextSubriber = {
  *
  * @template T - The type of the context value.
  * @typedef {object} Context<T>
- * @property {Set<ContextSubriber>} [contextSubscribers] - Array of components subscribed to this context and their state keys.
+ * @property {Set<ContextSubscriber>} [contextSubscribers] - Array of components subscribed to this context and their state keys.
  * @property {T} [contextValue] - The current value of the context.
  * @property {T} [contextValueInitial] - The initial value of the context.
  * @property {T} [contextInnerValue] - The actual stored value, potentially synced with cache.
+ * @property {Config['cache']} [contextReducer] - The reducer.
  * @property {number[]} [contextSubscriberModificationTracker] - Tracker for subscriber modifications.
  * @property {Function} reset - Resets the context value to the initial value.
  * @property {Function} getValue - Retrieves the current context value.
@@ -57,21 +69,19 @@ type ContextSubriber = {
  * @property {Function} update - Updates the context value and notifies subscribers.
  * @property {Function} [contextSubscribe] - Subscribes a component to this context with a given state key.
  */
-export type Context<T> = {
-  [contextSubscribers]: Set<ContextSubriber>
+export type Context<T, S = any, A = any> = {
+  [contextSubscribers]: Set<ContextSubscriber>
   [contextValue]: T
   [contextValueInitial]: T
   [contextInnerValue]: T
+  [contextReducer]?: Config<S, A>['reducer']
   [contextSubscriberModificationTracker]: number[]
   reset: () => void
   getValue: () => T
   isEqual: (value: T) => boolean
   update(updateValue: T, force?: boolean): Promise<boolean>
-  [contextSubscribe](subscriber: ContextSubriber): void
+  [contextSubscribe](subscriber: ContextSubscriber): void
 }
-
-const invalidContext = new Error('Invalid context')
-const stateIdNotIncluded = new Error('State Identifier/Key not specified')
 
 /**
  * Hook to manage state within a Reblend component.
@@ -195,17 +205,18 @@ export function useContext<T>(context: Context<T>, stateKey?: string): [T, (arg:
     !(
       contextValue in context &&
       contextInnerValue in context &&
+      contextReducer in context &&
       contextValueInitial in context &&
       contextSubscribers in context &&
       contextSubscribe in context &&
       contextSubscriberModificationTracker in context
     )
   ) {
-    throw invalidContext
+    throw new Error('Invalid context')
   }
 
   if (!stateKey) {
-    throw stateIdNotIncluded
+    throw new Error('State Identifier/Key not specified')
   }
 
   if (typeof stateKey !== 'string') {
@@ -225,11 +236,12 @@ export function useContext<T>(context: Context<T>, stateKey?: string): [T, (arg:
  * @param {CacheOption} [cacheOption] - Optional caching options.
  * @returns {Context<T>} - The created context object.
  */
-export function createContext<T>(initial: T, cacheOption?: CacheOption): Context<T> {
-  const context: Context<T> = {
+export function createContext<T, S = any, A = any>(initial: T, config?: Config): Context<T> {
+  const context: Context<T, S, A> = {
     [contextSubscribers]: new Set(),
     [contextSubscriberModificationTracker]: [],
     [contextInnerValue]: (() => {
+      const cacheOption = config?.cache as CacheOption | undefined
       if (!(cacheOption && cacheOption.type && cacheOption.key)) {
         return initial
       }
@@ -251,6 +263,7 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
       return value === undefined || value === null ? initial : value
     })(),
     set [contextValue](value: T) {
+      const cacheOption = config?.cache as CacheOption | undefined
       if (cacheOption && cacheOption.type && cacheOption.key) {
         switch (cacheOption.type) {
           case CacheType.SESSION:
@@ -271,6 +284,8 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
       return context[contextInnerValue]
     },
     async update(updateValue: T, force = false) {
+      const reducer = context[contextReducer]
+      updateValue = (reducer ? await reducer(context[contextValue] as any, updateValue as any) : updateValue) as T
       if (force || updateValue !== context[contextValue]) {
         context[contextValue] = updateValue
         const updateId = rand(123456789, 987654321)
@@ -311,6 +326,7 @@ export function createContext<T>(initial: T, cacheOption?: CacheOption): Context
       }
     },
     [contextValueInitial]: initial,
+    [contextReducer]: config?.reducer,
     reset() {
       context[contextValue] = context[contextValueInitial]
     },

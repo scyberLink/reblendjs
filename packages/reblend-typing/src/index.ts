@@ -722,7 +722,7 @@ export type RefCallback<T> = {
  */
 export type StateFunction<T> = (
   value: StateFunctionValue<T>,
-  force?: boolean
+  force?: boolean,
 ) => Promise<void>;
 /**
  * The value used to update the state, which can be either a new value directly or a function that computes the new value based on the previous state.
@@ -796,7 +796,7 @@ export type StateEffectiveFunction<E> = (args: {
  */
 export type StateReducerFunction<ValueType, IncomingType> = (
   previous: ValueType,
-  current: IncomingType
+  current: IncomingType,
 ) => Promise<ValueType> | ValueType;
 /**
  * Used to retrieve the possible components which accept a given set of props.
@@ -834,7 +834,7 @@ export type StateReducerFunction<ValueType, IncomingType> = (
  */
 export type ElementType<
   P = any,
-  Tag extends keyof JSX.IntrinsicElements = keyof JSX.IntrinsicElements
+  Tag extends keyof JSX.IntrinsicElements = keyof JSX.IntrinsicElements,
 > =
   | {
       [K in Tag]: P extends JSX.IntrinsicElements[K] ? K : never;
@@ -866,11 +866,11 @@ export type JSXElementConstructor<P> =
   | string
   | Promise<
       (
-        props: P
+        props: P,
       ) => Promise<ReblendNode | ReblendNode[]> | ReblendNode | ReblendNode[]
     >
   | ((
-      props: P
+      props: P,
     ) => Promise<ReblendNode | ReblendNode[]> | ReblendNode | ReblendNode[]);
 
 /**
@@ -1075,7 +1075,7 @@ export interface FunctionComponentElement<P> extends Component<P, any> {
 
 export interface DOMElement<
   P extends HTMLAttributes<T> | SVGAttributes<T>,
-  T extends Element
+  T extends Element,
   //@ts-ignore
 > extends ReblendElement {
   ref: Ref<T>;
@@ -1084,7 +1084,7 @@ export interface ReblendHTMLElement<T extends HTMLElement>
   extends DetailedReblendHTMLElement<AllHTMLAttributes<T>, T> {}
 export interface DetailedReblendHTMLElement<
   P extends HTMLAttributes<T>,
-  T extends HTMLElement
+  T extends HTMLElement,
 > extends DOMElement<P, T> {
   type: keyof ReblendHTML;
 }
@@ -1101,7 +1101,7 @@ export interface HTMLFactory<T extends HTMLElement>
   extends DetailedHTMLFactory<AllHTMLAttributes<T>, T> {}
 export interface DetailedHTMLFactory<
   P extends HTMLAttributes<T>,
-  T extends HTMLElement
+  T extends HTMLElement,
 > extends DOMFactory<P, T> {
   (
     props?: (ClassAttributes<T> & P) | null,
@@ -1163,6 +1163,26 @@ export type ReblendNode<P = any, S = any> =
   | undefined
   | null
   | void;
+
+export interface RenderingCycleTracker {
+  circles: number[];
+
+  generateId(): number;
+
+  hasACirle(): boolean;
+
+  hasPreviousCirle(): boolean;
+
+  isCurrentCycle(circleId: number): boolean;
+
+  completeCurrentCycle(circleId: number): boolean;
+
+  startCircle(): number;
+
+  resetCircle(): void;
+}
+
+export class RenderingCycleTracker {}
 
 /**
  * Represents a Reblend component, extending the standard HTMLElement with additional
@@ -1287,6 +1307,10 @@ export interface Component<P, S> extends HTMLElement {
    */
   stateEffectRunning: boolean;
   /**
+   * Used for tracking update cycle of a component.
+   */
+  renderingCycleTracker: RenderingCycleTracker;
+  /**
    * Indicates when effects function are required to update regardless of changes
    */
   forceEffects: boolean;
@@ -1375,8 +1399,11 @@ export interface Component<P, S> extends HTMLElement {
   setState(value: S): void;
   /**
    * Applies effects defined in the component, executing them in order.
+   * 
+   * @param circleId The rerendering circle id
+   * @param type Type of effect
    */
-  applyEffects(type: EffectType): Promise<void>;
+  applyEffects(circleId: number, type: EffectType): Promise<void>;
   /**
    * Handles an error that occurs during rendering or lifecycle methods.
    *
@@ -1428,7 +1455,7 @@ export interface Component<P, S> extends HTMLElement {
    */
   dependenciesChanged(
     currentDependencies: Array<any>,
-    previousDependencies: Array<any>
+    previousDependencies: Array<any>,
   ): boolean;
   /**
    * State management hook for functional components.
@@ -1440,7 +1467,7 @@ export interface Component<P, S> extends HTMLElement {
    */
   useState<T>(
     initial: StateFunctionValue<T>,
-    stateKey: string
+    stateKey: string,
   ): [T, StateFunction<T>];
   /**
    * Effect hook for performing side effects in functional components.
@@ -1457,7 +1484,7 @@ export interface Component<P, S> extends HTMLElement {
    */
   useEffectAfter<T>(
     fn: StateEffectiveFunction<T>,
-    dependencies?: () => any
+    dependencies?: () => any,
   ): void;
   /**
    * Effect hook for performing side effects or have access to previous and current props usefull within custom hooks.
@@ -1478,7 +1505,7 @@ export interface Component<P, S> extends HTMLElement {
   useReducer<T, I>(
     reducer: StateReducerFunction<T, I>,
     initial: StateFunctionValue<T>,
-    stateKey: string
+    stateKey: string,
   ): [T, StateFunction<I>];
   /**
    * Memoization hook for caching values in functional components.
@@ -1493,7 +1520,7 @@ export interface Component<P, S> extends HTMLElement {
   useMemo<T, E>(
     fn: StateEffectiveMemoFunction<T, E>,
     stateKey: string,
-    dependencies?: () => any
+    dependencies?: () => any,
   ): T;
   /**
    * Creates a ref object to hold mutable values that do not trigger re-renders.
@@ -1549,7 +1576,9 @@ export class Component<P, S> {}
  * }
  * ```
  */
-export type FC<P = {}> = FunctionComponent<P>;
+export type FC<P = {}, RefType = any> = FunctionComponent<
+  P & { ref?: Ref<RefType> }
+>;
 /**
  * Represents the type of a function component. Can optionally
  * receive a type argument that represents the props the component
@@ -1651,12 +1680,13 @@ type PropsWithChildren<P = unknown> = P & {
  * ```
  */
 export type ComponentProps<
-  T extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>
-> = T extends JSXElementConstructor<infer P>
-  ? P
-  : T extends keyof JSX.IntrinsicElements
-  ? JSX.IntrinsicElements[T]
-  : {};
+  T extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>,
+> =
+  T extends JSXElementConstructor<infer P>
+    ? P
+    : T extends keyof JSX.IntrinsicElements
+      ? JSX.IntrinsicElements[T]
+      : {};
 /**
  * Used to retrieve the props a component accepts with its ref. Can either be
  * passed a string, indicating a DOM element (e.g. 'div', 'span', etc.) or the
@@ -1700,8 +1730,8 @@ export type CustomComponentPropsWithRef<T extends ComponentType> =
   T extends new (props: infer P) => Component<any, any>
     ? PropsWithoutRef<P> & RefAttributes<InstanceType<T>>
     : T extends (props: infer P) => ReblendNode
-    ? PropsWithRef<P>
-    : never;
+      ? PropsWithRef<P>
+      : never;
 export interface BaseSyntheticEvent<E = object, C = any, T = any> {
   nativeEvent: E;
   currentTarget: C;
@@ -1894,7 +1924,7 @@ export interface HTMLProps<T>
     ClassAttributes<T> {}
 export type DetailedHTMLProps<
   E extends HTMLAttributes<T>,
-  T
+  T,
 > = ClassAttributes<T> & E;
 export interface SVGProps<T> extends SVGAttributes<T>, ClassAttributes<T> {}
 export interface SVGLineElementAttributes<T> extends SVGProps<T> {}
