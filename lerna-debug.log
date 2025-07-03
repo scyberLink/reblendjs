@@ -1,216 +1,1302 @@
 0 silly argv {
-0 silly argv   _: [ 'publish' ],
-0 silly argv   composed: 'publish',
-0 silly argv   lernaVersion: '4.0.0',
+0 silly argv   _: [ 'version' ],
+0 silly argv   lernaVersion: '8.2.2',
 0 silly argv   '$0': 'node_modules/.bin/lerna'
 0 silly argv }
-1 notice cli v4.0.0
-2 verbose rootPath /home/s/Desktop/projects/reblendjs
-3 info versioning independent
-4 verbose session 334ad7ee041e6a93
-5 verbose user-agent lerna/4.0.0/node@v20.18.2+x64 (linux)
-6 warn Yarn's registry proxy is broken, replacing with public npm registry
-7 warn If you don't have an npm token, you should exit and run `npm login`
-8 info publish rooted leaf detected, skipping synthetic root lifecycles
-9 silly argv { _: [ 'publish' ], composed: 'publish', lernaVersion: '4.0.0' }
-10 verbose rootPath /home/s/Desktop/projects/reblendjs
-11 silly isAnythingCommitted
-12 verbose isAnythingCommitted 1
-13 silly getCurrentBranch
-14 verbose currentBranch main
-15 silly remoteBranchExists
-16 silly isBehindUpstream
-17 silly isBehindUpstream main is behind origin/main by 0 commit(s) and ahead by 1
-18 silly hasTags
-19 verbose hasTags true
-20 silly git-describe.sync "reblend-router@1.0.0-1-g9f06e75" => {"lastTagName":"reblend-router@1.0.0","lastVersion":"1.0.0","refCount":"1","sha":"9f06e75","isDirty":false}
-21 info Looking for changed packages since reblend-router@1.0.0
-22 silly checking diff packages/reblend-router
-23 silly found diff in packages/reblend-router/package.json
-24 verbose filtered diff [ 'packages/reblend-router/package.json' ]
-25 silly checking diff packages/reblend-routing
-26 silly found diff in packages/reblend-routing/package.json
-27 verbose filtered diff [ 'packages/reblend-routing/package.json' ]
-28 silly checking diff packages/reblend-template-test
-29 silly found diff in packages/reblend-template-test/package.json
-30 verbose filtered diff [ 'packages/reblend-template-test/package.json' ]
-31 silly checking diff packages/reblend-typing
-32 silly found diff in packages/reblend-typing/package.json
-33 verbose filtered diff [ 'packages/reblend-typing/package.json' ]
-34 silly checking diff packages/reblendjs
-35 silly found diff in packages/reblendjs/package.json
-36 verbose filtered diff [ 'packages/reblendjs/package.json' ]
-37 verbose updated reblend-router
-38 verbose updated reblend-routing
-39 verbose updated reblend-template-test
-40 verbose updated reblend-typing
-41 verbose updated reblendjs
-42 verbose git-describe undefined => "reblend-router@1.0.0-1-g9f06e75"
-43 silly git-describe parsed => {"lastTagName":"reblend-router@1.0.0","lastVersion":"1.0.0","refCount":"1","sha":"9f06e75","isDirty":false}
-44 info execute Skipping releases
-45 silly lifecycle No script for "preversion" in "reblend-router", continuing
-46 silly lifecycle No script for "preversion" in "reblend-routing", continuing
-47 silly lifecycle No script for "preversion" in "reblend-template-test", continuing
-48 silly lifecycle No script for "preversion" in "reblend-typing", continuing
-49 silly lifecycle No script for "version" in "reblend-template-test", continuing
-50 silly lifecycle No script for "version" in "reblend-typing", continuing
-51 silly lifecycle No script for "preversion" in "reblendjs", continuing
-52 silly lifecycle No script for "version" in "reblend-routing", continuing
-53 silly lifecycle No script for "version" in "reblend-router", continuing
-54 silly lifecycle No script for "version" in "reblendjs", continuing
-55 silly gitAdd [
-55 silly gitAdd   'packages/reblend-template-test/package.json',
-55 silly gitAdd   'packages/reblend-typing/package.json',
-55 silly gitAdd   'packages/reblend-routing/package.json',
-55 silly gitAdd   'packages/reblend-router/package.json',
-55 silly gitAdd   'packages/reblendjs/package.json'
-55 silly gitAdd ]
-56 silly gitCommit Publish
-56 silly gitCommit
-56 silly gitCommit  - reblend-router@1.0.1
-56 silly gitCommit  - reblend-routing@5.0.1
-56 silly gitCommit  - reblend-template-test@3.0.1
-56 silly gitCommit  - reblend-typing@4.0.1
-56 silly gitCommit  - reblendjs@6.0.1
-57 verbose git [
-57 verbose git   'commit',
-57 verbose git   '-F',
-57 verbose git   '/tmp/bddb7b60-05ab-4944-9ccc-0d92245aef5d/lerna-commit.txt'
-57 verbose git ]
-58 silly gitTag reblend-router@1.0.1
-59 verbose git [ 'tag', 'reblend-router@1.0.1', '-m', 'reblend-router@1.0.1' ]
-60 silly gitTag reblend-routing@5.0.1
-61 verbose git [ 'tag', 'reblend-routing@5.0.1', '-m', 'reblend-routing@5.0.1' ]
-62 silly gitTag reblend-template-test@3.0.1
-63 verbose git [
-63 verbose git   'tag',
-63 verbose git   'reblend-template-test@3.0.1',
-63 verbose git   '-m',
-63 verbose git   'reblend-template-test@3.0.1'
-63 verbose git ]
-64 silly gitTag reblend-typing@4.0.1
-65 verbose git [ 'tag', 'reblend-typing@4.0.1', '-m', 'reblend-typing@4.0.1' ]
-66 silly gitTag reblendjs@6.0.1
-67 verbose git [ 'tag', 'reblendjs@6.0.1', '-m', 'reblendjs@6.0.1' ]
-68 silly lifecycle No script for "postversion" in "reblend-router", continuing
-69 silly lifecycle No script for "postversion" in "reblend-routing", continuing
-70 silly lifecycle No script for "postversion" in "reblend-template-test", continuing
-71 silly lifecycle No script for "postversion" in "reblend-typing", continuing
-72 silly lifecycle No script for "postversion" in "reblendjs", continuing
-73 info git Pushing tags...
-74 silly gitPush origin main
-75 info publish Publishing packages to npm...
-76 info Verifying npm credentials
-77 verbose Retrieving npm user profile
-78 http fetch GET 200 https://registry.npmjs.org/-/npm/v1/user 8163ms
-79 silly npm profile get received {"tfa":{"pending":false,"mode":"auth-and-writes"},"name":"scyber-link","email":"com.syber.emma@gmail.com","email_verified":true,"created":"2024-05-13T09:42:25.602Z","updated":"2024-05-16T12:03:28.524Z","cidr_whitelist":null,"fullname":"Scyber Link","github":"scansio"}
-80 silly get npm username received {"username":"scyber-link","tfa":{"pending":false,"mode":"auth-and-writes"},"name":"scyber-link","email":"com.syber.emma@gmail.com","email_verified":true,"created":"2024-05-13T09:42:25.602Z","updated":"2024-05-16T12:03:28.524Z","cidr_whitelist":null,"fullname":"Scyber Link","github":"scansio"}
-81 silly verifyNpmPackageAccess
-82 http fetch GET 200 https://registry.npmjs.org/-/org/scyber-link/package?format=cli 1884ms (cache updated)
-83 info Checking two-factor auth mode
-84 verbose Retrieving npm user profile
-85 warn registry Unexpected warning for https://registry.npmjs.org/: Miscellaneous Warning ETIMEDOUT: request to https://registry.npmjs.org/-/npm/v1/user failed, reason: read ETIMEDOUT
-86 warn registry Using stale data from https://registry.npmjs.org/ due to a request error during revalidation.
-87 http fetch GET 200 https://registry.npmjs.org/-/npm/v1/user 12139ms (from cache)
-88 silly npm profile get received {"tfa":{"pending":false,"mode":"auth-and-writes"},"name":"scyber-link","email":"com.syber.emma@gmail.com","email_verified":true,"created":"2024-05-13T09:42:25.602Z","updated":"2024-05-16T12:03:28.524Z","cidr_whitelist":null,"fullname":"Scyber Link","github":"scansio"}
-89 silly 2FA { pending: false, mode: 'auth-and-writes' }
-90 silly getCurrentSHA
-91 verbose getCurrentSHA 79a3e22f73913a686e76631559ba7830f7eb2e98
-92 verbose pack-directory packages/reblend-router
-93 verbose pack-directory packages/reblend-routing
-94 verbose pack-directory packages/reblend-template-test
-95 verbose pack-directory packages/reblend-typing
-96 silly lifecycle "prepublish" starting in "reblend-router"
-97 info lifecycle reblend-router@1.0.1~prepublish: reblend-router@1.0.1
-98 silly lifecycle "prepublish" starting in "reblend-routing"
-99 info lifecycle reblend-routing@5.0.1~prepublish: reblend-routing@5.0.1
-100 silly lifecycle No script for "prepublish" in "reblend-template-test", continuing
-101 silly lifecycle "prepublish" starting in "reblend-typing"
-102 info lifecycle reblend-typing@4.0.1~prepublish: reblend-typing@4.0.1
-103 silly lifecycle No script for "prepare" in "reblend-template-test", continuing
-104 warn lifecycle The node binary used for scripts is /tmp/yarn--1742165846929-0.36793894130375304/node but npm is using /home/s/.config/nvm/versions/node/v20.18.2/bin/node itself. Use the `--scripts-prepend-node-path` option to include the path for the node binary npm was executed with.
-105 verbose lifecycle reblend-router@1.0.1~prepublish: unsafe-perm in lifecycle true
-106 verbose lifecycle reblend-router@1.0.1~prepublish: PATH: /home/s/Desktop/projects/reblendjs/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/projects/reblendjs/packages/reblend-router/node_modules/.bin:/tmp/yarn--1742165846929-0.36793894130375304:/home/s/Desktop/projects/reblendjs/node_modules/.bin:/home/s/.config/yarn/link/node_modules/.bin:/home/s/Desktop/projects/reblendjs/node_modules/.bin:/home/s/.yarn/bin:/home/s/.config/nvm/versions/node/v20.18.2/libexec/lib/node_modules/npm/bin/node-gyp-bin:/home/s/.config/nvm/versions/node/v20.18.2/lib/node_modules/npm/bin/node-gyp-bin:/home/s/.config/nvm/versions/node/v20.18.2/bin/node_modules/npm/bin/node-gyp-bin:/home/s/jdk-17.0.13+11/bin:/home/s/.local/share/pnpm:/home/s/jdk-17.0.13+11/bin:/home/s/.config/nvm/versions/node/v20.18.2/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/sbin:/usr/sbin:/home/s/Android/Sdk/emulator:/home/s/Android/Sdk/tools:/home/s/Android/Sdk/tools/bin:/home/s/Android/Sdk/platform-tools:/home/s/Android/Sdk/build-tools/34.0.0:/home/s/Android/Sdk/cmdline-tools/latest/bin:/home/s/.config/Code/User/globalStorage/github.copilot-chat/debugCommand:/home/s/Android/Sdk/emulator:/home/s/Android/Sdk/tools:/home/s/Android/Sdk/tools/bin:/home/s/Android/Sdk/platform-tools:/home/s/Android/Sdk/build-tools/34.0.0:/home/s/Android/Sdk/cmdline-tools/latest/bin
-107 verbose lifecycle reblend-router@1.0.1~prepublish: CWD: /home/s/Desktop/projects/reblendjs/packages/reblend-router
-108 silly lifecycle reblend-router@1.0.1~prepublish: Args: [ '-c', 'npm run build' ]
-109 silly lifecycle No script for "prepublishOnly" in "reblend-template-test", continuing
-110 silly lifecycle No script for "prepack" in "reblend-template-test", continuing
-111 silly lifecycle No script for "postpack" in "reblend-template-test", continuing
-112 verbose packed packages/reblend-template-test
-113 silly lifecycle reblend-router@1.0.1~prepublish: Returned: code: 0  signal: null
-114 verbose lifecycle reblend-routing@5.0.1~prepublish: unsafe-perm in lifecycle true
-115 verbose lifecycle reblend-routing@5.0.1~prepublish: PATH: /home/s/Desktop/projects/reblendjs/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/projects/reblendjs/packages/reblend-routing/node_modules/.bin:/tmp/yarn--1742165846929-0.36793894130375304:/home/s/Desktop/projects/reblendjs/node_modules/.bin:/home/s/.config/yarn/link/node_modules/.bin:/home/s/Desktop/projects/reblendjs/node_modules/.bin:/home/s/.yarn/bin:/home/s/.config/nvm/versions/node/v20.18.2/libexec/lib/node_modules/npm/bin/node-gyp-bin:/home/s/.config/nvm/versions/node/v20.18.2/lib/node_modules/npm/bin/node-gyp-bin:/home/s/.config/nvm/versions/node/v20.18.2/bin/node_modules/npm/bin/node-gyp-bin:/home/s/jdk-17.0.13+11/bin:/home/s/.local/share/pnpm:/home/s/jdk-17.0.13+11/bin:/home/s/.config/nvm/versions/node/v20.18.2/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/sbin:/usr/sbin:/home/s/Android/Sdk/emulator:/home/s/Android/Sdk/tools:/home/s/Android/Sdk/tools/bin:/home/s/Android/Sdk/platform-tools:/home/s/Android/Sdk/build-tools/34.0.0:/home/s/Android/Sdk/cmdline-tools/latest/bin:/home/s/.config/Code/User/globalStorage/github.copilot-chat/debugCommand:/home/s/Android/Sdk/emulator:/home/s/Android/Sdk/tools:/home/s/Android/Sdk/tools/bin:/home/s/Android/Sdk/platform-tools:/home/s/Android/Sdk/build-tools/34.0.0:/home/s/Android/Sdk/cmdline-tools/latest/bin
-116 verbose lifecycle reblend-routing@5.0.1~prepublish: CWD: /home/s/Desktop/projects/reblendjs/packages/reblend-routing
-117 silly lifecycle reblend-routing@5.0.1~prepublish: Args: [ '-c', 'npm run build' ]
-118 silly lifecycle "prepublish" finished in "reblend-router"
-119 silly lifecycle No script for "prepare" in "reblend-router", continuing
-120 silly lifecycle No script for "prepublishOnly" in "reblend-router", continuing
-121 silly lifecycle No script for "prepack" in "reblend-router", continuing
-122 silly lifecycle No script for "postpack" in "reblend-router", continuing
-123 verbose packed packages/reblend-router
-124 silly lifecycle reblend-routing@5.0.1~prepublish: Returned: code: 0  signal: null
-125 verbose lifecycle reblend-typing@4.0.1~prepublish: unsafe-perm in lifecycle true
-126 verbose lifecycle reblend-typing@4.0.1~prepublish: PATH: /home/s/Desktop/projects/reblendjs/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/projects/reblendjs/packages/reblend-typing/node_modules/.bin:/tmp/yarn--1742165846929-0.36793894130375304:/home/s/Desktop/projects/reblendjs/node_modules/.bin:/home/s/.config/yarn/link/node_modules/.bin:/home/s/Desktop/projects/reblendjs/node_modules/.bin:/home/s/.yarn/bin:/home/s/.config/nvm/versions/node/v20.18.2/libexec/lib/node_modules/npm/bin/node-gyp-bin:/home/s/.config/nvm/versions/node/v20.18.2/lib/node_modules/npm/bin/node-gyp-bin:/home/s/.config/nvm/versions/node/v20.18.2/bin/node_modules/npm/bin/node-gyp-bin:/home/s/jdk-17.0.13+11/bin:/home/s/.local/share/pnpm:/home/s/jdk-17.0.13+11/bin:/home/s/.config/nvm/versions/node/v20.18.2/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/sbin:/usr/sbin:/home/s/Android/Sdk/emulator:/home/s/Android/Sdk/tools:/home/s/Android/Sdk/tools/bin:/home/s/Android/Sdk/platform-tools:/home/s/Android/Sdk/build-tools/34.0.0:/home/s/Android/Sdk/cmdline-tools/latest/bin:/home/s/.config/Code/User/globalStorage/github.copilot-chat/debugCommand:/home/s/Android/Sdk/emulator:/home/s/Android/Sdk/tools:/home/s/Android/Sdk/tools/bin:/home/s/Android/Sdk/platform-tools:/home/s/Android/Sdk/build-tools/34.0.0:/home/s/Android/Sdk/cmdline-tools/latest/bin
-127 verbose lifecycle reblend-typing@4.0.1~prepublish: CWD: /home/s/Desktop/projects/reblendjs/packages/reblend-typing
-128 silly lifecycle reblend-typing@4.0.1~prepublish: Args: [ '-c', 'npm run build' ]
-129 silly lifecycle "prepublish" finished in "reblend-routing"
-130 silly lifecycle No script for "prepare" in "reblend-routing", continuing
-131 silly lifecycle No script for "prepublishOnly" in "reblend-routing", continuing
-132 silly lifecycle No script for "prepack" in "reblend-routing", continuing
-133 silly lifecycle No script for "postpack" in "reblend-routing", continuing
-134 verbose packed packages/reblend-routing
-135 silly lifecycle reblend-typing@4.0.1~prepublish: Returned: code: 0  signal: null
-136 silly lifecycle "prepublish" finished in "reblend-typing"
-137 silly lifecycle No script for "prepare" in "reblend-typing", continuing
-138 silly lifecycle No script for "prepublishOnly" in "reblend-typing", continuing
-139 silly lifecycle No script for "prepack" in "reblend-typing", continuing
-140 silly lifecycle No script for "postpack" in "reblend-typing", continuing
-141 verbose packed packages/reblend-typing
-142 verbose pack-directory packages/reblendjs
-143 silly lifecycle "prepublish" starting in "reblendjs"
-144 info lifecycle reblendjs@6.0.1~prepublish: reblendjs@6.0.1
-145 verbose lifecycle reblendjs@6.0.1~prepublish: unsafe-perm in lifecycle true
-146 verbose lifecycle reblendjs@6.0.1~prepublish: PATH: /home/s/Desktop/projects/reblendjs/node_modules/npm-lifecycle/node-gyp-bin:/home/s/Desktop/projects/reblendjs/packages/reblendjs/node_modules/.bin:/tmp/yarn--1742165846929-0.36793894130375304:/home/s/Desktop/projects/reblendjs/node_modules/.bin:/home/s/.config/yarn/link/node_modules/.bin:/home/s/Desktop/projects/reblendjs/node_modules/.bin:/home/s/.yarn/bin:/home/s/.config/nvm/versions/node/v20.18.2/libexec/lib/node_modules/npm/bin/node-gyp-bin:/home/s/.config/nvm/versions/node/v20.18.2/lib/node_modules/npm/bin/node-gyp-bin:/home/s/.config/nvm/versions/node/v20.18.2/bin/node_modules/npm/bin/node-gyp-bin:/home/s/jdk-17.0.13+11/bin:/home/s/.local/share/pnpm:/home/s/jdk-17.0.13+11/bin:/home/s/.config/nvm/versions/node/v20.18.2/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/sbin:/usr/sbin:/home/s/Android/Sdk/emulator:/home/s/Android/Sdk/tools:/home/s/Android/Sdk/tools/bin:/home/s/Android/Sdk/platform-tools:/home/s/Android/Sdk/build-tools/34.0.0:/home/s/Android/Sdk/cmdline-tools/latest/bin:/home/s/.config/Code/User/globalStorage/github.copilot-chat/debugCommand:/home/s/Android/Sdk/emulator:/home/s/Android/Sdk/tools:/home/s/Android/Sdk/tools/bin:/home/s/Android/Sdk/platform-tools:/home/s/Android/Sdk/build-tools/34.0.0:/home/s/Android/Sdk/cmdline-tools/latest/bin
-147 verbose lifecycle reblendjs@6.0.1~prepublish: CWD: /home/s/Desktop/projects/reblendjs/packages/reblendjs
-148 silly lifecycle reblendjs@6.0.1~prepublish: Args: [ '-c', 'npm run build' ]
-149 silly lifecycle reblendjs@6.0.1~prepublish: Returned: code: 0  signal: null
-150 silly lifecycle "prepublish" finished in "reblendjs"
-151 silly lifecycle No script for "prepare" in "reblendjs", continuing
-152 silly lifecycle No script for "prepublishOnly" in "reblendjs", continuing
-153 silly lifecycle No script for "prepack" in "reblendjs", continuing
-154 silly lifecycle No script for "postpack" in "reblendjs", continuing
-155 verbose packed packages/reblendjs
-156 verbose publish reblend-router
-157 verbose publish reblend-routing
-158 verbose publish reblend-template-test
-159 verbose publish reblend-typing
-160 silly FetchError: request to https://registry.npmjs.org/reblend-router failed, reason: getaddrinfo ENOTFOUND registry.npmjs.org
-160 silly     at ClientRequest.<anonymous> (/home/s/Desktop/projects/reblendjs/node_modules/minipass-fetch/lib/index.js:110:14)
-160 silly     at ClientRequest.emit (node:events:518:28)
-160 silly     at emitErrorEvent (node:_http_client:101:11)
-160 silly     at TLSSocket.socketErrorListener (node:_http_client:504:5)
-160 silly     at TLSSocket.emit (node:events:530:35)
-160 silly     at emitErrorNT (node:internal/streams/destroy:169:8)
-160 silly     at emitErrorCloseNT (node:internal/streams/destroy:128:3)
-160 silly     at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
-160 silly  FetchError: request to https://registry.npmjs.org/reblend-router failed, reason: getaddrinfo ENOTFOUND registry.npmjs.org
-160 silly     at ClientRequest.<anonymous> (/home/s/Desktop/projects/reblendjs/node_modules/minipass-fetch/lib/index.js:110:14)
-160 silly     at ClientRequest.emit (node:events:518:28)
-160 silly     at emitErrorEvent (node:_http_client:101:11)
-160 silly     at TLSSocket.socketErrorListener (node:_http_client:504:5)
-160 silly     at TLSSocket.emit (node:events:530:35)
-160 silly     at emitErrorNT (node:internal/streams/destroy:169:8)
-160 silly     at emitErrorCloseNT (node:internal/streams/destroy:128:3)
-160 silly     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
-160 silly   code: 'ENOTFOUND',
-160 silly   errno: 'ENOTFOUND',
-160 silly   syscall: 'getaddrinfo',
-160 silly   hostname: 'registry.npmjs.org',
-160 silly   type: 'system'
-160 silly }
-161 error ENOTFOUND request to https://registry.npmjs.org/reblend-router failed, reason: getaddrinfo ENOTFOUND registry.npmjs.org
-162 error TypeError [ERR_INVALID_ARG_TYPE]: The "code" argument must be of type number. Received type string ('ENOTFOUND')
-162 error     at process.set [as exitCode] (node:internal/bootstrap/node:123:9)
-162 error     at /home/s/Desktop/projects/reblendjs/node_modules/@lerna/npm-publish/npm-publish.js:99:26
-162 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-162 error     at async /home/s/Desktop/projects/reblendjs/node_modules/p-pipe/index.js:12:19
+1 notice cli v8.2.2
+2 verbose packageConfigs Resolving packages based on package.json "workspaces" configuration.
+3 verbose rootPath /home/elomscansio/Desktop/projects/reblendjs
+4 info versioning independent
+5 silly isAnythingCommitted
+6 verbose isAnythingCommitted 1
+7 silly getCurrentBranch
+8 verbose currentBranch main
+9 silly remoteBranchExists
+10 silly isBehindUpstream
+11 silly isBehindUpstream main is behind origin/main by 0 commit(s) and ahead by 3
+12 silly hasTags
+13 verbose hasTags true
+14 silly git-describe.sync "reblend-router@4.0.6-36-g5d068c3" => {"lastTagName":"reblend-router@4.0.6","lastVersion":"4.0.6","refCount":"36","sha":"5d068c3","isDirty":false}
+15 info Looking for changed packages since reblend-router@4.0.6
+16 silly checking diff packages/reblend-bootstrap
+17 silly found diff in packages/reblend-bootstrap/.babelrc.js
+17 silly found diff in packages/reblend-bootstrap/.editorconfig
+17 silly found diff in packages/reblend-bootstrap/.gitattributes
+17 silly found diff in packages/reblend-bootstrap/.github/ISSUE_TEMPLATE/bug_report.yml
+17 silly found diff in packages/reblend-bootstrap/.github/ISSUE_TEMPLATE/feature_request.yml
+17 silly found diff in packages/reblend-bootstrap/.github/workflows/ci.yml
+17 silly found diff in packages/reblend-bootstrap/.gitignore
+17 silly found diff in packages/reblend-bootstrap/.nvmrc
+17 silly found diff in packages/reblend-bootstrap/CHANGELOG-pre1.md
+17 silly found diff in packages/reblend-bootstrap/CHANGELOG.md
+17 silly found diff in packages/reblend-bootstrap/CONTRIBUTING.md
+17 silly found diff in packages/reblend-bootstrap/LICENSE
+17 silly found diff in packages/reblend-bootstrap/MAINTAINING.md
+17 silly found diff in packages/reblend-bootstrap/README.md
+17 silly found diff in packages/reblend-bootstrap/codecov.yml
+17 silly found diff in packages/reblend-bootstrap/eslint.config.mjs
+17 silly found diff in packages/reblend-bootstrap/manual_releases.md
+17 silly found diff in packages/reblend-bootstrap/package.json
+17 silly found diff in packages/reblend-bootstrap/renovate.json
+17 silly found diff in packages/reblend-bootstrap/src/AbstractModalHeader.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Accordion.tsx
+17 silly found diff in packages/reblend-bootstrap/src/AccordionBody.tsx
+17 silly found diff in packages/reblend-bootstrap/src/AccordionButton.tsx
+17 silly found diff in packages/reblend-bootstrap/src/AccordionCollapse.tsx
+17 silly found diff in packages/reblend-bootstrap/src/AccordionContext.ts
+17 silly found diff in packages/reblend-bootstrap/src/AccordionHeader.tsx
+17 silly found diff in packages/reblend-bootstrap/src/AccordionItem.tsx
+17 silly found diff in packages/reblend-bootstrap/src/AccordionItemContext.ts
+17 silly found diff in packages/reblend-bootstrap/src/Alert.tsx
+17 silly found diff in packages/reblend-bootstrap/src/AlertHeading.tsx
+17 silly found diff in packages/reblend-bootstrap/src/AlertLink.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Anchor.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Badge.tsx
+17 silly found diff in packages/reblend-bootstrap/src/BootstrapModalManager.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Breadcrumb.tsx
+17 silly found diff in packages/reblend-bootstrap/src/BreadcrumbItem.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Button.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ButtonGroup.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ButtonToolbar.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Card.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CardBody.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CardFooter.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CardGroup.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CardHeader.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CardHeaderContext.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CardImg.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CardImgOverlay.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CardLink.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CardSubtitle.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CardText.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CardTitle.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Carousel.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CarouselCaption.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CarouselItem.tsx
+17 silly found diff in packages/reblend-bootstrap/src/CloseButton.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Col.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Collapse.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Container.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Dropdown.tsx
+17 silly found diff in packages/reblend-bootstrap/src/DropdownButton.tsx
+17 silly found diff in packages/reblend-bootstrap/src/DropdownContext.ts
+17 silly found diff in packages/reblend-bootstrap/src/DropdownDivider.tsx
+17 silly found diff in packages/reblend-bootstrap/src/DropdownHeader.tsx
+17 silly found diff in packages/reblend-bootstrap/src/DropdownItem.tsx
+17 silly found diff in packages/reblend-bootstrap/src/DropdownItemText.tsx
+17 silly found diff in packages/reblend-bootstrap/src/DropdownMenu.tsx
+17 silly found diff in packages/reblend-bootstrap/src/DropdownToggle.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ElementChildren.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Fade.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Feedback.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Figure.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FigureCaption.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FigureImage.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FloatingLabel.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Form.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FormCheck.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FormCheckInput.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FormCheckLabel.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FormContext.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FormControl.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FormFloating.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FormGroup.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FormLabel.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FormRange.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FormSelect.tsx
+17 silly found diff in packages/reblend-bootstrap/src/FormText.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Image.tsx
+17 silly found diff in packages/reblend-bootstrap/src/InputGroup.tsx
+17 silly found diff in packages/reblend-bootstrap/src/InputGroupContext.tsx
+17 silly found diff in packages/reblend-bootstrap/src/InputGroupText.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ListGroup.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ListGroupItem.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Modal.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ModalBody.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ModalContext.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ModalDialog.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ModalFooter.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ModalHeader.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ModalTitle.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Nav.tsx
+17 silly found diff in packages/reblend-bootstrap/src/NavContext.tsx
+17 silly found diff in packages/reblend-bootstrap/src/NavDropdown.tsx
+17 silly found diff in packages/reblend-bootstrap/src/NavItem.tsx
+17 silly found diff in packages/reblend-bootstrap/src/NavLink.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Navbar.tsx
+17 silly found diff in packages/reblend-bootstrap/src/NavbarBrand.tsx
+17 silly found diff in packages/reblend-bootstrap/src/NavbarCollapse.tsx
+17 silly found diff in packages/reblend-bootstrap/src/NavbarContext.tsx
+17 silly found diff in packages/reblend-bootstrap/src/NavbarOffcanvas.tsx
+17 silly found diff in packages/reblend-bootstrap/src/NavbarText.tsx
+17 silly found diff in packages/reblend-bootstrap/src/NavbarToggle.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Offcanvas.tsx
+17 silly found diff in packages/reblend-bootstrap/src/OffcanvasBody.tsx
+17 silly found diff in packages/reblend-bootstrap/src/OffcanvasHeader.tsx
+17 silly found diff in packages/reblend-bootstrap/src/OffcanvasTitle.tsx
+17 silly found diff in packages/reblend-bootstrap/src/OffcanvasToggling.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Overlay.tsx
+17 silly found diff in packages/reblend-bootstrap/src/OverlayTrigger.tsx
+17 silly found diff in packages/reblend-bootstrap/src/PageItem.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Pagination.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Placeholder.tsx
+17 silly found diff in packages/reblend-bootstrap/src/PlaceholderButton.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Popover.tsx
+17 silly found diff in packages/reblend-bootstrap/src/PopoverBody.tsx
+17 silly found diff in packages/reblend-bootstrap/src/PopoverHeader.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ProgressBar.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Ratio.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Row.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Spinner.tsx
+17 silly found diff in packages/reblend-bootstrap/src/SplitButton.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Stack.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Switch.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Tab.tsx
+17 silly found diff in packages/reblend-bootstrap/src/TabContainer.tsx
+17 silly found diff in packages/reblend-bootstrap/src/TabContent.tsx
+17 silly found diff in packages/reblend-bootstrap/src/TabPane.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Table.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Tabs.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ThemeProvider.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Toast.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ToastBody.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ToastContainer.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ToastContext.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ToastFade.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ToastHeader.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ToggleButton.tsx
+17 silly found diff in packages/reblend-bootstrap/src/ToggleButtonGroup.tsx
+17 silly found diff in packages/reblend-bootstrap/src/Tooltip.tsx
+17 silly found diff in packages/reblend-bootstrap/src/TransitionWrapper.tsx
+17 silly found diff in packages/reblend-bootstrap/src/createChainedFunction.tsx
+17 silly found diff in packages/reblend-bootstrap/src/createUtilityClasses.ts
+17 silly found diff in packages/reblend-bootstrap/src/createWithBsPrefix.tsx
+17 silly found diff in packages/reblend-bootstrap/src/divWithClassName.tsx
+17 silly found diff in packages/reblend-bootstrap/src/getInitialPopperStyles.ts
+17 silly found diff in packages/reblend-bootstrap/src/getTabTransitionComponent.ts
+17 silly found diff in packages/reblend-bootstrap/src/helpers.ts
+17 silly found diff in packages/reblend-bootstrap/src/index.tsx
+17 silly found diff in packages/reblend-bootstrap/src/transitionEndListener.ts
+17 silly found diff in packages/reblend-bootstrap/src/triggerBrowserReflow.tsx
+17 silly found diff in packages/reblend-bootstrap/src/types.tsx
+17 silly found diff in packages/reblend-bootstrap/src/useAccordionButton.ts
+17 silly found diff in packages/reblend-bootstrap/src/useCol.ts
+17 silly found diff in packages/reblend-bootstrap/src/useOverlayOffset.tsx
+17 silly found diff in packages/reblend-bootstrap/src/usePlaceholder.ts
+17 silly found diff in packages/reblend-bootstrap/src/useWrappedRefWithWarning.tsx
+17 silly found diff in packages/reblend-bootstrap/test/AccordionButtonSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/AccordionHeaderSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/AccordionSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/AlertSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/BadgeSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/BootstrapModalManagerSpec.ts
+17 silly found diff in packages/reblend-bootstrap/test/BreadcrumbItemSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/BreadcrumbSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ButtonGroupSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ButtonSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ButtonToolbarSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/CardImgSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/CardSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/CarouselCaptionSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/CarouselSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/CloseButtonSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ColSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/CollapseSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ContainerSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/DropdownButtonSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/DropdownItemSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/DropdownMenuSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/DropdownSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/DropdownToggleSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FadeSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FeedbackSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FigureCaptionSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FigureSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FloatingLabelSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FormCheckSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FormControlFeedbackSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FormControlSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FormGroupSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FormLabelSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FormRangeSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FormSelectSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FormSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/FormTextSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ImageSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/InputGroupSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ListGroupItemSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ListGroupSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ModalBodySpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ModalFooterSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ModalHeaderSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ModalSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ModalTitleSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/NavDropdownSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/NavItemSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/NavLinkSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/NavSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/NavbarBrandSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/NavbarOffcanvasSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/NavbarSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/NavbarToggleSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/OffcanvasSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/OverlaySpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/OverlayTriggerSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/PageItemSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/PaginationSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/PlaceholderButtonSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/PlaceholderSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/PopoverSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ProgressBarSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/RatioSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/RowSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/SpinnerSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/SplitButtonSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/StackSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/TabContentSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/TableSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/TabsSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ThemeProviderSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ToastBodySpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ToastContainerSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ToastHeaderSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ToastSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ToggleButtonGroupSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/ToggleButtonSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/TooltipSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/test/createChainedFunctionSpec.ts
+17 silly found diff in packages/reblend-bootstrap/test/createUtilityClassesSpec.ts
+17 silly found diff in packages/reblend-bootstrap/test/getInitialPopperStylesSpec.ts
+17 silly found diff in packages/reblend-bootstrap/test/helpers.ts
+17 silly found diff in packages/reblend-bootstrap/test/helpersSpec.ts
+17 silly found diff in packages/reblend-bootstrap/test/tsconfig.json
+17 silly found diff in packages/reblend-bootstrap/test/useOverlayOffsetSpec.tsx
+17 silly found diff in packages/reblend-bootstrap/tests/simple-types-test.tsx
+17 silly found diff in packages/reblend-bootstrap/tsconfig.json
+17 silly found diff in packages/reblend-bootstrap/vitest.config.mts
+17 silly found diff in packages/reblend-bootstrap/vitest.setup.ts
+17 silly found diff in packages/reblend-bootstrap/vitest.shims.d.ts
+17 silly found diff in packages/reblend-bootstrap/www/.gitignore
+17 silly found diff in packages/reblend-bootstrap/www/README.md
+17 silly found diff in packages/reblend-bootstrap/www/babel.config.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/about.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/_category_.json
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/accordion.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/alerts.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/badge.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/breadcrumb.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/button-group.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/buttons.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/cards.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/carousel.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/close-button.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/dropdowns.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/figures.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/images.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/list-group.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/modal.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/navbar.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/navs.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/offcanvas.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/overlays.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/pagination.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/placeholder.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/progress.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/spinners.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/table.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/tabs.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/components/toasts.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Accordion/AllCollapse.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Accordion/AlwaysOpen.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Accordion/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Accordion/ContextAwareToggle.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Accordion/CustomToggle.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Accordion/Flush.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Alert/AdditionalContent.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Alert/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Alert/Dismissible.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Alert/DismissibleControlled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Alert/Link.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/AsProp.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/AsPropComponent.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Badge/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Badge/Button.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Badge/Pill.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Badge/Variations.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Breadcrumb.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Button/Active.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Button/Block.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Button/Disabled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Button/Loading.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Button/OutlineTypes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Button/Sizes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Button/TagTypes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Button/ToggleButton.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Button/ToggleButtonGroupControlled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Button/ToggleButtonGroupUncontrolled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Button/Types.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ButtonGroup/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ButtonGroup/Nested.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ButtonGroup/Sizes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ButtonGroup/Toolbar.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ButtonGroup/ToolbarBasic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ButtonGroup/Vertical.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/BgColor.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/BodyOnly.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/BodyShorthand.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/Border.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/Grid.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/Group.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/HeaderAndFooter.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/ImageAndText.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/ImgOverlay.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/KitchenSink.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/ListGroupWithHeader.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/ListGroups.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/NavPills.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/NavTabs.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/Text.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/WithHeader.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/WithHeaderAndQuote.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Card/WithHeaderStyled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Carousel/CarouselFade.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Carousel/Controlled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Carousel/DarkVariant.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Carousel/IndividualIntervals.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Carousel/NoTransition.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Carousel/Uncontrolled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/CloseButton/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/CloseButton/Disabled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/CloseButton/Labelled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/CloseButton/Variants.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Collapse.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/CollapseHorizontal.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ColorMode.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/CustomBreakpoints.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/AutoClose.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/BasicButton.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/ButtonCustom.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/ButtonCustomMenu.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/ButtonDark.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/ButtonSizes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/DropDirections.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/DropdownItemTags.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/MenuAlignEnd.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/MenuAlignResponsive.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/MenuDividers.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/MenuHeaders.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/NavbarDark.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/SplitBasic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/SplitVariants.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Dropdown/Variants.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Fade.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Figure.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/Check.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/CheckApi.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/CheckInline.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/CheckReverse.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/ColorPicker.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormControlDisabled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormDisabled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormDisabledInputs.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormFile.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormFloatingBasic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormFloatingCustom.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormFloatingLayout.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormFloatingSelect.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormFloatingTextarea.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormGroup.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormLabelSizing.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/FormText.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/GridAutoSizing.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/GridAutoSizingColMix.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/GridBasic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/GridColSizes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/GridComplex.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/Horizontal.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/InputReadOnly.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/InputSizes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/NoLabels.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/Plaintext.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/Range.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/SelectBasic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/SelectSizes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/Switch.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/TextControls.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/ValidationFormik.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/ValidationInputGroup.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/ValidationNative.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Form/ValidationTooltips.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/AutoLayout.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/AutoLayoutSizing.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/AutoLayoutVariable.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/Container.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/ContainerFluid.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/ContainerFluidBreakpoint.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/Offsetting.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/Ordering.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/OrderingFirstLast.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/Responsive.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/ResponsiveAuto.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/RowColLayout.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Grid/RowColLayoutColWidthBreakpoint.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Image/Fluid.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Image/Shape.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/InputGroup/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/InputGroup/ButtonDropdowns.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/InputGroup/Buttons.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/InputGroup/Checkboxes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/InputGroup/MultipleAddons.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/InputGroup/MultipleInputs.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/InputGroup/SegmentedButtonDropdowns.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/InputGroup/Sizes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/Active.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/Buttons.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/Default.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/Disabled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/Flush.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/Header.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/Horizontal.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/HorizontalResponsive.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/Linked.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/Numbered.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/NumberedCustom.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/Style.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/StyleActions.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ListGroup/Tabs.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Modal/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Modal/CustomSizing.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Modal/DefaultSizing.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Modal/Focus.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Modal/FullScreen.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Modal/Grid.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Modal/Static.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Modal/StaticBackdrop.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Modal/VerticallyCentered.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Modal/WithoutAnimation.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Nav/Alignment.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Nav/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Nav/Dropdown.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Nav/DropdownImpl.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Nav/Fill.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Nav/Justified.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Nav/List.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Nav/Pills.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Nav/Stacked.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Nav/Tabs.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Nav/Underline.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Navbar/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Navbar/Brand.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Navbar/Collapsible.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Navbar/ColorSchemes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Navbar/ContainerInside.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Navbar/ContainerOutside.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Navbar/Form.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Navbar/NavScroll.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Navbar/Offcanvas.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Navbar/TextLink.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Offcanvas/Backdrop.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Offcanvas/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Offcanvas/Placement.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Offcanvas/Responsive.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Offcanvas/StaticBackdrop.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Overlays/Disabled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Overlays/Overlay.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Overlays/PopoverBasic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Overlays/PopoverContained.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Overlays/PopoverPositioned.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Overlays/ScheduleUpdate.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Overlays/TooltipInCopy.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Overlays/TooltipOverlay.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Overlays/TooltipPositioned.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Overlays/Trigger.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Overlays/TriggerRenderProp.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Pagination/Advanced.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Pagination/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Placeholder/Animation.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Placeholder/Card.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Placeholder/Color.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Placeholder/Example.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Placeholder/Size.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Placeholder/Width.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ProgressBar/Animated.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ProgressBar/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ProgressBar/Contextual.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ProgressBar/ScreenreaderLabel.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ProgressBar/Stacked.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ProgressBar/Striped.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/ProgressBar/WithLabel.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Ratio/Custom.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Ratio/Default.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Ratio/Example.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Spinner/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Spinner/Border.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Spinner/Buttons.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Spinner/Grow.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Spinner/Sizes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Spinner/Variants.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Stack/Buttons.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Stack/Form.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Stack/Horizontal.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Stack/HorizontalMarginStart.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Stack/HorizontalVerticalRules.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Stack/Vertical.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Table/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Table/Dark.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Table/Responsive.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Table/ResponsiveBreakpoints.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Table/Small.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Table/StripedColumns.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Table/StripedRow.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Tabs/Controlled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Tabs/Fill.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Tabs/Justified.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Tabs/LeftTabs.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Tabs/NoAnimation.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Tabs/Uncontrolled.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Theming/Prefixes.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Theming/Variants.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Toast/Autohide.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Toast/Basic.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Toast/Contextual.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Toast/Dismissible.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Toast/Placement.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Toast/PlacementMulti.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/examples/Toast/Stacking.js
+17 silly found diff in packages/reblend-bootstrap/www/docs/forms/_category_.json
+17 silly found diff in packages/reblend-bootstrap/www/docs/forms/checks-radios.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/forms/floating-labels.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/forms/form-control.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/forms/form-text.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/forms/input-group.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/forms/layout.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/forms/overview.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/forms/range.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/forms/select.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/forms/validation.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/getting-started/_category_.json
+17 silly found diff in packages/reblend-bootstrap/www/docs/getting-started/color-modes.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/getting-started/introduction.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/getting-started/rtl.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/getting-started/support.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/getting-started/theming.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/getting-started/why-react-bootstrap.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/layout/_category_.json
+17 silly found diff in packages/reblend-bootstrap/www/docs/layout/breakpoints.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/layout/grid.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/layout/stack.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/migrating.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/migrating/migrating_v2.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/utilities/_category_.json
+17 silly found diff in packages/reblend-bootstrap/www/docs/utilities/ratio.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/utilities/restart-ui.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docs/utilities/transitions.mdx
+17 silly found diff in packages/reblend-bootstrap/www/docusaurus.config.ts
+17 silly found diff in packages/reblend-bootstrap/www/package.json
+17 silly found diff in packages/reblend-bootstrap/www/plugins/bootstrap-metadata-plugin.ts
+17 silly found diff in packages/reblend-bootstrap/www/plugins/react-docgen-plugin.ts
+17 silly found diff in packages/reblend-bootstrap/www/plugins/react-resolver-plugin.ts
+17 silly found diff in packages/reblend-bootstrap/www/plugins/webpack-plugin.ts
+17 silly found diff in packages/reblend-bootstrap/www/sidebars.ts
+17 silly found diff in packages/reblend-bootstrap/www/src/components/AriaAbbr.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/components/BreakpointTable.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/components/CarbonAds.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/components/CssCodeBlock.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/components/DocLink.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/components/ExampleCarouselImage.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/components/HomepageFeatures/index.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/components/HomepageFeatures/styles.module.css
+17 silly found diff in packages/reblend-bootstrap/www/src/components/Markdown.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/components/PropsTable/ControllableNote.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/components/PropsTable/PropsTable.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/components/PropsTable/index.ts
+17 silly found diff in packages/reblend-bootstrap/www/src/components/PropsTable/propsOverride.ts
+17 silly found diff in packages/reblend-bootstrap/www/src/components/PropsTable/useComponentData.ts
+17 silly found diff in packages/reblend-bootstrap/www/src/css/algolia.scss
+17 silly found diff in packages/reblend-bootstrap/www/src/css/carbonads.scss
+17 silly found diff in packages/reblend-bootstrap/www/src/css/docusaurus-theme.scss
+17 silly found diff in packages/reblend-bootstrap/www/src/css/examples.scss
+17 silly found diff in packages/reblend-bootstrap/www/src/hooks/useBootstrapMetadata.ts
+17 silly found diff in packages/reblend-bootstrap/www/src/pages/index.module.css
+17 silly found diff in packages/reblend-bootstrap/www/src/pages/index.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/Admonition/index.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/Admonition/styles.module.css
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/CodeBlock.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/ColorModeToggle/index.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/ColorModeToggle/styles.module.css
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/MDXComponents.ts
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/MDXContent.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/Playground/EditorInfoMessage.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/Playground/Preview.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/Playground/index.tsx
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/Playground/styles.module.css
+17 silly found diff in packages/reblend-bootstrap/www/src/theme/ReactLiveScope.ts
+17 silly found diff in packages/reblend-bootstrap/www/static/.nojekyll
+17 silly found diff in packages/reblend-bootstrap/www/static/img/TheresaKnott_castle.svg
+17 silly found diff in packages/reblend-bootstrap/www/static/img/docusaurus.png
+17 silly found diff in packages/reblend-bootstrap/www/static/img/favicon.ico
+17 silly found diff in packages/reblend-bootstrap/www/static/img/logo.svg
+17 silly found diff in packages/reblend-bootstrap/www/static/img/undraw_docusaurus_mountain.svg
+17 silly found diff in packages/reblend-bootstrap/www/static/img/undraw_docusaurus_react.svg
+17 silly found diff in packages/reblend-bootstrap/www/static/img/undraw_docusaurus_tree.svg
+17 silly found diff in packages/reblend-bootstrap/www/tsconfig.json
+18 verbose filtered diff [
+18 verbose filtered diff   'packages/reblend-bootstrap/.babelrc.js',
+18 verbose filtered diff   'packages/reblend-bootstrap/.editorconfig',
+18 verbose filtered diff   'packages/reblend-bootstrap/.gitattributes',
+18 verbose filtered diff   'packages/reblend-bootstrap/.github/ISSUE_TEMPLATE/bug_report.yml',
+18 verbose filtered diff   'packages/reblend-bootstrap/.github/ISSUE_TEMPLATE/feature_request.yml',
+18 verbose filtered diff   'packages/reblend-bootstrap/.github/workflows/ci.yml',
+18 verbose filtered diff   'packages/reblend-bootstrap/.gitignore',
+18 verbose filtered diff   'packages/reblend-bootstrap/.nvmrc',
+18 verbose filtered diff   'packages/reblend-bootstrap/CHANGELOG-pre1.md',
+18 verbose filtered diff   'packages/reblend-bootstrap/CHANGELOG.md',
+18 verbose filtered diff   'packages/reblend-bootstrap/CONTRIBUTING.md',
+18 verbose filtered diff   'packages/reblend-bootstrap/LICENSE',
+18 verbose filtered diff   'packages/reblend-bootstrap/MAINTAINING.md',
+18 verbose filtered diff   'packages/reblend-bootstrap/README.md',
+18 verbose filtered diff   'packages/reblend-bootstrap/codecov.yml',
+18 verbose filtered diff   'packages/reblend-bootstrap/eslint.config.mjs',
+18 verbose filtered diff   'packages/reblend-bootstrap/manual_releases.md',
+18 verbose filtered diff   'packages/reblend-bootstrap/package.json',
+18 verbose filtered diff   'packages/reblend-bootstrap/renovate.json',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/AbstractModalHeader.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Accordion.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/AccordionBody.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/AccordionButton.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/AccordionCollapse.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/AccordionContext.ts',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/AccordionHeader.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/AccordionItem.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/AccordionItemContext.ts',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Alert.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/AlertHeading.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/AlertLink.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Anchor.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Badge.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/BootstrapModalManager.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Breadcrumb.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/BreadcrumbItem.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Button.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/ButtonGroup.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/ButtonToolbar.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Card.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CardBody.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CardFooter.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CardGroup.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CardHeader.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CardHeaderContext.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CardImg.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CardImgOverlay.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CardLink.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CardSubtitle.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CardText.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CardTitle.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Carousel.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CarouselCaption.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CarouselItem.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/CloseButton.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Col.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Collapse.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Container.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Dropdown.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/DropdownButton.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/DropdownContext.ts',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/DropdownDivider.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/DropdownHeader.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/DropdownItem.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/DropdownItemText.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/DropdownMenu.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/DropdownToggle.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/ElementChildren.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Fade.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Feedback.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Figure.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FigureCaption.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FigureImage.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FloatingLabel.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Form.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FormCheck.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FormCheckInput.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FormCheckLabel.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FormContext.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FormControl.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FormFloating.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FormGroup.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FormLabel.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FormRange.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FormSelect.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/FormText.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Image.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/InputGroup.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/InputGroupContext.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/InputGroupText.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/ListGroup.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/ListGroupItem.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Modal.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/ModalBody.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/ModalContext.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/ModalDialog.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/ModalFooter.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/ModalHeader.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/ModalTitle.tsx',
+18 verbose filtered diff   'packages/reblend-bootstrap/src/Nav.tsx',
+18 verbose filtered diff   ... 524 more items
+18 verbose filtered diff ]
+19 silly checking diff packages/reblend-deep-equal-iterative
+20 silly found diff in packages/reblend-deep-equal-iterative/.gitignore
+20 silly found diff in packages/reblend-deep-equal-iterative/.npmignore
+20 silly found diff in packages/reblend-deep-equal-iterative/LICENSE
+20 silly found diff in packages/reblend-deep-equal-iterative/README.md
+20 silly found diff in packages/reblend-deep-equal-iterative/jest.config.js
+20 silly found diff in packages/reblend-deep-equal-iterative/package.json
+20 silly found diff in packages/reblend-deep-equal-iterative/src/index.ts
+20 silly found diff in packages/reblend-deep-equal-iterative/src/test/index.test.ts
+20 silly found diff in packages/reblend-deep-equal-iterative/tsconfig.json
+21 verbose filtered diff [
+21 verbose filtered diff   'packages/reblend-deep-equal-iterative/.gitignore',
+21 verbose filtered diff   'packages/reblend-deep-equal-iterative/.npmignore',
+21 verbose filtered diff   'packages/reblend-deep-equal-iterative/LICENSE',
+21 verbose filtered diff   'packages/reblend-deep-equal-iterative/README.md',
+21 verbose filtered diff   'packages/reblend-deep-equal-iterative/jest.config.js',
+21 verbose filtered diff   'packages/reblend-deep-equal-iterative/package.json',
+21 verbose filtered diff   'packages/reblend-deep-equal-iterative/src/index.ts',
+21 verbose filtered diff   'packages/reblend-deep-equal-iterative/src/test/index.test.ts',
+21 verbose filtered diff   'packages/reblend-deep-equal-iterative/tsconfig.json'
+21 verbose filtered diff ]
+22 silly checking diff packages/reblend-hooks
+23 silly found diff in packages/reblend-hooks/.babelrc
+23 silly found diff in packages/reblend-hooks/.gitattributes
+23 silly found diff in packages/reblend-hooks/.github/workflows/deploy-docs.yml
+23 silly found diff in packages/reblend-hooks/.github/workflows/test.yml
+23 silly found diff in packages/reblend-hooks/.gitignore
+23 silly found diff in packages/reblend-hooks/CHANGELOG.md
+23 silly found diff in packages/reblend-hooks/LICENSE
+23 silly found diff in packages/reblend-hooks/README.md
+23 silly found diff in packages/reblend-hooks/jest.config.cjs
+23 silly found diff in packages/reblend-hooks/package.json
+23 silly found diff in packages/reblend-hooks/src/globals.d.ts
+23 silly found diff in packages/reblend-hooks/src/index.ts
+23 silly found diff in packages/reblend-hooks/src/useAnimationFrame.ts
+23 silly found diff in packages/reblend-hooks/src/useBreakpoint.ts
+23 silly found diff in packages/reblend-hooks/src/useCallbackRef.ts
+23 silly found diff in packages/reblend-hooks/src/useDebouncedCallback.ts
+23 silly found diff in packages/reblend-hooks/src/useDebouncedState.ts
+23 silly found diff in packages/reblend-hooks/src/useDebouncedValue.ts
+23 silly found diff in packages/reblend-hooks/src/useEventCallback.ts
+23 silly found diff in packages/reblend-hooks/src/useEventListener.ts
+23 silly found diff in packages/reblend-hooks/src/useFocusManager.ts
+23 silly found diff in packages/reblend-hooks/src/useForceUpdate.ts
+23 silly found diff in packages/reblend-hooks/src/useGlobalListener.ts
+23 silly found diff in packages/reblend-hooks/src/useImage.ts
+23 silly found diff in packages/reblend-hooks/src/useIntersectionObserver.ts
+23 silly found diff in packages/reblend-hooks/src/useInterval.ts
+23 silly found diff in packages/reblend-hooks/src/useIsInitialRenderRef.ts
+23 silly found diff in packages/reblend-hooks/src/useMap.ts
+23 silly found diff in packages/reblend-hooks/src/useMediaQuery.ts
+23 silly found diff in packages/reblend-hooks/src/useMergeState.ts
+23 silly found diff in packages/reblend-hooks/src/useMergeStateFromProps.ts
+23 silly found diff in packages/reblend-hooks/src/useMergedRefs.ts
+23 silly found diff in packages/reblend-hooks/src/useMountEffect.ts
+23 silly found diff in packages/reblend-hooks/src/useMounted.ts
+23 silly found diff in packages/reblend-hooks/src/useMutationObserver.ts
+23 silly found diff in packages/reblend-hooks/src/usePrevious.ts
+23 silly found diff in packages/reblend-hooks/src/useRafInterval.ts
+23 silly found diff in packages/reblend-hooks/src/useRefWithInitialValueFactory.ts
+23 silly found diff in packages/reblend-hooks/src/useResizeObserver.ts
+23 silly found diff in packages/reblend-hooks/src/useSet.ts
+23 silly found diff in packages/reblend-hooks/src/useThrottledEventHandler.ts
+23 silly found diff in packages/reblend-hooks/src/useTimeout.ts
+23 silly found diff in packages/reblend-hooks/src/useToggleState.ts
+23 silly found diff in packages/reblend-hooks/src/useUpdateEffect.ts
+23 silly found diff in packages/reblend-hooks/src/useUpdateEffectAfter.ts
+23 silly found diff in packages/reblend-hooks/src/useUpdatedRef.ts
+23 silly found diff in packages/reblend-hooks/test/helpers.tsx
+23 silly found diff in packages/reblend-hooks/test/setup.js
+23 silly found diff in packages/reblend-hooks/test/useAnimationFrame.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useBreakpoint.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useCallbackRef.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useDebouncedCallback.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useDebouncedState.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useDebouncedValue.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useForceUpdate.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useIntersectionObserver.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useInterval.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useIsInitialRenderRef.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useMap.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useMediaQuery.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useMergedRefs.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useMountEffect.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useMounted.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useMutationObserver.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useRefWithInitialValueFactory.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useSet.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useThrottledEventHandler.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useTimeout.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useToggleState.test.tsx
+23 silly found diff in packages/reblend-hooks/test/useUpdateEffect.test.tsx
+23 silly found diff in packages/reblend-hooks/tsconfig.json
+23 silly found diff in packages/reblend-hooks/tsconfig.types.json
+23 silly found diff in packages/reblend-hooks/www/.babelrc
+23 silly found diff in packages/reblend-hooks/www/.gitignore
+23 silly found diff in packages/reblend-hooks/www/gatsby-config.js
+23 silly found diff in packages/reblend-hooks/www/gatsby-node.js
+23 silly found diff in packages/reblend-hooks/www/package.json
+23 silly found diff in packages/reblend-hooks/www/src/@docpocalypse/gatsby-theme/components/.gitkeep
+23 silly found diff in packages/reblend-hooks/www/src/examples/.gitkeep
+23 silly found diff in packages/reblend-hooks/www/src/pages/index.mdx
+23 silly found diff in packages/reblend-hooks/www/tailwind.config.js
+23 silly found diff in packages/reblend-hooks/www/templates/component.js
+24 verbose filtered diff [
+24 verbose filtered diff   'packages/reblend-hooks/.babelrc',
+24 verbose filtered diff   'packages/reblend-hooks/.gitattributes',
+24 verbose filtered diff   'packages/reblend-hooks/.github/workflows/deploy-docs.yml',
+24 verbose filtered diff   'packages/reblend-hooks/.github/workflows/test.yml',
+24 verbose filtered diff   'packages/reblend-hooks/.gitignore',
+24 verbose filtered diff   'packages/reblend-hooks/CHANGELOG.md',
+24 verbose filtered diff   'packages/reblend-hooks/LICENSE',
+24 verbose filtered diff   'packages/reblend-hooks/README.md',
+24 verbose filtered diff   'packages/reblend-hooks/jest.config.cjs',
+24 verbose filtered diff   'packages/reblend-hooks/package.json',
+24 verbose filtered diff   'packages/reblend-hooks/src/globals.d.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/index.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useAnimationFrame.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useBreakpoint.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useCallbackRef.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useDebouncedCallback.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useDebouncedState.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useDebouncedValue.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useEventCallback.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useEventListener.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useFocusManager.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useForceUpdate.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useGlobalListener.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useImage.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useIntersectionObserver.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useInterval.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useIsInitialRenderRef.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useMap.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useMediaQuery.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useMergeState.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useMergeStateFromProps.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useMergedRefs.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useMountEffect.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useMounted.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useMutationObserver.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/usePrevious.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useRafInterval.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useRefWithInitialValueFactory.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useResizeObserver.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useSet.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useThrottledEventHandler.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useTimeout.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useToggleState.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useUpdateEffect.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useUpdateEffectAfter.ts',
+24 verbose filtered diff   'packages/reblend-hooks/src/useUpdatedRef.ts',
+24 verbose filtered diff   'packages/reblend-hooks/test/helpers.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/setup.js',
+24 verbose filtered diff   'packages/reblend-hooks/test/useAnimationFrame.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useBreakpoint.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useCallbackRef.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useDebouncedCallback.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useDebouncedState.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useDebouncedValue.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useForceUpdate.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useIntersectionObserver.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useInterval.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useIsInitialRenderRef.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useMap.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useMediaQuery.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useMergedRefs.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useMountEffect.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useMounted.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useMutationObserver.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useRefWithInitialValueFactory.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useSet.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useThrottledEventHandler.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useTimeout.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useToggleState.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/test/useUpdateEffect.test.tsx',
+24 verbose filtered diff   'packages/reblend-hooks/tsconfig.json',
+24 verbose filtered diff   'packages/reblend-hooks/tsconfig.types.json',
+24 verbose filtered diff   'packages/reblend-hooks/www/.babelrc',
+24 verbose filtered diff   'packages/reblend-hooks/www/.gitignore',
+24 verbose filtered diff   'packages/reblend-hooks/www/gatsby-config.js',
+24 verbose filtered diff   'packages/reblend-hooks/www/gatsby-node.js',
+24 verbose filtered diff   'packages/reblend-hooks/www/package.json',
+24 verbose filtered diff   'packages/reblend-hooks/www/src/@docpocalypse/gatsby-theme/components/.gitkeep',
+24 verbose filtered diff   'packages/reblend-hooks/www/src/examples/.gitkeep',
+24 verbose filtered diff   'packages/reblend-hooks/www/src/pages/index.mdx',
+24 verbose filtered diff   'packages/reblend-hooks/www/tailwind.config.js',
+24 verbose filtered diff   'packages/reblend-hooks/www/templates/component.js'
+24 verbose filtered diff ]
+25 silly checking diff packages/reblend-router
+26 silly found diff in packages/reblend-router/package.json
+26 silly found diff in packages/reblend-router/src/components/Route.tsx
+26 silly found diff in packages/reblend-router/src/components/Router.tsx
+27 verbose filtered diff [
+27 verbose filtered diff   'packages/reblend-router/package.json',
+27 verbose filtered diff   'packages/reblend-router/src/components/Route.tsx',
+27 verbose filtered diff   'packages/reblend-router/src/components/Router.tsx'
+27 verbose filtered diff ]
+28 silly checking diff packages/reblend-routing
+29 silly no diff found in reblend-routing
+30 silly checking diff packages/reblend-template-test
+31 silly no diff found in reblend-template-test
+32 silly checking diff packages/reblend-typing
+33 silly found diff in packages/reblend-typing/package.json
+33 silly found diff in packages/reblend-typing/src/index.ts
+33 silly found diff in packages/reblend-typing/src/standardAttribute.ts
+34 verbose filtered diff [
+34 verbose filtered diff   'packages/reblend-typing/package.json',
+34 verbose filtered diff   'packages/reblend-typing/src/index.ts',
+34 verbose filtered diff   'packages/reblend-typing/src/standardAttribute.ts'
+34 verbose filtered diff ]
+35 silly checking diff packages/reblend-ui
+36 silly found diff in packages/reblend-ui/.gitattributes
+36 silly found diff in packages/reblend-ui/.github/ISSUE_TEMPLATE/bug_report.md
+36 silly found diff in packages/reblend-ui/.github/ISSUE_TEMPLATE/feature_request.md
+36 silly found diff in packages/reblend-ui/.github/workflows/ci.yml
+36 silly found diff in packages/reblend-ui/.github/workflows/deploy-docs.yml
+36 silly found diff in packages/reblend-ui/.gitignore
+36 silly found diff in packages/reblend-ui/.nvmrc
+36 silly found diff in packages/reblend-ui/CHANGELOG.md
+36 silly found diff in packages/reblend-ui/LICENSE
+36 silly found diff in packages/reblend-ui/README.md
+36 silly found diff in packages/reblend-ui/babel.config.js
+36 silly found diff in packages/reblend-ui/codecov.yml
+36 silly found diff in packages/reblend-ui/eslint.config.mjs
+36 silly found diff in packages/reblend-ui/jest.config.cjs
+36 silly found diff in packages/reblend-ui/package.json
+36 silly found diff in packages/reblend-ui/renovate.json
+36 silly found diff in packages/reblend-ui/rollup.config.mjs
+36 silly found diff in packages/reblend-ui/src/Anchor.tsx
+36 silly found diff in packages/reblend-ui/src/Button.tsx
+36 silly found diff in packages/reblend-ui/src/DataKey.tsx
+36 silly found diff in packages/reblend-ui/src/Dropdown.tsx
+36 silly found diff in packages/reblend-ui/src/DropdownContext.ts
+36 silly found diff in packages/reblend-ui/src/DropdownItem.tsx
+36 silly found diff in packages/reblend-ui/src/DropdownMenu.tsx
+36 silly found diff in packages/reblend-ui/src/DropdownToggle.tsx
+36 silly found diff in packages/reblend-ui/src/ImperativeTransition.tsx
+36 silly found diff in packages/reblend-ui/src/Modal.tsx
+36 silly found diff in packages/reblend-ui/src/ModalManager.ts
+36 silly found diff in packages/reblend-ui/src/Nav.tsx
+36 silly found diff in packages/reblend-ui/src/NavContext.tsx
+36 silly found diff in packages/reblend-ui/src/NavItem.tsx
+36 silly found diff in packages/reblend-ui/src/NoopTransition.tsx
+36 silly found diff in packages/reblend-ui/src/Overlay.tsx
+36 silly found diff in packages/reblend-ui/src/Portal.tsx
+36 silly found diff in packages/reblend-ui/src/RTGTransition.tsx
+36 silly found diff in packages/reblend-ui/src/SelectableContext.tsx
+36 silly found diff in packages/reblend-ui/src/TabContext.tsx
+36 silly found diff in packages/reblend-ui/src/TabPanel.tsx
+36 silly found diff in packages/reblend-ui/src/Tabs.tsx
+36 silly found diff in packages/reblend-ui/src/Waypoint.tsx
+36 silly found diff in packages/reblend-ui/src/getScrollbarWidth.ts
+36 silly found diff in packages/reblend-ui/src/index.ts
+36 silly found diff in packages/reblend-ui/src/mergeOptionsWithPopperConfig.ts
+36 silly found diff in packages/reblend-ui/src/popper.ts
+36 silly found diff in packages/reblend-ui/src/types.ts
+36 silly found diff in packages/reblend-ui/src/useClickOutside.ts
+36 silly found diff in packages/reblend-ui/src/usePopper.ts
+36 silly found diff in packages/reblend-ui/src/useRTGTransitionProps.ts
+36 silly found diff in packages/reblend-ui/src/useRootClose.ts
+36 silly found diff in packages/reblend-ui/src/useScrollParent.tsx
+36 silly found diff in packages/reblend-ui/src/useWaitForDOMRef.ts
+36 silly found diff in packages/reblend-ui/src/useWaypoint.tsx
+36 silly found diff in packages/reblend-ui/src/useWindow.ts
+36 silly found diff in packages/reblend-ui/src/utils.ts
+36 silly found diff in packages/reblend-ui/test/AnchorSpec.tsx
+36 silly found diff in packages/reblend-ui/test/ButtonSpec.tsx
+36 silly found diff in packages/reblend-ui/test/DropdownItemSpec.tsx
+36 silly found diff in packages/reblend-ui/test/DropdownSpec.tsx
+36 silly found diff in packages/reblend-ui/test/ModalManagerSpec.ts
+36 silly found diff in packages/reblend-ui/test/ModalSpec.tsx
+36 silly found diff in packages/reblend-ui/test/NavItemSpec.tsx
+36 silly found diff in packages/reblend-ui/test/NavSpec.tsx
+36 silly found diff in packages/reblend-ui/test/PortalSpec.tsx
+36 silly found diff in packages/reblend-ui/test/TabContainerSpec.tsx
+36 silly found diff in packages/reblend-ui/test/TabPanelSpec.tsx
+36 silly found diff in packages/reblend-ui/test/WaitForContainerSpec.tsx
+36 silly found diff in packages/reblend-ui/test/helpers.ts
+36 silly found diff in packages/reblend-ui/test/setup.ts
+36 silly found diff in packages/reblend-ui/test/usePopperSpec.tsx
+36 silly found diff in packages/reblend-ui/test/useRootCloseSpec.tsx
+36 silly found diff in packages/reblend-ui/test/utilsSpec.tsx
+36 silly found diff in packages/reblend-ui/tsconfig.cjs.types.json
+36 silly found diff in packages/reblend-ui/tsconfig.esm.types.json
+36 silly found diff in packages/reblend-ui/tsconfig.json
+36 silly found diff in packages/reblend-ui/www/.gitignore
+36 silly found diff in packages/reblend-ui/www/README.md
+36 silly found diff in packages/reblend-ui/www/babel.config.js
+36 silly found diff in packages/reblend-ui/www/docs/.prettierrc
+36 silly found diff in packages/reblend-ui/www/docs/Button.mdx
+36 silly found diff in packages/reblend-ui/www/docs/Dropdown.mdx
+36 silly found diff in packages/reblend-ui/www/docs/Modal.mdx
+36 silly found diff in packages/reblend-ui/www/docs/Nav.mdx
+36 silly found diff in packages/reblend-ui/www/docs/Overlay.mdx
+36 silly found diff in packages/reblend-ui/www/docs/Portal.mdx
+36 silly found diff in packages/reblend-ui/www/docs/Waypoint.mdx
+36 silly found diff in packages/reblend-ui/www/docs/getting-started.md
+36 silly found diff in packages/reblend-ui/www/docs/transitions.mdx
+36 silly found diff in packages/reblend-ui/www/docs/usePopper.mdx
+36 silly found diff in packages/reblend-ui/www/docs/useRootClose.mdx
+36 silly found diff in packages/reblend-ui/www/docs/useWindow.mdx
+36 silly found diff in packages/reblend-ui/www/docusaurus.config.js
+36 silly found diff in packages/reblend-ui/www/package.json
+36 silly found diff in packages/reblend-ui/www/plugins/webpack.js
+36 silly found diff in packages/reblend-ui/www/postcss.config.js
+36 silly found diff in packages/reblend-ui/www/sidebars.js
+36 silly found diff in packages/reblend-ui/www/src/Button.tsx
+36 silly found diff in packages/reblend-ui/www/src/Dropdown.tsx
+36 silly found diff in packages/reblend-ui/www/src/Tooltip.tsx
+36 silly found diff in packages/reblend-ui/www/src/WaypointExample.tsx
+36 silly found diff in packages/reblend-ui/www/src/css/tailwind.css
+36 silly found diff in packages/reblend-ui/www/src/css/transitions.css
+36 silly found diff in packages/reblend-ui/www/src/theme/CodeLiveScope.ts
+36 silly found diff in packages/reblend-ui/www/static/.nojekyll
+36 silly found diff in packages/reblend-ui/www/static/refresh-dot.svg
+36 silly found diff in packages/reblend-ui/www/tailwind.config.js
+36 silly found diff in packages/reblend-ui/www/tsconfig.json
+37 verbose filtered diff [
+37 verbose filtered diff   'packages/reblend-ui/.gitattributes',
+37 verbose filtered diff   'packages/reblend-ui/.github/ISSUE_TEMPLATE/bug_report.md',
+37 verbose filtered diff   'packages/reblend-ui/.github/ISSUE_TEMPLATE/feature_request.md',
+37 verbose filtered diff   'packages/reblend-ui/.github/workflows/ci.yml',
+37 verbose filtered diff   'packages/reblend-ui/.github/workflows/deploy-docs.yml',
+37 verbose filtered diff   'packages/reblend-ui/.gitignore',
+37 verbose filtered diff   'packages/reblend-ui/.nvmrc',
+37 verbose filtered diff   'packages/reblend-ui/CHANGELOG.md',
+37 verbose filtered diff   'packages/reblend-ui/LICENSE',
+37 verbose filtered diff   'packages/reblend-ui/README.md',
+37 verbose filtered diff   'packages/reblend-ui/babel.config.js',
+37 verbose filtered diff   'packages/reblend-ui/codecov.yml',
+37 verbose filtered diff   'packages/reblend-ui/eslint.config.mjs',
+37 verbose filtered diff   'packages/reblend-ui/jest.config.cjs',
+37 verbose filtered diff   'packages/reblend-ui/package.json',
+37 verbose filtered diff   'packages/reblend-ui/renovate.json',
+37 verbose filtered diff   'packages/reblend-ui/rollup.config.mjs',
+37 verbose filtered diff   'packages/reblend-ui/src/Anchor.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/Button.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/DataKey.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/Dropdown.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/DropdownContext.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/DropdownItem.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/DropdownMenu.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/DropdownToggle.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/ImperativeTransition.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/Modal.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/ModalManager.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/Nav.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/NavContext.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/NavItem.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/NoopTransition.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/Overlay.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/Portal.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/RTGTransition.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/SelectableContext.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/TabContext.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/TabPanel.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/Tabs.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/Waypoint.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/getScrollbarWidth.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/index.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/mergeOptionsWithPopperConfig.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/popper.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/types.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/useClickOutside.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/usePopper.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/useRTGTransitionProps.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/useRootClose.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/useScrollParent.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/useWaitForDOMRef.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/useWaypoint.tsx',
+37 verbose filtered diff   'packages/reblend-ui/src/useWindow.ts',
+37 verbose filtered diff   'packages/reblend-ui/src/utils.ts',
+37 verbose filtered diff   'packages/reblend-ui/test/AnchorSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/ButtonSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/DropdownItemSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/DropdownSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/ModalManagerSpec.ts',
+37 verbose filtered diff   'packages/reblend-ui/test/ModalSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/NavItemSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/NavSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/PortalSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/TabContainerSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/TabPanelSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/WaitForContainerSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/helpers.ts',
+37 verbose filtered diff   'packages/reblend-ui/test/setup.ts',
+37 verbose filtered diff   'packages/reblend-ui/test/usePopperSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/useRootCloseSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/test/utilsSpec.tsx',
+37 verbose filtered diff   'packages/reblend-ui/tsconfig.cjs.types.json',
+37 verbose filtered diff   'packages/reblend-ui/tsconfig.esm.types.json',
+37 verbose filtered diff   'packages/reblend-ui/tsconfig.json',
+37 verbose filtered diff   'packages/reblend-ui/www/.gitignore',
+37 verbose filtered diff   'packages/reblend-ui/www/README.md',
+37 verbose filtered diff   'packages/reblend-ui/www/babel.config.js',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/.prettierrc',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/Button.mdx',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/Dropdown.mdx',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/Modal.mdx',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/Nav.mdx',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/Overlay.mdx',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/Portal.mdx',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/Waypoint.mdx',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/getting-started.md',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/transitions.mdx',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/usePopper.mdx',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/useRootClose.mdx',
+37 verbose filtered diff   'packages/reblend-ui/www/docs/useWindow.mdx',
+37 verbose filtered diff   'packages/reblend-ui/www/docusaurus.config.js',
+37 verbose filtered diff   'packages/reblend-ui/www/package.json',
+37 verbose filtered diff   'packages/reblend-ui/www/plugins/webpack.js',
+37 verbose filtered diff   'packages/reblend-ui/www/postcss.config.js',
+37 verbose filtered diff   'packages/reblend-ui/www/sidebars.js',
+37 verbose filtered diff   'packages/reblend-ui/www/src/Button.tsx',
+37 verbose filtered diff   'packages/reblend-ui/www/src/Dropdown.tsx',
+37 verbose filtered diff   'packages/reblend-ui/www/src/Tooltip.tsx',
+37 verbose filtered diff   'packages/reblend-ui/www/src/WaypointExample.tsx',
+37 verbose filtered diff   'packages/reblend-ui/www/src/css/tailwind.css',
+37 verbose filtered diff   ... 6 more items
+37 verbose filtered diff ]
+38 silly checking diff packages/reblendjs
+39 silly found diff in packages/reblendjs/package.json
+39 silly found diff in packages/reblendjs/src/index.ts
+39 silly found diff in packages/reblendjs/src/internal/BaseComponent.ts
+39 silly found diff in packages/reblendjs/src/internal/ConfigUtil.ts
+39 silly found diff in packages/reblendjs/src/internal/ElementUtil.ts
+39 silly found diff in packages/reblendjs/src/internal/NodeOperationUtil.ts
+39 silly found diff in packages/reblendjs/src/internal/PropertyUtil.ts
+39 silly found diff in packages/reblendjs/src/internal/Reblend.ts
+39 silly found diff in packages/reblendjs/src/internal/RenderingSessionTracker.ts
+39 silly found diff in packages/reblendjs/src/internal/components/Placeholder.tsx
+39 silly found diff in packages/reblendjs/src/internal/components/Portal.tsx
+39 silly found diff in packages/reblendjs/src/internal/hooks.ts
+40 verbose filtered diff [
+40 verbose filtered diff   'packages/reblendjs/package.json',
+40 verbose filtered diff   'packages/reblendjs/src/index.ts',
+40 verbose filtered diff   'packages/reblendjs/src/internal/BaseComponent.ts',
+40 verbose filtered diff   'packages/reblendjs/src/internal/ConfigUtil.ts',
+40 verbose filtered diff   'packages/reblendjs/src/internal/ElementUtil.ts',
+40 verbose filtered diff   'packages/reblendjs/src/internal/NodeOperationUtil.ts',
+40 verbose filtered diff   'packages/reblendjs/src/internal/PropertyUtil.ts',
+40 verbose filtered diff   'packages/reblendjs/src/internal/Reblend.ts',
+40 verbose filtered diff   'packages/reblendjs/src/internal/RenderingSessionTracker.ts',
+40 verbose filtered diff   'packages/reblendjs/src/internal/components/Placeholder.tsx',
+40 verbose filtered diff   'packages/reblendjs/src/internal/components/Portal.tsx',
+40 verbose filtered diff   'packages/reblendjs/src/internal/hooks.ts'
+40 verbose filtered diff ]
+41 verbose updated reblend-bootstrap
+42 verbose updated reblend-deep-equal-iterative
+43 verbose updated reblend-hooks
+44 verbose updated reblend-router
+45 verbose updated reblend-template-test
+46 verbose updated reblend-typing
+47 verbose updated reblend-ui
+48 verbose updated reblendjs
+49 info version rooted leaf detected, skipping synthetic root lifecycles
+50 verbose git-describe undefined => "reblend-router@4.0.6-36-g5d068c3"
+51 silly git-describe parsed => {"lastTagName":"reblend-router@4.0.6","lastVersion":"4.0.6","refCount":"36","sha":"5d068c3","isDirty":false}
+52 info execute Skipping releases
+53 silly lifecycle No script for "preversion" in "reblend-deep-equal-iterative", continuing
+54 silly lifecycle No script for "preversion" in "reblend-hooks", continuing
+55 silly lifecycle No script for "preversion" in "reblend-router", continuing
+56 silly lifecycle No script for "preversion" in "reblend-typing", continuing
+57 verbose version reblend-deep-equal-iterative has no lockfile. Skipping lockfile update.
+58 verbose version reblend-hooks has no lockfile. Skipping lockfile update.
+59 verbose version reblend-router has no lockfile. Skipping lockfile update.
+60 verbose version reblend-typing has no lockfile. Skipping lockfile update.
+61 silly lifecycle No script for "version" in "reblend-hooks", continuing
+62 silly lifecycle No script for "preversion" in "reblend-ui", continuing
+63 verbose version reblend-ui has no lockfile. Skipping lockfile update.
+64 silly lifecycle No script for "version" in "reblend-deep-equal-iterative", continuing
+65 silly lifecycle No script for "version" in "reblend-typing", continuing
+66 silly lifecycle No script for "preversion" in "reblendjs", continuing
+67 silly lifecycle No script for "version" in "reblend-router", continuing
+68 silly lifecycle No script for "preversion" in "reblend-template-test", continuing
+69 verbose version reblendjs has no lockfile. Skipping lockfile update.
+70 verbose version reblend-template-test has no lockfile. Skipping lockfile update.
+71 silly lifecycle No script for "version" in "reblend-ui", continuing
+72 silly lifecycle No script for "preversion" in "reblend-bootstrap", continuing
+73 verbose version reblend-bootstrap has no lockfile. Skipping lockfile update.
+74 silly lifecycle No script for "version" in "reblend-template-test", continuing
+75 silly lifecycle No script for "version" in "reblendjs", continuing
+76 silly lifecycle No script for "version" in "reblend-bootstrap", continuing
+77 verbose version Updating root package-lock.json
+78 error Error: Command failed with exit code 1: npm install --package-lock-only --ignore-scripts
+78 error npm warn ERESOLVE overriding peer dependency
+78 error npm warn While resolving: @typescript-eslint/eslint-plugin@5.62.0
+78 error npm warn Found: @typescript-eslint/parser@6.21.0
+78 error npm warn node_modules/@typescript-eslint/parser
+78 error npm warn   @typescript-eslint/parser@"^6.4.0" from eslint-config-standard-with-typescript@43.0.1
+78 error npm warn   node_modules/eslint-config-standard-with-typescript
+78 error npm warn     dev eslint-config-standard-with-typescript@"^43.0.1" from the root project
+78 error npm warn
+78 error npm warn Could not resolve dependency:
+78 error npm warn peer @typescript-eslint/parser@"^5.0.0" from @typescript-eslint/eslint-plugin@5.62.0
+78 error npm warn node_modules/@typescript-eslint/eslint-plugin
+78 error npm warn   @typescript-eslint/eslint-plugin@"^5.5.0" from eslint-config-reblend-app@7.0.51
+78 error npm warn   node_modules/eslint-config-reblend-app
+78 error npm warn   1 more (eslint-plugin-jest)
+78 error npm warn
+78 error npm warn Conflicting peer dependency: @typescript-eslint/parser@5.62.0
+78 error npm warn node_modules/@typescript-eslint/parser
+78 error npm warn   peer @typescript-eslint/parser@"^5.0.0" from @typescript-eslint/eslint-plugin@5.62.0
+78 error npm warn   node_modules/@typescript-eslint/eslint-plugin
+78 error npm warn     @typescript-eslint/eslint-plugin@"^5.5.0" from eslint-config-reblend-app@7.0.51
+78 error npm warn     node_modules/eslint-config-reblend-app
+78 error npm warn     1 more (eslint-plugin-jest)
+78 error npm error code ERESOLVE
+78 error npm error ERESOLVE could not resolve
+78 error npm error
+78 error npm error While resolving: eslint-config-standard-with-typescript@43.0.1
+78 error npm error Found: @typescript-eslint/eslint-plugin@5.62.0
+78 error npm error node_modules/@typescript-eslint/eslint-plugin
+78 error npm error   @typescript-eslint/eslint-plugin@"^5.5.0" from eslint-config-reblend-app@7.0.51
+78 error npm error   node_modules/eslint-config-reblend-app
+78 error npm error     eslint-config-reblend-app@"^7.0.51" from reblend-scripts@6.0.69
+78 error npm error     node_modules/reblend-scripts
+78 error npm error       reblend-scripts@"^6.0.69" from reblend-template-test@4.1.8
+78 error npm error       packages/reblend-template-test
+78 error npm error         reblend-template-test@4.1.7
+78 error npm error         node_modules/reblend-template-test
+78 error npm error   peerOptional @typescript-eslint/eslint-plugin@"^4.0.0 || ^5.0.0" from eslint-plugin-jest@25.7.0
+78 error npm error   node_modules/eslint-plugin-jest
+78 error npm error     eslint-plugin-jest@"^25.3.0" from eslint-config-reblend-app@7.0.51
+78 error npm error     node_modules/eslint-config-reblend-app
+78 error npm error       eslint-config-reblend-app@"^7.0.51" from reblend-scripts@6.0.69
+78 error npm error       node_modules/reblend-scripts
+78 error npm error         reblend-scripts@"^6.0.69" from reblend-template-test@4.1.8
+78 error npm error         packages/reblend-template-test
+78 error npm error
+78 error npm error Could not resolve dependency:
+78 error npm error peer @typescript-eslint/eslint-plugin@"^6.4.0" from eslint-config-standard-with-typescript@43.0.1
+78 error npm error node_modules/eslint-config-standard-with-typescript
+78 error npm error   dev eslint-config-standard-with-typescript@"^43.0.1" from the root project
+78 error npm error
+78 error npm error Conflicting peer dependency: @typescript-eslint/eslint-plugin@6.21.0
+78 error npm error node_modules/@typescript-eslint/eslint-plugin
+78 error npm error   peer @typescript-eslint/eslint-plugin@"^6.4.0" from eslint-config-standard-with-typescript@43.0.1
+78 error npm error   node_modules/eslint-config-standard-with-typescript
+78 error npm error     dev eslint-config-standard-with-typescript@"^43.0.1" from the root project
+78 error npm error
+78 error npm error Fix the upstream dependency conflict, or retry
+78 error npm error this command with --force or --legacy-peer-deps
+78 error npm error to accept an incorrect (and potentially broken) dependency resolution.
+78 error npm error
+78 error npm error
+78 error npm error For a full report see:
+78 error npm error /home/elomscansio/.npm/_logs/2025-07-03T23_27_36_517Z-eresolve-report.txt
+78 error npm error A complete log of this run can be found in: /home/elomscansio/.npm/_logs/2025-07-03T23_27_36_517Z-debug-0.log
+78 error     at makeError (/home/elomscansio/Desktop/projects/reblendjs/node_modules/lerna/node_modules/execa/lib/error.js:59:11)
+78 error     at handlePromise (/home/elomscansio/Desktop/projects/reblendjs/node_modules/lerna/node_modules/execa/index.js:114:26)
+78 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+78 error     at async VersionCommand.updatePackageVersions (/home/elomscansio/Desktop/projects/reblendjs/node_modules/lerna/dist/index.js:9904:13)
+78 error     at async Promise.all (index 0)

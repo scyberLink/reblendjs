@@ -1,6 +1,6 @@
 {
   "name": "reblend-router",
-  "version": "4.0.9",
+  "version": "4.0.10",
   "author": "Emmanuel Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "main": "lib/index.js",
@@ -17,7 +17,7 @@
     "reblend-routing": "^7.1.2"
   },
   "peerDependencies": {
-    "reblendjs": "12.5.0"
+    "reblendjs": "^12.5.1"
   },
   "scripts": {
     "build": "rm -rf dist; rm -rf lib; tsc && babel dist --out-dir lib"
@@ -34,6 +34,5 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {},
   "gitHead": "79a3e22f73913a686e76631559ba7830f7eb2e98"
 }

@@ -1,6 +1,6 @@
 {
   "name": "reblend-bootstrap",
-  "version": "3.0.0-beta.2",
+  "version": "3.0.0",
   "description": "Bootstrap 5 components built with React",
   "keywords": [
     "bootstrap",
@@ -83,14 +83,13 @@
     "invariant": "^2.2.4",
     "react-transition-group": "^4.4.5",
     "reblend-hooks": "1.0.1",
-    "reblend-ui": "^3.0.0",
+    "reblend-ui": "^3.0.1",
     "uncontrollable": "^9.0.0",
     "warning": "^4.0.3"
   },
   "peerDependencies": {
     "reblendjs": "12.0.0"
   },
-  "devDependencies": {},
   "publishConfig": {
     "access": "public"
   },

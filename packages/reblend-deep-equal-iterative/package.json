@@ -1,6 +1,6 @@
 {
   "name": "reblend-deep-equal-iterative",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Non-recursive deep equal with circular, depth, and key ignoring support",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,6 +9,5 @@
   "scripts": {
     "build": "rimraf lib && tsc",
     "test": "jest"
-  },
-  "devDependencies": {}
+  }
 }

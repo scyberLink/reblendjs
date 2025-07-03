@@ -1,6 +1,6 @@
 {
   "name": "reblend-ui",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Utilities for creating robust overlay components",
   "author": {
     "name": "Emmanuel Paul Elom",
@@ -77,9 +77,9 @@
     "@popperjs/core": "^2.11.8",
     "@types/warning": "^3.0.3",
     "dom-helpers": "^5.2.0",
+    "reblend-hooks": "1.0.1",
     "uncontrollable": "^9.0.0",
-    "warning": "^4.0.3",
-    "reblend-hooks": "1.0.1"
+    "warning": "^4.0.3"
   },
   "peerDependencies": {
     "reblendjs": "latest"
