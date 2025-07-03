@@ -157,21 +157,21 @@ export function diffCreateOrRemove<P, S>(
  * Diffs oldNode and newNode to generate patches that represent the changes between them.
  *
  * @param {ReblendTyping.Componennt<P, S>} origin - The rerendering origin node.
- * @param {number} circleId - The rerendering circle id.
+ * @param {number} sessionId - The rerendering circle id.
  * @param {ReblendTyping.DomNodeChild} oldNode - The old node.
  * @param {ReblendTyping.VNodeChild} newNode - The new node.
  * @returns {ReblendTyping.Patch[]} - The array of patches.
  */
 export async function diff<P, S>(
   origin: ReblendTyping.Component<P, S>,
-  circleId: number,
+  sessionId: number,
   parent: ReblendTyping.Component<P, S>,
   oldNode: ReblendTyping.DomNodeChild<P, S>,
   newNode: ReblendTyping.VNodeChild,
 ): Promise<ReblendTyping.Patch<P, S>[]> {
   const patches: ReblendTyping.Patch<P, S>[] = []
 
-  if (!origin.renderingCycleTracker.isCurrentCycle(circleId)) {
+  if (!origin.renderingSessionTracker.isCurrentSession(sessionId)) {
     return patches
   }
 
@@ -236,12 +236,12 @@ export async function diff<P, S>(
         })
       }
 
-      if (!origin.renderingCycleTracker.isCurrentCycle(circleId)) {
+      if (!origin.renderingSessionTracker.isCurrentSession(sessionId)) {
         return patches
       }
 
       if (oldNode.childrenInitialize) {
-        patches.push(...(await diffChildren(origin, circleId, oldNode, oldNode, newNode as ReblendTyping.VNode)))
+        patches.push(...(await diffChildren(origin, sessionId, oldNode, oldNode, newNode as ReblendTyping.VNode)))
       }
     }
   }
@@ -317,7 +317,7 @@ export function diffProps<P, S>(newNode: ReblendTyping.VNode, oldNode: ReblendTy
  * Diffs the children of the old and new virtual nodes and returns the patches required to update them.
  *
  * @param {ReblendTyping.Component<P, S>} origin - The rerendering origin.
- * @param {number} circleId - The rerendering circle id.
+ * @param {number} sessionId - The rerendering circle id.
  * @param {ReblendTyping.Component<P, S>} parent - The parent component containing the children.
  * @param {ReblendTyping.Component<P, S>} oldNode - The old component node.
  * @param {VNode} newNode - The new virtual node.
@@ -325,7 +325,7 @@ export function diffProps<P, S>(newNode: ReblendTyping.VNode, oldNode: ReblendTy
  */
 export async function diffChildren<P, S>(
   origin: ReblendTyping.Component<P, S>,
-  circleId: number,
+  sessionId: number,
   parent: ReblendTyping.Component<P, S>,
   oldNode: ReblendTyping.Component<P, S>,
   newNode: ReblendTyping.VNode,
@@ -348,7 +348,7 @@ export async function diffChildren<P, S>(
     if (oldChild === undefined || newChild === undefined) {
       patches.push(...diffCreateOrRemove(parent, oldChild, newChild))
     } else {
-      patches.push(...(await diff(origin, circleId, parent, oldChild, newChild)))
+      patches.push(...(await diff(origin, sessionId, parent, oldChild, newChild)))
     }
   }
 

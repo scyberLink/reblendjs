@@ -52,7 +52,7 @@
   "license": "MIT",
   "dependencies": {
     "reblend-deep-equal-iterative": "^2.0.0",
-    "reblend-typing": "^7.0.0"
+    "reblend-typing": "^8.2.0"
   },
   "gitHead": "79a3e22f73913a686e76631559ba7830f7eb2e98"
 }

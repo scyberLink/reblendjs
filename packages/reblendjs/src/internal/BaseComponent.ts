@@ -28,7 +28,7 @@ import { flattenVNodeChildren } from './DiffUtil'
 import { connected, detach, connectedCallback, diff, applyPatches, disconnectedCallback } from './NodeOperationUtil'
 import { ConfigUtil, IReblendAppConfig } from './ConfigUtil'
 import deepEqualIterative from 'reblend-deep-equal-iterative'
-import { RenderingCycleTracker } from './RenderingCycleTracker'
+import { RenderingSessionTracker } from './RenderingSessionTracker'
 
 export interface BaseComponent<P, S> extends HTMLElement {
   nearestStandardParent?: HTMLElement
@@ -59,7 +59,7 @@ export interface BaseComponent<P, S> extends HTMLElement {
   htmlElements: ReblendTyping.Component<P, S>[]
   childrenPropsUpdate: Set<ChildrenPropsUpdateType>
   numAwaitingUpdates: number
-  renderingCycleTracker: ReblendTyping.RenderingCycleTracker
+  renderingSessionTracker: ReblendTyping.SessionTracker
   stateEffectRunning: boolean
   forceEffects: boolean
   mountingEffects: boolean
@@ -229,7 +229,7 @@ export class BaseComponent<
     elementOrElementId: string | HTMLElement,
     app: ReblendTyping.ReblendNode,
     options?: IReblendAppConfig,
-  ): Promise<ReblendTyping.Component<any, any>[]> {
+  ): Promise<Set<ReblendTyping.Component<any, any>>> {
     let appRoot: BaseComponent =
       typeof elementOrElementId === 'string' ? document.getElementById(elementOrElementId) : (elementOrElementId as any)
     if (!appRoot) {
@@ -312,7 +312,7 @@ export class BaseComponent<
       closePreloader()
     }
 
-    return Array.from((appRoot.elementChildren || new Set()).values())
+    return appRoot.elementChildren || new Set()
   }
 
   /**
@@ -523,7 +523,7 @@ export class BaseComponent<
     this.onStateChange()
   }
 
-  async applyEffects(circleId: number, type: EffectType) {
+  async applyEffects(sessionId: number, type: EffectType) {
     if (this.hasDisconnected) {
       return
     }
@@ -537,7 +537,11 @@ export class BaseComponent<
         state.disconnectEffect = disconnectEffect
       }
 
-      if (!this.mountingEffects && !this.mountingAfterEffects && !this.renderingCycleTracker.isCurrentCycle(circleId)) {
+      if (
+        !this.mountingEffects &&
+        !this.mountingAfterEffects &&
+        !this.renderingSessionTracker.isCurrentSession(sessionId)
+      ) {
         break
       }
     }
@@ -571,14 +575,14 @@ export class BaseComponent<
       return
     }
 
-    const circleId = this.renderingCycleTracker.startCircle()
-    if (this.renderingCycleTracker.hasPreviousCirle()) {
+    const sessionId = this.renderingSessionTracker.startSession()
+    if (this.renderingSessionTracker.hasPreviousSession()) {
       return
     }
 
     const configs = getConfig()
     const rerender = async () => {
-      this.renderingCycleTracker.resetCircle()
+      this.renderingSessionTracker.resetSession()
       if (configs.noDefering) {
         await this.onStateChange()
       } else {
@@ -590,9 +594,9 @@ export class BaseComponent<
     let newVNodes: ReblendTyping.ReblendNode
     try {
       this.stateEffectRunning = true
-      await this.applyEffects(circleId, EffectType.BEFORE)
+      await this.applyEffects(sessionId, EffectType.BEFORE)
       this.stateEffectRunning = false
-      if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+      if (!this.renderingSessionTracker.isCurrentSession(sessionId)) {
         return await rerender()
       }
       this.forceEffects = false
@@ -611,11 +615,11 @@ export class BaseComponent<
         for (let i = 0; i < maxLength; i++) {
           const newVNode: ReblendTyping.VNodeChild = newVNodes![i]
           const currentVNode = oldNodes[i]
-          if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+          if (!this.renderingSessionTracker.isCurrentSession(sessionId)) {
             return await rerender()
           }
-          patches.push(...((await diff(this, circleId, this as any, currentVNode as any, newVNode)) as any))
-          if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+          patches.push(...((await diff(this, sessionId, this as any, currentVNode as any, newVNode)) as any))
+          if (!this.renderingSessionTracker.isCurrentSession(sessionId)) {
             return await rerender()
           }
         }
@@ -626,19 +630,19 @@ export class BaseComponent<
       this.handleError(error as Error)
     }
 
-    if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+    if (!this.renderingSessionTracker.isCurrentSession(sessionId)) {
       return await rerender()
     }
     await applyPatches(patches)
-    if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+    if (!this.renderingSessionTracker.isCurrentSession(sessionId)) {
       return await rerender()
     }
-    await this.applyEffects(circleId, EffectType.AFTER)
-    if (!this.renderingCycleTracker.isCurrentCycle(circleId)) {
+    await this.applyEffects(sessionId, EffectType.AFTER)
+    if (!this.renderingSessionTracker.isCurrentSession(sessionId)) {
       return await rerender()
     }
     newVNodes = null as any
-    this.renderingCycleTracker.resetCircle()
+    this.renderingSessionTracker.resetSession()
   }
 
   async html(): Promise<ReblendTyping.ReblendNode> {
@@ -902,6 +906,6 @@ export class BaseComponent<
     this.numAwaitingUpdates = 0
     this.effectsState = new Map()
     this.hasDisconnected = false
-    this.renderingCycleTracker = new RenderingCycleTracker()
+    this.renderingSessionTracker = new RenderingSessionTracker()
   }
 }

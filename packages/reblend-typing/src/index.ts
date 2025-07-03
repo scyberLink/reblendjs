@@ -1,5 +1,5 @@
-import * as CSS from 'csstype';
-import React from 'react';
+import * as CSS from "csstype";
+import React from "react";
 
 /**
  * Represents a generic event in the DOM.
@@ -616,11 +616,11 @@ type NativeWheelEvent = WheelEvent;
  * Used to represent DOM API's where users can either pass
  * true or false as a boolean or as its equivalent strings.
  */
-type Booleanish = boolean | 'true' | 'false';
+type Booleanish = boolean | "true" | "false";
 /**
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/crossorigin MDN}
  */
-type CrossOrigin = 'anonymous' | 'use-credentials' | '' | undefined;
+type CrossOrigin = "anonymous" | "use-credentials" | "" | undefined;
 
 export interface ChildWithProps<P, S> {
   child: Component<P, S>;
@@ -630,7 +630,7 @@ export interface ReblendRenderingException<P, S> extends Error {
   component: Component<P, S>;
 }
 export interface PropPatch<P, S> {
-  type: 'REMOVE' | 'UPDATE';
+  type: "REMOVE" | "UPDATE";
   node: Component<P, S>;
   key: string;
   propValue?: string;
@@ -689,7 +689,7 @@ export interface EffectState {
   disconnectEffect?: () => void | Promise<void>;
 }
 
-export type ComponentRef<T = any> = RefAttributes<T>['ref'];
+export type ComponentRef<T = any> = RefAttributes<T>["ref"];
 
 /**
  * Represents a mutable reference object whose `current` property can hold a value of type `T` or an `HTMLElement`.
@@ -837,8 +837,8 @@ export type ElementType<
   Tag extends keyof JSX.IntrinsicElements = keyof JSX.IntrinsicElements,
 > =
   | {
-      [K in Tag]: P extends JSX.IntrinsicElements[K] ? K : never;
-    }[Tag]
+    [K in Tag]: P extends JSX.IntrinsicElements[K] ? K : never;
+  }[Tag]
   | ComponentType<P>;
 /**
  * Represents any user-defined component, either as a function or a class.
@@ -865,13 +865,13 @@ export type ComponentType<P = {}> = ComponentClass<P> | FunctionComponent<P>;
 export type JSXElementConstructor<P> =
   | string
   | Promise<
-      (
-        props: P,
-      ) => Promise<ReblendNode | ReblendNode[]> | ReblendNode | ReblendNode[]
-    >
-  | ((
+    (
       props: P,
-    ) => Promise<ReblendNode | ReblendNode[]> | ReblendNode | ReblendNode[]);
+    ) => Promise<ReblendNode | ReblendNode[]> | ReblendNode | ReblendNode[]
+  >
+  | ((
+    props: P,
+  ) => Promise<ReblendNode | ReblendNode[]> | ReblendNode | ReblendNode[]);
 
 /**
  * Retrieves the type of the 'ref' prop for a given component type or tag name.
@@ -1053,31 +1053,30 @@ type HTMLs =
  * const element: ReblendElement = <div />;
  * ```
  */
-export type ReblendElement = HTMLElement &
-  React.ReactElement &
-  React.ReactPortal &
-  React.ForwardRefExoticComponent<any> &
-  undefined &
-  null;
+export type ReblendElement =
+  & HTMLElement
+  & React.ReactElement
+  & React.ReactPortal
+  & React.ForwardRefExoticComponent<any>
+  & undefined
+  & null;
 
 //@ts-ignore Don't have to implement Component
 export interface FunctionComponentElement<P> extends Component<P, any> {
   ref?:
-    | ('ref' extends keyof P
-        ? P extends {
-            ref?: infer R | undefined;
-          }
-          ? R
-          : never
-        : never)
+    | ("ref" extends keyof P ? P extends {
+        ref?: infer R | undefined;
+      } ? R
+      : never
+      : never)
     | undefined;
 }
 
 export interface DOMElement<
   P extends HTMLAttributes<T> | SVGAttributes<T>,
   T extends Element,
-  //@ts-ignore
-> extends ReblendElement {
+> //@ts-ignore
+  extends ReblendElement {
   ref: Ref<T>;
 }
 export interface ReblendHTMLElement<T extends HTMLElement>
@@ -1164,25 +1163,57 @@ export type ReblendNode<P = any, S = any> =
   | null
   | void;
 
-export interface RenderingCycleTracker {
-  circles: number[];
+/**
+ * Tracks and manages the current rendering session for a component.
+ * Used to implement rendering cancellation: if a new update is triggered
+ * while a previous render is running, the previous render is aborted.
+ *
+ * A rendering session is a unique, versioned period of rendering work.
+ * When a new session starts, any previous session is considered obsolete and
+ * should be canceled. This ensures that only the latest state and effects are
+ * applied, preventing race conditions and wasted work from overlapping renders.
+ *
+ * Typical usage:
+ * - Call `startSession()` at the beginning of a render/update.
+ * - Pass the returned session ID to all async work.
+ * - After each async step, call `isCurrentSession(sessionId)` to check if the
+ *   session is still valid. If not, abort the rest of the work.
+ * - Call `resetSession()` when the render is complete or canceled.
+ */
 
-  generateId(): number;
+export interface SessionTracker {
+  /**
+   * Returns the current session ID if a session is active, or undefined/null otherwise.
+   * Useful for checking if a session is in progress.
+   */
+  hasASession(): boolean;
 
-  hasACirle(): boolean;
+  /**
+   * Starts a new rendering session and returns a unique session ID.
+   * Each call increments the internal version/token, invalidating any previous session.
+   * Should be called at the start of a render or update.
+   */
+  startSession(): number;
 
-  hasPreviousCirle(): boolean;
+  /**
+   * Returns true if a previous session was already running before this one.
+   * Useful for detecting overlapping or re-entrant renders.
+   */
+  hasPreviousSession(): boolean;
 
-  isCurrentCycle(circleId: number): boolean;
+  /**
+   * Returns true if the given session ID matches the current session.
+   * Used to check if the current render/update is still valid (not canceled).
+   * If false, the render should be aborted.
+   */
+  isCurrentSession(sessionId: number): boolean;
 
-  completeCurrentCycle(circleId: number): boolean;
-
-  startCircle(): number;
-
-  resetCircle(): void;
+  /**
+   * Resets the tracker, invalidating any previous sessions.
+   * Typically called when a render is completed or canceled.
+   */
+  resetSession(): void;
 }
-
-export class RenderingCycleTracker {}
 
 /**
  * Represents a Reblend component, extending the standard HTMLElement with additional
@@ -1235,7 +1266,7 @@ export interface Component<P, S> extends HTMLElement {
   /**
    * This is a react dom root
    */
-  reactDomCreateRoot_root: import('react-dom/client').Root | null;
+  reactDomCreateRoot_root: import("react-dom/client").Root | null;
   /**
    * This denote when current component children has been initialized
    */
@@ -1309,7 +1340,7 @@ export interface Component<P, S> extends HTMLElement {
   /**
    * Used for tracking update cycle of a component.
    */
-  renderingCycleTracker: RenderingCycleTracker;
+  renderingSessionTracker: SessionTracker;
   /**
    * Indicates when effects function are required to update regardless of changes
    */
@@ -1399,11 +1430,11 @@ export interface Component<P, S> extends HTMLElement {
   setState(value: S): void;
   /**
    * Applies effects defined in the component, executing them in order.
-   * 
-   * @param circleId The rerendering circle id
+   *
+   * @param sessionId The rerendering circle id
    * @param type Type of effect
    */
-  applyEffects(circleId: number, type: EffectType): Promise<void>;
+  applyEffects(sessionId: number, type: EffectType): Promise<void>;
   /**
    * Handles an error that occurs during rendering or lifecycle methods.
    *
@@ -1632,22 +1663,17 @@ export interface ComponentClass<P = {}, S = ComponentState>
  *
  * @template P The props object type.
  */
-type PropsWithoutRef<P> = P extends any
-  ? 'ref' extends keyof P
-    ? Omit<P, 'ref'>
-    : P
+type PropsWithoutRef<P> = P extends any ? "ref" extends keyof P ? Omit<P, "ref">
+  : P
   : P;
 /** Ensures that the props do not include string ref, which cannot be forwarded */
-type PropsWithRef<P> = 'ref' extends keyof P
-  ? P extends {
-      ref?: infer R | undefined;
-    }
-    ? string extends R
-      ? PropsWithoutRef<P> & {
-          ref?: Exclude<R, string> | undefined;
-        }
-      : P
+type PropsWithRef<P> = "ref" extends keyof P ? P extends {
+    ref?: infer R | undefined;
+  } ? string extends R ? PropsWithoutRef<P> & {
+        ref?: Exclude<R, string> | undefined;
+      }
     : P
+  : P
   : P;
 type PropsWithChildren<P = unknown> = P & {
   children?: ReblendNode | undefined;
@@ -1681,12 +1707,9 @@ type PropsWithChildren<P = unknown> = P & {
  */
 export type ComponentProps<
   T extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>,
-> =
-  T extends JSXElementConstructor<infer P>
-    ? P
-    : T extends keyof JSX.IntrinsicElements
-      ? JSX.IntrinsicElements[T]
-      : {};
+> = T extends JSXElementConstructor<infer P> ? P
+  : T extends keyof JSX.IntrinsicElements ? JSX.IntrinsicElements[T]
+  : {};
 /**
  * Used to retrieve the props a component accepts with its ref. Can either be
  * passed a string, indicating a DOM element (e.g. 'div', 'span', etc.) or the
@@ -1726,12 +1749,11 @@ export type ComponentProps<
  * type MyComponentPropsWithRef = Reblend.CustomComponentPropsWithRef<typeof MyComponent>;
  * ```
  */
-export type CustomComponentPropsWithRef<T extends ComponentType> =
-  T extends new (props: infer P) => Component<any, any>
-    ? PropsWithoutRef<P> & RefAttributes<InstanceType<T>>
-    : T extends (props: infer P) => ReblendNode
-      ? PropsWithRef<P>
-      : never;
+export type CustomComponentPropsWithRef<T extends ComponentType> = T extends
+  new (props: infer P) => Component<any, any>
+  ? PropsWithoutRef<P> & RefAttributes<InstanceType<T>>
+  : T extends (props: infer P) => ReblendNode ? PropsWithRef<P>
+  : never;
 export interface BaseSyntheticEvent<E = object, C = any, T = any> {
   nativeEvent: E;
   currentTarget: C;
@@ -1779,7 +1801,7 @@ export interface PointerEvent<T = Element>
   twist: number;
   width: number;
   height: number;
-  pointerType: 'mouse' | 'pen' | 'touch';
+  pointerType: "mouse" | "pen" | "touch";
   isPrimary: boolean;
 }
 export interface FocusEvent<Target = Element, RelatedTarget = Element>
@@ -1795,20 +1817,20 @@ export interface ChangeEvent<T = Element> extends SyntheticEvent<T> {
   target: EventTarget & T;
 }
 export type ModifierKey =
-  | 'Alt'
-  | 'AltGraph'
-  | 'CapsLock'
-  | 'Control'
-  | 'Fn'
-  | 'FnLock'
-  | 'Hyper'
-  | 'Meta'
-  | 'NumLock'
-  | 'ScrollLock'
-  | 'Shift'
-  | 'Super'
-  | 'Symbol'
-  | 'SymbolLock';
+  | "Alt"
+  | "AltGraph"
+  | "CapsLock"
+  | "Control"
+  | "Fn"
+  | "FnLock"
+  | "Hyper"
+  | "Meta"
+  | "NumLock"
+  | "ScrollLock"
+  | "Shift"
+  | "Super"
+  | "Symbol"
+  | "SymbolLock";
 export interface KeyboardEvent<T = Element>
   extends UIEvent<T, NativeKeyboardEvent> {
   altKey: boolean;
@@ -1895,7 +1917,7 @@ export interface TransitionEvent<T = Element>
 }
 export type EventHandler<E extends SyntheticEvent<any>> = {
   bivarianceHack(event: E): void;
-}['bivarianceHack'];
+}["bivarianceHack"];
 export type ReblendEventHandler<T = Element> = EventHandler<SyntheticEvent<T>>;
 export type ClipboardEventHandler<T = Element> = EventHandler<
   ClipboardEvent<T>
@@ -1920,8 +1942,7 @@ export type TransitionEventHandler<T = Element> = EventHandler<
   TransitionEvent<T>
 >;
 export interface HTMLProps<T>
-  extends AllHTMLAttributes<T>,
-    ClassAttributes<T> {}
+  extends AllHTMLAttributes<T>, ClassAttributes<T> {}
 export type DetailedHTMLProps<
   E extends HTMLAttributes<T>,
   T,
@@ -1933,8 +1954,8 @@ export interface DOMAttributes<T> {
   children?: ReblendNode | undefined;
   dangerouslySetInnerHTML?:
     | {
-        __html: string | TrustedHTML;
-      }
+      __html: string | TrustedHTML;
+    }
     | undefined;
   onCopy?: ClipboardEventHandler<T> | undefined;
   oncopy?: ClipboardEventHandler<T> | undefined;
@@ -2262,327 +2283,327 @@ export interface DOMAttributes<T> {
 export interface CSSProperties extends CSS.Properties<string | number> {}
 export interface AriaAttributes {
   /** Identifies the currently active element when DOM focus is on a composite widget, textbox, group, or application. */
-  'aria-activedescendant'?: string | undefined;
+  "aria-activedescendant"?: string | undefined;
   /** Indicates whether assistive technologies will present all, or only parts of, the changed region based on the change notifications defined by the aria-relevant attribute. */
-  'aria-atomic'?: Booleanish | undefined;
+  "aria-atomic"?: Booleanish | undefined;
   /**
    * Indicates whether inputting text could trigger display of one or more predictions of the user's intended value for an input and specifies how predictions would be
    * presented if they are made.
    */
-  'aria-autocomplete'?: 'none' | 'inline' | 'list' | 'both' | undefined;
+  "aria-autocomplete"?: "none" | "inline" | "list" | "both" | undefined;
   /** Indicates an element is being modified and that assistive technologies MAY want to wait until the modifications are complete before exposing them to the user. */
   /**
    * Defines a string value that labels the current element, which is intended to be converted into Braille.
    * @see aria-label.
    */
-  'aria-braillelabel'?: string | undefined;
+  "aria-braillelabel"?: string | undefined;
   /**
    * Defines a human-readable, author-localized abbreviated description for the role of an element, which is intended to be converted into Braille.
    * @see aria-roledescription.
    */
-  'aria-brailleroledescription'?: string | undefined;
-  'aria-busy'?: Booleanish | undefined;
+  "aria-brailleroledescription"?: string | undefined;
+  "aria-busy"?: Booleanish | undefined;
   /**
    * Indicates the current "checked" state of checkboxes, radio buttons, and other widgets.
    * @see aria-pressed @see aria-selected.
    */
-  'aria-checked'?: boolean | 'false' | 'mixed' | 'true' | undefined;
+  "aria-checked"?: boolean | "false" | "mixed" | "true" | undefined;
   /**
    * Defines the total number of columns in a table, grid, or treegrid.
    * @see aria-colindex.
    */
-  'aria-colcount'?: number | undefined;
+  "aria-colcount"?: number | undefined;
   /**
    * Defines an element's column index or position with respect to the total number of columns within a table, grid, or treegrid.
    * @see aria-colcount @see aria-colspan.
    */
-  'aria-colindex'?: number | undefined;
+  "aria-colindex"?: number | undefined;
   /**
    * Defines a human readable text alternative of aria-colindex.
    * @see aria-rowindextext.
    */
-  'aria-colindextext'?: string | undefined;
+  "aria-colindextext"?: string | undefined;
   /**
    * Defines the number of columns spanned by a cell or gridcell within a table, grid, or treegrid.
    * @see aria-colindex @see aria-rowspan.
    */
-  'aria-colspan'?: number | undefined;
+  "aria-colspan"?: number | undefined;
   /**
    * Identifies the element (or elements) whose contents or presence are controlled by the current element.
    * @see aria-owns.
    */
-  'aria-controls'?: string | undefined;
+  "aria-controls"?: string | undefined;
   /** Indicates the element that represents the current item within a container or set of related elements. */
-  'aria-current'?:
+  "aria-current"?:
     | boolean
-    | 'false'
-    | 'true'
-    | 'page'
-    | 'step'
-    | 'location'
-    | 'date'
-    | 'time'
+    | "false"
+    | "true"
+    | "page"
+    | "step"
+    | "location"
+    | "date"
+    | "time"
     | undefined;
   /**
    * Identifies the element (or elements) that describes the object.
    * @see aria-labelledby
    */
-  'aria-describedby'?: string | undefined;
+  "aria-describedby"?: string | undefined;
   /**
    * Defines a string value that describes or annotates the current element.
    * @see related aria-describedby.
    */
-  'aria-description'?: string | undefined;
+  "aria-description"?: string | undefined;
   /**
    * Identifies the element that provides a detailed, extended description for the object.
    * @see aria-describedby.
    */
-  'aria-details'?: string | undefined;
+  "aria-details"?: string | undefined;
   /**
    * Indicates that the element is perceivable but disabled, so it is not editable or otherwise operable.
    * @see aria-hidden @see aria-readonly.
    */
-  'aria-disabled'?: Booleanish | undefined;
+  "aria-disabled"?: Booleanish | undefined;
   /**
    * Indicates what functions can be performed when a dragged object is released on the drop target.
    * @deprecated in ARIA 1.1
    */
-  'aria-dropeffect'?:
-    | 'none'
-    | 'copy'
-    | 'execute'
-    | 'link'
-    | 'move'
-    | 'popup'
+  "aria-dropeffect"?:
+    | "none"
+    | "copy"
+    | "execute"
+    | "link"
+    | "move"
+    | "popup"
     | undefined;
   /**
    * Identifies the element that provides an error message for the object.
    * @see aria-invalid @see aria-describedby.
    */
-  'aria-errormessage'?: string | undefined;
+  "aria-errormessage"?: string | undefined;
   /** Indicates whether the element, or another grouping element it controls, is currently expanded or collapsed. */
-  'aria-expanded'?: Booleanish | undefined;
+  "aria-expanded"?: Booleanish | undefined;
   /**
    * Identifies the next element (or elements) in an alternate reading order of content which, at the user's discretion,
    * allows assistive technology to override the general default of reading in document source order.
    */
-  'aria-flowto'?: string | undefined;
+  "aria-flowto"?: string | undefined;
   /**
    * Indicates an element's "grabbed" state in a drag-and-drop operation.
    * @deprecated in ARIA 1.1
    */
-  'aria-grabbed'?: Booleanish | undefined;
+  "aria-grabbed"?: Booleanish | undefined;
   /** Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by an element. */
-  'aria-haspopup'?:
+  "aria-haspopup"?:
     | boolean
-    | 'false'
-    | 'true'
-    | 'menu'
-    | 'listbox'
-    | 'tree'
-    | 'grid'
-    | 'dialog'
+    | "false"
+    | "true"
+    | "menu"
+    | "listbox"
+    | "tree"
+    | "grid"
+    | "dialog"
     | undefined;
   /**
    * Indicates whether the element is exposed to an accessibility API.
    * @see aria-disabled.
    */
-  'aria-hidden'?: Booleanish | undefined;
+  "aria-hidden"?: Booleanish | undefined;
   /**
    * Indicates the entered value does not conform to the format expected by the application.
    * @see aria-errormessage.
    */
-  'aria-invalid'?:
+  "aria-invalid"?:
     | boolean
-    | 'false'
-    | 'true'
-    | 'grammar'
-    | 'spelling'
+    | "false"
+    | "true"
+    | "grammar"
+    | "spelling"
     | undefined;
   /** Indicates keyboard shortcuts that an author has implemented to activate or give focus to an element. */
-  'aria-keyshortcuts'?: string | undefined;
+  "aria-keyshortcuts"?: string | undefined;
   /**
    * Defines a string value that labels the current element.
    * @see aria-labelledby.
    */
-  'aria-label'?: string | undefined;
+  "aria-label"?: string | undefined;
   /**
    * Identifies the element (or elements) that labels the current element.
    * @see aria-describedby.
    */
-  'aria-labelledby'?: string | undefined;
+  "aria-labelledby"?: string | undefined;
   /** Defines the hierarchical level of an element within a structure. */
-  'aria-level'?: number | undefined;
+  "aria-level"?: number | undefined;
   /** Indicates that an element will be updated, and describes the types of updates the user agents, assistive technologies, and user can expect from the live region. */
-  'aria-live'?: 'off' | 'assertive' | 'polite' | undefined;
+  "aria-live"?: "off" | "assertive" | "polite" | undefined;
   /** Indicates whether an element is modal when displayed. */
-  'aria-modal'?: Booleanish | undefined;
+  "aria-modal"?: Booleanish | undefined;
   /** Indicates whether a text box accepts multiple lines of input or only a single line. */
-  'aria-multiline'?: Booleanish | undefined;
+  "aria-multiline"?: Booleanish | undefined;
   /** Indicates that the user may select more than one item from the current selectable descendants. */
-  'aria-multiselectable'?: Booleanish | undefined;
+  "aria-multiselectable"?: Booleanish | undefined;
   /** Indicates whether the element's orientation is horizontal, vertical, or unknown/ambiguous. */
-  'aria-orientation'?: 'horizontal' | 'vertical' | undefined;
+  "aria-orientation"?: "horizontal" | "vertical" | undefined;
   /**
    * Identifies an element (or elements) in order to define a visual, functional, or contextual parent/child relationship
    * between DOM elements where the DOM hierarchy cannot be used to represent the relationship.
    * @see aria-controls.
    */
-  'aria-owns'?: string | undefined;
+  "aria-owns"?: string | undefined;
   /**
    * Defines a short hint (a word or short phrase) intended to aid the user with data entry when the control has no value.
    * A hint could be a sample value or a brief description of the expected format.
    */
-  'aria-placeholder'?: string | undefined;
+  "aria-placeholder"?: string | undefined;
   /**
    * Defines an element's number or position in the current set of listitems or treeitems. Not required if all elements in the set are present in the DOM.
    * @see aria-setsize.
    */
-  'aria-posinset'?: number | undefined;
+  "aria-posinset"?: number | undefined;
   /**
    * Indicates the current "pressed" state of toggle buttons.
    * @see aria-checked @see aria-selected.
    */
-  'aria-pressed'?: boolean | 'false' | 'mixed' | 'true' | undefined;
+  "aria-pressed"?: boolean | "false" | "mixed" | "true" | undefined;
   /**
    * Indicates that the element is not editable, but is otherwise operable.
    * @see aria-disabled.
    */
-  'aria-readonly'?: Booleanish | undefined;
+  "aria-readonly"?: Booleanish | undefined;
   /**
    * Indicates what notifications the user agent will trigger when the accessibility tree within a live region is modified.
    * @see aria-atomic.
    */
-  'aria-relevant'?:
-    | 'additions'
-    | 'additions removals'
-    | 'additions text'
-    | 'all'
-    | 'removals'
-    | 'removals additions'
-    | 'removals text'
-    | 'text'
-    | 'text additions'
-    | 'text removals'
+  "aria-relevant"?:
+    | "additions"
+    | "additions removals"
+    | "additions text"
+    | "all"
+    | "removals"
+    | "removals additions"
+    | "removals text"
+    | "text"
+    | "text additions"
+    | "text removals"
     | undefined;
   /** Indicates that user input is required on the element before a form may be submitted. */
-  'aria-required'?: Booleanish | undefined;
+  "aria-required"?: Booleanish | undefined;
   /** Defines a human-readable, author-localized description for the role of an element. */
-  'aria-roledescription'?: string | undefined;
+  "aria-roledescription"?: string | undefined;
   /**
    * Defines the total number of rows in a table, grid, or treegrid.
    * @see aria-rowindex.
    */
-  'aria-rowcount'?: number | undefined;
+  "aria-rowcount"?: number | undefined;
   /**
    * Defines an element's row index or position with respect to the total number of rows within a table, grid, or treegrid.
    * @see aria-rowcount @see aria-rowspan.
    */
-  'aria-rowindex'?: number | undefined;
+  "aria-rowindex"?: number | undefined;
   /**
    * Defines a human readable text alternative of aria-rowindex.
    * @see aria-colindextext.
    */
-  'aria-rowindextext'?: string | undefined;
+  "aria-rowindextext"?: string | undefined;
   /**
    * Defines the number of rows spanned by a cell or gridcell within a table, grid, or treegrid.
    * @see aria-rowindex @see aria-colspan.
    */
-  'aria-rowspan'?: number | undefined;
+  "aria-rowspan"?: number | undefined;
   /**
    * Indicates the current "selected" state of various widgets.
    * @see aria-checked @see aria-pressed.
    */
-  'aria-selected'?: Booleanish | undefined;
+  "aria-selected"?: Booleanish | undefined;
   /**
    * Defines the number of items in the current set of listitems or treeitems. Not required if all elements in the set are present in the DOM.
    * @see aria-posinset.
    */
-  'aria-setsize'?: number | undefined;
+  "aria-setsize"?: number | undefined;
   /** Indicates if items in a table or grid are sorted in ascending or descending order. */
-  'aria-sort'?: 'none' | 'ascending' | 'descending' | 'other' | undefined;
+  "aria-sort"?: "none" | "ascending" | "descending" | "other" | undefined;
   /** Defines the maximum allowed value for a range widget. */
-  'aria-valuemax'?: number | undefined;
+  "aria-valuemax"?: number | undefined;
   /** Defines the minimum allowed value for a range widget. */
-  'aria-valuemin'?: number | undefined;
+  "aria-valuemin"?: number | undefined;
   /**
    * Defines the current value for a range widget.
    * @see aria-valuetext.
    */
-  'aria-valuenow'?: number | undefined;
+  "aria-valuenow"?: number | undefined;
   /** Defines the human readable text alternative of aria-valuenow for a range widget. */
-  'aria-valuetext'?: string | undefined;
+  "aria-valuetext"?: string | undefined;
 }
 export type AriaRole =
-  | 'alert'
-  | 'alertdialog'
-  | 'application'
-  | 'article'
-  | 'banner'
-  | 'button'
-  | 'cell'
-  | 'checkbox'
-  | 'columnheader'
-  | 'combobox'
-  | 'complementary'
-  | 'contentinfo'
-  | 'definition'
-  | 'dialog'
-  | 'directory'
-  | 'document'
-  | 'feed'
-  | 'figure'
-  | 'form'
-  | 'grid'
-  | 'gridcell'
-  | 'group'
-  | 'heading'
-  | 'img'
-  | 'link'
-  | 'list'
-  | 'listbox'
-  | 'listitem'
-  | 'log'
-  | 'main'
-  | 'marquee'
-  | 'math'
-  | 'menu'
-  | 'menubar'
-  | 'menuitem'
-  | 'menuitemcheckbox'
-  | 'menuitemradio'
-  | 'navigation'
-  | 'none'
-  | 'note'
-  | 'option'
-  | 'presentation'
-  | 'progressbar'
-  | 'radio'
-  | 'radiogroup'
-  | 'region'
-  | 'row'
-  | 'rowgroup'
-  | 'rowheader'
-  | 'scrollbar'
-  | 'search'
-  | 'searchbox'
-  | 'separator'
-  | 'slider'
-  | 'spinbutton'
-  | 'status'
-  | 'switch'
-  | 'tab'
-  | 'table'
-  | 'tablist'
-  | 'tabpanel'
-  | 'term'
-  | 'textbox'
-  | 'timer'
-  | 'toolbar'
-  | 'tooltip'
-  | 'tree'
-  | 'treegrid'
-  | 'treeitem'
+  | "alert"
+  | "alertdialog"
+  | "application"
+  | "article"
+  | "banner"
+  | "button"
+  | "cell"
+  | "checkbox"
+  | "columnheader"
+  | "combobox"
+  | "complementary"
+  | "contentinfo"
+  | "definition"
+  | "dialog"
+  | "directory"
+  | "document"
+  | "feed"
+  | "figure"
+  | "form"
+  | "grid"
+  | "gridcell"
+  | "group"
+  | "heading"
+  | "img"
+  | "link"
+  | "list"
+  | "listbox"
+  | "listitem"
+  | "log"
+  | "main"
+  | "marquee"
+  | "math"
+  | "menu"
+  | "menubar"
+  | "menuitem"
+  | "menuitemcheckbox"
+  | "menuitemradio"
+  | "navigation"
+  | "none"
+  | "note"
+  | "option"
+  | "presentation"
+  | "progressbar"
+  | "radio"
+  | "radiogroup"
+  | "region"
+  | "row"
+  | "rowgroup"
+  | "rowheader"
+  | "scrollbar"
+  | "search"
+  | "searchbox"
+  | "separator"
+  | "slider"
+  | "spinbutton"
+  | "status"
+  | "switch"
+  | "tab"
+  | "table"
+  | "tablist"
+  | "tabpanel"
+  | "term"
+  | "textbox"
+  | "timer"
+  | "toolbar"
+  | "tooltip"
+  | "tree"
+  | "treegrid"
+  | "treeitem"
   | (string & {});
 export interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
   defaultChecked?: boolean | undefined;
@@ -2593,7 +2614,7 @@ export interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
   autoFocus?: boolean | undefined;
   className?: string | undefined;
   class?: string | undefined;
-  contentEditable?: Booleanish | 'inherit' | 'plaintext-only' | undefined;
+  contentEditable?: Booleanish | "inherit" | "plaintext-only" | undefined;
   contextMenu?: string | undefined;
   dir?: string | undefined;
   draggable?: Booleanish | undefined;
@@ -2607,7 +2628,7 @@ export interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
   tabIndex?: string | number | undefined;
   tabindex?: string | number | undefined;
   title?: string | undefined;
-  translate?: 'yes' | 'no' | undefined;
+  translate?: "yes" | "no" | undefined;
   radioGroup?: string | undefined;
   role?: AriaRole | undefined;
   about?: string | undefined;
@@ -2632,20 +2653,20 @@ export interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
   itemRef?: string | undefined;
   results?: number | undefined;
   security?: string | undefined;
-  unselectable?: 'on' | 'off' | undefined;
+  unselectable?: "on" | "off" | undefined;
   /**
    * Hints at the type of data that might be entered by the user while editing the element or its contents
    * @see {@link https://html.spec.whatwg.org/multipage/interaction.html#input-modalities:-the-inputmode-attribute}
    */
   inputMode?:
-    | 'none'
-    | 'text'
-    | 'tel'
-    | 'url'
-    | 'email'
-    | 'numeric'
-    | 'decimal'
-    | 'search'
+    | "none"
+    | "text"
+    | "tel"
+    | "url"
+    | "email"
+    | "numeric"
+    | "decimal"
+    | "search"
     | undefined;
   /**
    * Specify that a standard HTML element should behave like a defined custom built-in element
@@ -2670,7 +2691,7 @@ export interface AllHTMLAttributes<T> extends HTMLAttributes<T> {
   autocomplete?: string | undefined;
   autoPlay?: boolean | undefined;
   autoplay?: boolean | undefined;
-  capture?: boolean | 'user' | 'environment' | undefined;
+  capture?: boolean | "user" | "environment" | undefined;
   cellPadding?: number | string | undefined;
   cellpadding?: number | string | undefined;
   cellSpacing?: number | string | undefined;
@@ -2790,20 +2811,20 @@ export interface AllHTMLAttributes<T> extends HTMLAttributes<T> {
   wrap?: string | undefined;
 }
 type HTMLAttributeReferrerPolicy =
-  | ''
-  | 'no-referrer'
-  | 'no-referrer-when-downgrade'
-  | 'origin'
-  | 'origin-when-cross-origin'
-  | 'same-origin'
-  | 'strict-origin'
-  | 'strict-origin-when-cross-origin'
-  | 'unsafe-url';
+  | ""
+  | "no-referrer"
+  | "no-referrer-when-downgrade"
+  | "origin"
+  | "origin-when-cross-origin"
+  | "same-origin"
+  | "strict-origin"
+  | "strict-origin-when-cross-origin"
+  | "unsafe-url";
 type HTMLAttributeAnchorTarget =
-  | '_self'
-  | '_blank'
-  | '_parent'
-  | '_top'
+  | "_self"
+  | "_blank"
+  | "_parent"
+  | "_top"
   | (string & {});
 export interface AnchorHTMLAttributes<T> extends HTMLAttributes<T> {
   download?: any;
@@ -2848,7 +2869,7 @@ export interface ButtonHTMLAttributes<T> extends HTMLAttributes<T> {
   formTarget?: string | undefined;
   target?: string | undefined;
   name?: string | undefined;
-  type?: 'submit' | 'reset' | 'button' | undefined;
+  type?: "submit" | "reset" | "button" | undefined;
   value?: string | readonly string[] | number | undefined;
 }
 export interface CanvasHTMLAttributes<T> extends HTMLAttributes<T> {
@@ -2911,7 +2932,7 @@ export interface IframeHTMLAttributes<T> extends HTMLAttributes<T> {
   /** @deprecated */
   frameBorder?: number | string | undefined;
   height?: number | string | undefined;
-  loading?: 'eager' | 'lazy' | undefined;
+  loading?: "eager" | "lazy" | undefined;
   /** @deprecated */
   marginHeight?: number | undefined;
   /** @deprecated */
@@ -2929,10 +2950,10 @@ export interface IframeHTMLAttributes<T> extends HTMLAttributes<T> {
 export interface ImgHTMLAttributes<T> extends HTMLAttributes<T> {
   alt?: string | undefined;
   crossOrigin?: CrossOrigin;
-  decoding?: 'async' | 'auto' | 'sync' | undefined;
-  fetchPriority?: 'high' | 'low' | 'auto';
+  decoding?: "async" | "auto" | "sync" | undefined;
+  fetchPriority?: "high" | "low" | "auto";
   height?: number | string | undefined;
-  loading?: 'eager' | 'lazy' | undefined;
+  loading?: "eager" | "lazy" | undefined;
   referrerPolicy?: HTMLAttributeReferrerPolicy | undefined;
   sizes?: string | undefined;
   src?: string | undefined;
@@ -2945,106 +2966,108 @@ export interface InsHTMLAttributes<T> extends HTMLAttributes<T> {
   dateTime?: string | undefined;
 }
 type HTMLInputTypeAttribute =
-  | 'button'
-  | 'checkbox'
-  | 'color'
-  | 'date'
-  | 'datetime-local'
-  | 'email'
-  | 'file'
-  | 'hidden'
-  | 'image'
-  | 'month'
-  | 'number'
-  | 'password'
-  | 'radio'
-  | 'range'
-  | 'reset'
-  | 'search'
-  | 'submit'
-  | 'tel'
-  | 'text'
-  | 'time'
-  | 'url'
-  | 'week'
+  | "button"
+  | "checkbox"
+  | "color"
+  | "date"
+  | "datetime-local"
+  | "email"
+  | "file"
+  | "hidden"
+  | "image"
+  | "month"
+  | "number"
+  | "password"
+  | "radio"
+  | "range"
+  | "reset"
+  | "search"
+  | "submit"
+  | "tel"
+  | "text"
+  | "time"
+  | "url"
+  | "week"
   | (string & {});
-type AutoFillAddressKind = 'billing' | 'shipping';
-type AutoFillBase = '' | 'off' | 'on';
+type AutoFillAddressKind = "billing" | "shipping";
+type AutoFillBase = "" | "off" | "on";
 type AutoFillContactField =
-  | 'email'
-  | 'tel'
-  | 'tel-area-code'
-  | 'tel-country-code'
-  | 'tel-extension'
-  | 'tel-local'
-  | 'tel-local-prefix'
-  | 'tel-local-suffix'
-  | 'tel-national';
-type AutoFillContactKind = 'home' | 'mobile' | 'work';
-type AutoFillCredentialField = 'webauthn';
+  | "email"
+  | "tel"
+  | "tel-area-code"
+  | "tel-country-code"
+  | "tel-extension"
+  | "tel-local"
+  | "tel-local-prefix"
+  | "tel-local-suffix"
+  | "tel-national";
+type AutoFillContactKind = "home" | "mobile" | "work";
+type AutoFillCredentialField = "webauthn";
 type AutoFillNormalField =
-  | 'additional-name'
-  | 'address-level1'
-  | 'address-level2'
-  | 'address-level3'
-  | 'address-level4'
-  | 'address-line1'
-  | 'address-line2'
-  | 'address-line3'
-  | 'bday-day'
-  | 'bday-month'
-  | 'bday-year'
-  | 'cc-csc'
-  | 'cc-exp'
-  | 'cc-exp-month'
-  | 'cc-exp-year'
-  | 'cc-family-name'
-  | 'cc-given-name'
-  | 'cc-name'
-  | 'cc-number'
-  | 'cc-type'
-  | 'country'
-  | 'country-name'
-  | 'current-password'
-  | 'family-name'
-  | 'given-name'
-  | 'honorific-prefix'
-  | 'honorific-suffix'
-  | 'name'
-  | 'new-password'
-  | 'one-time-code'
-  | 'organization'
-  | 'postal-code'
-  | 'street-address'
-  | 'transaction-amount'
-  | 'transaction-currency'
-  | 'username';
-type OptionalPrefixToken<T extends string> = `${T} ` | '';
-type OptionalPostfixToken<T extends string> = ` ${T}` | '';
+  | "additional-name"
+  | "address-level1"
+  | "address-level2"
+  | "address-level3"
+  | "address-level4"
+  | "address-line1"
+  | "address-line2"
+  | "address-line3"
+  | "bday-day"
+  | "bday-month"
+  | "bday-year"
+  | "cc-csc"
+  | "cc-exp"
+  | "cc-exp-month"
+  | "cc-exp-year"
+  | "cc-family-name"
+  | "cc-given-name"
+  | "cc-name"
+  | "cc-number"
+  | "cc-type"
+  | "country"
+  | "country-name"
+  | "current-password"
+  | "family-name"
+  | "given-name"
+  | "honorific-prefix"
+  | "honorific-suffix"
+  | "name"
+  | "new-password"
+  | "one-time-code"
+  | "organization"
+  | "postal-code"
+  | "street-address"
+  | "transaction-amount"
+  | "transaction-currency"
+  | "username";
+type OptionalPrefixToken<T extends string> = `${T} ` | "";
+type OptionalPostfixToken<T extends string> = ` ${T}` | "";
 type AutoFillField =
   | AutoFillNormalField
   | `${OptionalPrefixToken<AutoFillContactKind>}${AutoFillContactField}`;
 type AutoFillSection = `section-${string}`;
 type AutoFill =
   | AutoFillBase
-  | `${OptionalPrefixToken<AutoFillSection>}${OptionalPrefixToken<AutoFillAddressKind>}${AutoFillField}${OptionalPostfixToken<AutoFillCredentialField>}`;
+  | `${OptionalPrefixToken<AutoFillSection>}${OptionalPrefixToken<
+    AutoFillAddressKind
+  >}${AutoFillField}${OptionalPostfixToken<AutoFillCredentialField>}`;
 type HTMLInputAutoCompleteAttribute = AutoFill | (string & {});
 export interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
   accept?: string | undefined;
   alt?: string | undefined;
   autoComplete?: HTMLInputAutoCompleteAttribute | undefined;
   autocomplete?: HTMLInputAutoCompleteAttribute | undefined;
-  capture?: boolean | 'user' | 'environment' | undefined;
+  capture?: boolean | "user" | "environment" | undefined;
   checked?: boolean | undefined;
   disabled?: boolean | undefined;
   enterKeyHint?:
-    | 'enter'
-    | 'done'
-    | 'go'
-    | 'next'
-    | 'previous'
-    | 'search'
-    | 'send'
+    | "enter"
+    | "done"
+    | "go"
+    | "next"
+    | "previous"
+    | "search"
+    | "send"
     | undefined;
   form?: string | undefined;
   formAction?: string | undefined;
@@ -3101,8 +3124,8 @@ export interface LinkHTMLAttributes<T> extends HTMLAttributes<T> {
   as?: string | undefined;
   crossOrigin?: CrossOrigin;
   crossorigin?: CrossOrigin;
-  fetchPriority?: 'high' | 'low' | 'auto';
-  fetchpriority?: 'high' | 'low' | 'auto';
+  fetchPriority?: "high" | "low" | "auto";
+  fetchpriority?: "high" | "low" | "auto";
   href?: string | undefined;
   hrefLang?: string | undefined;
   hreflang?: string | undefined;
@@ -3176,7 +3199,7 @@ export interface ObjectHTMLAttributes<T> extends HTMLAttributes<T> {
 export interface OlHTMLAttributes<T> extends HTMLAttributes<T> {
   reversed?: boolean | undefined;
   start?: number | undefined;
-  type?: '1' | 'a' | 'A' | 'i' | 'I' | undefined;
+  type?: "1" | "a" | "A" | "i" | "I" | undefined;
 }
 export interface OptgroupHTMLAttributes<T> extends HTMLAttributes<T> {
   disabled?: boolean | undefined;
@@ -3248,13 +3271,13 @@ export interface StyleHTMLAttributes<T> extends HTMLAttributes<T> {
   type?: string | undefined;
 }
 export interface TableHTMLAttributes<T> extends HTMLAttributes<T> {
-  align?: 'left' | 'center' | 'right' | undefined;
+  align?: "left" | "center" | "right" | undefined;
   bgcolor?: string | undefined;
   border?: number | undefined;
   cellPadding?: number | string | undefined;
   cellSpacing?: number | string | undefined;
   frame?: boolean | undefined;
-  rules?: 'none' | 'groups' | 'rows' | 'columns' | 'all' | undefined;
+  rules?: "none" | "groups" | "rows" | "columns" | "all" | undefined;
   summary?: string | undefined;
   width?: number | string | undefined;
 }
@@ -3277,7 +3300,7 @@ export interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
   onchange?: ChangeEventHandler<T> | undefined;
 }
 export interface TdHTMLAttributes<T> extends HTMLAttributes<T> {
-  align?: 'left' | 'center' | 'right' | 'justify' | 'char' | undefined;
+  align?: "left" | "center" | "right" | "justify" | "char" | undefined;
   colSpan?: number | undefined;
   headers?: string | undefined;
   rowSpan?: number | undefined;
@@ -3285,10 +3308,10 @@ export interface TdHTMLAttributes<T> extends HTMLAttributes<T> {
   abbr?: string | undefined;
   height?: number | string | undefined;
   width?: number | string | undefined;
-  valign?: 'top' | 'middle' | 'bottom' | 'baseline' | undefined;
+  valign?: "top" | "middle" | "bottom" | "baseline" | undefined;
 }
 export interface ThHTMLAttributes<T> extends HTMLAttributes<T> {
-  align?: 'left' | 'center' | 'right' | 'justify' | 'char' | undefined;
+  align?: "left" | "center" | "right" | "justify" | "char" | undefined;
   colSpan?: number | undefined;
   headers?: string | undefined;
   rowSpan?: number | undefined;
@@ -3334,27 +3357,27 @@ export interface SVGAttributes<T> extends AriaAttributes, DOMAttributes<T> {
   tabIndex?: number | undefined;
   crossOrigin?: CrossOrigin;
   accentHeight?: number | string | undefined;
-  accumulate?: 'none' | 'sum' | undefined;
-  additive?: 'replace' | 'sum' | undefined;
+  accumulate?: "none" | "sum" | undefined;
+  additive?: "replace" | "sum" | undefined;
   alignmentBaseline?:
-    | 'auto'
-    | 'baseline'
-    | 'before-edge'
-    | 'text-before-edge'
-    | 'middle'
-    | 'central'
-    | 'after-edge'
-    | 'text-after-edge'
-    | 'ideographic'
-    | 'alphabetic'
-    | 'hanging'
-    | 'mathematical'
-    | 'inherit'
+    | "auto"
+    | "baseline"
+    | "before-edge"
+    | "text-before-edge"
+    | "middle"
+    | "central"
+    | "after-edge"
+    | "text-after-edge"
+    | "ideographic"
+    | "alphabetic"
+    | "hanging"
+    | "mathematical"
+    | "inherit"
     | undefined;
-  allowReorder?: 'no' | 'yes' | undefined;
+  allowReorder?: "no" | "yes" | undefined;
   alphabetic?: number | string | undefined;
   amplitude?: number | string | undefined;
-  arabicForm?: 'initial' | 'medial' | 'terminal' | 'isolated' | undefined;
+  arabicForm?: "initial" | "medial" | "terminal" | "isolated" | undefined;
   ascent?: number | string | undefined;
   attributeName?: string | undefined;
   attributeType?: string | undefined;
@@ -3375,10 +3398,10 @@ export interface SVGAttributes<T> extends AriaAttributes, DOMAttributes<T> {
   clipRule?: number | string | undefined;
   colorInterpolation?: number | string | undefined;
   colorInterpolationFilters?:
-    | 'auto'
-    | 'sRGB'
-    | 'linearRGB'
-    | 'inherit'
+    | "auto"
+    | "sRGB"
+    | "linearRGB"
+    | "inherit"
     | undefined;
   colorProfile?: number | string | undefined;
   colorRendering?: number | string | undefined;
@@ -3406,13 +3429,13 @@ export interface SVGAttributes<T> extends AriaAttributes, DOMAttributes<T> {
   externalResourcesRequired?: Booleanish | undefined;
   fill?: string | undefined;
   fillOpacity?: number | string | undefined;
-  fillRule?: 'nonzero' | 'evenodd' | 'inherit' | undefined;
+  fillRule?: "nonzero" | "evenodd" | "inherit" | undefined;
   filter?: string | undefined;
   filterRes?: number | string | undefined;
   filterUnits?: number | string | undefined;
   floodColor?: number | string | undefined;
   floodOpacity?: number | string | undefined;
-  focusable?: Booleanish | 'auto' | undefined;
+  focusable?: Booleanish | "auto" | undefined;
   fontFamily?: string | undefined;
   fontSize?: number | string | undefined;
   fontSizeAdjust?: number | string | undefined;
@@ -3531,8 +3554,8 @@ export interface SVGAttributes<T> extends AriaAttributes, DOMAttributes<T> {
   stroke?: string | undefined;
   strokeDasharray?: string | number | undefined;
   strokeDashoffset?: string | number | undefined;
-  strokeLinecap?: 'butt' | 'round' | 'square' | 'inherit' | undefined;
-  strokeLinejoin?: 'miter' | 'round' | 'bevel' | 'inherit' | undefined;
+  strokeLinecap?: "butt" | "round" | "square" | "inherit" | undefined;
+  strokeLinejoin?: "miter" | "round" | "bevel" | "inherit" | undefined;
   strokeMiterlimit?: number | string | undefined;
   strokeOpacity?: number | string | undefined;
   strokeWidth?: number | string | undefined;
@@ -3579,7 +3602,7 @@ export interface SVGAttributes<T> extends AriaAttributes, DOMAttributes<T> {
   xlinkActuate?: string | undefined;
   xlinkArcrole?: string | undefined;
   xlinkHref?: string | undefined;
-  'xlink:href'?: string | undefined;
+  "xlink:href"?: string | undefined;
   xlinkRole?: string | undefined;
   xlinkShow?: string | undefined;
   xlinkTitle?: string | undefined;
@@ -3588,9 +3611,9 @@ export interface SVGAttributes<T> extends AriaAttributes, DOMAttributes<T> {
   xmlLang?: string | undefined;
   xmlns?: string | undefined;
   xmlnsXlink?: string | undefined;
-  'xmlns:xlink'?: string | undefined;
+  "xmlns:xlink"?: string | undefined;
   xmlSpace?: string | undefined;
-  'xml:space'?: string | undefined;
+  "xml:space"?: string | undefined;
   y1?: number | string | undefined;
   y2?: number | string | undefined;
   y?: number | string | undefined;
@@ -4004,15 +4027,15 @@ export enum PatchTypeAndOrder {
 }
 
 export enum EffectType {
-  BEFORE = 'BEFORE',
-  AFTER = 'AFTER',
+  BEFORE = "BEFORE",
+  AFTER = "AFTER",
 }
 
-export const ERROR_EVENTNAME = 'reblend-render-error';
-export const REBLEND_PRIMITIVE_ELEMENT_NAME = 'ReblendPrimitive';
+export const ERROR_EVENTNAME = "reblend-render-error";
+export const REBLEND_PRIMITIVE_ELEMENT_NAME = "ReblendPrimitive";
 
 export {
   allAttribute,
-  shouldUseSetAttribute,
   attributeName,
-} from './standardAttribute';
+  shouldUseSetAttribute,
+} from "./standardAttribute";
