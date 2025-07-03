@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-namespace */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -10,11 +11,8 @@ import * as ReblendTyping from 'reblend-typing'
 declare global {
   export namespace Reblend.JSX {
     type ElementType = any
-    type Element = ReblendTyping.ReblendElement
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    interface ElementClass<P = {}, S = {}> extends ReblendTyping.Component<P, S> {
-      html?: () => Promise<ReblendTyping.ReblendNode> | ReblendTyping.ReblendNode
-    }
+    type Element = any
+    type ElementClass = any
     interface ElementAttributesProperty {
       props: { children: ReblendTyping.ReblendElement[] } & IAny
     }

@@ -188,6 +188,14 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
     ui = (ui as any)({})
   }
 
+  if (isPrimitive(ui)) {
+    return [newReblendPrimitive()?.setData(ui as ReblendTyping.Primitive) as any]
+  }
+
+  if (ui instanceof Promise) {
+    return (await createChildren(BaseComponent.construct(ui as any, {}) as any)) as any
+  }
+
   const tempComponent: typeof Reblend = ui as any
 
   // Handle Reblend class component
@@ -202,6 +210,10 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
   let { displayName } = ui as ReblendTyping.VNode
   if (isCallable(displayName)) {
     displayName = await (displayName as any)((ui as any).props)
+  }
+
+  if (typeof displayName !== 'string' && isPrimitive(displayName)) {
+    return [newReblendPrimitive()?.setData(displayName as any) as any]
   }
 
   const node = displayName as any
