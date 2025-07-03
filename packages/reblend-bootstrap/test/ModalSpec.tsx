@@ -462,7 +462,7 @@ describe('<Modal>', () => {
 
     // TODO: Ugly, but temp until we move to new test runner/assertion lib.
     try {
-      await waitFor(() => expect(screen.queryByRole('dialog')).not.to.exist);
+      await waitFor(() => expect(screen.queryByRole('dialog')).nottoBeTruthy());
     } catch (err) {
       // Expected an error.
       return;

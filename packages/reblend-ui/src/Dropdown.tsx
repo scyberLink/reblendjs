@@ -1,7 +1,15 @@
 import qsa from 'dom-helpers/querySelectorAll';
 import addEventListener from 'dom-helpers/addEventListener';
-import { useCallback, useRef, useEffect, useMemo, useContext } from 'reblendjs';
-import * as Reblend from 'reblendjs';
+import {
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+  useContext,
+  useReducer,
+  useState,
+} from 'reblendjs';
+import Reblend from 'reblendjs';
 import { useUncontrolledProp } from 'uncontrollable';
 import { useForceUpdate } from 'reblend-hooks';
 import { useEventListener } from 'reblend-hooks';
@@ -116,19 +124,17 @@ export interface DropdownProps {
    *   },
    * }) => Reblend.Element}
    */
-  children: Reblend.ReactNode;
+  children: Reblend.ReblendNode;
 }
 
 function useRefWithUpdate() {
   const forceUpdate = useForceUpdate();
   const ref = useRef<HTMLElement | null>(null);
-  const attachRef = useCallback(
-    (element: null | HTMLElement) => {
-      ref.current = element;
-      // ensure that a menu set triggers an update for consumers
-      forceUpdate();
-    },
-  );
+  const attachRef = useCallback((element: null | HTMLElement) => {
+    ref.current = element;
+    // ensure that a menu set triggers an update for consumers
+    forceUpdate();
+  });
   return [ref, attachRef] as const;
 }
 
@@ -136,7 +142,7 @@ function useRefWithUpdate() {
  * @displayName Dropdown
  * @public
  */
-function Dropdown({
+async function Dropdown({
   defaultShow,
   show: rawShow,
   onSelect,
@@ -147,25 +153,35 @@ function Dropdown({
   children,
 }: DropdownProps) {
   const [window] = useWindow();
-  const [show, onToggle] = useUncontrolledProp(
-    rawShow,
-    defaultShow!,
-    rawOnToggle,
-  );
+  const [show, setShow] = useState(defaultShow);
+
+  useEffect(() => {
+    if (typeof rawShow !== 'undefined') {
+      setShow(rawShow);
+    }
+  }, rawShow);
+
+  const onToggle = useCallback((nextShow: boolean, meta: ToggleMetadata) => {
+    if (typeof rawShow !== 'undefined') {
+      // controlled, so we don't update the state
+      return rawOnToggle?.(nextShow, meta);
+    } else if (nextShow !== show) {
+      // uncontrolled, so we update the state
+      setShow(nextShow);
+      rawOnToggle?.(nextShow, meta);
+    }
+  });
 
   // We use normal refs instead of useCallbackRef in order to populate the
   // the value as quickly as possible, otherwise the effect to focus the element
   // may run before the state value is set
   const [menuRef, setMenu] = useRefWithUpdate();
-  const menuElement = menuRef.current;
 
   const [toggleRef, setToggle] = useRefWithUpdate();
-  const toggleElement = toggleRef.current;
 
-  const lastShow = usePrevious(show);
+  const lastShow = useMemo(({ previous }) => previous, show);
   const lastSourceEvent = useRef<string | null>(null);
   const focusInDropdown = useRef(false);
-  const onSelectCtx = useContext(SelectableContext);
 
   const toggle = useCallback(
     (
@@ -175,42 +191,40 @@ function Dropdown({
     ) => {
       onToggle(nextShow, { originalEvent: event, source });
     },
-    [onToggle],
   );
 
   const handleSelect = useEventCallback(
     (key: string | null, event: Reblend.SyntheticEvent) => {
       onSelect?.(key, event);
       toggle(false, event, 'select');
-
-      if (!event.isPropagationStopped()) {
-        onSelectCtx?.(key, event);
-      }
     },
   );
 
-  const context = useMemo(
-    () => ({
+  useEffect(async () => {
+    const context = {
       toggle,
       placement,
-      show,
-      menuElement,
-      toggleElement,
+      show: !!show,
+      menuElement: menuRef.current,
+      toggleElement: toggleRef.current,
       setMenu,
       setToggle,
-    }),
-    [toggle, placement, show, menuElement, toggleElement, setMenu, setToggle],
-  );
+    };
 
-  if (menuElement && lastShow && !show) {
-    focusInDropdown.current = menuElement.contains(
-      menuElement.ownerDocument.activeElement,
-    );
-  }
+    await DropdownContext.update(context);
+  }, [placement, show, menuRef.current, toggleRef.current, setMenu, setToggle]);
+
+  useEffect(() => {
+    if (menuRef.current && lastShow && !show) {
+      focusInDropdown.current = menuRef.current.contains(
+        menuRef.current.ownerDocument.activeElement,
+      );
+    }
+  });
 
   const focusToggle = useEventCallback(() => {
-    if (toggleElement && toggleElement.focus) {
-      toggleElement.focus();
+    if (toggleRef.current && toggleRef.current.focus) {
+      toggleRef.current.focus();
     }
   });
 
@@ -242,7 +256,7 @@ function Dropdown({
       focusToggle();
     }
     // only `show` should be changing
-  }, [show, focusInDropdown, focusToggle, maybeFocusFirst]);
+  }, [show, focusInDropdown]);
 
   useEffect(() => {
     lastSourceEvent.current = null;
@@ -260,7 +274,7 @@ function Dropdown({
   };
 
   useEventListener(
-    useCallback(() => window!.document, [window]),
+    useCallback(() => window!.document),
     'keydown',
     (event: KeyboardEvent) => {
       const { key } = event;
@@ -340,13 +354,8 @@ function Dropdown({
     },
   );
 
-  return (
-    <SelectableContext.Provider value={handleSelect}>
-      <DropdownContext.Provider value={context}>
-        {children}
-      </DropdownContext.Provider>
-    </SelectableContext.Provider>
-  );
+  await SelectableContext.update(handleSelect);
+  return children as any;
 }
 
 Dropdown.displayName = 'Dropdown';

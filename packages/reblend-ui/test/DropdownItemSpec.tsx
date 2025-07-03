@@ -1,20 +1,20 @@
-import * as Reblend from 'reblendjs';
+import Reblend from 'reblendjs';
 import { render, fireEvent } from 'reblend-testing-library';
 
 import { expect, describe, it } from '@jest/globals';
-import DropdownItem from '../src/DropdownItem';
-import SelectableContext from '../src/SelectableContext';
+import DropdownItem from '../cjs/DropdownItem';
+import SelectableContext from '../cjs/SelectableContext';
 
 describe('<DropdownItem>', () => {
-  it('should output a nav item as button', () => {
-    const { getByText } = render(<DropdownItem>test</DropdownItem>);
+  it('should output a nav item as button', async () => {
+    const { getByText } = await render(<DropdownItem>test</DropdownItem>);
 
     expect(getByText('test').tagName).toEqual('BUTTON');
   });
 
-  it('should trigger onClick', () => {
+  it('should trigger onClick', async () => {
     const onClickSpy = jest.fn();
-    const { getByText } = render(
+    const { getByText } = await render(
       <DropdownItem onClick={onClickSpy}>test</DropdownItem>,
     );
     fireEvent.click(getByText('test'));
@@ -22,9 +22,9 @@ describe('<DropdownItem>', () => {
     expect(onClickSpy).toHaveBeenCalled();
   });
 
-  it('should not trigger onClick if disabled', () => {
+  it('should not trigger onClick if disabled', async () => {
     const onClickSpy = jest.fn();
-    const { getByText } = render(
+    const { getByText } = await render(
       <DropdownItem onClick={onClickSpy} disabled>
         test
       </DropdownItem>,
@@ -33,29 +33,27 @@ describe('<DropdownItem>', () => {
     expect(onClickSpy).not.toHaveBeenCalled();
   });
 
-  it('should call onSelect if a key is defined', () => {
+  it('should call onSelect if a key is defined', async () => {
     const onSelect = jest.fn();
-    const { getByText } = render(
-      <SelectableContext.Provider value={onSelect}>
-        <DropdownItem eventKey="abc">test</DropdownItem>
-      </SelectableContext.Provider>,
+    await SelectableContext.update(onSelect);
+    const { getByText } = await render(
+      <DropdownItem eventKey="abc">test</DropdownItem>,
     );
 
     fireEvent.click(getByText('test'));
     expect(onSelect.mock.calls.at(-1)![0]).toEqual('abc');
   });
 
-  it('should not call onSelect onClick stopPropagation called', () => {
+  it('should not call onSelect onClick stopPropagation called', async () => {
     const onSelect = jest.fn();
+    await SelectableContext.update(onSelect);
     const handleClick = (e: Reblend.MouseEvent) => {
       e.stopPropagation();
     };
-    const { getByText } = render(
-      <SelectableContext.Provider value={onSelect}>
-        <DropdownItem eventKey="abc" onClick={handleClick}>
-          test
-        </DropdownItem>
-      </SelectableContext.Provider>,
+    const { getByText } = await render(
+      <DropdownItem eventKey="abc" onClick={handleClick}>
+        test
+      </DropdownItem>,
     );
 
     fireEvent.click(getByText('test'));

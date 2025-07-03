@@ -8,7 +8,7 @@ import SelectableContext, { makeEventKey } from './SelectableContext';
 import TabContext from './TabContext';
 import {
   EventKey,
-  DynamicRefForwardingComponent,
+  DynamicComponent,
   SelectCallback,
 } from './types';
 import { dataAttr, dataProp } from './DataKey';

@@ -5,7 +5,7 @@ import { useEventCallback } from 'reblend-hooks';
 import SelectableContext, { makeEventKey } from './SelectableContext';
 import NavContext from './NavContext';
 
-import { EventKey, DynamicRefForwardingComponent } from './types';
+import { EventKey, DynamicComponent } from './types';
 import Button from './Button';
 import { dataAttr } from './DataKey';
 
@@ -89,7 +89,7 @@ export function useDropdownItem({
   ] as const;
 }
 
-const DropdownItem: DynamicRefForwardingComponent<
+const DropdownItem: DynamicComponent<
   typeof Button,
   DropdownItemProps
 > = ({

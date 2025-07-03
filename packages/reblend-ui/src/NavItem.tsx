@@ -4,7 +4,7 @@ import { useEventCallback } from 'reblend-hooks';
 
 import NavContext from './NavContext';
 import SelectableContext, { makeEventKey } from './SelectableContext';
-import { EventKey, DynamicRefForwardingComponent } from './types';
+import { EventKey, DynamicComponent } from './types';
 import Button from './Button';
 import { dataAttr } from './DataKey';
 import TabContext from './TabContext';
@@ -116,7 +116,7 @@ export function useNavItem({
   return [props, { isActive }] as const;
 }
 
-const NavItem: DynamicRefForwardingComponent<typeof Button, NavItemProps> = ({
+const NavItem: DynamicComponent<typeof Button, NavItemProps> = ({
   as: Component = Button,
   active,
   eventKey,

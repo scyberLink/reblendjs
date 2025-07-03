@@ -1,4 +1,4 @@
-import Reblend, { AriaRole, FC, RefAttributes } from 'reblendjs';
+import Reblend, { AriaRole, ButtonHTMLAttributes, FC, ReblendNode, RefAttributes } from 'reblendjs';
 
 export type ButtonType = 'button' | 'reset' | 'submit';
 
@@ -12,7 +12,7 @@ export interface UseButtonPropsOptions extends AnchorOptions {
   type?: ButtonType;
   disabled?: boolean;
   onClick?: Reblend.EventHandler<Reblend.MouseEvent | Reblend.KeyboardEvent>;
-  tabIndex?: number;
+  tabIndex?: number | string;
   tagName?: keyof JSX.IntrinsicElements;
   role?: AriaRole | undefined;
 }
@@ -25,7 +25,7 @@ export interface AriaButtonProps {
   type?: ButtonType | undefined;
   disabled: boolean | undefined;
   role?: Reblend.AriaRole;
-  tabIndex?: number | undefined;
+  tabIndex?: number | string | undefined;
   href?: string | undefined;
   target?: string | undefined;
   rel?: string | undefined;
@@ -108,7 +108,7 @@ export function useButtonProps({
   ];
 }
 
-export interface BaseButtonProps {
+export interface BaseButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * Control the underlying rendered element directly by passing in a valid
    * component type
@@ -126,6 +126,7 @@ export interface BaseButtonProps {
 
   rel?: string | undefined;
   ref?: RefAttributes<HTMLButtonElement>['ref'];
+  children: ReblendNode;
 }
 
 export interface ButtonProps extends BaseButtonProps {}

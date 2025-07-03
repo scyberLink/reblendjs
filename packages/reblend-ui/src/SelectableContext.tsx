@@ -1,7 +1,7 @@
-import * as Reblend from 'reblendjs';
+import { createContext } from 'reblendjs';
 import { EventKey, SelectCallback } from './types';
 
-const SelectableContext = Reblend.createContext<SelectCallback | null>(null);
+const SelectableContext = createContext<SelectCallback | null>(null);
 
 export const makeEventKey = (
   eventKey?: EventKey | null,

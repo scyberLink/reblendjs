@@ -23,7 +23,7 @@ function isModifiedEvent(event: MouseEvent) {
 }
 
 export const getRefTarget = (
-  ref: Reblend.RefObject<Element> | Element | null | undefined,
+  ref: Reblend.Ref<Element> | Element | null | undefined,
 ) => ref && ('current' in ref ? ref.current : ref);
 
 export interface ClickOutsideOptions {
@@ -48,7 +48,7 @@ const InitialTriggerEvents: Partial<Record<MouseEvents, MouseEvents>> = {
  * @param {string=}  options.clickTrigger The DOM event name (click, mousedown, etc) to attach listeners on
  */
 function useClickOutside(
-  ref: Reblend.RefObject<Element> | Element | null | undefined,
+  ref: Reblend.Ref<Element> | Element | null | undefined,
   onClickOutside: (e: Event) => void = noop,
   { disabled, clickTrigger = 'click' }: ClickOutsideOptions = {},
 ) {
@@ -73,8 +73,7 @@ function useClickOutside(
         waitingForTrigger.current;
 
       waitingForTrigger.current = false;
-    },
-    [ref],
+    }, 
   );
 
   const handleInitialMouse = useEventCallback((e: MouseEvent) => {

@@ -40,7 +40,7 @@ describe('<Button>', () => {
       </Button>,
     );
 
-    expect(getByTestId('test').getAttribute('type')).to.be.null;
+    expect(getByTestId('test').getAttribute('type')).toBeFalsy();
   });
 
   it('should forward refs to the button', async () => {

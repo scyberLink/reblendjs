@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { getChildRef } from '../src/utils';
+import { getChildRef } from '../cjs/utils';
 
 describe('utils', () => {
   describe('getChildRef', () => {

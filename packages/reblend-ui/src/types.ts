@@ -1,41 +1,16 @@
-import * as Reblend from 'reblendjs';
+import Reblend, { ReblendElement } from 'reblendjs';
 
 export type EventKey = string | number;
 
 export type IntrinsicElementTypes = keyof Reblend.JSX.IntrinsicElements;
 
-export type AssignPropsWithRef<
-  Inner extends string | Reblend.ComponentType<any>,
-  P,
-> = Omit<
-  Reblend.ComponentPropsWithRef<Inner extends Reblend.ElementType ? Inner : never>,
-  keyof P
-> &
-  P;
-
-export type { AssignPropsWithRef as AssignProps };
-
-export type AssignPropsWithoutRef<
-  Inner extends string | Reblend.ComponentType<any>,
-  P,
-> = Omit<
-  Reblend.ComponentPropsWithoutRef<
-    Inner extends Reblend.ElementType ? Inner : never
-  >,
-  keyof P
-> &
-  P;
-
-export interface DynamicRefForwardingComponent<
+export interface DynamicComponent<
   TInitial extends string | Reblend.ComponentType<any>,
   P = { children?: Reblend.ReactNode },
 > {
   <As extends string | Reblend.ComponentType<any> = TInitial>(
-    props: AssignPropsWithRef<As, { as?: As } & P>,
-    context?: any,
+    props: { as?: As } & P,
   ): Reblend.ReactNode;
-  propTypes?: any;
-  contextTypes?: any;
   defaultProps?: Partial<P>;
   displayName?: string;
 }
@@ -45,25 +20,17 @@ export interface DynamicFunctionComponent<
   P = { children?: Reblend.ReactNode },
 > {
   <As extends string | Reblend.ComponentType<any> = TInitial>(
-    props: AssignPropsWithoutRef<As, { as?: As } & P>,
-    context?: any,
+    props: { as?: As } & P,
   ): Reblend.ReactNode;
-  propTypes?: any;
-  contextTypes?: any;
   defaultProps?: Partial<P>;
   displayName?: string;
 }
-
-export class DynamicComponent<
-  As extends string | Reblend.ComponentType<any>,
-  P = unknown,
-> extends Reblend.Component<AssignPropsWithRef<As, { as?: As } & P>> {}
 
 // Need to use this instead of typeof Component to get proper type checking.
 export type DynamicComponentClass<
   As extends string | Reblend.ComponentType<any>,
   P = unknown,
-> = Reblend.ComponentClass<AssignPropsWithRef<As, { as?: As } & P>>;
+> = Reblend.ComponentClass<{ as?: As } & P>;
 
 export type SelectCallback = (
   eventKey: string | null,
@@ -100,7 +67,7 @@ export interface TransitionCallbacks {
 export interface TransitionProps extends TransitionCallbacks {
   in?: boolean;
   appear?: boolean;
-  children: Reblend.ReactElement<any>;
+  children: ReblendElement;
   mountOnEnter?: boolean;
   unmountOnExit?: boolean;
 }

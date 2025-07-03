@@ -1,9 +1,7 @@
 import { render, fireEvent, screen, waitFor } from 'reblend-testing-library';
-import { expect, describe, it, afterEach, beforeEach, jest } from '@jest/globals';
-
-import userEvent from '@testing-library/user-event';
-import Dropdown from '../src/Dropdown';
-import DropdownItem from '../src/DropdownItem';
+import Dropdown from '../cjs/Dropdown';
+import DropdownItem from '../cjs/DropdownItem';
+import Reblend from 'reblendjs';
 
 describe('<Dropdown>', () => {
   const Menu = ({
@@ -85,17 +83,17 @@ describe('<Dropdown>', () => {
 
   let focusableContainer: HTMLElement;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     focusableContainer = document.createElement('div');
     document.body.appendChild(focusableContainer);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     document.body.removeChild(focusableContainer);
   });
 
-  it('renders toggle with Dropdown.Toggle', () => {
-    render(<SimpleDropdown />);
+  it('renders toggle with Dropdown.Toggle', async () => {
+    await render(<SimpleDropdown />);
 
     const buttonNode = screen.getByTestId('toggle');
 
@@ -106,12 +104,12 @@ describe('<Dropdown>', () => {
     expect(buttonNode.getAttribute('id')).toBeTruthy();
   });
 
-  it('forwards placement to menu', () => {
+  it('forwards placement to menu', async () => {
     const renderSpy = jest.fn((meta) => {
       expect(meta.placement).toEqual('bottom-end');
     });
 
-    render(
+    await render(
       <SimpleDropdown
         show
         placement="bottom-end"
@@ -126,24 +124,26 @@ describe('<Dropdown>', () => {
   // NOTE: The onClick event handler is invoked for both the Enter and Space
   // keys as well since the component is a button. I cannot figure out how to
   // get ReactTestUtils to simulate such though.
-  it('toggles open/closed when clicked', () => {
-    const { container } = render(<SimpleDropdown />);
+  it('toggles open/closed when clicked', async () => {
+    const { container } = await render(<SimpleDropdown />);
 
     expect(container.querySelector('.show')).toBeNull();
 
     fireEvent.click(container.querySelector('button[aria-expanded="false"]')!);
 
-    expect(container.querySelector('div[data-show="true"]')).to.exist;
+    expect(container.querySelector('div[data-show="true"]')).toBeTruthy();
 
     fireEvent.click(container.querySelector('button[aria-expanded="true"]')!);
 
     expect(container.querySelector('.show')).toBeNull();
-    expect(container.querySelector('button[aria-expanded="false"]')).to.exist;
+    expect(
+      container.querySelector('button[aria-expanded="false"]'),
+    ).toBeTruthy();
   });
 
-  it('closes when clicked outside', () => {
+  it('closes when clicked outside', async () => {
     const closeSpy = jest.fn();
-    const { container } = render(<SimpleDropdown onToggle={closeSpy} />);
+    const { container } = await render(<SimpleDropdown onToggle={closeSpy} />);
 
     fireEvent.click(container.querySelector('.toggle')!);
 
@@ -154,10 +154,10 @@ describe('<Dropdown>', () => {
     expect(closeSpy.mock.calls.at(-1)![0]).toEqual(false);
   });
 
-  it('closes when mousedown outside if rootCloseEvent set', () => {
+  it('closes when mousedown outside if rootCloseEvent set', async () => {
     const closeSpy = jest.fn();
 
-    const { container } = render(
+    const { container } = await render(
       <Dropdown onToggle={closeSpy}>
         <div>
           <Toggle>Toggle</Toggle>,
@@ -177,9 +177,9 @@ describe('<Dropdown>', () => {
     expect(closeSpy.mock.calls.at(-1)![0]).toEqual(false);
   });
 
-  it('when focused and closed toggles open when the key "down" is pressed', () => {
+  it('when focused and closed toggles open when the key "down" is pressed', async () => {
     const closeSpy = jest.fn();
-    const { container } = render(<SimpleDropdown onToggle={closeSpy} />, {
+    const { container } = await render(<SimpleDropdown onToggle={closeSpy} />, {
       container: focusableContainer,
     });
 
@@ -191,20 +191,20 @@ describe('<Dropdown>', () => {
     expect(closeSpy.mock.calls.at(-1)![0]).toEqual(true);
   });
 
-  it('closes when item is clicked', () => {
+  it('closes when item is clicked', async () => {
     const onToggle = jest.fn();
 
-    const root = render(<SimpleDropdown show onToggle={onToggle} />);
+    const root = await render(<SimpleDropdown show onToggle={onToggle} />);
 
     fireEvent.click(root.getByText('Item 4'));
 
     expect(onToggle.mock.calls[0][0]).toEqual(false);
   });
 
-  it('does not close when onToggle is controlled', () => {
+  it('does not close when onToggle is controlled', async () => {
     const onToggle = jest.fn();
 
-    const root = render(<SimpleDropdown show onToggle={onToggle} />);
+    const root = await render(<SimpleDropdown show onToggle={onToggle} />);
 
     fireEvent.click(root.getByText('Toggle'));
 
@@ -212,19 +212,19 @@ describe('<Dropdown>', () => {
 
     expect(onToggle.mock.calls[0][0]).toEqual(false);
 
-    expect(root.container.querySelector('div[data-show="true"]')).to.exist;
+    expect(root.container.querySelector('div[data-show="true"]')).toBeTruthy();
   });
 
-  it('has aria-labelledby same id as toggle button', () => {
-    const root = render(<SimpleDropdown defaultShow />);
+  it('has aria-labelledby same id as toggle button', async () => {
+    const root = await render(<SimpleDropdown defaultShow />);
 
     expect(root.getByText('Toggle').getAttribute('id')).toEqual(
       root.container.querySelector('.menu')!.getAttribute('aria-labelledby'),
     );
   });
 
-  it('has aria-haspopup when menu has role=menu and not otherwise', () => {
-    let root = render(
+  it('has aria-haspopup when menu has role=menu and not otherwise', async () => {
+    let root = await render(
       <Dropdown>
         <div>
           <Toggle>Toggle</Toggle>,
@@ -242,7 +242,7 @@ describe('<Dropdown>', () => {
     // doesn't really work across rerenders b/c the menu ref doesn't change
     root.unmount();
 
-    root = render(
+    root = await render(
       <Dropdown>
         <div>
           <Toggle>Toggle</Toggle>,
@@ -261,7 +261,7 @@ describe('<Dropdown>', () => {
 
   describe('focusable state', () => {
     it('when focus should not be moved to first item when focusFirstItemOnShow is `false`', async () => {
-      render(
+      await render(
         <Dropdown focusFirstItemOnShow={false}>
           <div>
             <Toggle>Toggle</Toggle>,
@@ -277,13 +277,13 @@ describe('<Dropdown>', () => {
 
       toggle.focus();
 
-      await userEvent.click(toggle);
+      await fireEvent.click(toggle);
 
       expect(document.activeElement).toEqual(toggle);
     });
 
     it('when focused and closed sets focus on first menu item when the key "down" is pressed for role="menu"', async () => {
-      render(
+      await render(
         <Dropdown>
           <div>
             <Toggle>Toggle</Toggle>,
@@ -311,8 +311,8 @@ describe('<Dropdown>', () => {
       );
     });
 
-    it('when focused and closed sets focus on first menu item when the focusFirstItemOnShow is true', () => {
-      render(
+    it('when focused and closed sets focus on first menu item when the focusFirstItemOnShow is true', async () => {
+      await render(
         <Dropdown focusFirstItemOnShow>
           <div>
             <Toggle>Toggle</Toggle>,
@@ -338,8 +338,8 @@ describe('<Dropdown>', () => {
       );
     });
 
-    it('when open and the key "Escape" is pressed the menu is closed and focus is returned to the button', () => {
-      render(<SimpleDropdown defaultShow />, {
+    it('when open and the key "Escape" is pressed the menu is closed and focus is returned to the button', async () => {
+      await render(<SimpleDropdown defaultShow />, {
         container: focusableContainer,
       });
 
@@ -356,9 +356,9 @@ describe('<Dropdown>', () => {
       expect(document.activeElement).toEqual(screen.getByTestId('toggle'));
     });
 
-    it('when open and a search input is focused and the key "Escape" is pressed the menu stays open', () => {
+    it('when open and a search input is focused and the key "Escape" is pressed the menu stays open', async () => {
       const toggleSpy = jest.fn();
-      const root = render(
+      const root = await render(
         <Dropdown defaultShow onToggle={toggleSpy}>
           <Toggle key="toggle">Toggle</Toggle>,
           <Menu key="menu">
@@ -382,8 +382,8 @@ describe('<Dropdown>', () => {
       expect(toggleSpy).not.toHaveBeenCalled();
     });
 
-    it('when open and the key "tab" is pressed the menu is closed and focus is progress to the next focusable element', () => {
-      render(
+    it('when open and the key "tab" is pressed the menu is closed and focus is progress to the next focusable element', async () => {
+      await render(
         <div>
           <SimpleDropdown defaultShow />
           <input type="text" id="next-focusable" />
@@ -406,9 +406,9 @@ describe('<Dropdown>', () => {
     });
   });
 
-  it('should not call onToggle if the menu ref not defined and "tab" is pressed', () => {
+  it('should not call onToggle if the menu ref not defined and "tab" is pressed', async () => {
     const onToggleSpy = jest.fn();
-    const root = render(
+    const root = await render(
       <SimpleDropdown onToggle={onToggleSpy} renderMenuOnMount={false} />,
       {
         container: focusableContainer,
@@ -424,9 +424,9 @@ describe('<Dropdown>', () => {
     expect(onToggleSpy).not.toHaveBeenCalled();
   });
 
-  it('should not call onToggle if the menu is hidden and "tab" is pressed', () => {
+  it('should not call onToggle if the menu is hidden and "tab" is pressed', async () => {
     const onToggleSpy = jest.fn();
-    const root = render(<SimpleDropdown onToggle={onToggleSpy} />, {
+    const root = await render(<SimpleDropdown onToggle={onToggleSpy} />, {
       container: focusableContainer,
     });
 
@@ -453,7 +453,7 @@ describe('<Dropdown>', () => {
         ],
       };
 
-      render(
+      await render(
         <Dropdown show>
           <div>
             <Toggle>Toggle</Toggle>

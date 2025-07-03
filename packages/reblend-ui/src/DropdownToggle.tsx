@@ -1,12 +1,11 @@
-import { useContext, useCallback, useId } from 'reblendjs';
-import * as Reblend from 'reblendjs';
+import { useContext, useCallback, useEffect } from 'reblendjs';
+import Reblend from 'reblendjs';
 import DropdownContext, { DropdownContextValue } from './DropdownContext';
 
 export const isRoleMenu = (el: HTMLElement) =>
   el.getAttribute('role')?.toLowerCase() === 'menu';
 
 export interface UseDropdownToggleProps {
-  id: string;
   ref: DropdownContextValue['setToggle'];
   onClick: Reblend.MouseEventHandler;
   'aria-expanded': boolean;
@@ -26,39 +25,37 @@ const noop = () => {};
  *
  * @memberOf Dropdown
  */
-export function useDropdownToggle(): [
-  UseDropdownToggleProps,
-  UseDropdownToggleMetadata,
-] {
-  const id = useId();
-  const {
-    show = false,
-    toggle = noop,
-    setToggle,
-    menuElement,
-  } = useContext(DropdownContext) || {};
-  const handleClick = useCallback(
-    (e: Event | Reblend.SyntheticEvent<Element, Event>) => {
-      toggle(!show, e as any);
-    },
-    [show, toggle],
-  );
+export function useDropdownToggle(): {
+  props: UseDropdownToggleProps;
+  meta: UseDropdownToggleMetadata;
+} {
+  const [dropdownContextValue] = useContext(DropdownContext);
+  const handleClick = useCallback((e) => {
+    dropdownContextValue?.toggle(!dropdownContextValue?.show, e as any);
+  });
 
   const props: UseDropdownToggleProps = {
-    id,
-    ref: setToggle || noop,
+    ref: dropdownContextValue?.setToggle || noop,
     onClick: handleClick,
-    'aria-expanded': !!show,
+    'aria-expanded': !!dropdownContextValue?.show,
   };
 
-  // This is maybe better down in an effect, but
-  // the component is going to update anyway when the menu element
-  // is set so might return new props.
-  if (menuElement && isRoleMenu(menuElement)) {
-    props['aria-haspopup'] = true;
-  }
+  const meta: UseDropdownToggleMetadata = {
+    show: dropdownContextValue?.show!,
+    toggle: dropdownContextValue?.toggle!,
+  };
 
-  return [props, { show, toggle }];
+  useEffect(() => {
+    if (
+      dropdownContextValue?.menuElement &&
+      isRoleMenu(dropdownContextValue?.menuElement)
+    ) {
+      props['aria-haspopup'] = true;
+    }
+    meta.show = dropdownContextValue?.show!;
+  });
+
+  return { props, meta };
 }
 
 export interface DropdownToggleProps {
@@ -79,10 +76,12 @@ export interface DropdownToggleProps {
    *   }
    * }) => Reblend.Element}
    */
-  children: (
-    props: UseDropdownToggleProps,
-    meta: UseDropdownToggleMetadata,
-  ) => Reblend.ReactNode;
+  children: [
+    (
+      props: UseDropdownToggleProps,
+      meta: UseDropdownToggleMetadata,
+    ) => Reblend.ReactNode,
+  ];
 }
 
 /**
@@ -92,9 +91,15 @@ export interface DropdownToggleProps {
  * @memberOf Dropdown
  */
 function DropdownToggle({ children }: DropdownToggleProps) {
-  const [props, meta] = useDropdownToggle();
+  const dropDownToggle = useDropdownToggle();
 
-  return <>{children(props, meta)}</>;
+  return (
+    <>
+      {children.map((child) =>
+        child(dropDownToggle.props, dropDownToggle.meta),
+      )}
+    </>
+  );
 }
 
 DropdownToggle.displayName = 'DropdownToggle';

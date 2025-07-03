@@ -28,7 +28,7 @@ export interface RootCloseOptions extends ClickOutsideOptions {
  * @param {string=}  options.clickTrigger The DOM event name (click, mousedown, etc) to attach listeners on
  */
 function useRootClose(
-  ref: Reblend.RefObject<Element> | Element | null | undefined,
+  ref: Reblend.Ref<Element> | Element | null | undefined,
   onRootClose: (e: Event) => void,
   { disabled, clickTrigger }: RootCloseOptions = {},
 ) {

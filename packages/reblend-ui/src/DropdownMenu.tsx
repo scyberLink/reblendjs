@@ -1,5 +1,5 @@
-import { useContext, useRef } from 'reblendjs';
-import * as Reblend from 'reblendjs';
+import { ReblendNode, useContext, useRef } from 'reblendjs';
+import Reblend from 'reblendjs';
 import { useCallbackRef } from 'reblend-hooks';
 import DropdownContext, { DropdownContextValue } from './DropdownContext';
 import usePopper, {
@@ -102,9 +102,9 @@ const noop: any = () => {};
  * @param {object}  options.popperConfig Options passed to the [`usePopper`](/api/usePopper) hook.
  */
 export function useDropdownMenu(options: UseDropdownMenuOptions = {}) {
-  const context = useContext(DropdownContext);
+  const [context] = useContext(DropdownContext);
 
-  const [arrowElement, attachArrowRef] = useCallbackRef<Element>();
+  const elementRef = useCallbackRef<Element>();
 
   const hasShownRef = useRef(false);
 
@@ -141,7 +141,7 @@ export function useDropdownMenu(options: UseDropdownMenuOptions = {}) {
       offset,
       flip,
       fixed,
-      arrowElement,
+      arrowElement: elementRef.item,
       popperConfig,
     }),
   );
@@ -161,7 +161,7 @@ export function useDropdownMenu(options: UseDropdownMenuOptions = {}) {
     popper: shouldUsePopper ? popper : null,
     arrowProps: shouldUsePopper
       ? {
-          ref: attachArrowRef,
+          ref: elementRef.ref,
           ...popper.attributes.arrow,
           style: popper.styles.arrow as any,
         }
@@ -198,10 +198,12 @@ export interface DropdownMenuProps extends UseDropdownMenuOptions {
    *   },
    * }) => Reblend.Element}
    */
-  children: (
-    props: UserDropdownMenuProps,
-    meta: UseDropdownMenuMetadata,
-  ) => Reblend.ReactNode;
+  children: [
+    (
+      props: UserDropdownMenuProps,
+      meta: UseDropdownMenuMetadata,
+    ) => ReblendNode,
+  ];
 }
 
 /**
@@ -220,7 +222,7 @@ function DropdownMenu({
     usePopper: usePopperProp,
   });
 
-  return <>{children(props, meta)}</>;
+  return <>{children.map((child) => child(props, meta))}</>;
 }
 
 DropdownMenu.displayName = 'DropdownMenu';

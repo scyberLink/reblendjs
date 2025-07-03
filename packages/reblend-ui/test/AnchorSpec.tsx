@@ -6,21 +6,25 @@ describe('Anchor', () => {
   it('renders an anchor tag', async () => {
     const { container } = await render(<Anchor data-testid="anchor" />);
 
-    expect(container.firstElementChild!.tagName).toEqual('A');
+    expect(container.firstElementChild!.firstElementChild!.tagName).toEqual(
+      'A',
+    );
   });
 
   it('forwards provided href', async () => {
     const { container } = await render(<Anchor href="http://google.com" />);
 
-    expect(container.firstElementChild!.getAttribute('href')!).toEqual(
-      'http://google.com',
-    );
+    expect(
+      container.firstElementChild!.firstElementChild!.getAttribute('href')!,
+    ).toEqual('http://google.com');
   });
 
   it('ensures that a href is a hash if none provided', async () => {
     const { container } = await render(<Anchor />);
 
-    expect(container.firstElementChild!.getAttribute('href')!).toEqual('#');
+    expect(
+      container.firstElementChild!.firstElementChild!.getAttribute('href')!,
+    ).toEqual('#');
   });
 
   it('forwards onClick handler', async () => {
@@ -28,7 +32,7 @@ describe('Anchor', () => {
 
     const { container } = await render(<Anchor onClick={handleClick} />);
 
-    fireEvent.click(container.firstChild!);
+    fireEvent.click(container.firstChild!.firstChild!);
 
     expect(handleClick).toHaveBeenCalled();
   });
@@ -38,7 +42,7 @@ describe('Anchor', () => {
 
     const { container } = await render(<Anchor onClick={handleClick} />);
 
-    fireEvent.keyDown(container.firstChild!, { key: ' ' });
+    fireEvent.keyDown(container.firstChild!.firstChild!, { key: ' ' });
 
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -50,7 +54,7 @@ describe('Anchor', () => {
       <Anchor href="http://google.com" onKeyDown={onKeyDownSpy} />,
     );
 
-    fireEvent.keyDown(container.firstChild!, { key: ' ' });
+    fireEvent.keyDown(container.firstChild!.firstChild!, { key: ' ' });
 
     expect(onKeyDownSpy).toHaveBeenCalledTimes(1);
   });
@@ -62,35 +66,35 @@ describe('Anchor', () => {
       <Anchor onClick={handleClick} />,
     );
 
-    fireEvent.click(container.firstChild!);
+    fireEvent.click(container.firstChild!.firstChild!);
 
     await rerender(<Anchor onClick={handleClick} href="#" />);
 
-    fireEvent.click(container.firstChild!);
+    fireEvent.click(container.firstChild!.firstChild!);
 
     expect(handleClick).toHaveBeenCalledTimes(2);
-    expect(handleClick.mock.calls[0][0].isDefaultPrevented()).toEqual(true);
-    expect(handleClick.mock.calls[1][0].isDefaultPrevented()).toEqual(true);
+    expect(handleClick.mock.calls[0][0].defaultPrevented).toEqual(true);
+    expect(handleClick.mock.calls[1][0].defaultPrevented).toEqual(true);
   });
 
   it('does not prevent default when href is provided', async () => {
     const handleClick = jest.fn();
 
     fireEvent.click(
-      await render(<Anchor href="#foo" onClick={handleClick} />).container
-        .firstChild!,
+      (await render(<Anchor href="#foo" onClick={handleClick} />)).container
+        .firstChild!.firstChild!,
     );
 
     expect(handleClick).toHaveBeenCalledTimes(1);
-    expect(handleClick.mock.calls[0][0].isDefaultPrevented()).toEqual(false);
+    expect(handleClick.mock.calls[0][0].defaultPrevented).toEqual(false);
   });
 
   it('forwards provided role', async () => {
-    await render(<Anchor role="dialog" />).getByRole('dialog');
+    (await render(<Anchor role="dialog" />)).getByRole('dialog');
   });
 
   it('forwards provided role with href', async () => {
-    await render(<Anchor role="dialog" href="http://google.com" />).getByRole(
+    (await render(<Anchor role="dialog" href="http://google.com" />)).getByRole(
       'dialog',
     );
   });
@@ -107,9 +111,9 @@ describe('Anchor', () => {
 
   it('sets no role with provided href', async () => {
     expect(
-      await render(
-        <Anchor href="http://google.com" />,
-      ).container.firstElementChild!.hasAttribute('role'),
+      (
+        await render(<Anchor href="http://google.com" />)
+      ).container.firstElementChild!.firstElementChild!.hasAttribute('role'),
     ).toEqual(false);
   });
 });

@@ -1,9 +1,8 @@
 import { createContext, useContext } from 'reblendjs';
-import canUseDOM from 'dom-helpers/canUseDOM';
 
-const Context = createContext(canUseDOM ? window : undefined);
-
-export const WindowProvider = Context.Provider;
+const Context = createContext(
+  typeof window !== 'undefined' ? window : undefined,
+);
 
 /**
  * The document "window" placed in React context. Helpful for determining
@@ -12,5 +11,6 @@ export const WindowProvider = Context.Provider;
  * @returns the current window
  */
 export default function useWindow() {
-  return useContext(Context);
+  const windowContext = useContext(Context);
+  return windowContext;
 }

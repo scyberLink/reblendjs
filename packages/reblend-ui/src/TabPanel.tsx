@@ -5,7 +5,7 @@ import TabContext from './TabContext';
 import SelectableContext, { makeEventKey } from './SelectableContext';
 import {
   EventKey,
-  DynamicRefForwardingComponent,
+  DynamicComponent,
   TransitionCallbacks,
   TransitionComponent,
 } from './types';
@@ -121,7 +121,7 @@ export function useTabPanel({
   ];
 }
 
-const TabPanel: DynamicRefForwardingComponent<'div', TabPanelProps> =
+const TabPanel: DynamicComponent<'div', TabPanelProps> =
   // Need to define the default "as" during prop destructuring to be compatible with styled-components github.com/react-bootstrap/react-bootstrap/issues/3595
   ({ as: Component = 'div', ref, ...props }) => {
     const [

@@ -75,8 +75,8 @@ describe('<Tabs>', () => {
     const navItem = getByTestId('nav-item');
     const navItemID = navItem.getAttribute('id');
 
-    expect(navItemID).to.exist;
-    expect(tabPanelID).to.exist;
+    expect(navItemID).toBeTruthy();
+    expect(tabPanelID).toBeTruthy();
 
     expect(tabPanel.getAttribute('aria-labelledby')).toEqual(navItemID);
     expect(navItem.getAttribute('aria-controls')).toEqual(tabPanelID);
@@ -93,7 +93,7 @@ describe('<Tabs>', () => {
       </Tabs>,
     );
 
-    expect(getByRole('tablist')).to.exist;
+    expect(getByRole('tablist')).toBeTruthy();
     expect(getByText('One').getAttribute('role')).toEqual('tab');
   });
 
@@ -108,7 +108,7 @@ describe('<Tabs>', () => {
       </Tabs>,
     );
 
-    expect(getByRole('navigation')).to.exist;
+    expect(getByRole('navigation')).toBeTruthy();
 
     // make sure it's not passed to the NavItem
     expect(getByRole('button').getAttribute('role')).toBeNull();
@@ -159,11 +159,11 @@ describe('<Tabs>', () => {
       </Tabs>,
     );
 
-    expect(queryByText('Tab 1')).to.exist;
+    expect(queryByText('Tab 1')).toBeTruthy();
     expect(queryByText('Tab 2')).toBeNull();
     fireEvent.click(getByText('Two'));
     expect(queryByText('Tab 1')).toBeNull();
-    expect(queryByText('Tab 2')).to.exist;
+    expect(queryByText('Tab 2')).toBeTruthy();
   });
 
   it('Should include "aria-controls" matching rendered TabPanel', () => {
@@ -181,10 +181,10 @@ describe('<Tabs>', () => {
       </Tabs>,
     );
 
-    expect(queryByText('Tab 1')).to.exist;
-    expect(queryByText('Tab 2')).to.exist;
-    expect(getByText('One').getAttribute('aria-controls')).to.exist;
-    expect(getByText('Two').getAttribute('aria-controls')).to.exist;
+    expect(queryByText('Tab 1')).toBeTruthy();
+    expect(queryByText('Tab 2')).toBeTruthy();
+    expect(getByText('One').getAttribute('aria-controls')).toBeTruthy();
+    expect(getByText('Two').getAttribute('aria-controls')).toBeTruthy();
   });
 
   it('Should include "aria-controls" only for rendered tabs when unmountOnExit is true', () => {
@@ -202,15 +202,15 @@ describe('<Tabs>', () => {
       </Tabs>,
     );
 
-    expect(queryByText('Tab 1')).to.exist;
+    expect(queryByText('Tab 1')).toBeTruthy();
     expect(queryByText('Tab 2')).toBeNull();
-    expect(getByText('One').getAttribute('aria-controls')).to.exist;
+    expect(getByText('One').getAttribute('aria-controls')).toBeTruthy();
     expect(getByText('Two').getAttribute('aria-controls')).toBeNull();
     fireEvent.click(getByText('Two'));
     expect(queryByText('Tab 1')).toBeNull();
-    expect(queryByText('Tab 2')).to.exist;
+    expect(queryByText('Tab 2')).toBeTruthy();
     expect(getByText('One').getAttribute('aria-controls')).toBeNull();
-    expect(getByText('Two').getAttribute('aria-controls')).to.exist;
+    expect(getByText('Two').getAttribute('aria-controls')).toBeTruthy();
   });
 
   it('Should include "aria-controls" only for the active tab, when mountOnEnter is true', () => {
@@ -227,14 +227,14 @@ describe('<Tabs>', () => {
         </div>
       </Tabs>,
     );
-    expect(queryByText('Tab 1')).to.exist;
+    expect(queryByText('Tab 1')).toBeTruthy();
     expect(queryByText('Tab 2')).toBeNull();
-    expect(getByText('One').getAttribute('aria-controls')).to.exist;
+    expect(getByText('One').getAttribute('aria-controls')).toBeTruthy();
     expect(getByText('Two').getAttribute('aria-controls')).toBeNull();
     fireEvent.click(getByText('Two'));
-    expect(queryByText('Tab 1')).to.exist;
-    expect(queryByText('Tab 2')).to.exist;
+    expect(queryByText('Tab 1')).toBeTruthy();
+    expect(queryByText('Tab 2')).toBeTruthy();
     expect(getByText('One').getAttribute('aria-controls')).toBeNull();
-    expect(getByText('Two').getAttribute('aria-controls')).to.exist;
+    expect(getByText('Two').getAttribute('aria-controls')).toBeTruthy();
   });
 });
