@@ -23,7 +23,7 @@
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "alex": "^8.2.0",
-    "babel-preset-reblend": "^11.2.5",
+    "babel-preset-reblend": "^11.2.6",
     "concurrently": "^9.1.2",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
