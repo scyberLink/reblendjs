@@ -212,7 +212,8 @@ export async function diff<P, S>(
     const oldNodeTag = (oldNode.displayName as string).toLowerCase()
     let newNodeTag = ''
 
-    if (isCallable((newNode as any).displayName)) {
+    const isReactComponent = (newNode as any)?.props?.REACTCOMPONENT
+    if (!isReactComponent && isCallable((newNode as any).displayName)) {
       ;(newNode as any).displayName = await (newNode as any).displayName()
     }
 
@@ -225,7 +226,10 @@ export async function diff<P, S>(
     }
     newNodeTag = typeof newNodeTag === 'string' ? newNodeTag?.toLowerCase() : ''
 
-    if (isCallable((newNode as any).displayName) || (oldNodeTag && newNodeTag && oldNodeTag !== newNodeTag)) {
+    if (
+      (!isReactComponent && isCallable((newNode as any).displayName)) ||
+      (oldNodeTag && newNodeTag && oldNodeTag !== newNodeTag)
+    ) {
       patches.push({ type: PatchTypeAndOrder.REPLACE, parent, newNode, oldNode })
     } else {
       const propsDiff = diffProps(newNode as ReblendTyping.VNode, oldNode)
