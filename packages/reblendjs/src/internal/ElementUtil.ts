@@ -276,7 +276,7 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
     tagName = clazz?.ELEMENT_NAME || 'Anonymous'
   }
 
-  if (!isTagStandard && !_isLazyNode) {
+  if (!isTagStandard && !_isLazyNode && !_isReactNode) {
     if ((displayName as any)?.ELEMENT_NAME === 'Reblend' && (displayName as any)?.name === 'Reblend') {
       return [...((displayName as any)?.children || [])]
     }

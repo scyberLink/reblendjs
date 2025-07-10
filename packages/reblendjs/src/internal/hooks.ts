@@ -32,7 +32,7 @@ export enum CacheType {
  * @property {CacheOption} cache - The caching option
  * @property {ReblendTyping.StateFunction} updater - The reducer for the context
  */
-type Config<S = any, A = any> = { cache: CacheOption; reducer: ReblendTyping.StateReducerFunction<S, A> }
+type Config<S = any, A = any> = { cache: CacheOption; reducer?: ReblendTyping.StateReducerFunction<S, A> }
 
 /**
  * Options for configuring caching behavior for a context.
