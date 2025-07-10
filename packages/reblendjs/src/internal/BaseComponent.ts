@@ -29,6 +29,7 @@ import { connected, detach, connectedCallback, diff, applyPatches, disconnectedC
 import { ConfigUtil, IReblendAppConfig } from './ConfigUtil'
 import deepEqualIterative from 'reblend-deep-equal-iterative'
 import { RenderingSessionTracker } from './RenderingSessionTracker'
+import React from 'react'
 
 export interface BaseComponent<P, S> extends HTMLElement {
   nearestStandardParent?: HTMLElement
@@ -89,6 +90,13 @@ export class BaseComponent<
   ) {
     const elementChildren = await createElement(components as any)
     return await ReblendReactClass.getChildrenWrapperForReact(elementChildren)
+  }
+
+  static reactCompact<T extends keyof React.JSX.IntrinsicElements | React.JSXElementConstructor<any>>(
+    component: T,
+    props?: React.ComponentProps<T>,
+  ) {
+    return BaseComponent.construct(component as any, { ...(props || {}), REACTCOMPONENT: true })
   }
 
   static construct(

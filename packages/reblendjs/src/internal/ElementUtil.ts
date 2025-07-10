@@ -208,7 +208,7 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
   }
 
   let { displayName } = ui as ReblendTyping.VNode
-  if (isCallable(displayName)) {
+  if (!(ui && ui['REACTCOMPONENT']) && isCallable(displayName)) {
     displayName = await (displayName as any)((ui as any).props)
   }
 
@@ -258,7 +258,7 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
 
   let clazz: typeof Reblend = displayName as any as typeof Reblend
   const isTagStandard = typeof displayName === 'string'
-  const _isReactNode = isReactNode(displayName as any)
+  const _isReactNode = (ui && ui['REACTCOMPONENT']) || isReactNode(displayName as any)
   const _isLazyNode = isLazyNode(ui as any) || isLazyNode(displayName as any)
 
   let tagName: string
