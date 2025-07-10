@@ -13,10 +13,10 @@
 8 verbose currentBranch main
 9 silly remoteBranchExists
 10 silly isBehindUpstream
-11 silly isBehindUpstream main is behind origin/main by 0 commit(s) and ahead by 3
+11 silly isBehindUpstream main is behind origin/main by 0 commit(s) and ahead by 1
 12 silly hasTags
 13 verbose hasTags true
-14 silly git-describe.sync "reblend-router@4.0.6-36-g5d068c3" => {"lastTagName":"reblend-router@4.0.6","lastVersion":"4.0.6","refCount":"36","sha":"5d068c3","isDirty":false}
+14 silly git-describe.sync "reblend-router@4.0.6-38-g29cffa1" => {"lastTagName":"reblend-router@4.0.6","lastVersion":"4.0.6","refCount":"38","sha":"29cffa1","isDirty":false}
 15 info Looking for changed packages since reblend-router@4.0.6
 16 silly checking diff packages/reblend-bootstrap
 17 silly found diff in packages/reblend-bootstrap/.babelrc.js
@@ -946,357 +946,358 @@
 28 silly checking diff packages/reblend-routing
 29 silly no diff found in reblend-routing
 30 silly checking diff packages/reblend-template-test
-31 silly no diff found in reblend-template-test
-32 silly checking diff packages/reblend-typing
-33 silly found diff in packages/reblend-typing/package.json
-33 silly found diff in packages/reblend-typing/src/index.ts
-33 silly found diff in packages/reblend-typing/src/standardAttribute.ts
-34 verbose filtered diff [
-34 verbose filtered diff   'packages/reblend-typing/package.json',
-34 verbose filtered diff   'packages/reblend-typing/src/index.ts',
-34 verbose filtered diff   'packages/reblend-typing/src/standardAttribute.ts'
-34 verbose filtered diff ]
-35 silly checking diff packages/reblend-ui
-36 silly found diff in packages/reblend-ui/.gitattributes
-36 silly found diff in packages/reblend-ui/.github/ISSUE_TEMPLATE/bug_report.md
-36 silly found diff in packages/reblend-ui/.github/ISSUE_TEMPLATE/feature_request.md
-36 silly found diff in packages/reblend-ui/.github/workflows/ci.yml
-36 silly found diff in packages/reblend-ui/.github/workflows/deploy-docs.yml
-36 silly found diff in packages/reblend-ui/.gitignore
-36 silly found diff in packages/reblend-ui/.nvmrc
-36 silly found diff in packages/reblend-ui/CHANGELOG.md
-36 silly found diff in packages/reblend-ui/LICENSE
-36 silly found diff in packages/reblend-ui/README.md
-36 silly found diff in packages/reblend-ui/babel.config.js
-36 silly found diff in packages/reblend-ui/codecov.yml
-36 silly found diff in packages/reblend-ui/eslint.config.mjs
-36 silly found diff in packages/reblend-ui/jest.config.cjs
-36 silly found diff in packages/reblend-ui/package.json
-36 silly found diff in packages/reblend-ui/renovate.json
-36 silly found diff in packages/reblend-ui/rollup.config.mjs
-36 silly found diff in packages/reblend-ui/src/Anchor.tsx
-36 silly found diff in packages/reblend-ui/src/Button.tsx
-36 silly found diff in packages/reblend-ui/src/DataKey.tsx
-36 silly found diff in packages/reblend-ui/src/Dropdown.tsx
-36 silly found diff in packages/reblend-ui/src/DropdownContext.ts
-36 silly found diff in packages/reblend-ui/src/DropdownItem.tsx
-36 silly found diff in packages/reblend-ui/src/DropdownMenu.tsx
-36 silly found diff in packages/reblend-ui/src/DropdownToggle.tsx
-36 silly found diff in packages/reblend-ui/src/ImperativeTransition.tsx
-36 silly found diff in packages/reblend-ui/src/Modal.tsx
-36 silly found diff in packages/reblend-ui/src/ModalManager.ts
-36 silly found diff in packages/reblend-ui/src/Nav.tsx
-36 silly found diff in packages/reblend-ui/src/NavContext.tsx
-36 silly found diff in packages/reblend-ui/src/NavItem.tsx
-36 silly found diff in packages/reblend-ui/src/NoopTransition.tsx
-36 silly found diff in packages/reblend-ui/src/Overlay.tsx
-36 silly found diff in packages/reblend-ui/src/Portal.tsx
-36 silly found diff in packages/reblend-ui/src/RTGTransition.tsx
-36 silly found diff in packages/reblend-ui/src/SelectableContext.tsx
-36 silly found diff in packages/reblend-ui/src/TabContext.tsx
-36 silly found diff in packages/reblend-ui/src/TabPanel.tsx
-36 silly found diff in packages/reblend-ui/src/Tabs.tsx
-36 silly found diff in packages/reblend-ui/src/Waypoint.tsx
-36 silly found diff in packages/reblend-ui/src/getScrollbarWidth.ts
-36 silly found diff in packages/reblend-ui/src/index.ts
-36 silly found diff in packages/reblend-ui/src/mergeOptionsWithPopperConfig.ts
-36 silly found diff in packages/reblend-ui/src/popper.ts
-36 silly found diff in packages/reblend-ui/src/types.ts
-36 silly found diff in packages/reblend-ui/src/useClickOutside.ts
-36 silly found diff in packages/reblend-ui/src/usePopper.ts
-36 silly found diff in packages/reblend-ui/src/useRTGTransitionProps.ts
-36 silly found diff in packages/reblend-ui/src/useRootClose.ts
-36 silly found diff in packages/reblend-ui/src/useScrollParent.tsx
-36 silly found diff in packages/reblend-ui/src/useWaitForDOMRef.ts
-36 silly found diff in packages/reblend-ui/src/useWaypoint.tsx
-36 silly found diff in packages/reblend-ui/src/useWindow.ts
-36 silly found diff in packages/reblend-ui/src/utils.ts
-36 silly found diff in packages/reblend-ui/test/AnchorSpec.tsx
-36 silly found diff in packages/reblend-ui/test/ButtonSpec.tsx
-36 silly found diff in packages/reblend-ui/test/DropdownItemSpec.tsx
-36 silly found diff in packages/reblend-ui/test/DropdownSpec.tsx
-36 silly found diff in packages/reblend-ui/test/ModalManagerSpec.ts
-36 silly found diff in packages/reblend-ui/test/ModalSpec.tsx
-36 silly found diff in packages/reblend-ui/test/NavItemSpec.tsx
-36 silly found diff in packages/reblend-ui/test/NavSpec.tsx
-36 silly found diff in packages/reblend-ui/test/PortalSpec.tsx
-36 silly found diff in packages/reblend-ui/test/TabContainerSpec.tsx
-36 silly found diff in packages/reblend-ui/test/TabPanelSpec.tsx
-36 silly found diff in packages/reblend-ui/test/WaitForContainerSpec.tsx
-36 silly found diff in packages/reblend-ui/test/helpers.ts
-36 silly found diff in packages/reblend-ui/test/setup.ts
-36 silly found diff in packages/reblend-ui/test/usePopperSpec.tsx
-36 silly found diff in packages/reblend-ui/test/useRootCloseSpec.tsx
-36 silly found diff in packages/reblend-ui/test/utilsSpec.tsx
-36 silly found diff in packages/reblend-ui/tsconfig.cjs.types.json
-36 silly found diff in packages/reblend-ui/tsconfig.esm.types.json
-36 silly found diff in packages/reblend-ui/tsconfig.json
-36 silly found diff in packages/reblend-ui/www/.gitignore
-36 silly found diff in packages/reblend-ui/www/README.md
-36 silly found diff in packages/reblend-ui/www/babel.config.js
-36 silly found diff in packages/reblend-ui/www/docs/.prettierrc
-36 silly found diff in packages/reblend-ui/www/docs/Button.mdx
-36 silly found diff in packages/reblend-ui/www/docs/Dropdown.mdx
-36 silly found diff in packages/reblend-ui/www/docs/Modal.mdx
-36 silly found diff in packages/reblend-ui/www/docs/Nav.mdx
-36 silly found diff in packages/reblend-ui/www/docs/Overlay.mdx
-36 silly found diff in packages/reblend-ui/www/docs/Portal.mdx
-36 silly found diff in packages/reblend-ui/www/docs/Waypoint.mdx
-36 silly found diff in packages/reblend-ui/www/docs/getting-started.md
-36 silly found diff in packages/reblend-ui/www/docs/transitions.mdx
-36 silly found diff in packages/reblend-ui/www/docs/usePopper.mdx
-36 silly found diff in packages/reblend-ui/www/docs/useRootClose.mdx
-36 silly found diff in packages/reblend-ui/www/docs/useWindow.mdx
-36 silly found diff in packages/reblend-ui/www/docusaurus.config.js
-36 silly found diff in packages/reblend-ui/www/package.json
-36 silly found diff in packages/reblend-ui/www/plugins/webpack.js
-36 silly found diff in packages/reblend-ui/www/postcss.config.js
-36 silly found diff in packages/reblend-ui/www/sidebars.js
-36 silly found diff in packages/reblend-ui/www/src/Button.tsx
-36 silly found diff in packages/reblend-ui/www/src/Dropdown.tsx
-36 silly found diff in packages/reblend-ui/www/src/Tooltip.tsx
-36 silly found diff in packages/reblend-ui/www/src/WaypointExample.tsx
-36 silly found diff in packages/reblend-ui/www/src/css/tailwind.css
-36 silly found diff in packages/reblend-ui/www/src/css/transitions.css
-36 silly found diff in packages/reblend-ui/www/src/theme/CodeLiveScope.ts
-36 silly found diff in packages/reblend-ui/www/static/.nojekyll
-36 silly found diff in packages/reblend-ui/www/static/refresh-dot.svg
-36 silly found diff in packages/reblend-ui/www/tailwind.config.js
-36 silly found diff in packages/reblend-ui/www/tsconfig.json
-37 verbose filtered diff [
-37 verbose filtered diff   'packages/reblend-ui/.gitattributes',
-37 verbose filtered diff   'packages/reblend-ui/.github/ISSUE_TEMPLATE/bug_report.md',
-37 verbose filtered diff   'packages/reblend-ui/.github/ISSUE_TEMPLATE/feature_request.md',
-37 verbose filtered diff   'packages/reblend-ui/.github/workflows/ci.yml',
-37 verbose filtered diff   'packages/reblend-ui/.github/workflows/deploy-docs.yml',
-37 verbose filtered diff   'packages/reblend-ui/.gitignore',
-37 verbose filtered diff   'packages/reblend-ui/.nvmrc',
-37 verbose filtered diff   'packages/reblend-ui/CHANGELOG.md',
-37 verbose filtered diff   'packages/reblend-ui/LICENSE',
-37 verbose filtered diff   'packages/reblend-ui/README.md',
-37 verbose filtered diff   'packages/reblend-ui/babel.config.js',
-37 verbose filtered diff   'packages/reblend-ui/codecov.yml',
-37 verbose filtered diff   'packages/reblend-ui/eslint.config.mjs',
-37 verbose filtered diff   'packages/reblend-ui/jest.config.cjs',
-37 verbose filtered diff   'packages/reblend-ui/package.json',
-37 verbose filtered diff   'packages/reblend-ui/renovate.json',
-37 verbose filtered diff   'packages/reblend-ui/rollup.config.mjs',
-37 verbose filtered diff   'packages/reblend-ui/src/Anchor.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/Button.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/DataKey.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/Dropdown.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/DropdownContext.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/DropdownItem.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/DropdownMenu.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/DropdownToggle.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/ImperativeTransition.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/Modal.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/ModalManager.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/Nav.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/NavContext.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/NavItem.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/NoopTransition.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/Overlay.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/Portal.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/RTGTransition.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/SelectableContext.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/TabContext.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/TabPanel.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/Tabs.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/Waypoint.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/getScrollbarWidth.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/index.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/mergeOptionsWithPopperConfig.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/popper.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/types.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/useClickOutside.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/usePopper.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/useRTGTransitionProps.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/useRootClose.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/useScrollParent.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/useWaitForDOMRef.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/useWaypoint.tsx',
-37 verbose filtered diff   'packages/reblend-ui/src/useWindow.ts',
-37 verbose filtered diff   'packages/reblend-ui/src/utils.ts',
-37 verbose filtered diff   'packages/reblend-ui/test/AnchorSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/ButtonSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/DropdownItemSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/DropdownSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/ModalManagerSpec.ts',
-37 verbose filtered diff   'packages/reblend-ui/test/ModalSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/NavItemSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/NavSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/PortalSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/TabContainerSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/TabPanelSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/WaitForContainerSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/helpers.ts',
-37 verbose filtered diff   'packages/reblend-ui/test/setup.ts',
-37 verbose filtered diff   'packages/reblend-ui/test/usePopperSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/useRootCloseSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/test/utilsSpec.tsx',
-37 verbose filtered diff   'packages/reblend-ui/tsconfig.cjs.types.json',
-37 verbose filtered diff   'packages/reblend-ui/tsconfig.esm.types.json',
-37 verbose filtered diff   'packages/reblend-ui/tsconfig.json',
-37 verbose filtered diff   'packages/reblend-ui/www/.gitignore',
-37 verbose filtered diff   'packages/reblend-ui/www/README.md',
-37 verbose filtered diff   'packages/reblend-ui/www/babel.config.js',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/.prettierrc',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/Button.mdx',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/Dropdown.mdx',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/Modal.mdx',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/Nav.mdx',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/Overlay.mdx',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/Portal.mdx',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/Waypoint.mdx',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/getting-started.md',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/transitions.mdx',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/usePopper.mdx',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/useRootClose.mdx',
-37 verbose filtered diff   'packages/reblend-ui/www/docs/useWindow.mdx',
-37 verbose filtered diff   'packages/reblend-ui/www/docusaurus.config.js',
-37 verbose filtered diff   'packages/reblend-ui/www/package.json',
-37 verbose filtered diff   'packages/reblend-ui/www/plugins/webpack.js',
-37 verbose filtered diff   'packages/reblend-ui/www/postcss.config.js',
-37 verbose filtered diff   'packages/reblend-ui/www/sidebars.js',
-37 verbose filtered diff   'packages/reblend-ui/www/src/Button.tsx',
-37 verbose filtered diff   'packages/reblend-ui/www/src/Dropdown.tsx',
-37 verbose filtered diff   'packages/reblend-ui/www/src/Tooltip.tsx',
-37 verbose filtered diff   'packages/reblend-ui/www/src/WaypointExample.tsx',
-37 verbose filtered diff   'packages/reblend-ui/www/src/css/tailwind.css',
-37 verbose filtered diff   ... 6 more items
-37 verbose filtered diff ]
-38 silly checking diff packages/reblendjs
-39 silly found diff in packages/reblendjs/package.json
-39 silly found diff in packages/reblendjs/src/index.ts
-39 silly found diff in packages/reblendjs/src/internal/BaseComponent.ts
-39 silly found diff in packages/reblendjs/src/internal/ConfigUtil.ts
-39 silly found diff in packages/reblendjs/src/internal/ElementUtil.ts
-39 silly found diff in packages/reblendjs/src/internal/NodeOperationUtil.ts
-39 silly found diff in packages/reblendjs/src/internal/PropertyUtil.ts
-39 silly found diff in packages/reblendjs/src/internal/Reblend.ts
-39 silly found diff in packages/reblendjs/src/internal/RenderingSessionTracker.ts
-39 silly found diff in packages/reblendjs/src/internal/components/Placeholder.tsx
-39 silly found diff in packages/reblendjs/src/internal/components/Portal.tsx
-39 silly found diff in packages/reblendjs/src/internal/hooks.ts
-40 verbose filtered diff [
-40 verbose filtered diff   'packages/reblendjs/package.json',
-40 verbose filtered diff   'packages/reblendjs/src/index.ts',
-40 verbose filtered diff   'packages/reblendjs/src/internal/BaseComponent.ts',
-40 verbose filtered diff   'packages/reblendjs/src/internal/ConfigUtil.ts',
-40 verbose filtered diff   'packages/reblendjs/src/internal/ElementUtil.ts',
-40 verbose filtered diff   'packages/reblendjs/src/internal/NodeOperationUtil.ts',
-40 verbose filtered diff   'packages/reblendjs/src/internal/PropertyUtil.ts',
-40 verbose filtered diff   'packages/reblendjs/src/internal/Reblend.ts',
-40 verbose filtered diff   'packages/reblendjs/src/internal/RenderingSessionTracker.ts',
-40 verbose filtered diff   'packages/reblendjs/src/internal/components/Placeholder.tsx',
-40 verbose filtered diff   'packages/reblendjs/src/internal/components/Portal.tsx',
-40 verbose filtered diff   'packages/reblendjs/src/internal/hooks.ts'
-40 verbose filtered diff ]
-41 verbose updated reblend-bootstrap
-42 verbose updated reblend-deep-equal-iterative
-43 verbose updated reblend-hooks
-44 verbose updated reblend-router
-45 verbose updated reblend-template-test
-46 verbose updated reblend-typing
-47 verbose updated reblend-ui
-48 verbose updated reblendjs
-49 info version rooted leaf detected, skipping synthetic root lifecycles
-50 verbose git-describe undefined => "reblend-router@4.0.6-36-g5d068c3"
-51 silly git-describe parsed => {"lastTagName":"reblend-router@4.0.6","lastVersion":"4.0.6","refCount":"36","sha":"5d068c3","isDirty":false}
-52 info execute Skipping releases
-53 silly lifecycle No script for "preversion" in "reblend-deep-equal-iterative", continuing
-54 silly lifecycle No script for "preversion" in "reblend-hooks", continuing
-55 silly lifecycle No script for "preversion" in "reblend-router", continuing
-56 silly lifecycle No script for "preversion" in "reblend-typing", continuing
-57 verbose version reblend-deep-equal-iterative has no lockfile. Skipping lockfile update.
-58 verbose version reblend-hooks has no lockfile. Skipping lockfile update.
-59 verbose version reblend-router has no lockfile. Skipping lockfile update.
-60 verbose version reblend-typing has no lockfile. Skipping lockfile update.
-61 silly lifecycle No script for "version" in "reblend-hooks", continuing
-62 silly lifecycle No script for "preversion" in "reblend-ui", continuing
-63 verbose version reblend-ui has no lockfile. Skipping lockfile update.
-64 silly lifecycle No script for "version" in "reblend-deep-equal-iterative", continuing
-65 silly lifecycle No script for "version" in "reblend-typing", continuing
-66 silly lifecycle No script for "preversion" in "reblendjs", continuing
-67 silly lifecycle No script for "version" in "reblend-router", continuing
-68 silly lifecycle No script for "preversion" in "reblend-template-test", continuing
-69 verbose version reblendjs has no lockfile. Skipping lockfile update.
-70 verbose version reblend-template-test has no lockfile. Skipping lockfile update.
-71 silly lifecycle No script for "version" in "reblend-ui", continuing
-72 silly lifecycle No script for "preversion" in "reblend-bootstrap", continuing
-73 verbose version reblend-bootstrap has no lockfile. Skipping lockfile update.
-74 silly lifecycle No script for "version" in "reblend-template-test", continuing
-75 silly lifecycle No script for "version" in "reblendjs", continuing
-76 silly lifecycle No script for "version" in "reblend-bootstrap", continuing
-77 verbose version Updating root package-lock.json
-78 error Error: Command failed with exit code 1: npm install --package-lock-only --ignore-scripts
-78 error npm warn ERESOLVE overriding peer dependency
-78 error npm warn While resolving: @typescript-eslint/eslint-plugin@5.62.0
-78 error npm warn Found: @typescript-eslint/parser@6.21.0
-78 error npm warn node_modules/@typescript-eslint/parser
-78 error npm warn   @typescript-eslint/parser@"^6.4.0" from eslint-config-standard-with-typescript@43.0.1
-78 error npm warn   node_modules/eslint-config-standard-with-typescript
-78 error npm warn     dev eslint-config-standard-with-typescript@"^43.0.1" from the root project
-78 error npm warn
-78 error npm warn Could not resolve dependency:
-78 error npm warn peer @typescript-eslint/parser@"^5.0.0" from @typescript-eslint/eslint-plugin@5.62.0
-78 error npm warn node_modules/@typescript-eslint/eslint-plugin
-78 error npm warn   @typescript-eslint/eslint-plugin@"^5.5.0" from eslint-config-reblend-app@7.0.51
-78 error npm warn   node_modules/eslint-config-reblend-app
-78 error npm warn   1 more (eslint-plugin-jest)
-78 error npm warn
-78 error npm warn Conflicting peer dependency: @typescript-eslint/parser@5.62.0
-78 error npm warn node_modules/@typescript-eslint/parser
-78 error npm warn   peer @typescript-eslint/parser@"^5.0.0" from @typescript-eslint/eslint-plugin@5.62.0
-78 error npm warn   node_modules/@typescript-eslint/eslint-plugin
-78 error npm warn     @typescript-eslint/eslint-plugin@"^5.5.0" from eslint-config-reblend-app@7.0.51
-78 error npm warn     node_modules/eslint-config-reblend-app
-78 error npm warn     1 more (eslint-plugin-jest)
-78 error npm error code ERESOLVE
-78 error npm error ERESOLVE could not resolve
-78 error npm error
-78 error npm error While resolving: eslint-config-standard-with-typescript@43.0.1
-78 error npm error Found: @typescript-eslint/eslint-plugin@5.62.0
-78 error npm error node_modules/@typescript-eslint/eslint-plugin
-78 error npm error   @typescript-eslint/eslint-plugin@"^5.5.0" from eslint-config-reblend-app@7.0.51
-78 error npm error   node_modules/eslint-config-reblend-app
-78 error npm error     eslint-config-reblend-app@"^7.0.51" from reblend-scripts@6.0.69
-78 error npm error     node_modules/reblend-scripts
-78 error npm error       reblend-scripts@"^6.0.69" from reblend-template-test@4.1.8
-78 error npm error       packages/reblend-template-test
-78 error npm error         reblend-template-test@4.1.7
-78 error npm error         node_modules/reblend-template-test
-78 error npm error   peerOptional @typescript-eslint/eslint-plugin@"^4.0.0 || ^5.0.0" from eslint-plugin-jest@25.7.0
-78 error npm error   node_modules/eslint-plugin-jest
-78 error npm error     eslint-plugin-jest@"^25.3.0" from eslint-config-reblend-app@7.0.51
-78 error npm error     node_modules/eslint-config-reblend-app
-78 error npm error       eslint-config-reblend-app@"^7.0.51" from reblend-scripts@6.0.69
-78 error npm error       node_modules/reblend-scripts
-78 error npm error         reblend-scripts@"^6.0.69" from reblend-template-test@4.1.8
-78 error npm error         packages/reblend-template-test
-78 error npm error
-78 error npm error Could not resolve dependency:
-78 error npm error peer @typescript-eslint/eslint-plugin@"^6.4.0" from eslint-config-standard-with-typescript@43.0.1
-78 error npm error node_modules/eslint-config-standard-with-typescript
-78 error npm error   dev eslint-config-standard-with-typescript@"^43.0.1" from the root project
-78 error npm error
-78 error npm error Conflicting peer dependency: @typescript-eslint/eslint-plugin@6.21.0
-78 error npm error node_modules/@typescript-eslint/eslint-plugin
-78 error npm error   peer @typescript-eslint/eslint-plugin@"^6.4.0" from eslint-config-standard-with-typescript@43.0.1
-78 error npm error   node_modules/eslint-config-standard-with-typescript
-78 error npm error     dev eslint-config-standard-with-typescript@"^43.0.1" from the root project
-78 error npm error
-78 error npm error Fix the upstream dependency conflict, or retry
-78 error npm error this command with --force or --legacy-peer-deps
-78 error npm error to accept an incorrect (and potentially broken) dependency resolution.
-78 error npm error
-78 error npm error
-78 error npm error For a full report see:
-78 error npm error /home/elomscansio/.npm/_logs/2025-07-03T23_27_36_517Z-eresolve-report.txt
-78 error npm error A complete log of this run can be found in: /home/elomscansio/.npm/_logs/2025-07-03T23_27_36_517Z-debug-0.log
-78 error     at makeError (/home/elomscansio/Desktop/projects/reblendjs/node_modules/lerna/node_modules/execa/lib/error.js:59:11)
-78 error     at handlePromise (/home/elomscansio/Desktop/projects/reblendjs/node_modules/lerna/node_modules/execa/index.js:114:26)
-78 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-78 error     at async VersionCommand.updatePackageVersions (/home/elomscansio/Desktop/projects/reblendjs/node_modules/lerna/dist/index.js:9904:13)
-78 error     at async Promise.all (index 0)
+31 silly found diff in packages/reblend-template-test/package.json
+32 verbose filtered diff [ 'packages/reblend-template-test/package.json' ]
+33 silly checking diff packages/reblend-typing
+34 silly found diff in packages/reblend-typing/package.json
+34 silly found diff in packages/reblend-typing/src/index.ts
+34 silly found diff in packages/reblend-typing/src/standardAttribute.ts
+35 verbose filtered diff [
+35 verbose filtered diff   'packages/reblend-typing/package.json',
+35 verbose filtered diff   'packages/reblend-typing/src/index.ts',
+35 verbose filtered diff   'packages/reblend-typing/src/standardAttribute.ts'
+35 verbose filtered diff ]
+36 silly checking diff packages/reblend-ui
+37 silly found diff in packages/reblend-ui/.gitattributes
+37 silly found diff in packages/reblend-ui/.github/ISSUE_TEMPLATE/bug_report.md
+37 silly found diff in packages/reblend-ui/.github/ISSUE_TEMPLATE/feature_request.md
+37 silly found diff in packages/reblend-ui/.github/workflows/ci.yml
+37 silly found diff in packages/reblend-ui/.github/workflows/deploy-docs.yml
+37 silly found diff in packages/reblend-ui/.gitignore
+37 silly found diff in packages/reblend-ui/.nvmrc
+37 silly found diff in packages/reblend-ui/CHANGELOG.md
+37 silly found diff in packages/reblend-ui/LICENSE
+37 silly found diff in packages/reblend-ui/README.md
+37 silly found diff in packages/reblend-ui/babel.config.js
+37 silly found diff in packages/reblend-ui/codecov.yml
+37 silly found diff in packages/reblend-ui/eslint.config.mjs
+37 silly found diff in packages/reblend-ui/jest.config.cjs
+37 silly found diff in packages/reblend-ui/package.json
+37 silly found diff in packages/reblend-ui/renovate.json
+37 silly found diff in packages/reblend-ui/rollup.config.mjs
+37 silly found diff in packages/reblend-ui/src/Anchor.tsx
+37 silly found diff in packages/reblend-ui/src/Button.tsx
+37 silly found diff in packages/reblend-ui/src/DataKey.tsx
+37 silly found diff in packages/reblend-ui/src/Dropdown.tsx
+37 silly found diff in packages/reblend-ui/src/DropdownContext.ts
+37 silly found diff in packages/reblend-ui/src/DropdownItem.tsx
+37 silly found diff in packages/reblend-ui/src/DropdownMenu.tsx
+37 silly found diff in packages/reblend-ui/src/DropdownToggle.tsx
+37 silly found diff in packages/reblend-ui/src/ImperativeTransition.tsx
+37 silly found diff in packages/reblend-ui/src/Modal.tsx
+37 silly found diff in packages/reblend-ui/src/ModalManager.ts
+37 silly found diff in packages/reblend-ui/src/Nav.tsx
+37 silly found diff in packages/reblend-ui/src/NavContext.tsx
+37 silly found diff in packages/reblend-ui/src/NavItem.tsx
+37 silly found diff in packages/reblend-ui/src/NoopTransition.tsx
+37 silly found diff in packages/reblend-ui/src/Overlay.tsx
+37 silly found diff in packages/reblend-ui/src/Portal.tsx
+37 silly found diff in packages/reblend-ui/src/RTGTransition.tsx
+37 silly found diff in packages/reblend-ui/src/SelectableContext.tsx
+37 silly found diff in packages/reblend-ui/src/TabContext.tsx
+37 silly found diff in packages/reblend-ui/src/TabPanel.tsx
+37 silly found diff in packages/reblend-ui/src/Tabs.tsx
+37 silly found diff in packages/reblend-ui/src/Waypoint.tsx
+37 silly found diff in packages/reblend-ui/src/getScrollbarWidth.ts
+37 silly found diff in packages/reblend-ui/src/index.ts
+37 silly found diff in packages/reblend-ui/src/mergeOptionsWithPopperConfig.ts
+37 silly found diff in packages/reblend-ui/src/popper.ts
+37 silly found diff in packages/reblend-ui/src/types.ts
+37 silly found diff in packages/reblend-ui/src/useClickOutside.ts
+37 silly found diff in packages/reblend-ui/src/usePopper.ts
+37 silly found diff in packages/reblend-ui/src/useRTGTransitionProps.ts
+37 silly found diff in packages/reblend-ui/src/useRootClose.ts
+37 silly found diff in packages/reblend-ui/src/useScrollParent.tsx
+37 silly found diff in packages/reblend-ui/src/useWaitForDOMRef.ts
+37 silly found diff in packages/reblend-ui/src/useWaypoint.tsx
+37 silly found diff in packages/reblend-ui/src/useWindow.ts
+37 silly found diff in packages/reblend-ui/src/utils.ts
+37 silly found diff in packages/reblend-ui/test/AnchorSpec.tsx
+37 silly found diff in packages/reblend-ui/test/ButtonSpec.tsx
+37 silly found diff in packages/reblend-ui/test/DropdownItemSpec.tsx
+37 silly found diff in packages/reblend-ui/test/DropdownSpec.tsx
+37 silly found diff in packages/reblend-ui/test/ModalManagerSpec.ts
+37 silly found diff in packages/reblend-ui/test/ModalSpec.tsx
+37 silly found diff in packages/reblend-ui/test/NavItemSpec.tsx
+37 silly found diff in packages/reblend-ui/test/NavSpec.tsx
+37 silly found diff in packages/reblend-ui/test/PortalSpec.tsx
+37 silly found diff in packages/reblend-ui/test/TabContainerSpec.tsx
+37 silly found diff in packages/reblend-ui/test/TabPanelSpec.tsx
+37 silly found diff in packages/reblend-ui/test/WaitForContainerSpec.tsx
+37 silly found diff in packages/reblend-ui/test/helpers.ts
+37 silly found diff in packages/reblend-ui/test/setup.ts
+37 silly found diff in packages/reblend-ui/test/usePopperSpec.tsx
+37 silly found diff in packages/reblend-ui/test/useRootCloseSpec.tsx
+37 silly found diff in packages/reblend-ui/test/utilsSpec.tsx
+37 silly found diff in packages/reblend-ui/tsconfig.cjs.types.json
+37 silly found diff in packages/reblend-ui/tsconfig.esm.types.json
+37 silly found diff in packages/reblend-ui/tsconfig.json
+37 silly found diff in packages/reblend-ui/www/.gitignore
+37 silly found diff in packages/reblend-ui/www/README.md
+37 silly found diff in packages/reblend-ui/www/babel.config.js
+37 silly found diff in packages/reblend-ui/www/docs/.prettierrc
+37 silly found diff in packages/reblend-ui/www/docs/Button.mdx
+37 silly found diff in packages/reblend-ui/www/docs/Dropdown.mdx
+37 silly found diff in packages/reblend-ui/www/docs/Modal.mdx
+37 silly found diff in packages/reblend-ui/www/docs/Nav.mdx
+37 silly found diff in packages/reblend-ui/www/docs/Overlay.mdx
+37 silly found diff in packages/reblend-ui/www/docs/Portal.mdx
+37 silly found diff in packages/reblend-ui/www/docs/Waypoint.mdx
+37 silly found diff in packages/reblend-ui/www/docs/getting-started.md
+37 silly found diff in packages/reblend-ui/www/docs/transitions.mdx
+37 silly found diff in packages/reblend-ui/www/docs/usePopper.mdx
+37 silly found diff in packages/reblend-ui/www/docs/useRootClose.mdx
+37 silly found diff in packages/reblend-ui/www/docs/useWindow.mdx
+37 silly found diff in packages/reblend-ui/www/docusaurus.config.js
+37 silly found diff in packages/reblend-ui/www/package.json
+37 silly found diff in packages/reblend-ui/www/plugins/webpack.js
+37 silly found diff in packages/reblend-ui/www/postcss.config.js
+37 silly found diff in packages/reblend-ui/www/sidebars.js
+37 silly found diff in packages/reblend-ui/www/src/Button.tsx
+37 silly found diff in packages/reblend-ui/www/src/Dropdown.tsx
+37 silly found diff in packages/reblend-ui/www/src/Tooltip.tsx
+37 silly found diff in packages/reblend-ui/www/src/WaypointExample.tsx
+37 silly found diff in packages/reblend-ui/www/src/css/tailwind.css
+37 silly found diff in packages/reblend-ui/www/src/css/transitions.css
+37 silly found diff in packages/reblend-ui/www/src/theme/CodeLiveScope.ts
+37 silly found diff in packages/reblend-ui/www/static/.nojekyll
+37 silly found diff in packages/reblend-ui/www/static/refresh-dot.svg
+37 silly found diff in packages/reblend-ui/www/tailwind.config.js
+37 silly found diff in packages/reblend-ui/www/tsconfig.json
+38 verbose filtered diff [
+38 verbose filtered diff   'packages/reblend-ui/.gitattributes',
+38 verbose filtered diff   'packages/reblend-ui/.github/ISSUE_TEMPLATE/bug_report.md',
+38 verbose filtered diff   'packages/reblend-ui/.github/ISSUE_TEMPLATE/feature_request.md',
+38 verbose filtered diff   'packages/reblend-ui/.github/workflows/ci.yml',
+38 verbose filtered diff   'packages/reblend-ui/.github/workflows/deploy-docs.yml',
+38 verbose filtered diff   'packages/reblend-ui/.gitignore',
+38 verbose filtered diff   'packages/reblend-ui/.nvmrc',
+38 verbose filtered diff   'packages/reblend-ui/CHANGELOG.md',
+38 verbose filtered diff   'packages/reblend-ui/LICENSE',
+38 verbose filtered diff   'packages/reblend-ui/README.md',
+38 verbose filtered diff   'packages/reblend-ui/babel.config.js',
+38 verbose filtered diff   'packages/reblend-ui/codecov.yml',
+38 verbose filtered diff   'packages/reblend-ui/eslint.config.mjs',
+38 verbose filtered diff   'packages/reblend-ui/jest.config.cjs',
+38 verbose filtered diff   'packages/reblend-ui/package.json',
+38 verbose filtered diff   'packages/reblend-ui/renovate.json',
+38 verbose filtered diff   'packages/reblend-ui/rollup.config.mjs',
+38 verbose filtered diff   'packages/reblend-ui/src/Anchor.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/Button.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/DataKey.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/Dropdown.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/DropdownContext.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/DropdownItem.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/DropdownMenu.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/DropdownToggle.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/ImperativeTransition.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/Modal.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/ModalManager.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/Nav.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/NavContext.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/NavItem.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/NoopTransition.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/Overlay.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/Portal.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/RTGTransition.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/SelectableContext.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/TabContext.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/TabPanel.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/Tabs.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/Waypoint.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/getScrollbarWidth.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/index.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/mergeOptionsWithPopperConfig.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/popper.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/types.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/useClickOutside.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/usePopper.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/useRTGTransitionProps.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/useRootClose.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/useScrollParent.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/useWaitForDOMRef.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/useWaypoint.tsx',
+38 verbose filtered diff   'packages/reblend-ui/src/useWindow.ts',
+38 verbose filtered diff   'packages/reblend-ui/src/utils.ts',
+38 verbose filtered diff   'packages/reblend-ui/test/AnchorSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/ButtonSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/DropdownItemSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/DropdownSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/ModalManagerSpec.ts',
+38 verbose filtered diff   'packages/reblend-ui/test/ModalSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/NavItemSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/NavSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/PortalSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/TabContainerSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/TabPanelSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/WaitForContainerSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/helpers.ts',
+38 verbose filtered diff   'packages/reblend-ui/test/setup.ts',
+38 verbose filtered diff   'packages/reblend-ui/test/usePopperSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/useRootCloseSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/test/utilsSpec.tsx',
+38 verbose filtered diff   'packages/reblend-ui/tsconfig.cjs.types.json',
+38 verbose filtered diff   'packages/reblend-ui/tsconfig.esm.types.json',
+38 verbose filtered diff   'packages/reblend-ui/tsconfig.json',
+38 verbose filtered diff   'packages/reblend-ui/www/.gitignore',
+38 verbose filtered diff   'packages/reblend-ui/www/README.md',
+38 verbose filtered diff   'packages/reblend-ui/www/babel.config.js',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/.prettierrc',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/Button.mdx',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/Dropdown.mdx',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/Modal.mdx',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/Nav.mdx',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/Overlay.mdx',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/Portal.mdx',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/Waypoint.mdx',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/getting-started.md',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/transitions.mdx',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/usePopper.mdx',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/useRootClose.mdx',
+38 verbose filtered diff   'packages/reblend-ui/www/docs/useWindow.mdx',
+38 verbose filtered diff   'packages/reblend-ui/www/docusaurus.config.js',
+38 verbose filtered diff   'packages/reblend-ui/www/package.json',
+38 verbose filtered diff   'packages/reblend-ui/www/plugins/webpack.js',
+38 verbose filtered diff   'packages/reblend-ui/www/postcss.config.js',
+38 verbose filtered diff   'packages/reblend-ui/www/sidebars.js',
+38 verbose filtered diff   'packages/reblend-ui/www/src/Button.tsx',
+38 verbose filtered diff   'packages/reblend-ui/www/src/Dropdown.tsx',
+38 verbose filtered diff   'packages/reblend-ui/www/src/Tooltip.tsx',
+38 verbose filtered diff   'packages/reblend-ui/www/src/WaypointExample.tsx',
+38 verbose filtered diff   'packages/reblend-ui/www/src/css/tailwind.css',
+38 verbose filtered diff   ... 6 more items
+38 verbose filtered diff ]
+39 silly checking diff packages/reblendjs
+40 silly found diff in packages/reblendjs/package.json
+40 silly found diff in packages/reblendjs/src/index.ts
+40 silly found diff in packages/reblendjs/src/internal/BaseComponent.ts
+40 silly found diff in packages/reblendjs/src/internal/ConfigUtil.ts
+40 silly found diff in packages/reblendjs/src/internal/ElementUtil.ts
+40 silly found diff in packages/reblendjs/src/internal/NodeOperationUtil.ts
+40 silly found diff in packages/reblendjs/src/internal/PropertyUtil.ts
+40 silly found diff in packages/reblendjs/src/internal/Reblend.ts
+40 silly found diff in packages/reblendjs/src/internal/RenderingSessionTracker.ts
+40 silly found diff in packages/reblendjs/src/internal/components/Placeholder.tsx
+40 silly found diff in packages/reblendjs/src/internal/components/Portal.tsx
+40 silly found diff in packages/reblendjs/src/internal/hooks.ts
+41 verbose filtered diff [
+41 verbose filtered diff   'packages/reblendjs/package.json',
+41 verbose filtered diff   'packages/reblendjs/src/index.ts',
+41 verbose filtered diff   'packages/reblendjs/src/internal/BaseComponent.ts',
+41 verbose filtered diff   'packages/reblendjs/src/internal/ConfigUtil.ts',
+41 verbose filtered diff   'packages/reblendjs/src/internal/ElementUtil.ts',
+41 verbose filtered diff   'packages/reblendjs/src/internal/NodeOperationUtil.ts',
+41 verbose filtered diff   'packages/reblendjs/src/internal/PropertyUtil.ts',
+41 verbose filtered diff   'packages/reblendjs/src/internal/Reblend.ts',
+41 verbose filtered diff   'packages/reblendjs/src/internal/RenderingSessionTracker.ts',
+41 verbose filtered diff   'packages/reblendjs/src/internal/components/Placeholder.tsx',
+41 verbose filtered diff   'packages/reblendjs/src/internal/components/Portal.tsx',
+41 verbose filtered diff   'packages/reblendjs/src/internal/hooks.ts'
+41 verbose filtered diff ]
+42 verbose updated reblend-bootstrap
+43 verbose updated reblend-deep-equal-iterative
+44 verbose updated reblend-hooks
+45 verbose updated reblend-router
+46 verbose updated reblend-template-test
+47 verbose updated reblend-typing
+48 verbose updated reblend-ui
+49 verbose updated reblendjs
+50 info version rooted leaf detected, skipping synthetic root lifecycles
+51 verbose git-describe undefined => "reblend-router@4.0.6-38-g29cffa1"
+52 silly git-describe parsed => {"lastTagName":"reblend-router@4.0.6","lastVersion":"4.0.6","refCount":"38","sha":"29cffa1","isDirty":false}
+53 info execute Skipping releases
+54 silly lifecycle No script for "preversion" in "reblend-deep-equal-iterative", continuing
+55 silly lifecycle No script for "preversion" in "reblend-hooks", continuing
+56 silly lifecycle No script for "preversion" in "reblend-router", continuing
+57 silly lifecycle No script for "preversion" in "reblend-typing", continuing
+58 verbose version reblend-deep-equal-iterative has no lockfile. Skipping lockfile update.
+59 verbose version reblend-hooks has no lockfile. Skipping lockfile update.
+60 verbose version reblend-router has no lockfile. Skipping lockfile update.
+61 verbose version reblend-typing has no lockfile. Skipping lockfile update.
+62 silly lifecycle No script for "version" in "reblend-typing", continuing
+63 silly lifecycle No script for "preversion" in "reblend-ui", continuing
+64 verbose version reblend-ui has no lockfile. Skipping lockfile update.
+65 silly lifecycle No script for "version" in "reblend-router", continuing
+66 silly lifecycle No script for "preversion" in "reblend-template-test", continuing
+67 verbose version reblend-template-test has no lockfile. Skipping lockfile update.
+68 silly lifecycle No script for "version" in "reblend-deep-equal-iterative", continuing
+69 silly lifecycle No script for "preversion" in "reblendjs", continuing
+70 verbose version reblendjs has no lockfile. Skipping lockfile update.
+71 silly lifecycle No script for "version" in "reblend-hooks", continuing
+72 silly lifecycle No script for "version" in "reblend-ui", continuing
+73 silly lifecycle No script for "preversion" in "reblend-bootstrap", continuing
+74 verbose version reblend-bootstrap has no lockfile. Skipping lockfile update.
+75 silly lifecycle No script for "version" in "reblend-template-test", continuing
+76 silly lifecycle No script for "version" in "reblendjs", continuing
+77 silly lifecycle No script for "version" in "reblend-bootstrap", continuing
+78 verbose version Updating root package-lock.json
+79 error Error: Command failed with exit code 1: npm install --package-lock-only --ignore-scripts
+79 error npm warn ERESOLVE overriding peer dependency
+79 error npm warn While resolving: @typescript-eslint/eslint-plugin@5.62.0
+79 error npm warn Found: @typescript-eslint/parser@6.21.0
+79 error npm warn node_modules/@typescript-eslint/parser
+79 error npm warn   @typescript-eslint/parser@"^6.4.0" from eslint-config-standard-with-typescript@43.0.1
+79 error npm warn   node_modules/eslint-config-standard-with-typescript
+79 error npm warn     dev eslint-config-standard-with-typescript@"^43.0.1" from the root project
+79 error npm warn
+79 error npm warn Could not resolve dependency:
+79 error npm warn peer @typescript-eslint/parser@"^5.0.0" from @typescript-eslint/eslint-plugin@5.62.0
+79 error npm warn node_modules/@typescript-eslint/eslint-plugin
+79 error npm warn   @typescript-eslint/eslint-plugin@"^5.5.0" from eslint-config-reblend-app@7.0.51
+79 error npm warn   node_modules/eslint-config-reblend-app
+79 error npm warn   1 more (eslint-plugin-jest)
+79 error npm warn
+79 error npm warn Conflicting peer dependency: @typescript-eslint/parser@5.62.0
+79 error npm warn node_modules/@typescript-eslint/parser
+79 error npm warn   peer @typescript-eslint/parser@"^5.0.0" from @typescript-eslint/eslint-plugin@5.62.0
+79 error npm warn   node_modules/@typescript-eslint/eslint-plugin
+79 error npm warn     @typescript-eslint/eslint-plugin@"^5.5.0" from eslint-config-reblend-app@7.0.51
+79 error npm warn     node_modules/eslint-config-reblend-app
+79 error npm warn     1 more (eslint-plugin-jest)
+79 error npm error code ERESOLVE
+79 error npm error ERESOLVE could not resolve
+79 error npm error
+79 error npm error While resolving: eslint-config-standard-with-typescript@43.0.1
+79 error npm error Found: @typescript-eslint/eslint-plugin@5.62.0
+79 error npm error node_modules/@typescript-eslint/eslint-plugin
+79 error npm error   @typescript-eslint/eslint-plugin@"^5.5.0" from eslint-config-reblend-app@7.0.51
+79 error npm error   node_modules/eslint-config-reblend-app
+79 error npm error     eslint-config-reblend-app@"^7.0.51" from reblend-scripts@6.0.69
+79 error npm error     node_modules/reblend-scripts
+79 error npm error       reblend-scripts@"^6.0.69" from reblend-template-test@4.1.9
+79 error npm error       packages/reblend-template-test
+79 error npm error         reblend-template-test@4.1.7
+79 error npm error         node_modules/reblend-template-test
+79 error npm error   peerOptional @typescript-eslint/eslint-plugin@"^4.0.0 || ^5.0.0" from eslint-plugin-jest@25.7.0
+79 error npm error   node_modules/eslint-plugin-jest
+79 error npm error     eslint-plugin-jest@"^25.3.0" from eslint-config-reblend-app@7.0.51
+79 error npm error     node_modules/eslint-config-reblend-app
+79 error npm error       eslint-config-reblend-app@"^7.0.51" from reblend-scripts@6.0.69
+79 error npm error       node_modules/reblend-scripts
+79 error npm error         reblend-scripts@"^6.0.69" from reblend-template-test@4.1.9
+79 error npm error         packages/reblend-template-test
+79 error npm error
+79 error npm error Could not resolve dependency:
+79 error npm error peer @typescript-eslint/eslint-plugin@"^6.4.0" from eslint-config-standard-with-typescript@43.0.1
+79 error npm error node_modules/eslint-config-standard-with-typescript
+79 error npm error   dev eslint-config-standard-with-typescript@"^43.0.1" from the root project
+79 error npm error
+79 error npm error Conflicting peer dependency: @typescript-eslint/eslint-plugin@6.21.0
+79 error npm error node_modules/@typescript-eslint/eslint-plugin
+79 error npm error   peer @typescript-eslint/eslint-plugin@"^6.4.0" from eslint-config-standard-with-typescript@43.0.1
+79 error npm error   node_modules/eslint-config-standard-with-typescript
+79 error npm error     dev eslint-config-standard-with-typescript@"^43.0.1" from the root project
+79 error npm error
+79 error npm error Fix the upstream dependency conflict, or retry
+79 error npm error this command with --force or --legacy-peer-deps
+79 error npm error to accept an incorrect (and potentially broken) dependency resolution.
+79 error npm error
+79 error npm error
+79 error npm error For a full report see:
+79 error npm error /home/elomscansio/.npm/_logs/2025-07-10T16_25_25_665Z-eresolve-report.txt
+79 error npm error A complete log of this run can be found in: /home/elomscansio/.npm/_logs/2025-07-10T16_25_25_665Z-debug-0.log
+79 error     at makeError (/home/elomscansio/Desktop/projects/reblendjs/node_modules/lerna/node_modules/execa/lib/error.js:59:11)
+79 error     at handlePromise (/home/elomscansio/Desktop/projects/reblendjs/node_modules/lerna/node_modules/execa/index.js:114:26)
+79 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+79 error     at async VersionCommand.updatePackageVersions (/home/elomscansio/Desktop/projects/reblendjs/node_modules/lerna/dist/index.js:9904:13)
+79 error     at async Promise.all (index 0)

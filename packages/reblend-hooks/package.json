@@ -1,6 +1,6 @@
 {
   "name": "reblend-hooks",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "./cjs/index.js",
   "module": "./esm/index.js",
   "types": "./types/index.d.ts",
@@ -48,6 +48,6 @@
     "conventionalCommits": true
   },
   "peerDependencies": {
-    "reblendjs": "12.0.0"
+    "reblendjs": "^12.5.2"
   }
 }

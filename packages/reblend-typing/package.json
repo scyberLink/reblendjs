@@ -1,6 +1,6 @@
 {
   "name": "reblend-typing",
-  "version": "8.2.1",
+  "version": "8.2.2",
   "description": "This is reblend jsx typing",
   "keywords": [
     "ReblendJs",
@@ -34,8 +34,5 @@
     "@types/react-dom": "^18.3.1",
     "csstype": "^3.1.3"
   },
-  "gitHead": "79a3e22f73913a686e76631559ba7830f7eb2e98",
-  "devDependencies": {
-    "typescript": "^5.8.3"
-  }
+  "gitHead": "79a3e22f73913a686e76631559ba7830f7eb2e98"
 }
