@@ -40,16 +40,18 @@ function Router<T>({ routes }: { routes: { [key: string]: RouterProps<T> } }) {
     if (!routes) {
       console.warn('List of routes is empty');
     } else {
-      setRoutesContext((() => {
-        const map = new Map();
-        Object.values(routes).forEach(route => {
-          map.set(route.path, {
-            Component: route.Component,
-            path: route.path,
+      setRoutesContext(
+        (() => {
+          const map = new Map();
+          Object.values(routes).forEach(route => {
+            map.set(route.path, {
+              Component: route.Component,
+              path: route.path,
+            });
           });
-        });
-        return map;
-      })());
+          return map;
+        })(),
+      );
     }
   }, [routes]);
 
@@ -117,7 +119,7 @@ function Router<T>({ routes }: { routes: { [key: string]: RouterProps<T> } }) {
     }
 
     setTimeout(() => {
-      const idElement = document.querySelector(matchedData.hash);
+      const idElement = document.querySelector(decodeURI(matchedData.hash));
       if (!idElement) {
         return;
       }
