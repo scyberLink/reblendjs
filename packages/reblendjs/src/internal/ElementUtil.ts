@@ -269,7 +269,7 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
   } else if (isTagStandard) {
     tagName = displayName as string
   } else if (isReactNode(clazz)) {
-    tagName = (clazz as any as ReblendTyping.ReactNode).displayName
+    tagName = (clazz as any as ReblendTyping.ReactNode).displayName || clazz.name || 'ReactComponent'
   } else if (clazz?.ELEMENT_NAME === 'Fragment') {
     tagName = clazz.name
   } else {

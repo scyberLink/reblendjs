@@ -223,6 +223,10 @@ export async function diff<P, S>(
       newNodeTag = (newNode as any).displayName.ELEMENT_NAME
     } else if ((newNode as any).displayName.displayName) {
       newNodeTag = (newNode as any).displayName.displayName
+    } else if ((newNode as any).displayName.name) {
+      newNodeTag = (newNode as any).displayName.name
+    } else if ((newNode as any).displayName) {
+      newNodeTag = (newNode as any).displayName
     }
     newNodeTag = typeof newNodeTag === 'string' ? newNodeTag?.toLowerCase() : ''
 
