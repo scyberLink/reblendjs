@@ -96,7 +96,7 @@ export class BaseComponent<
     component: T,
     props?: React.ComponentProps<T>,
   ) {
-    return BaseComponent.construct(component as any, { ...(props || {}), REACTCOMPONENT: true })
+    return BaseComponent.construct(component as any, { ...(props || {}), reactcomponent: true })
   }
 
   static construct(

@@ -208,7 +208,7 @@ export async function createElement<P, S>(ui: ReblendTyping.ReblendNode): Promis
   }
 
   let { displayName } = ui as ReblendTyping.VNode
-  const reactComponent = ui && ui['props'] && (ui as any).props.REACTCOMPONENT
+  const reactComponent = ui && ui['props'] && (ui as any).props.reactcomponent
   if (!reactComponent && isCallable(displayName)) {
     displayName = await (displayName as any)((ui as any).props)
   }

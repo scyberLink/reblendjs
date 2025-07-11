@@ -212,7 +212,7 @@ export async function diff<P, S>(
     const oldNodeTag = (oldNode.displayName as string).toLowerCase()
     let newNodeTag = ''
 
-    const isReactComponent = (newNode as any)?.props?.REACTCOMPONENT
+    const isReactComponent = (newNode as any)?.props?.reactcomponent
     if (!isReactComponent && isCallable((newNode as any).displayName)) {
       ;(newNode as any).displayName = await (newNode as any).displayName()
     }
