@@ -1,22 +1,55 @@
-# ReblendJS
+- # ReblendJS
 
-ReblendJS is a lightweight frontend library that seamlessly integrates the flexibility of React with the efficiency of Web Components. It offers a modular approach to state management and component rendering, ensuring fast and predictable UI updates.
+ReblendJS is a modern frontend library that combines the best of React and Web Components. It provides a simple, high-performance API for building reusable UI components, with native support for async rendering, hooks, and seamless integration with both React and standard HTML.
 
-## 🚀 Features
+---
 
-- ✅ **Supports Standard HTML & React Attributes** – Write components using familiar syntax.
-- ✅ **JSX Support** – Use `for`, `style` (as a string), `class` (as `classNames`), and standard attributes.
-- ✅ **React Component Compatibility** – Use React components within ReblendJS.
-- ✅ **Uses React's Build Tools** – No need to change your existing setup.
-- ✅ **Functional Components Compile to Classes** – Optimized for performance.
-- ✅ **Single Execution for Functional Components** – No unnecessary re-renders.
-- ✅ **Web Component Native Support** – Directly renders existing `HTMLElement` instances without wrappers.
-- ✅ **Simple API & Easy to Learn** – Minimal boilerplate, quick to get started.
-- ✅ **Built-in Hooks Support** – Manage state and side effects seamlessly.
-- ✅ **Component-Level State Management** – Each element holds its own state.
-- ✅ **No Mixed or Async State Rendering** – Eliminates issues with pre/post rendering.
-- ✅ **Faster Rendering** – State is localized within each element, reducing unnecessary updates.
-- ✅ **Async Components & Rendering** – Out-of-the-box support for async components and lazy loading.
+## 📁 Project Directory Structure
+
+Here’s an overview of the main project structure. Each package is explained below:
+
+```
+reblendjs/
+├── packages/
+│   ├── reblend-bootstrap/         # Bootstrap component wrappers for ReblendJS
+│   ├── reblend-deep-equal-iterative/ # Deep equality checking utilities
+│   ├── reblend-hooks/             # Built-in hooks (state, effect, etc.)
+│   ├── reblend-router/            # Client-side routing for ReblendJS apps
+│   ├── reblend-routing/           # Routing utilities and helpers
+│   ├── reblend-template-test/     # Template and test utilities
+│   ├── reblend-typing/            # TypeScript type definitions
+│   └── reblend-ui/                # Core UI components and primitives
+├── tasks/                         # Project scripts and automation
+├── README.md                      # Project documentation (this file)
+├── package.json                   # Project metadata and dependencies
+└── ...                            # Other configuration and support files
+```
+
+**What Each Package Does:**
+
+- **reblend-bootstrap/**: Provides Bootstrap-styled components for use with ReblendJS.
+- **reblend-deep-equal-iterative/**: Utilities for deep equality checks, useful for state comparison and memoization.
+- **reblend-hooks/**: Collection of built-in hooks (like `useState`, `useEffect`) for state and lifecycle management.
+- **reblend-router/**: Implements client-side routing for single-page applications.
+- **reblend-routing/**: Additional routing helpers and utilities, inspired by Express.js.
+- **reblend-template-test/**: Templates and utilities for testing ReblendJS components and bootstrapping new projects.
+- **reblend-typing/**: TypeScript type definitions for strong typing and IDE support.
+- **reblend-ui/**: Core UI primitives and reusable, headless components.
+
+---
+- **Standard HTML & React Attributes** – Write components using familiar syntax.
+- **JSX Support** – Use `for`, `style` (as a string), `class` (as `classNames`), and standard attributes.
+- **React Component Compatibility** – Use React components within ReblendJS.
+- **Uses React's Build Tools** – No need to change your existing setup.
+- **Functional Components Compile to Classes** – Optimized for performance.
+- **Single Execution for Functional Components** – No unnecessary re-renders.
+- **Web Component Native Support** – Directly renders existing `HTMLElement` instances without wrappers.
+- **Simple API & Easy to Learn** – Minimal boilerplate, quick to get started.
+- **Built-in Hooks Support** – Manage state and side effects seamlessly.
+- **Component-Level State Management** – Each element holds its own state.
+- **No Mixed or Async State Rendering** – Eliminates issues with pre/post rendering.
+- **Faster Rendering** – State is localized within each element, reducing unnecessary updates.
+- **Async Components & Rendering** – Out-of-the-box support for async components and lazy loading.
 
 ---
 
@@ -24,7 +57,7 @@ ReblendJS is a lightweight frontend library that seamlessly integrates the flexi
 
 ReblendJS supports **async components and async rendering** natively. You can return a `Promise` from your component, enabling features like code-splitting and conditional lazy loading without extra libraries.
 
-Example:
+**Example:**
 
 ```js
 import Reblend from "reblendjs";
@@ -60,9 +93,7 @@ Alternatively, install ReblendJS manually:
 ```sh
 npm install reblendjs
 ```
-
 or
-
 ```sh
 yarn add reblendjs
 ```
@@ -107,12 +138,12 @@ Reblend.mountOn('root', Counter);
 
 ReblendJS **fully supports JSX attributes**, including:
 
-- ✅ `for` (instead of `htmlFor` in React)
-- ✅ `style` (as a **string**, unlike React's object-based approach)
-- ✅ `class` (as `classNames`)
-- ✅ Standard attributes (`id`, `name`, `placeholder`, etc.)
+- `for` (instead of `htmlFor` in React)
+- `style` (as a **string**, unlike React's object-based approach)
+- `class` (as `classNames`)
+- Standard attributes (`id`, `name`, `placeholder`, etc.)
 
-Example:
+**Example:**
 
 ```js
 const FormExample = () => {
@@ -155,12 +186,12 @@ ReblendJS is ideal for:
 | JSX `for`, `style`, `class` | ✅ Fully supported                     | ❌ `htmlFor`, `style` as an object, `className` |
 | React Component Support     | ✅ Fully Compatible                    | ✅ Native                                       |
 | Functional Components       | ✅ Compiled to Classes                 | ✅ Functional with Hooks                        |
-| Hooks                       | ✅ Supported                           | ✅ Supported                                    |
+| Hooks                      | ✅ Supported                           | ✅ Supported                                    |
 | Web Component Support       | ✅ Native (renders without wrapper)    | ❌ Requires wrappers like `Reblend.createElement` |
-| State Management            | ✅ Localized in elements               | ✅ Centralized (React Context, Redux)           |
-| Rendering Performance       | ✅ Faster (isolated state per element) | ⚠️ Slower when dealing with large states        |
-| Build Tool                  | ✅ Uses React's toolchain              | ✅ Uses its own build tools                     |
-| Learning Curve              | ✅ Simpler syntax, minimal setup       | ⚠️ More concepts (Virtual DOM, Reconciliation)  |
+| State Management           | ✅ Localized in elements               | ✅ Centralized (React Context, Redux)           |
+| Rendering Performance      | ✅ Faster (isolated state per element) | ⚠️ Slower when dealing with large states        |
+| Build Tool                 | ✅ Uses React's toolchain              | ✅ Uses its own build tools                     |
+| Learning Curve             | ✅ Simpler syntax, minimal setup       | ⚠️ More concepts (Virtual DOM, Reconciliation)  |
 
 ---
 
@@ -173,7 +204,7 @@ import { Button } from 'react-bootstrap';
 import Reblend, { useState } from 'reblendjs';
 import Modal from 'react-bootstrap/Modal';
 
-export function MyVerticallyCenteredModal(props: any) {
+export function MyVerticallyCenteredModal(props) {
   return (
     <Modal
       {...props}
